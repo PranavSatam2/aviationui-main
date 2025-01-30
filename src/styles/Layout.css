@@ -1,0 +1,83 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* App Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Header */
+.app-header {
+  background-color: #4facfe;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Body (Sidebar + Main Content) */
+.app-body {
+  display: flex;
+  flex: 1; /* Ensures this section takes up remaining space */
+}
+
+/* Sidebar */
+.app-sidebar {
+  width: 250px;
+  background-color: #333;
+  color: white;
+  padding: 15px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.app-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.app-sidebar ul li {
+  margin: 15px 0;
+}
+
+.app-sidebar ul li a {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  display: block;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.app-sidebar ul li a:hover {
+  background-color: #4facfe;
+}
+
+/* Main Content */
+.app-content {
+  flex: 1; /* Ensures this section takes up the remaining width */
+  padding: 20px;
+  background-color: white;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+/* Footer */
+.app-footer {
+  background-color: #4facfe;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.2);
+}
