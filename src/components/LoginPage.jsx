@@ -3,7 +3,6 @@ import axios from "axios";
 import "../styles/LoginPage.css";
 import Header from "./Header";
 import Footer from "./Footer";
-import Sidebar from "./Sidebar";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -39,8 +38,8 @@ const LoginPage = () => {
       if (response.status === 200) {
         console.log("Login Successful:", response.data);
         alert("Login successful!");
-        // Redirect to a dashboard or another page
-        window.location.href = "/dashboard"; // Change the path as needed
+        // Redirect to the home page
+        window.location.href = "/";
       }
     } catch (error) {
       // Handle error response
