@@ -15,6 +15,6 @@ export const StoreDetail = (empId) => axios.get(`${service_API}/${StoreId}`)
 
 let login_API = REST_API_BASE_URL + "/login"
 
-export const login = (loginData) => axios.post(login_API, loginData)
+export const login = (loginData) => axios.post(login_API, loginData);
 
 

@@ -5,14 +5,19 @@ import LoginPage from "./LoginPage";
 
 const Header = () => {
   return (
-    <nav class="navbar navbar-dark bg-dark py-4">
+    <div className="header" style={{ border: "1px solid #000", borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px" }}>
+    <nav class="navbar navbar-dark py-4" style={{ backgroundColor: "#16404D" }}>
   <div class="container-fluid">
-    <a class="navbar-brand">Navbar</a>
+  <a class="navbar-brand" href="/">
+      <img src="/airplane.jpg" alt="" width="30" height="24" class="d-inline-block align-text-top"></img>
+      Airplane
+    </a>
     <form class="d-flex">
       <button class="btn btn-outline-success" type="submit"><Link to="/Login">Login</Link></button>
     </form>
   </div>
 </nav>
+    </div>
   );
 };
 

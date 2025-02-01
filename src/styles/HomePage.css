@@ -1,135 +1,64 @@
-/* General Styling */
+/* General styles */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  .home-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  /* Header Styling */
-  .header {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    font-size: 1.5rem;
-  }
-  
-  /* Footer Styling */
-  .footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    width: 100%;
-    font-size: 0.9rem;
-  }
-  
-  /* Content Styling */
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color, #f4f4f4);
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+  align-items: flex-start;
+}
+
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}
+
+.form-container {
+  flex-grow: 1;
+  background: #fff;
+  padding: 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .content {
-    display: flex;
-    flex: 1;
-    overflow: hidden; /* Prevents unnecessary scrollbars */
-  }
-  
-  /* Sidebar Styling */
-  .sidebar {
-    background-color: #f4f4f4;
-    width: 300px;
-    margin-top: 40px;
-    min-width: 150px;
-    padding: 15px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
   }
-  
-  .sidebar ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+  .sidebar {
+    width: 100%;
   }
-  
-  .sidebar li {
-    margin-bottom: 10px;
+  .form-container {
+    max-width: 95%;
+    padding: 1rem;
   }
-  
-  .sidebar a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 5px;
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    font-size: 0.875rem;
+    padding: 0.5rem;
   }
-  
-  .sidebar a:hover {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  /* Main Content Styling */
-  .main-content {
-    flex: 1;
-    padding: 20px;
-    background-color: #f8f9fa;
-    overflow-y: auto;
-    font-size: 1rem;
-  }
-  
-  /* Responsive Design */
-  
-  /* For smaller screens, adjust layout */
-  @media (max-width: 768px) {
-    .content {
-      flex-direction: column; /* Stack the sidebar and main content vertically */
-    }
-  
-    .sidebar {
-      width: 100%; /* Sidebar takes full width */
-      box-shadow: none;
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-  
-    .sidebar ul {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-    }
-  
-    .sidebar li {
-      margin-bottom: 0;
-    }
-  }
-  
-  /* For very small screens, reduce padding and font size */
-  @media (max-width: 480px) {
-    .header {
-      font-size: 1.2rem;
-      padding: 8px 15px;
-    }
-  
-    .footer {
-      font-size: 0.8rem;
-      padding: 8px;
-    }
-  
-    .sidebar a {
-      font-size: 0.9rem;
-      padding: 5px;
-    }
-  
-    .main-content {
-      font-size: 0.9rem;
-      padding: 10px;
-    }
-  }
-  
+}
