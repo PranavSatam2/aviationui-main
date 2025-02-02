@@ -11,6 +11,9 @@ const Sidebar = () => {
         <li>
           <Link to="/AddProduct">Product Form</Link>
         </li>
+        <li>
+          <Link to="/ListProducts">List Products</Link>
+        </li>
         {/* Add more links as needed */}
       </ul>
     </div>
