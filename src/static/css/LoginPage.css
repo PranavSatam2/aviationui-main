@@ -1,0 +1,138 @@
+/* Airplane-themed login page with a fading border effect */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", sans-serif;
+  background: url("/hangar.jpg") no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 2s ease-in-out; /* Background fade-in animation */
+}
+
+/* Fade-in animation for the login form */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Login Container with Fading Border */
+.login-container {
+  background: rgba(255, 255, 255, 0.1); /* Transparent white */
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Frosted glass effect */
+  backdrop-filter: blur(10px); /* Adds the frosted glass effect */
+  padding: 30px 20px;
+  border-radius: 15px;
+  border: 5px solid transparent; /* Transparent border */
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1)); /* Fading gradient */
+  color: white; /* Text color */
+  animation: scaleUp 1.5s ease-in-out; /* Scale-up animation on load */
+}
+
+/* Heading */
+.login-container h2 {
+  color: #ffffff;
+  font-size: 26px;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Glow effect */
+  animation: fadeIn 2s ease-in-out; /* Fade-in for heading */
+}
+
+/* Input Fields */
+.login-form input {
+  display: block;
+  width: 90%;
+  margin: 10px auto;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2); /* Transparent input background */
+  color: white;
+  text-align: center;
+  transition: all 0.3s ease; /* Smooth transition for focus effect */
+}
+
+.login-form input::placeholder {
+  color: black; /* Black placeholder text */
+  font-style: italic; /* Optional: italic style for placeholders */
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #00bfff; /* Blue highlight */
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.5); /* Blue glow effect */
+  transform: scale(1.02); /* Slight zoom on focus */
+  transition: transform 0.2s ease-in-out; /* Smooth zoom animation */
+}
+
+/* Submit Button */
+.login-form button {
+  padding: 12px 20px;
+  font-size: 16px;
+  color: white;
+  background: linear-gradient(135deg, #007bff, #00bfff); /* Gradient button */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease-in-out; /* Smooth transition for hover */
+}
+
+.login-form button:hover {
+  transform: scale(1.05); /* Slight scaling */
+  background: linear-gradient(135deg, #0056b3, #007bff); /* Darker gradient on hover */
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.5); /* Button shadow effect */
+}
+
+/* Error Message */
+.error-message {
+  color: #ff4d4d; /* Light red */
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Welcome Message */
+.welcome-container h2 {
+  color: white;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Glow effect */
+  animation: fadeIn 2s ease-in-out;
+}
+
+.welcome-container button {
+  padding: 12px 20px;
+  font-size: 16px;
+  color: white;
+  background: linear-gradient(135deg, #dc3545, #ff6f6f);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.welcome-container button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #c82333, #ff4d4d);
+}
