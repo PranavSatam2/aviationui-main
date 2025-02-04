@@ -3,8 +3,11 @@ import axios from "axios";
 import "../styles/LoginPage.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import { isSessionValid } from "../utils/session";
 
-const LoginPage = () => {
+const LoginPage = () => 
+{
+  // Variable
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -50,6 +53,33 @@ const LoginPage = () => {
       }
       console.error("Login Error:", error);
     }
+  };
+
+  // Session handling 
+  const [sessionValid, setSessionValid] = useState(false);
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    // Check if the session is valid on component mount
+    if (isSessionValid()) {
+      setSessionValid(true);
+      setUserData(getSessionData()); // Get session data if valid
+    } else {
+      setSessionValid(false);
+    }
+  }, []);
+
+  const handleLoginSession = (userInfo) => {
+    // Assuming userInfo contains the user data
+    saveSession(userInfo); // Save session with user data
+    setSessionValid(true);
+    setUserData(userInfo);
+  };
+
+  const handleLogoutSession = () => {
+    clearSession(); // Clear the session
+    setSessionValid(false);
+    setUserData(null);
   };
 
   return (
