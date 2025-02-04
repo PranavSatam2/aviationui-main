@@ -17,4 +17,9 @@ let login_API = REST_API_BASE_URL + "/login"
 
 export const login = (loginData) => axios.post(login_API, loginData);
 
+// ######################### Products #####################
+
+let product_API = REST_API_BASE_URL + "/products"
+
+export const addProducts = () => axios.get(product_API);
 

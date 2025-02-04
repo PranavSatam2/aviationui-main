@@ -3,11 +3,13 @@ import axios from "axios";
 import "../styles/LoginPage.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate(); // Initialize navigate function
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -38,8 +40,9 @@ const LoginPage = () => {
       if (response.status === 200) {
         console.log("Login Successful:", response.data);
         alert("Login successful!");
-        // Redirect to the home page
-        window.location.href = "/";
+
+        // Redirect to the home page using navigate
+        navigate("/"); // This will navigate to the home page ("/")
       }
     } catch (error) {
       // Handle error response
@@ -54,39 +57,39 @@ const LoginPage = () => {
 
   return (
     <div>
-    <Header />
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleLogin}>
-        <h2>Login</h2>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            placeholder="Enter your username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="login-button">
-          Login
-        </button>
-      </form>
-    </div>
-    <Footer />
+      <Header />
+      <div className="login-container">
+        <form className="login-form" onSubmit={handleLogin}>
+          <h2>Login</h2>
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="login-button">
+            Login
+          </button>
+        </form>
+      </div>
+      <Footer />
     </div>
   );
 };

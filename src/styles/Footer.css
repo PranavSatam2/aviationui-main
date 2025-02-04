@@ -1,17 +1,9 @@
-/* Sticky Footer Classes */
-
-html,
-body {
-  height: 100%;
-}
-
-#page-content {
-  flex: 1 0 auto;
-}
-
-/* Other Classes for Page Styling */
-
-body {
-  background: #222831;
-  background: linear-gradient(to right, #0062E6, #33AEFF);
+.app-footer {
+  background-color: #4facfe;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  position: relative;
+  box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.2);
 }
