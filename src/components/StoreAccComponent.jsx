@@ -1,18 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faHouse } from '@fortawesome/free-solid-svg-icons';
-import { createStore } from "../services/DB_Manager";
-
+import { createStore, getStoreDetail, listAllStore, updateStore } from "../services/db_manager";
 
 const StoreAccComponent = () =>
 {
     // Variable
-    const [form, setForm] = useState({partNum : '', description : '' , batch: '', condition : '', supplier : '', quantity : '', dom : '', doe : '', dateOfRecipet : '', document : '', nameOfQualityInsp : '', signatureOfQualityInsp : ''})
-    // var partNumOpt = document.querySelectorAll('.editable-dropdown-item')
-    var partNumInput = document.getElementById('partNum')
+    const [form, setForm] = useState({partNum : '', description : '' , batch: '', supplier : '', quantity : '', dom : '', doe : '', dateOfRecipet : '', document : '', nameOfQualityInsp : '', signatureOfQualityInsp : ''})
+    const [dropdownItems, setDropdownItems] = useState([])
+    const [listData, setListData] = useState('');
 
-
-    // ######################### FUNCTION #####################
+    // ######################### FUNCTION ########################
 
     // This functiom handle all change event's
     const handleChange = (event) => {
@@ -23,19 +21,66 @@ const StoreAccComponent = () =>
         }));
     };
 
-    // This function handle change event
-    function saveFormData(event)
+    // This function set selected part number to input field
+    function setSelectedPartNum(event, value)
     {
-        event.preventDefault();
-        createStore(form)
+        setForm((prevData) => ({
+            ...prevData,
+            partNum: value 
+        }));
+        handleViewRequest(event, value)
     }
 
-    // This function is
-    function setSelectedPartNum(partNum)
+    // ########################## HOOKS ##############################
+
+    // This function is used to send save request
+    function sendSaveRequest()
     {
-        partNumInput.value = partNum
+        let partNum = form.partNum
+        if(listData.includes(partNum))
+        {
+            updateStore(partNum, form)
+        }
+        else
+        {
+            createStore(form)
+        }
     }
 
+    // This function is used to handle view response
+    async function handleViewRequest(event, partNum)
+    {
+        event.preventDefault(); 
+        let response = await getStoreDetail(partNum)
+        if (response.data)
+        {
+            setForm({ ...response.data, });
+        }
+    }
+
+    // This function is used to display part num list reposne
+    useEffect(() => 
+    {
+        listAllStore().then(response => 
+            { 
+                let data = response.data
+                let list = []
+
+                for (let index = 0; index < data.length; index++) 
+                {
+                    list.push(data[index])   
+                }
+
+                setDropdownItems([...list])
+                setListData(list.join('~'));
+
+            }).catch(error => 
+            {
+                console.error("Error fetching stores:", error);
+            });
+    }, []);
+
+    // ############################ RETURN ################################
     return (
         // <!-- Page Wrapper -->
         <div id="wrapper">
@@ -68,64 +113,54 @@ const StoreAccComponent = () =>
                             <div className="col-md-12">
                                 <form>
                                     <div className="col-md-12">
-                                        <div className="col-md-6 p-2 d-flex">
+                                        <div className="col-md-6 p-2 d-flex align-items-center">
                                             <label htmlFor="partNum" className="col-md-4 mt-2">Part Number</label>
-                                            <input className="form-control w-100" type="text"  id="partNum" name="partNum" placeholder="Enter part number" value={form.partNum} onChange={handleChange} required />
-                                            {/* <div class="col-md-10">
-                                                <div className="input-group">
-                                                    <input type="text"  id="partNum" className="form-control w-100" value={form.partNum} onChange={handleChange} required /> */}
-                                                    {/* <div className="input-group-append">
-                                                        <button className="d-none d-sm-inline-block btn btn-sm btn-light shadow-sm dropdown-toggle dropdown-toggle" type="button" id="dropdownMsgPrflButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-                                                        <div className="dropdown-menu dropdown-menu-right" style="z-index: 1050; max-height: 350px; width: 430px ; overflow-y: auto;" aria-labelledby="dropdownMsgPrflButton"> */}
-                                                            {/* Value will be generated dynamically */}
-                                                            {/* <a className="dropdown-item editable-dropdown-item" onclick="" style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;" value='{{mti_code}}' >{{mti_code}} - {{mti_desc}}</a> */}
-                                                        {/* </div>
+                                            <div className="col-md-8 d-flex p-0">
+                                                <input className="form-control w-100" type="text" id="partNum" name="partNum" placeholder="Enter part number" value={form.partNum} onChange={handleChange} required  />
+                                                <div className="input-group-append">
+                                                    <button className="btn btn-sm btn-light shadow-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                                    <div className="dropdown-menu dropdown-menu-right" id="part-num-list" style={{zIndex: 1050, maxHeight: '350px', width: 'max-content', overflowY: 'auto' }}>
+                                                            {/* <a className="dropdown-item editable-dropdown-item device-dropdown-item"  style={{ whiteSpace: 'normal', wordWrap: 'break-word', overflowWrap: 'break-word' }}></a> */}
+                                                            {dropdownItems.map((item) => (
+                                                                <a key={item} onClick={(event)=> setSelectedPartNum(event, item)} className="dropdown-item editable-dropdown-item device-dropdown-item" style={{ whiteSpace: "normal", wordWrap: "break-word", overflowWrap: "break-word" }} > {item} </a> ))}
                                                     </div>
                                                 </div>
-                                            </div> */}
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <hr className="border border-dark m-1" />
+                                    <hr className="border m-1" />
 
                                     <div className="col-md-12 d-flex">
                                         <div className="col-md-6 p-2 d-flex">
                                             <label htmlFor="description" className="col-md-4 mt-2">Description</label>
-                                            <input className="form-control w-100" type="text"  id="description" name="description" placeholder="Enter description" value={form.description} onChange={handleChange} required />
+                                            <input className="form-control w-100" type="text"  id="description" name="description" placeholder="Enter description" value={form.description} onChange={handleChange} />
                                         </div>
 
                                         <div className="col-md-6 p-2 d-flex">
                                             <label htmlFor="batch" className="col-md-4 mt-2">Batch / Lot Number</label>
-                                            <input className="form-control w-100" type="text"  id="batch" name="batch" placeholder="Enter description" value={form.batch} onChange={handleChange} required />
+                                            <input className="form-control w-100" type="number"  id="batch" name="batch" placeholder="Enter description" value={form.batch} onChange={handleChange} required />
                                         </div>
                                     </div>
 
                                     <div className="col-md-12 d-flex">
                                         <div className="col-md-6 p-2 d-flex">
                                             <label htmlFor="condition" className="col-md-4 mt-2">Condition</label>
-                                            <select className="form-control w-100" name="condition" id="condition" value={form.condition} onChange={handleChange}>
-                                                <option value="Condition"> -- Select Condition --</option>
-                                                <option value="Pawan" selected> -- Pawan --</option>
-                                            </select>
-
-                                        </div>
-
-                                        <div className="col-md-6 p-2 d-flex flex-wrap align-items-center">
-                                            <label htmlFor="batch" className="col-md-4 mt-2">Batch / Lot Number</label>
-                                            <div className="col-md-6 d-flex">
+                                            <div className="col-md-8 d-flex">
                                                 <div className="form-check col-md-4">
-                                                    <input className="form-check-input p-0 m-0 mt-1" type="radio" name="new_opt" id="newRadio" />
-                                                    <label className="form-check-label p-0 m-0" htmlFor="newRadio">New</label>
+                                                    <input className="form-check-input" type="radio" name="condition" id="newRadio" />
+                                                    <label className="form-check-label" htmlFor="newRadio">New</label>
                                                 </div>
                                                 <div className="form-check col-md-4">
-                                                    <input className="form-check-input p-0 m-0 mt-1" type="radio" name="o_w" id="o_wRadio" />
-                                                    <label className="form-check-label p-0 m-0" htmlFor="o_wRadio">O/W</label>
+                                                    <input className="form-check-input" type="radio" name="condition" id="o_wRadio" />
+                                                    <label className="form-check-label" htmlFor="o_wRadio">O/W</label>
                                                 </div>
                                                 <div className="form-check col-md-7">
-                                                    <input className="form-check-input p-0 m-0 mt-1" type="radio" name="repaired" id="repairedRadio" />
-                                                    <label className="form-check-label p-0 m-0" htmlFor="repairedRadio">Repaired</label>
+                                                    <input className="form-check-input" type="radio" name="condition" id="repairedRadio" />
+                                                    <label className="form-check-label" htmlFor="repairedRadio">Repaired</label>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
 
@@ -144,14 +179,14 @@ const StoreAccComponent = () =>
                                     <div className="col-md-12 d-flex">
                                         <div className="col-md-6 p-2 d-flex">
                                             <label htmlFor="dom" className="col-md-4 mt-2">DOM</label>
-                                            {/* <input className="form-control w-100" type="date"  id="dom" name="dom"  value={form.dom} onChange={handleChange} required /> */}
-                                            <input className="form-control w-100" type="text"  id="dom" name="dom"  value={form.dom} onChange={handleChange} required />
+                                            <input className="form-control w-100" type="date"  id="dom" name="dom"  value={form.dom} onChange={handleChange} required />
+                                            {/* <input className="form-control w-100" type="text"  id="dom" name="dom"  value={form.dom} onChange={handleChange} required /> */}
                                         </div>
 
                                         <div className="col-md-6 p-2 d-flex">
                                             <label htmlFor="batch" className="col-md-4 mt-2">DOE</label>
-                                            {/* <input className="form-control w-100" type="date"  id="doe" name="doe" value={form.doe} onChange={handleChange} required /> */}
-                                            <input className="form-control w-100" type="text"  id="doe" name="doe" value={form.doe} onChange={handleChange} required />
+                                            <input className="form-control w-100" type="date"  id="doe" name="doe" value={form.doe} onChange={handleChange} required />
+                                            {/* <input className="form-control w-100" type="text"  id="doe" name="doe" value={form.doe} onChange={handleChange} required /> */}
                                         </div>
                                     </div>
 
@@ -163,8 +198,8 @@ const StoreAccComponent = () =>
 
                                         <div className="col-md-6 p-2 d-flex">
                                             <label htmlFor="batch" className="col-md-4 mt-2">Date Of Recipt</label>
-                                            {/* <input className="form-control w-100" type="date"  id="recipt" name="recipt" value={form.recipt} onChange={handleChange} required /> */}
-                                            <input className="form-control w-100" type="text"  id="dateOfRecipet" name="dateOfRecipet" value={form.dateOfRecipet} onChange={handleChange} required />
+                                            <input className="form-control w-100" type="date"  id="dateOfRecipet" name="dateOfRecipet" value={form.dateOfRecipet} onChange={handleChange} required />
+                                            {/* <input className="form-control w-100" type="text"  id="dateOfRecipet" name="dateOfRecipet" value={form.dateOfRecipet} onChange={handleChange} required /> */}
                                         </div>
                                     </div>
 
@@ -180,19 +215,17 @@ const StoreAccComponent = () =>
                                         </div>
                                     </div>
 
-                                    <hr className="border border-dark m-1" />
+                                    <hr className="border m-1" />
 
                                     <div className="col-md-12 text-end m-2">
                                         <div className="text-end m-2">
-                                            <button className="btn btn-primary" onClick={(event) => saveFormData(event)}>Save</button>
+                                            <button className="btn btn-primary m-0 mt-2 mx-2" onClick={(event) => sendSaveRequest(event)}>Save</button>
+                                            <button className="btn btn-danger m-0 mt-2 mx-2" onClick={(event) => loadListResponse()}>Delete</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
-
-
-
                     {/* End of Begin Page */}
                     </div>
                 </div>

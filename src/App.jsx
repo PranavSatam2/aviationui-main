@@ -3,15 +3,19 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./components/HomePage";
 import AddProduct from "./components/AddProduct";
 import StoreAccComponent from "./components/StoreAccComponent";
-import LoginPage from "./components/LoginPage";
+import SupplierRegistration from "./components/SupplierRegistration";
+
+
+
+
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/AddProduct" element={<AddProduct />} />
-        <Route path="/Store" element={<StoreAccComponent />} />
-        <Route path="/Login" element={<LoginPage />} />
+        <Route path="/storeAcceptance" element={<StoreAccComponent />} />
+        <Route path="/SupplierRegistration" element={<SupplierRegistration />}></Route>
       </Routes>
     </Router>
   );
