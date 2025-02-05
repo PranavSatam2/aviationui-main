@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
+import Sidebar from "./Sidebar";
 import "../styles/ViewProduct.css";
 
 const ViewProduct = () => {
@@ -52,9 +53,13 @@ const ViewProduct = () => {
   };
 
   return (
-    <div>
+    <div className="wrapper " style={{height : '100vh'}}>
+      <Sidebar />
+      
+      <div className="content">
       <Header />
-      <div className="container mt-5">
+        <div className="card">
+        <div className="container mt-5" style={{maxWidth: "80%", marginLeft: "18%"}}>
         <h3 className="text-center text-primary">View Products</h3>
 
         {/* Search by Product ID */}
@@ -118,6 +123,8 @@ const ViewProduct = () => {
             </table>
           </div>
         )}
+      </div>
+        </div>      
       </div>
       <Footer />
     </div>

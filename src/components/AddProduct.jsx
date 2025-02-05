@@ -52,35 +52,27 @@ const AddProduct = () => {
   };
 
   return (
-    <div id="">
+    <div className="wrapper " style={{height : '100vh'}}>
+      <Sidebar />
+      
+      <div className="content">
       <Header />
-      <div id="content-wrapper" className="d-flex flex-row mt-5">
+        <div className="card">
+        <div id="content-wrapper" className="d-flex flex-row mt-5">
         <div id="content">
-          <div className="container-fluid">
+          <div className="container-fluid" style={{ marginLeft: "50%" }}>
             <div className="row mx-5">
-              <div className="col-md-6 px-0 d-flex">
+              <div className="col-md-6 px-3 d-flex">
                 <h5 className="h5 mb-0 text-gray-800 mt-3">Add Product</h5>
               </div>
             </div>
 
-            <div className="row mx-5 card border border-dark shadow-lg">
+            <div className="row mx-5 card border border-dark shadow-lg py-2">
               <div className="col-md-12">
                 <form onSubmit={handleSubmit}>
                   <div className="col-md-12 p-2 d-flex">
-                    <label className="col-md-4 mt-2">Material Classification</label>
-                    <input
-                      className="form-control w-100"
-                      type="text"
-                      name="materialClassification"
-                      value={form.materialClassification}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="col-md-12 d-flex">
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-4 mt-3">Product ID</label>
+                    <div className="col-md-6 p-1 d-flex">
+                      <label className="col-md-4 mt-1">Product ID</label>
                       <input
                         className="form-control w-100"
                         type="text"
@@ -90,9 +82,22 @@ const AddProduct = () => {
                         required
                       />
                     </div>
+                  </div>
 
+                  <div className="col-md-12 p-2 d-flex">
                     <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-4 mt-2">Product Name</label>
+                    <label className="col-md-5 mt-2">Material Classification</label>
+                    <input
+                      className="form-control w-100"
+                      type="text"
+                      name="materialClassification"
+                      value={form.materialClassification}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6 p-2 d-flex">
+                      <label className="col-md-5 mt-1">Product Name</label>
                       <input
                         className="form-control w-100"
                         type="text"
@@ -104,8 +109,8 @@ const AddProduct = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-12 p-2 d-flex">
-                    <label className="col-md-4 mt-2">Product Description</label>
+                  <div className="col-md-12 p-3 d-flex">
+                    <label className="col-md-2 mt-2">Product Description</label>
                     <textarea
                       className="form-control w-100"
                       name="productDescription"
@@ -116,7 +121,7 @@ const AddProduct = () => {
                   </div>
 
                   <div className="col-md-12 d-flex">
-                    <div className="col-md-6 p-2 d-flex">
+                    <div className="col-md-6 p-1 d-flex">
                       <label className="col-md-6 mt-2">Unit of Measurement</label>
                       <input
                         className="form-control w-100"
@@ -129,7 +134,7 @@ const AddProduct = () => {
                     </div>
 
                     <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-4 mt-2">OEM</label>
+                      <label className="col-md-3 mt-2">OEM</label>
                       <input
                         className="form-control w-100"
                         type="text"
@@ -144,7 +149,7 @@ const AddProduct = () => {
                   <div className="col-md-12 d-flex">
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">NHA</label>
-                      <input
+                      <textarea
                         className="form-control w-100"
                         type="text"
                         name="nha"
@@ -156,7 +161,7 @@ const AddProduct = () => {
 
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">CMM Reference Number</label>
-                      <input
+                      <textarea
                         className="form-control w-100"
                         type="text"
                         name="cmmReferenceNumber"
@@ -201,6 +206,8 @@ const AddProduct = () => {
             </div>
           </div>
         </div>
+      </div>
+        </div>      
       </div>
       <Footer />
     </div>

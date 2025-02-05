@@ -2,7 +2,7 @@
 
 /* General container styling */
 .container {
-  max-width: max-content;
+  max-width: 80%;
   margin: 0 auto;
   padding: 20px;
 }

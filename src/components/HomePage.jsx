@@ -2,16 +2,19 @@ import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";
+import StoreAccComponent from "./StoreAccComponent";
 
 const HomePage = () => {
   return (
-    <div className="home-container">
+    <div className="wrapper " style={{height : '100vh'}}>
+      <Sidebar />
+      
+      <div className="content">
       <Header />
-      <div className="content d-flex">
-        <Sidebar />
-        <div className="form-container" style={{ textAlign: "center", padding: "20px", margin: "20px" }}>
-          <h1>Welcome Home!!!!!!!</h1>
-        </div>
+        <div className="card">
+          {/* conetnt */}
+          
+        </div>      
       </div>
       <Footer />
     </div>

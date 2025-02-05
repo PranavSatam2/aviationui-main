@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
+import Sidebar from "./Sidebar";
 
 const EditProduct = () => {
   const [productId, setProductId] = useState("");
@@ -54,9 +55,13 @@ const EditProduct = () => {
   };
 
   return (
-    <div>
+    <div className="wrapper " style={{height : '100vh'}}>
+      <Sidebar />
+      
+      <div className="content">
       <Header />
-      <div className="container mt-5">
+        <div className="card">
+        <div className="container mt-5" style={{maxWidth: "80%", marginLeft: "18%"}}>
         <h3 className="text-center text-primary">Edit Product</h3>
 
         {/* Input for fetching product data */}
@@ -130,6 +135,8 @@ const EditProduct = () => {
             </button>
           </form>
         )}
+      </div>
+        </div>      
       </div>
       <Footer />
     </div>
