@@ -50,7 +50,7 @@ html, body {
   margin-left: 220px; 
   flex-grow: 1;
   padding: 0px; 
-  background-color: #f9f7f7; 
+  background-color: rgb(250, 247, 247)  ; 
   height: 100vh; 
   overflow: auto; 
 }
