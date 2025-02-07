@@ -1,92 +1,144 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import "../styles/EditProduct.css";
+import React, { useState } from "react";
+import axios from "axios";
+import Header from "./Header";
+import Footer from "./Footer";
+import Sidebar from "./Sidebar";
 
 const EditProduct = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    materialClassification: "",
-    productId: "",
-    productName: "",
-    productDescription: "",
-    unitOfMeasurement: "",
-    oem: "",
-    nha: "",
-    cmmReferenceNumber: "",
-    date: "",
-    registeredBy: "",
-  });
+  const [productId, setProductId] = useState("");
+  const [form, setForm] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Fetch product data by ID from API
-    fetch(`https://api.example.com/products/${id}`)
-      .then((response) => response.json())
-      .then((data) => setFormData(data))
-      .catch((error) => console.error("Error fetching product:", error));
-  }, [id]);
+  // Function to fetch product data by ID
+  const fetchProductData = async () => {
+    if (!productId.trim()) {
+      setError("Please enter a valid Product ID.");
+      return;
+    }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.get(`https://api.example.com/products/${productId}`);
+      setForm(response.data); // Assuming API returns product object
+      setError("");
+    } catch (err) {
+      setError("Product not found. Please check the Product ID.");
+      setForm(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e) => {
+  // Function to handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Function to submit the updated data
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Send updated data to API
-    fetch(`https://api.example.com/products/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then(() => {
-        alert("Product updated successfully!");
-        navigate("/list-products");
-      })
-      .catch((error) => console.error("Error updating product:", error));
+    if (!form) return;
+
+    setLoading(true);
+    try {
+      await axios.put(`https://api.example.com/products/${productId}`, form);
+      alert("Product updated successfully!");
+    } catch (err) {
+      alert("Failed to update product. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="edit-product-container">
-      <h2>Edit Product</h2>
-      <form className="edit-form" onSubmit={handleSubmit}>
-        <label>Material Classification</label>
-        <input type="text" name="materialClassification" value={formData.materialClassification} onChange={handleChange} required />
+    <div className="wrapper " style={{height : '100vh'}}>
+      <Sidebar />
+      
+      <div className="content">
+      <Header />
+        <div className="card">
+        <div className="container mt-5" style={{maxWidth: "80%", marginLeft: "18%"}}>
+        <h3 className="text-center text-primary">Edit Product</h3>
 
-        <label>Product ID</label>
-        <input type="text" name="productId" value={formData.productId} onChange={handleChange} required />
-
-        <label>Product Name</label>
-        <input type="text" name="productName" value={formData.productName} onChange={handleChange} required />
-
-        <label>Description</label>
-        <textarea name="productDescription" value={formData.productDescription} onChange={handleChange} required />
-
-        <label>Unit of Measurement</label>
-        <input type="text" name="unitOfMeasurement" value={formData.unitOfMeasurement} onChange={handleChange} required />
-
-        <label>OEM</label>
-        <input type="text" name="oem" value={formData.oem} onChange={handleChange} required />
-
-        <label>NHA</label>
-        <input type="text" name="nha" value={formData.nha} onChange={handleChange} required />
-
-        <label>CMM Reference Number</label>
-        <input type="text" name="cmmReferenceNumber" value={formData.cmmReferenceNumber} onChange={handleChange} required />
-
-        <label>Date</label>
-        <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-
-        <label>Registered By</label>
-        <input type="text" name="registeredBy" value={formData.registeredBy} onChange={handleChange} required />
-
-        <div className="button-group">
-          <button type="submit" className="save-button">Save</button>
-          <button type="button" className="cancel-button" onClick={() => navigate("/list-products")}>Cancel</button>
+        {/* Input for fetching product data */}
+        <div className="card p-3 shadow-lg">
+          <label className="form-label">Enter Product ID:</label>
+          <div className="input-group">
+            <input
+              type="number"
+              className="form-control py-2 border-end-0 border rounded-start"
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+              placeholder="Enter Product ID"
+            /><br/>
+            <button className="btn btn-primary" onClick={fetchProductData} disabled={loading}>
+              {loading ? "Fetching..." : "Fetch Product"}
+            </button>
+          </div>
+          {error && <p className="text-danger mt-2">{error}</p>}
         </div>
-      </form>
+
+        {/* Display Form only if data is found */}
+        {form && (
+          <form className="card p-4 shadow-lg mt-4" onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Material Classification</label>
+              <input type="text" className="form-control" name="materialClassification" value={form.materialClassification} onChange={handleChange} required />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Product Name</label>
+              <input type="text" className="form-control" name="productName" value={form.productName} onChange={handleChange} required />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Product Description</label>
+              <textarea className="form-control" name="productDescription" value={form.productDescription} onChange={handleChange} required></textarea>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Unit of Measurement</label>
+              <input type="text" className="form-control" name="unitOfMeasurement" value={form.unitOfMeasurement} onChange={handleChange} required />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">OEM</label>
+              <input type="text" className="form-control" name="oem" value={form.oem} onChange={handleChange} required />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">NHA</label>
+              <input type="text" className="form-control" name="nha" value={form.nha} onChange={handleChange} required />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">CMM Reference Number</label>
+              <input type="text" className="form-control" name="cmmReferenceNumber" value={form.cmmReferenceNumber} onChange={handleChange} required />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Date</label>
+              <input type="date" className="form-control" name="date" value={form.date} onChange={handleChange} required />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Registered By</label>
+              <input type="text" className="form-control" name="registeredBy" value={form.registeredBy} onChange={handleChange} required />
+            </div>
+
+            <button type="submit" className="btn btn-success" disabled={loading}>
+              {loading ? "Saving..." : "Save Changes"}
+            </button>
+          </form>
+        )}
+      </div>
+        </div>      
+      </div>
+      <Footer />
     </div>
   );
 };

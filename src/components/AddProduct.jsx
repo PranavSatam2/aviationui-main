@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
+import axios from "axios"; // Import axios if you are using axios
 
 const AddProduct = () => {
-  const initialFormState = {
+  const [form, setForm] = useState({
     materialClassification: "",
     productId: "",
     productName: "",
@@ -15,215 +16,198 @@ const AddProduct = () => {
     cmmReferenceNumber: "",
     date: "",
     registeredBy: "",
-  };
-
-  const [formData, setFormData] = useState(initialFormState);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isViewing, setIsViewing] = useState(false);
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    alert("Form Submitted Successfully!");
 
-    // Clear input fields after submission
-    setFormData(initialFormState);
-    setIsEditing(false);
-  };
+    // Use axios or fetch to send data to the backend
+    try {
+      const response = await axios.post("https://your-api-endpoint.com/products", form);
+      console.log("Product added successfully:", response.data);
+      alert("Product Added Successfully!");
 
-  const handleEdit = () => {
-    setIsEditing(true);
-    setIsViewing(false);
-  };
-
-  const handleView = async () => {
-    setIsViewing(true);
-    setIsEditing(false);
-
-    // Mock API Data
-    const mockApiData = {
-      materialClassification: "Metal",
-      productId: "P12345",
-      productName: "Steel Bolt",
-      productDescription: "High-quality steel bolt used for heavy machinery",
-      unitOfMeasurement: "Pieces",
-      oem: "OEM Corp",
-      nha: "NHA123",
-      cmmReferenceNumber: "CMM56789",
-      date: "2024-02-01",
-      registeredBy: "John Doe",
-    };
-
-    setFormData(mockApiData);
+      // Reset the form after successful submission
+      setForm({
+        materialClassification: "",
+        productId: "",
+        productName: "",
+        productDescription: "",
+        unitOfMeasurement: "",
+        oem: "",
+        nha: "",
+        cmmReferenceNumber: "",
+        date: "",
+        registeredBy: "",
+      });
+    } catch (error) {
+      console.error("Error adding product:", error);
+      alert("Failed to add product.");
+    }
   };
 
   return (
-    <div className="container">
+    <div className="wrapper " style={{height : '100vh'}}>
+      <Sidebar />
+      
+      <div className="content">
       <Header />
-      <div className="content d-flex">
-        <Sidebar />
-        <div className="form-container">
-          <fieldset>
-            <legend>Product Details</legend>
-            <form onSubmit={handleSubmit}>
-              <div className="form-columns">
-                {/* Left Column */}
-                <div className="form-column">
-                  <div className="form-group">
-                    <label htmlFor="materialClassification">Material Classification</label>
+        <div className="card">
+        <div id="content-wrapper" className="d-flex flex-row mt-5">
+        <div id="content">
+          <div className="container-fluid" style={{ marginLeft: "50%" }}>
+            <div className="row mx-5">
+              <div className="col-md-6 px-3 d-flex">
+                <h5 className="h5 mb-0 text-gray-800 mt-3">Add Product</h5>
+              </div>
+            </div>
+
+            <div className="row mx-5 card border border-dark shadow-lg py-2">
+              <div className="col-md-12">
+                <form onSubmit={handleSubmit}>
+                  <div className="col-md-12 p-2 d-flex">
+                    <div className="col-md-6 p-1 d-flex">
+                      <label className="col-md-4 mt-1">Product ID</label>
+                      <input
+                        className="form-control w-100"
+                        type="text"
+                        name="productId"
+                        value={form.productId}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-12 p-2 d-flex">
+                    <div className="col-md-6 p-2 d-flex">
+                    <label className="col-md-5 mt-2">Material Classification</label>
                     <input
+                      className="form-control w-100"
                       type="text"
-                      id="materialClassification"
                       name="materialClassification"
-                      value={formData.materialClassification}
+                      value={form.materialClassification}
                       onChange={handleChange}
-                      disabled={isViewing}
                       required
                     />
+                  </div>
+                  <div className="col-md-6 p-2 d-flex">
+                      <label className="col-md-5 mt-1">Product Name</label>
+                      <input
+                        className="form-control w-100"
+                        type="text"
+                        name="productName"
+                        value={form.productName}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="productId">Product ID</label>
-                    <input
-                      type="text"
-                      id="productId"
-                      name="productId"
-                      value={formData.productId}
+                  <div className="col-md-12 p-3 d-flex">
+                    <label className="col-md-2 mt-2">Product Description</label>
+                    <textarea
+                      className="form-control w-100"
+                      name="productDescription"
+                      value={form.productDescription}
                       onChange={handleChange}
-                      disabled={isViewing}
                       required
-                    />
+                    ></textarea>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="productName">Product Name</label>
-                    <input
-                      type="text"
-                      id="productName"
-                      name="productName"
-                      value={formData.productName}
-                      onChange={handleChange}
-                      disabled={isViewing}
-                      required
-                    />
+                  <div className="col-md-12 d-flex">
+                    <div className="col-md-6 p-1 d-flex">
+                      <label className="col-md-6 mt-2">Unit of Measurement</label>
+                      <input
+                        className="form-control w-100"
+                        type="text"
+                        name="unitOfMeasurement"
+                        value={form.unitOfMeasurement}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="col-md-6 p-2 d-flex">
+                      <label className="col-md-3 mt-2">OEM</label>
+                      <input
+                        className="form-control w-100"
+                        type="text"
+                        name="oem"
+                        value={form.oem}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="unitOfMeasurement">Unit of Measurement</label>
-                    <input
-                      type="text"
-                      id="unitOfMeasurement"
-                      name="unitOfMeasurement"
-                      value={formData.unitOfMeasurement}
-                      onChange={handleChange}
-                      disabled={isViewing}
-                      required
-                    />
+                  <div className="col-md-12 d-flex">
+                    <div className="col-md-6 p-2 d-flex">
+                      <label className="col-md-4 mt-2">NHA</label>
+                      <textarea
+                        className="form-control w-100"
+                        type="text"
+                        name="nha"
+                        value={form.nha}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="col-md-6 p-2 d-flex">
+                      <label className="col-md-4 mt-2">CMM Reference Number</label>
+                      <textarea
+                        className="form-control w-100"
+                        type="text"
+                        name="cmmReferenceNumber"
+                        value={form.cmmReferenceNumber}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="oem">OEM (Original Equipment Manufacturer)</label>
-                    <input
-                      type="text"
-                      id="oem"
-                      name="oem"
-                      value={formData.oem}
-                      onChange={handleChange}
-                      disabled={isViewing}
-                      required
-                    />
-                  </div>
-                </div>
+                  <div className="col-md-12 d-flex">
+                    <div className="col-md-6 p-2 d-flex">
+                      <label className="col-md-4 mt-2">Date</label>
+                      <input
+                        className="form-control w-100"
+                        type="date"
+                        name="date"
+                        value={form.date}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
 
-                {/* Right Column */}
-                <div className="form-column">
-                  <div className="form-group">
-                    <label htmlFor="nha">NHA</label>
-                    <input
-                      type="text"
-                      id="nha"
-                      name="nha"
-                      value={formData.nha}
-                      onChange={handleChange}
-                      disabled={isViewing}
-                      required
-                    />
+                    <div className="col-md-6 p-2 d-flex">
+                      <label className="col-md-4 mt-2">Registered By</label>
+                      <input
+                        className="form-control w-100"
+                        type="text"
+                        name="registeredBy"
+                        value={form.registeredBy}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="cmmReferenceNumber">CMM Reference Number</label>
-                    <input
-                      type="text"
-                      id="cmmReferenceNumber"
-                      name="cmmReferenceNumber"
-                      value={formData.cmmReferenceNumber}
-                      onChange={handleChange}
-                      disabled={isViewing}
-                      required
-                    />
+                  <div className="col-md-12 text-end m-2">
+                    <button type="submit" className="btn btn-primary">Add Product</button>
                   </div>
-
-                  <div className="form-group">
-                    <label htmlFor="date">Date</label>
-                    <input
-                      type="date"
-                      id="date"
-                      name="date"
-                      value={formData.date}
-                      onChange={handleChange}
-                      disabled={isViewing}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="registeredBy">Registered By (Name)</label>
-                    <input
-                      type="text"
-                      id="registeredBy"
-                      name="registeredBy"
-                      value={formData.registeredBy}
-                      onChange={handleChange}
-                      disabled={isViewing}
-                      required
-                    />
-                  </div>
-                </div>
+                </form>
               </div>
-
-              {/* Full Width Description Field */}
-              <div className="form-group">
-                <label htmlFor="productDescription">Product Description</label>
-                <textarea
-                  id="productDescription"
-                  name="productDescription"
-                  value={formData.productDescription}
-                  onChange={handleChange}
-                  disabled={isViewing}
-                  required
-                ></textarea>
-              </div>
-
-              {/* Button Group */}
-              <div className="button-group">
-                <button type="button" className="edit-button" onClick={handleEdit}>
-                  Edit
-                </button>
-                <button type="button" className="view-button" onClick={handleView}>
-                  View
-                </button>
-                <button type="submit" className="submit-button">
-                  Submit
-                </button>
-              </div>
-            </form>
-          </fieldset>
+            </div>
+          </div>
         </div>
+      </div>
+        </div>      
       </div>
       <Footer />
     </div>
