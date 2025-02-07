@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/viewProduct" element={<ViewProduct />} />
         <Route path="/editProduct" element={<EditProduct />} />
         <Route path="/storeAcceptance" element={<StoreAccComponent />} />
-        <Route path="/supplier" element={<SupplierRegistartion />} />
+        <Route path="/SupplierRegistration" element={<SupplierRegistartion />} />
       </Routes>
     </Router>
   );

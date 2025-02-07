@@ -16,12 +16,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                     <div className="col-md-6 d-flex">
                         <label className="col-form-label col-md-6" htmlFor="isoRegistered">Are you ISO Registered</label>
                         <div className="d-flex">
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="isoRegisteredYes" name="isoRegistered" value={dataMap.isoRegistered} onChange={handleChange} onInput={() => validateDataType('coreProcess', 'A')}/>
                                 <label className="form-check-label pt-1" htmlFor="isoRegisteredYes" value="True">Yes</label>
                             </div>
 
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="isoRegisteredNo" name="isoRegistered"  value={dataMap.isoRegistered} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="isoRegisteredNo" value="False">No</label>
                             </div>
@@ -35,12 +35,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                     <div className="col-md-6 d-flex">
                         <label className="col-form-label col-md-6" htmlFor="isoRegistered">ISO Registered</label>
                         <div className="d-flex">
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="dontKnow1" name="dontKnow"  value={dataMap.dontKnow} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="dontKnow1" value="True">Yes</label>
                             </div>
 
-                            <div className="form-check mx-3"> 
+                            <div className="form-check mx-3 p-0"> 
                                 <input className="form-check-input" type="radio" id="dontKnow2" name="dontKnow" value={dataMap.dontKnow} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="dontKnow2" value="False">No</label>
                             </div>
@@ -50,12 +50,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                     <div className="col-md-6 d-flex">
                         <label className="col-form-label col-md-6" htmlFor="isoStandard">ISO Standard</label>
                         <div className="d-flex">
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="isoStandard1" name="isoStandard" value={dataMap.isoStandard} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="isoStandard1"value="True">Yes</label>
                             </div>
 
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="isoStandard2" name="isoStandard" value={dataMap.isoStandard} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="isoStandard2" value="False">No</label>
                             </div>
@@ -69,12 +69,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                     <div className="col-md-6 d-flex">
                         <label className="col-form-label col-md-6" htmlFor="isoRegistered">Having CAR 145/DGCA Approval</label>
                         <div className="d-flex">
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="carApprovalYes" name="carApproval" value={dataMap.carApproval} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="carApprovalYes"value="True">Yes</label>
                             </div>
 
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="carApprovalNo" name="carApproval" value={dataMap.carApproval} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="carApprovalNo" value="False">No</label>
                             </div>
@@ -107,12 +107,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                     <div className="col-md-6 d-flex">
                         <label className="col-md-6 col-form-label" htmlFor="numEmp">Do you have current quality manual's </label>
                         <div className="d-flex">
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="quaManualYes" name="quaManual" value={dataMap.quaManual} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="quaManualYes"value="True">Yes</label>
                             </div>
 
-                            <div className="form-check mx-3">
+                            <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="quaManualNo" name="quaManual" value={dataMap.quaManual} onChange={handleChange}/>
                                 <label className="form-check-label pt-1" htmlFor="quaManualNo" value="False">No</label>
                             </div>
