@@ -3,7 +3,6 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import "../styles/ViewProduct.css";
 
 const ViewProduct = () => {
   const [products, setProducts] = useState([]); // State to store all products
@@ -53,78 +52,81 @@ const ViewProduct = () => {
   };
 
   return (
-    <div className="wrapper " style={{height : '100vh'}}>
-      <Sidebar />
-      
-      <div className="content">
-      <Header />
-        <div className="card">
-        <div className="container mt-5" style={{maxWidth: "80%", marginLeft: "18%"}}>
-        <h3 className="text-center text-primary">View Products</h3>
-
-        {/* Search by Product ID */}
-        <div className="card p-3 shadow-lg mb-4">
-          <label className="form-label">Search by Product ID:</label>
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control py-2 border-end-0 border rounded-start"
-              value={searchId}
-              onChange={(e) => setSearchId(e.target.value)}
-              placeholder="Enter Product ID"
-            />
-            <button
-              className="btn btn-primary"
-              onClick={handleSearch}
-              disabled={loading}
-            >
-              {loading ? "Searching..." : "Search"}
-            </button>
+    <div className="wrapper ">
+    <Sidebar />
+    
+    <div className="content">
+    <Header />
+      {/* conetnt Begin*/}
+      <div className="col-md-6">
+          <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
+              <h5 className="h5 mx-3 mb-0 text-gray-800">View Products</h5>
           </div>
-          {error && <p className="text-danger mt-2">{error}</p>}
-        </div>
-
-        {/* Display All Products in a Table */}
-        {loading ? (
-          <p className="text-center">Loading...</p>
-        ) : (
-          <div className="card p-4 shadow-lg">
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Material Classification</th>
-                  <th>Product Name</th>
-                  <th>Product Description</th>
-                  <th>Unit of Measurement</th>
-                  <th>OEM</th>
-                  <th>NHA</th>
-                  <th>CMM Reference Number</th>
-                  <th>Date</th>
-                  <th>Registered By</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product) => (
-                  <tr key={product.id}>
-                    <td>{product.id}</td>
-                    <td>{product.materialClassification}</td>
-                    <td>{product.productName}</td>
-                    <td>{product.productDescription}</td>
-                    <td>{product.unitOfMeasurement}</td>
-                    <td>{product.oem}</td>
-                    <td>{product.nha}</td>
-                    <td>{product.cmmReferenceNumber}</td>
-                    <td>{product.date}</td>
-                    <td>{product.registeredBy}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
-        </div>      
+        <div className="card shadow mx-4 my-2 p-2">
+
+            {/* Search by Product ID */}
+            <div className="p-3 shadow-lg mb-4">
+              <label className="form-label">Search by Product ID:</label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control py-2 border-end-0 border rounded-start"
+                  value={searchId}
+                  onChange={(e) => setSearchId(e.target.value)}
+                  placeholder="Enter Product ID"
+                />
+                <button
+                  className="btn btn-primary"
+                  onClick={handleSearch}
+                  disabled={loading}
+                >
+                  {loading ? "Searching..." : "Search"}
+                </button>
+              </div>
+              {error && <p className="text-danger mt-2">{error}</p>}
+            </div>
+
+            {/* Display All Products in a Table */}
+            {loading ? (
+              <p className="text-center">Loading...</p>
+            ) : (
+              <div className="card p-4 shadow-lg">
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Material Classification</th>
+                      <th>Product Name</th>
+                      <th>Product Description</th>
+                      <th>Unit of Measurement</th>
+                      <th>OEM</th>
+                      <th>NHA</th>
+                      <th>CMM Reference Number</th>
+                      <th>Date</th>
+                      <th>Registered By</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredProducts.map((product) => (
+                      <tr key={product.id}>
+                        <td>{product.id}</td>
+                        <td>{product.materialClassification}</td>
+                        <td>{product.productName}</td>
+                        <td>{product.productDescription}</td>
+                        <td>{product.unitOfMeasurement}</td>
+                        <td>{product.oem}</td>
+                        <td>{product.nha}</td>
+                        <td>{product.cmmReferenceNumber}</td>
+                        <td>{product.date}</td>
+                        <td>{product.registeredBy}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>     
       </div>
       <Footer />
     </div>
