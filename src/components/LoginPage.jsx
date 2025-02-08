@@ -42,7 +42,7 @@ const LoginPage = () => {
         alert("Login successful!");
 
         // Redirect to the home page using navigate
-        navigate("/"); // This will navigate to the home page ("/")
+        navigate("/homePage"); // This will navigate to the home page ("/")
       }
     } catch (error) {
       // Handle error response
