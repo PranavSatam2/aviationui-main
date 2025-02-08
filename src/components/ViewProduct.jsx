@@ -122,10 +122,11 @@ const ViewProduct = () => {
                       <th>CMM</th>
                       <th>Date</th>
                       <th>Registered By</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody className="overflow-auto w-100">
-                    {filteredProducts.map((product) => (
+                    {/* {filteredProducts.map((product) => (
                       <tr key={product.id}>
                         <td>{product.id}</td>
                         <td>{product.materialClassification}</td>
@@ -137,8 +138,44 @@ const ViewProduct = () => {
                         <td>{product.cmmReferenceNumber}</td>
                         <td>{product.date}</td>
                         <td>{product.registeredBy}</td>
+                        <td>
+                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
+                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
+                        </td>
                       </tr>
-                    ))}
+                    ))} */}
+                    <tr >
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>
+                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
+                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
+                        </td>
+                      </tr>
+                      <tr >
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>
+                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
+                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
+                        </td>
+                      </tr>
                   </tbody>
                 </table>
               </div>

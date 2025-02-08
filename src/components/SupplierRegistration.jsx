@@ -13,12 +13,10 @@ import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
 
 
 
-const SupplierRegistration = () => 
+const SupplierRegistration = (dataToEdit) => 
 {
     // Variables
     const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
-
-
 
 
     // ######################################### HOOK #######################################
@@ -32,6 +30,16 @@ const SupplierRegistration = () =>
                                             safetyProgram : '',             houseKeeping : '', })
 
     // ################################### FUNCTIONS ###############################
+
+    window.onload = () =>
+    {
+        if ( dataToEdit !== undefined )
+        {
+            setDataMap((dataMap) => ({
+                ...dataToEdit,
+            }));
+        }
+    }
 
     // This functiom handle all change event's
     const handleChange = (event) => {
