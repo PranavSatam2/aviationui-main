@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -9,40 +9,62 @@ import SupplierAnalysisTab from "./tabs/supplier_registration/SupplierAnalysisTa
 import QualityProcessTab from "./tabs/supplier_registration/QualityProcessTab";
 import DocAndProcControl from "./tabs/supplier_registration/DocAndProcControl";
 import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
+import { createSupplier } from "../services/db_manager";
+import { useLocation } from "react-router-dom";
 
-
-
-
-const SupplierRegistration = (dataToEdit) => 
+const SupplierRegistration = ({elementId = '' , elementData}) => 
 {
     // Variables
     const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
 
 
     // ######################################### HOOK #######################################
-    const [dataMap, setDataMap] = useState({name : '',                      phoneNum : '',          faxNum : '',            email : '',                 address : '',               qualityManager : '',    qmPhoneNum : '', 
-                                            SaleResp : '',                  coreProcess : '',       workYear :'',           isoRegistered : '',         dontKnow : '',              isoStandard : '',       qmEmail : '',
+    const [dataMap, setDataMap] = useState({supplierName: '',               phoneNumber : '',       faxNum : '',            email : '',                 address : '',               qualityManagerName : '',    
+                                            SaleResp : '',                  coreProcess : '',       workYear :'',           isoRegistered : '',         dontKnow : '',              isoStandard : '',       
                                             registerCar : '',               numEmp : '',            numOpeShift : '',       quaManual : '',             turnOver : '',              independenceManuf : '', 
                                             documentedProcedure : '',       productShipment : '',   processDocumented : '', samplingIncomingInsp : '',  objectiveEvidence : '',     carApproval : '',
                                             identificationMaintained : '',  sepInsMaterial : '',    nonConMaterial : '',    affectCusReq : '',          instructionStation : '',    documentedOperative : '',
                                             finalInsAcc : '',               statisMethod : '',      suppliedDocument : '',  includeMethod : '',         qualityCapabilities : '',   approvedSupplier : '',
                                             marketPrice : '',               certifiedReport : '',   supplierCapable : '',   equipCalibrated : '',       recalibration : '',         scopeOfWork : '',
-                                            safetyProgram : '',             houseKeeping : '', })
+                                            safetyProgram : '',             houseKeeping : '',      qmEmail : '',           qualityManagerPhoneNumber : '' })
 
-    // ################################### FUNCTIONS ###############################
+    const location = useLocation(); // Get location object
+    const { supplierId, supplierData } = location.state || {};  // Access the state passed through navigate
 
-    window.onload = () =>
+    // ################################## HOOK-FUNCTION ###########################
+
+    // This function is used to save Form data
+    async function actionPerformed()
     {
-        if ( dataToEdit !== undefined )
+        if ( elementId === '' )
         {
-            setDataMap((dataMap) => ({
-                ...dataToEdit,
-            }));
+            let response = await createSupplier(dataMap)
+            
+            if ( response )
+            {
+
+            }
         }
     }
 
+
+
+    // ################################### FUNCTIONS ###############################
+
+    useEffect(() => {
+        // Check if supplierData and supplierId are available
+        if (supplierData && supplierId) {
+            setDataMap((prevData) => ({
+                ...prevData,
+                ...supplierData, // Merge supplierData into dataMap
+            }));
+        }
+    }, [supplierData, supplierId]);
+
+
     // This functiom handle all change event's
-    const handleChange = (event) => {
+    const handleChange = (event) => 
+    {
         const { name, value } = event.target; 
         setDataMap((dataMap) => ({
             ...dataMap,
@@ -56,7 +78,6 @@ const SupplierRegistration = (dataToEdit) =>
     // This function validate the dataType
     function validateDataType(elementId , dataType)
     {
-        debugger
         let value = dataMap[elementId] ;
 
         if ( dataType === 'A' )
@@ -94,10 +115,6 @@ const SupplierRegistration = (dataToEdit) =>
     {
 
     }
-
-
-
-
 
     // ############################### RETURN-COMPONENT #############################
     return (
@@ -144,7 +161,7 @@ const SupplierRegistration = (dataToEdit) =>
                     <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">          <QualityProcessTab      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
                     <div className="tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection-tab">    <IncomingInspectionTab  dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
                     <div className="tab-pane fade" id="Doc&Proc" role="tabpanel" aria-labelledby="Doc&Proc-tab">        <DocAndProcControl      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
-                    <div className="tab-pane fade" id="Proc&Other" role="tabpanel" aria-labelledby="Proc&Other-tab">    <MaterialAndOther       dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
+                    <div className="tab-pane fade" id="Proc&Other" role="tabpanel" aria-labelledby="Proc&Other-tab">    <MaterialAndOther       dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} actionPerformed={actionPerformed}/></div>
                 </div>
               </div>
             </div>          

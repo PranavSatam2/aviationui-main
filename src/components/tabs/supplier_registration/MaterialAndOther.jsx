@@ -1,6 +1,6 @@
 
 
-const MaterialAndOther = ({dataMap, handleChange, validateDataType}) => 
+const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerformed}) => 
     {
         return (
             <div className="row m-2 p-2 mt-4">
@@ -95,7 +95,7 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType}) =>
             </div>
 
             <div className="col-md-12 text-right align-items-end">
-                <button type="button" className="btn btn-primary">Submit</button>
+                <button type="button" className="btn btn-primary" onClick={actionPerformed}>Submit</button>
             </div>
         </div>
         )

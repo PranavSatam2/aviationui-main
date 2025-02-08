@@ -100,16 +100,7 @@ const ViewProduct = () => {
           ) : (
             <div className="card p-4 shadow-lg">
               <div className="table-responsive overflow-auto px-0">
-                <table
-                  id="dataTable"
-                  className="table border"
-                  style={{
-                    width: "100%",
-                    cellspacing: "0",
-                    tableLayout: "fixed",
-                    height: "390px",
-                  }}
-                >
+                <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed", height: "390px",}} >
                   <thead className="position-sticky sticky-top bg-light">
                     <tr>
                       <th style={{ width: "35px" }}>ID</th>
@@ -125,6 +116,7 @@ const ViewProduct = () => {
                       <th>Action</th>
                     </tr>
                   </thead>
+                  
                   <tbody className="overflow-auto w-100">
                     {/* {filteredProducts.map((product) => (
                       <tr key={product.id}>
