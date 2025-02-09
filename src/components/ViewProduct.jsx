@@ -51,20 +51,27 @@ const ViewProduct = () => {
     }
   };
 
+  // Initialize DataTable after products are loaded or filtered
+  useEffect(() => {
+    // Only initialize DataTable if table is rendered
+    if (window.$) {
+      window.$("#dataTable").DataTable(); // Initialize DataTable
+    }
+  }, [filteredProducts]); // Re-run whenever filteredProducts change
+
   return (
-    <div className="wrapper ">
+    <div className="wrapper">
       <Sidebar />
 
       <div className="content">
         <Header />
-        {/* conetnt Begin*/}
+        {/* content Begin */}
         <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
             <h5 className="h5 mx-3 mb-0 text-gray-800">View Products</h5>
           </div>
         </div>
         <div className="card shadow mx-4 my-2 p-0">
-
           {/* Search by Product ID */}
           <div className="px-3 py-1 shadow-lg mb-1">
             <label className="form-label">Search by Product ID:</label>
@@ -93,11 +100,11 @@ const ViewProduct = () => {
           ) : (
             <div className="card p-4 shadow-lg">
               <div className="table-responsive overflow-auto px-0">
-                <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed", height: "275px" }}>
+                <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed", height: "390px",}} >
                   <thead className="position-sticky sticky-top bg-light">
                     <tr>
-                      <th style={{width: "35px"}}>ID</th>
-                      <th style={{width: "200px"}}>Material Classification</th>
+                      <th style={{ width: "35px" }}>ID</th>
+                      <th style={{ width: "200px" }}>Material Classification</th>
                       <th>Product Name</th>
                       <th>Description</th>
                       <th>Unit</th>
@@ -106,10 +113,12 @@ const ViewProduct = () => {
                       <th>CMM</th>
                       <th>Date</th>
                       <th>Registered By</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
+                  
                   <tbody className="overflow-auto w-100">
-                    {filteredProducts.map((product) => (
+                    {/* {filteredProducts.map((product) => (
                       <tr key={product.id}>
                         <td>{product.id}</td>
                         <td>{product.materialClassification}</td>
@@ -121,17 +130,53 @@ const ViewProduct = () => {
                         <td>{product.cmmReferenceNumber}</td>
                         <td>{product.date}</td>
                         <td>{product.registeredBy}</td>
+                        <td>
+                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
+                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
+                        </td>
                       </tr>
-                    ))}
+                    ))} */}
+                    <tr >
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>pawan</td>
+                        <td>
+                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
+                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
+                        </td>
+                      </tr>
+                      <tr >
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>panchal</td>
+                        <td>
+                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
+                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
+                        </td>
+                      </tr>
                   </tbody>
                 </table>
               </div>
-              </div>
-            )}
-            </div>     
+            </div>
+          )}
+        </div>
       </div>
-        <Footer />
-      </div>
+      <Footer />
+    </div>
   );
 };
 
