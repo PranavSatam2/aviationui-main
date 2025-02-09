@@ -55,13 +55,13 @@ const EditProduct = () => {
   };
 
   return (
-    <div className="wrapper " style={{height : '100vh'}}>
+    <div className="wrapper ">
       <Sidebar />
       
       <div className="content">
       <Header />
         <div className="card">
-        <div className="container mt-5" style={{maxWidth: "80%", marginLeft: "18%"}}>
+        <div className="container mt-5">
         <h3 className="text-center text-primary">Edit Product</h3>
 
         {/* Input for fetching product data */}

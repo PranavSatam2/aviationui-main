@@ -65,7 +65,7 @@ const AddProduct = () => {
       </div>
         <div className="card shadow mx-4 my-2 p-2">
           <div className="container-fluid">
-            <div className="row mx-5 card border border-dark shadow-lg py-2">
+            <div className="row mx-1 w-100 card border border-dark shadow-lg py-2">
               <div className="col-md-12">
                 <form onSubmit={handleSubmit}>
                   <div className="col-md-12 p-2 d-flex">

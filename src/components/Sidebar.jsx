@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import AddProduct from './AddProduct';
+import EditProduct from './EditProduct';
+import ViewProduct from './ViewProduct';
 
 const Sidebar = () => {
   return (
@@ -23,14 +26,13 @@ const Sidebar = () => {
       </li>
 
       <li className="mb-4">
-          <a className="mx-2 mb-2 btn-toggle align-items-center rounded collapsed text-white mb-3 font-weight-bold text-decoration-none" data-bs-toggle="collapse" data-bs-target="#purchaseOrder-collapse" aria-expanded="false"> Purchase Order </a>
+          <a className="mx-2 mb-2 btn-toggle align-items-center rounded collapsed text-white mb-3 font-weight-bold text-decoration-none" data-bs-toggle="collapse" data-bs-target="#purchaseOrder-collapse" aria-expanded="false"> Product Order </a>
           
           <div className="collapse bg-white rounded border mt-2" id="purchaseOrder-collapse">
             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
-              <li className='mb-2'><a href="#" className="rounded mb-4 text-dark text-decoration-none">Overview</a></li>
-              <li className='mb-2'><a href="#" className="rounded mb-4 text-dark text-decoration-none">Overview</a></li>
-              <li className='mb-2'><a href="#" className="rounded mb-4 text-dark text-decoration-none">Overview</a></li>
-              <li className='mb-2'><a href="#" className="rounded mb-4 text-dark text-decoration-none">Overview</a></li>
+              <li className='mb-2'><a href="AddProduct" className="rounded mb-4 text-dark text-decoration-none">Add Product</a></li>
+              <li className='mb-2'><a href="ViewProduct" className="rounded mb-4 text-dark text-decoration-none">View Product</a></li>
+              <li className='mb-2'><a href="EditProduct" className="rounded mb-4 text-dark text-decoration-none">Edit Product</a></li>
             </ul>
           </div>
       </li>
