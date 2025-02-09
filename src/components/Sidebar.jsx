@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import AddProduct from './AddProduct';
 import EditProduct from './EditProduct';
 import ViewProduct from './ViewProduct';
+import SupplierRegistration from './SupplierRegistration';
+import ViewSupplierRegistration from './ViewSupplierRegis';
 
 const Sidebar = () => {
   return (
@@ -17,8 +19,8 @@ const Sidebar = () => {
           </a>
           <div className="collapse bg-white rounded border mt-2" id="supplierReg-collapse">
             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
-              <li className="mb-2"><Link to="/SupplierRegistration" className="rounded mb-4 text-dark text-decoration-none">Supplier Registration</Link></li>
-              <li className="mb-2"><Link to="/view-supplier-registrtaion" className="rounded mb-4 text-dark text-decoration-none">View Supplier Registration</Link></li>
+              <li className="mb-2"><a href="SupplierRegistration" className="rounded mb-4 text-dark text-decoration-none">Supplier Registration</a></li>
+              <li className="mb-2"><a href="ViewSupplierRegistration" className="rounded mb-4 text-dark text-decoration-none">View Supplier Registration</a></li>
             </ul>
           </div>
         </li>
@@ -42,7 +44,7 @@ const Sidebar = () => {
           </a>
           <div className="collapse bg-white rounded border mt-2" id="materialManagement-collapse">
             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
-              <li className="mb-2"><Link to="#" className="rounded mb-4 text-dark text-decoration-none">Overview</Link></li>
+              {/* <li className="mb-2"><Link to="#" className="rounded mb-4 text-dark text-decoration-none">Overview</Link></li> */}
             </ul>
           </div>
         </li>
