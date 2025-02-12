@@ -9,52 +9,65 @@ import SupplierAnalysisTab from "./tabs/supplier_registration/SupplierAnalysisTa
 import QualityProcessTab from "./tabs/supplier_registration/QualityProcessTab";
 import DocAndProcControl from "./tabs/supplier_registration/DocAndProcControl";
 import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
-import { createSupplier } from "../services/db_manager";
+import { createSupplier, updateSupplier } from "../services/db_manager";
 import { useLocation } from "react-router-dom";
 
-const SupplierRegistration = ({elementId = '' , elementData}) => 
+const SupplierRegistration = () => 
 {
     // Variables
     const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
-
+    let formVariavles = {supplierName           : '',       phoneNumber     : '',       faxNum              : '',       email                       : '',           address                 : '',           qualityManagerName  : '',    
+                        SaleResp                : '',       coreProcess     : '',       workYear            : '',       isoRegistered               : '',           dontKnow                : '',           isoStandard         : '',       
+                        registerCar             : '',       numEmp          : '',       numOpeShift         : '',       quaManual                   : '',           turnOver                : '',           independenceManuf   : '', 
+                        documentedProcedure     : '',       productShipment : '',       processDocumented   : '',       samplingIncomingInsp        : '',           objectiveEvidence       : '',           carApproval         : '',
+                        identificationMaintained: '',       sepInsMaterial  : '',       nonConMaterial      : '',       affectCusReq                : '',           instructionStation      : '',           documentedOperative : '',
+                        finalInsAcc             : '',       statisMethod    : '',       suppliedDocument    : '',       includeMethod               : '',           qualityCapabilities     : '',           approvedSupplier    : '',
+                        marketPrice             : '',       certifiedReport : '',       supplierCapable     : '',       equipCalibrated             : '',           recalibration           : '',           scopeOfWork         : '',
+                        safetyProgram           : '',       houseKeeping    : '',       qmEmail             : '',       qualityManagerPhoneNumber   : '' }
 
     // ######################################### HOOK #######################################
-    const [dataMap, setDataMap] = useState({supplierName: '',               phoneNumber : '',       faxNum : '',            email : '',                 address : '',               qualityManagerName : '',    
-                                            SaleResp : '',                  coreProcess : '',       workYear :'',           isoRegistered : '',         dontKnow : '',              isoStandard : '',       
-                                            registerCar : '',               numEmp : '',            numOpeShift : '',       quaManual : '',             turnOver : '',              independenceManuf : '', 
-                                            documentedProcedure : '',       productShipment : '',   processDocumented : '', samplingIncomingInsp : '',  objectiveEvidence : '',     carApproval : '',
-                                            identificationMaintained : '',  sepInsMaterial : '',    nonConMaterial : '',    affectCusReq : '',          instructionStation : '',    documentedOperative : '',
-                                            finalInsAcc : '',               statisMethod : '',      suppliedDocument : '',  includeMethod : '',         qualityCapabilities : '',   approvedSupplier : '',
-                                            marketPrice : '',               certifiedReport : '',   supplierCapable : '',   equipCalibrated : '',       recalibration : '',         scopeOfWork : '',
-                                            safetyProgram : '',             houseKeeping : '',      qmEmail : '',           qualityManagerPhoneNumber : '' })
+    const [dataMap, setDataMap] = useState(formVariavles)
 
-    const location = useLocation(); // Get location object
-    const { supplierId, supplierData } = location.state || {};  // Access the state passed through navigate
+    const location                      = useLocation(); // Get location object
+    const { supplierId, supplierData }  = location.state || {};  // Access the state passed through navigate
 
     // ################################## HOOK-FUNCTION ###########################
 
     // This function is used to save Form data
     async function actionPerformed()
     {
-        if ( elementId === '' )
+        debugger
+        if ( supplierId === '' || supplierId == undefined )
         {
+            setDataMap(formVariavles)
             let response = await createSupplier(dataMap)
             
             if ( response )
             {
-
+                setDataMap(formVariavles)
+                window.location.reload();
+            }
+        }
+        else
+        {
+            let response = await updateSupplier(supplierId, dataMap)
+            if ( response )
+            {
+                setDataMap(formVariavles)
+                window.location.reload();
             }
         }
     }
 
-
-
     // ################################### FUNCTIONS ###############################
 
-    useEffect(() => {
+    useEffect(() => 
+    {
         // Check if supplierData and supplierId are available
-        if (supplierData && supplierId) {
-            setDataMap((prevData) => ({
+        if (supplierData && supplierId) 
+        {
+            setDataMap((prevData) => (
+            {
                 ...prevData,
                 ...supplierData, // Merge supplierData into dataMap
             }));
@@ -66,7 +79,8 @@ const SupplierRegistration = ({elementId = '' , elementData}) =>
     const handleChange = (event) => 
     {
         const { name, value } = event.target; 
-        setDataMap((dataMap) => ({
+        setDataMap((dataMap) => (
+        {
             ...dataMap,
             [name]: value 
         }));
@@ -76,45 +90,49 @@ const SupplierRegistration = ({elementId = '' , elementData}) =>
     // ########################### VALIDATION ################################
 
     // This function validate the dataType
-    function validateDataType(elementId , dataType)
+    const validateDataType = (event, dataType) => 
     {
-        let value = dataMap[elementId] ;
-
-        if ( dataType === 'A' )
+        let value = event.target.value
+        if (dataType === 'A') 
         {
             value = value.replace(/[^a-zA-Z0-9 ]/g, '');
-            document.getElementById(elementId).classList.remove('is-invalid') 
-            document.getElementById(elementId).classList.add('is-valid')
-        }
-        else if ( dataType === 'N' )
+        } 
+        else if (dataType === 'N') 
         {
             value = value.replace(/[^0-9]/g, '');
-            document.getElementById(elementId).classList.remove('is-invalid') 
-            document.getElementById(elementId).classList.add('is-valid')
-        }
-        else if ( dataType === 'ANS' )
+        } 
+        else if (dataType === 'ANS') 
         {
             value = value.replace(/[^a-zA-Z0-9@.]/g, '');
-            document.getElementById(elementId).classList.remove('is-invalid') 
-            document.getElementById(elementId).classList.add('is-valid')
         }
-        else
-        {
-            document.getElementById(elementId).classList.add('is-invalid') 
-            document.getElementById(elementId).classList.remove('is-valid')
-        }
-
-        setDataMap((dataMap) => ({
-            ...dataMap,
-            [elementId]: value 
-        }));
-    }
+    
+        event.target.value = value
+    
+    };
 
     // This function validate the length of field
-    function validateLen(element, minLen, maxLen)
+    function validateLen(event, minLen, maxLen) 
     {
-
+        let value = event.target.value.substring(0,maxLen)
+        event.target.value = value
+        let elementLen = value.length
+        if (elementLen > maxLen) 
+        {
+            event.target.classList.remove('is-valid')
+            event.target.classList.add('is-invalid')
+        } 
+        else if (elementLen < minLen) 
+        {
+            event.target.classList.remove('is-valid')
+            event.target.classList.add('is-invalid')
+        } 
+        else 
+        {
+            event.target.classList.add('is-valid')
+            event.target.classList.remove('is-invalid')
+        }
     }
+       
 
     // ############################### RETURN-COMPONENT #############################
     return (
@@ -156,12 +174,12 @@ const SupplierRegistration = ({elementId = '' , elementData}) =>
                     </li>
                 </ul>
                 <div className="tab-content mt-0 border" id="myTabsContent" style={{height : '450px'}}> 
-                    <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">    <GeneralTab             dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
-                    <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">          <SupplierAnalysisTab    dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
-                    <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">          <QualityProcessTab      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
-                    <div className="tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection-tab">    <IncomingInspectionTab  dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
-                    <div className="tab-pane fade" id="Doc&Proc" role="tabpanel" aria-labelledby="Doc&Proc-tab">        <DocAndProcControl      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType}/></div>
-                    <div className="tab-pane fade" id="Proc&Other" role="tabpanel" aria-labelledby="Proc&Other-tab">    <MaterialAndOther       dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} actionPerformed={actionPerformed}/></div>
+                    <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">    <GeneralTab             dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
+                    <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">          <SupplierAnalysisTab    dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
+                    <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">          <QualityProcessTab      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
+                    <div className="tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection-tab">    <IncomingInspectionTab  dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
+                    <div className="tab-pane fade" id="Doc&Proc" role="tabpanel" aria-labelledby="Doc&Proc-tab">        <DocAndProcControl      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
+                    <div className="tab-pane fade" id="Proc&Other" role="tabpanel" aria-labelledby="Proc&Other-tab">    <MaterialAndOther       dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen} actionPerformed={actionPerformed}/></div>
                 </div>
               </div>
             </div>          

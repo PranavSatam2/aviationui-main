@@ -32,9 +32,6 @@ const ViewSupplierRegis = () =>
                 console.log("Error fetching data");
             });
         }, []);
-    
-
-
 
     // ########################### FUNCTION ############################
 
@@ -42,12 +39,13 @@ const ViewSupplierRegis = () =>
     async function deleteSelectedElement(elementId)
     {
         // Code for delete modal
-        debugger
         if ( elementId !== '' )
         {
-            modalRef.current.openModal();
             let response = await deleteSupplier(elementId)
-            window.location.reload();
+            if ( response )
+            {
+                window.location.reload();
+            }
         }
     }
 
@@ -96,7 +94,8 @@ const ViewSupplierRegis = () =>
                 <div className="card border border-dark shadow mx-4 my-4 p-2" style={{height : '500px'}}>
                     <div className="col-md-12">
                         <div className="table-responsive overflow-auto px-0 mt-4">
-                            <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed"}} >
+                            {/* <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed"}} > */}
+                            <table id="" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed"}} >
                                 <thead className="position-sticky sticky-top bg-light">
                                     <tr>
                                     <th style={{ width: "35px" }}>ID</th>

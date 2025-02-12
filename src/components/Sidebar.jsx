@@ -4,6 +4,7 @@ import EditProduct from './EditProduct';
 import ViewProduct from './ViewProduct';
 import SupplierRegistration from './SupplierRegistration';
 import ViewSupplierRegistration from './ViewSupplierRegis';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   return (
@@ -17,13 +18,8 @@ const Sidebar = () => {
           <a className="mx-2 mb-2 btn-toggle align-items-center rounded collapsed text-white mb-3 font-weight-bold text-decoration-none" data-bs-toggle="collapse" data-bs-target="#supplierReg-collapse" aria-expanded="false">Supplier Registration</a>
           <div className="collapse bg-white rounded border mt-2" id="supplierReg-collapse">
             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
-<<<<<<< Updated upstream
-              <li className="mb-2"><a href="SupplierRegistration" className="rounded mb-4 text-dark text-decoration-none">Supplier Registration</a></li>
-              <li className="mb-2"><a href="ViewSupplierRegistration" className="rounded mb-4 text-dark text-decoration-none">View Supplier Registration</a></li>
-=======
               <li className="mb-2"><span><i className="fa-solid fa-address-card"></i><Link to="/SupplierRegistration"       className="rounded mb-4 text-dark text-decoration-none">Registration </Link></span></li>
               <li className="mb-2"><span><i className="fa-solid fa-eye">         </i><Link to="/view-supplier-registrtaion" className="rounded mb-4 text-dark text-decoration-none">View Supplier</Link></span></li>
->>>>>>> Stashed changes
             </ul>
           </div>
         </li>
@@ -42,12 +38,10 @@ const Sidebar = () => {
 
         {/* More Menu Items */}
         <li className="mb-4">
-          <a className="mx-2 mb-2 btn-toggle align-items-center rounded collapsed text-white mb-3 font-weight-bold text-decoration-none" data-bs-toggle="collapse" data-bs-target="#materialManagement-collapse" aria-expanded="false">
-            Material Management
-          </a>
+          <a className="mx-2 mb-2 btn-toggle align-items-center rounded collapsed text-white mb-3 font-weight-bold text-decoration-none" data-bs-toggle="collapse" data-bs-target="#materialManagement-collapse" aria-expanded="false">Store Acceptance</a>
           <div className="collapse bg-white rounded border mt-2" id="materialManagement-collapse">
             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
-              {/* <li className="mb-2"><Link to="#" className="rounded mb-4 text-dark text-decoration-none">Overview</Link></li> */}
+            <li className="mb-2"><span><i className="fa-solid fa-address-card"></i><Link to="/storeAcceptance" className="rounded mb-4 text-dark text-decoration-none">Registration </Link></span></li>
             </ul>
           </div>
         </li>

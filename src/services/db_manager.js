@@ -19,7 +19,7 @@ export const updateStore = (StoreId, Store) => axios.put(`${STORE_URL}/${StoreId
 export const getStoreDetail = (StoreId) => axios.get(`${STORE_URL}/${StoreId}`)
 
 // Supplier Registration
-// export const createSupplier = (Supplier) => axios.post(SUPPLIER_URL, Supplier);
+export const createSupplier = (Supplier) => axios.post(SUPPLIER_URL, Supplier);
 // export const listAllSupplier = () => axios.get(`${SUPPLIER_URL}/`);
 export const deleteSupplier = (SupplierId) => axios.delete(`${SUPPLIER_URL}/${SupplierId}`)
 export const updateSupplier = (SupplierId, Supplier) => axios.put(`${SUPPLIER_URL}/${SupplierId}`, Supplier)
@@ -27,17 +27,6 @@ export const getSupplierDetail = (SupplierId) => axios.get(`${SUPPLIER_URL}/${Su
 
 export const listAllSupplier = () => {
     return axios.get(`${SUPPLIER_URL}/`)
-      .then(response => {
-        return response.data; // Return the data when the promise resolves
-      })
-      .catch(error => {
-        console.error('Error fetching suppliers:', error); // Handle error
-        throw error; // Rethrow or handle the error
-      });
-  };
-
-  export const createSupplier = (Supplier) => {
-    return axios.post(`${SUPPLIER_URL}/supplierReg`,Supplier)
       .then(response => {
         return response.data; // Return the data when the promise resolves
       })

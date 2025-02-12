@@ -1,11 +1,11 @@
-const GeneralTab = ({dataMap, handleChange, validateDataType}) => {
+const GeneralTab = ({dataMap, handleChange, validateDataType, validateLen}) => {
     return (
         <div className="m-2 p-2 mt-4">
             <div className="col-md-12 mb-3">
                 <div className="col-md-6 ">
                     <div className="row">
                         <label className="col-md-4 pt-2" htmlFor="name">Supplier/Sub-Contractor name</label>
-                        <input className="col-md-8 form-control" type="text" name="supplierName" id="supplierName" placeholder="Full Name" value={dataMap.supplierName} onChange={handleChange} onInput={() => validateDataType('supplierName', 'A')}/>
+                        <input className="col-md-8 form-control" type="text" name="supplierName" id="supplierName" placeholder="Full Name" value={dataMap.supplierName } onChange={handleChange} onInput={(event) => {validateDataType(event, 'A');validateLen(event, 0, 100);}}/>
                     </div>
                 </div>
             </div>
@@ -16,7 +16,7 @@ const GeneralTab = ({dataMap, handleChange, validateDataType}) => {
                 <div className="col-md-6">
                     <div className="row">
                         <label className="col-md-4 pt-2" htmlFor="phoneNum">Phone Number</label>
-                        <input className="col-md-8 form-control" type="number" name="phoneNumber" id="phoneNumber" value={dataMap.phoneNumber} onChange={handleChange} onInput={() => validateDataType('phoneNumber', 'N')}/>
+                        <input className="col-md-8 form-control" type="number" name="phoneNumber" id="phoneNumber" value={dataMap.phoneNumber} onChange={handleChange} onInput={(event) => {validateDataType(event, 'N');validateLen(event, 10, 10);}}/>
                     </div>
                 </div>
 
