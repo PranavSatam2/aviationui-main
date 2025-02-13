@@ -24,7 +24,7 @@ const App = () => {
         <Route path="/editProduct" element={<EditProduct />} />
         <Route path="/storeAcceptance" element={<StoreAccComponent />} />
         <Route path="/SupplierRegistration" element={<SupplierRegistartion />} />
-        <Route path="/view-supplier-registrtaion" element={<ViewSupplierRegis />} />
+        <Route path="/ViewSupplierRegistration" element={<ViewSupplierRegis />} />
       </Routes>
     </Router>
   );
