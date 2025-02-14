@@ -3,6 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import axios from "axios"; // Import axios if you are using axios
+import { createProduct } from "../services/db_manager";
 
 const AddProduct = () => {
   const [form, setForm] = useState({
@@ -28,7 +29,7 @@ const AddProduct = () => {
 
     // Use axios or fetch to send data to the backend
     try {
-      const response = await axios.post("https://your-api-endpoint.com/products", form);
+      const response = createProduct(form);
       console.log("Product added successfully:", response.data);
       alert("Product Added Successfully!");
 
@@ -52,21 +53,19 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="wrapper " style={{height : '100vh'}}>
+    <div className="wrapper ">
       <Sidebar />
       
       <div className="content">
       <Header />
-        <div className="card">
-        <div id="content-wrapper" className="d-flex flex-row mt-5">
-        <div id="content">
-          <div className="container-fluid" style={{ marginLeft: "50%" }}>
-            <div className="row mx-5">
-              <div className="col-md-6 px-3 d-flex">
-                <h5 className="h5 mb-0 text-gray-800 mt-3">Add Product</h5>
-              </div>
-            </div>
-
+      {/* conetnt Begin*/}
+      <div className="col-md-6">
+          <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
+              <h5 className="h5 mx-3 mb-0 text-gray-800">Add Products</h5>
+          </div>
+      </div>
+        <div className="card shadow mx-4 my-2 p-2">
+          <div className="container-fluid">
             <div className="row mx-5 card border border-dark shadow-lg py-2">
               <div className="col-md-12">
                 <form onSubmit={handleSubmit}>
@@ -206,8 +205,6 @@ const AddProduct = () => {
             </div>
           </div>
         </div>
-      </div>
-        </div>      
       </div>
       <Footer />
     </div>

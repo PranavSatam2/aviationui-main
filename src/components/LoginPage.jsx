@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../styles/LoginPage.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import "../static/css/LoginPage.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
 const LoginPage = () => {
