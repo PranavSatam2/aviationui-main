@@ -5,7 +5,7 @@ import { REST_API_BASE_URL } from "./base_services";
 // ######################### ROUTE #########################
 let STORE_URL       = REST_API_BASE_URL + "/storeAcceptance"
 let SUPPLIER_URL    = REST_API_BASE_URL + "/api/supplier"
-let PRODUCT_URL     = REST_API_BASE_URL + "/Product"
+let PRODUCT_URL     = REST_API_BASE_URL + "/api/product"
 
 
 
@@ -48,7 +48,7 @@ export const listAllSupplier = () => {
   };
 
 // Product
-export const createProduct = (Product) => axios.post(PRODUCT_URL, Product);
+export const createProduct = (Product) => axios.post(`${PRODUCT_URL}/create`, Product);
 export const listAllProduct = () =>  axios.get(`${PRODUCT_URL}/`);
 export const deleteProduct = (ProductId) => axios.delete(`${PRODUCT_URL}/${ProductId}`)
 export const updateProduct = (ProductId, Product) => axios.put(`${PRODUCT_URL}/${ProductId}`, Product)

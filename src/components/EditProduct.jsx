@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
+import { getProductDetail, updateProduct } from "../services/db_manager";
 
 const EditProduct = () => {
   const [productId, setProductId] = useState("");
@@ -21,7 +22,7 @@ const EditProduct = () => {
     setError("");
 
     try {
-      const response = await axios.get(`https://api.example.com/products/${productId}`);
+      const response = await getProductDetail(productId);
       setForm(response.data); // Assuming API returns product object
       setError("");
     } catch (err) {
@@ -45,7 +46,7 @@ const EditProduct = () => {
 
     setLoading(true);
     try {
-      await axios.put(`https://api.example.com/products/${productId}`, form);
+      await updateProduct(productId, form);
       alert("Product updated successfully!");
     } catch (err) {
       alert("Failed to update product. Please try again.");

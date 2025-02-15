@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
+import { getProductDetail } from "../services/db_manager";
 
 const ViewProduct = () => {
   const [products, setProducts] = useState([]); // State to store all products
@@ -22,7 +23,7 @@ const ViewProduct = () => {
     setError("");
 
     try {
-      const response = await axios.get("https://api.example.com/products");
+      const response = await listAllProduct();
       setProducts(response.data); // Assuming API returns an array of products
       setFilteredProducts(response.data); // Initialize filtered products with all products
     } catch (err) {
@@ -39,9 +40,7 @@ const ViewProduct = () => {
       return;
     }
 
-    const filtered = products.filter((product) =>
-      product.id.toString().includes(searchId)
-    );
+    const filtered = getProductDetail(searchId);
     setFilteredProducts(filtered);
 
     if (filtered.length === 0) {
