@@ -54,6 +54,7 @@ const AddProduct = () => {
 
   return (
     <div className="wrapper ">
+    <div className="wrapper ">
       <Sidebar />
       
       <div className="content">
@@ -201,6 +202,10 @@ const AddProduct = () => {
                     <button type="submit" className="btn btn-primary">Add Product</button>
                   </div>
                 </form>
+              </div>
+            </div>
+          </div>
+        </div>
               </div>
             </div>
           </div>
