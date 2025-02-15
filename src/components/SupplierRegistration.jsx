@@ -16,6 +16,7 @@ const SupplierRegistration = () =>
 {
     // Variables
     const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
+    
     let formVariavles = {supplierName           : '',       phoneNumber     : '',       faxNum              : '',       email                       : '',           address                 : '',           qualityManagerName  : '',    
                         SaleResp                : '',       coreProcess     : '',       workYear            : '',       isoRegistered               : '',           dontKnow                : '',           isoStandard         : '',       
                         registerCar             : '',       numEmp          : '',       numOpeShift         : '',       quaManual                   : '',           turnOver                : '',           independenceManuf   : '', 
@@ -92,6 +93,7 @@ const SupplierRegistration = () =>
     // This function validate the dataType
     const validateDataType = (event, dataType) => 
     {
+        document.getElementById('')
         let value = event.target.value
         if (dataType === 'A') 
         {
@@ -107,7 +109,6 @@ const SupplierRegistration = () =>
         }
     
         event.target.value = value
-    
     };
 
     // This function validate the length of field

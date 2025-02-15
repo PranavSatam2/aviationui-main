@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
+import { listAllProduct } from "../services/db_manager";
 
 const ViewProduct = () => {
   const [products, setProducts] = useState([]); // State to store all products
@@ -22,7 +23,8 @@ const ViewProduct = () => {
     setError("");
 
     try {
-      const response = await axios.get("https://api.example.com/products");
+      debugger
+      const response = await listAllProduct();
       setProducts(response.data); // Assuming API returns an array of products
       setFilteredProducts(response.data); // Initialize filtered products with all products
     } catch (err) {
@@ -100,7 +102,7 @@ const ViewProduct = () => {
           ) : (
             <div className="card p-4 shadow-lg">
               <div className="table-responsive overflow-auto px-0">
-                <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed", height: "390px",}} >
+                <table id="" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed", height: "390px",}} >
                   <thead className="position-sticky sticky-top bg-light">
                     <tr>
                       <th style={{ width: "35px" }}>ID</th>
@@ -118,9 +120,9 @@ const ViewProduct = () => {
                   </thead>
                   
                   <tbody className="overflow-auto w-100">
-                    {/* {filteredProducts.map((product) => (
-                      <tr key={product.id}>
-                        <td>{product.id}</td>
+                    {filteredProducts.map((product) => (
+                      <tr key={product.productId}>
+                        <td>{product.productId}</td>
                         <td>{product.materialClassification}</td>
                         <td>{product.productName}</td>
                         <td>{product.productDescription}</td>
@@ -131,43 +133,11 @@ const ViewProduct = () => {
                         <td>{product.date}</td>
                         <td>{product.registeredBy}</td>
                         <td>
-                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
-                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
+                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i className="fa-solid fa-trash"></i></span>
+                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i className="fa-solid fa-pen-to-square"></i></span>
                         </td>
                       </tr>
-                    ))} */}
-                    <tr >
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>pawan</td>
-                        <td>
-                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
-                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
-                        </td>
-                      </tr>
-                      <tr >
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>panchal</td>
-                        <td>
-                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i class="fa-solid fa-trash"></i></span>
-                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i class="fa-solid fa-pen-to-square"></i></span>
-                        </td>
-                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

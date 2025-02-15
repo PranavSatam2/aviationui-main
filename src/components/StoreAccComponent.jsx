@@ -37,15 +37,21 @@ const StoreAccComponent = () =>
     // ########################## HOOKS ##############################
 
     // This function is used to send save request
-    function sendSaveRequest()
+     async function sendSaveRequest()
     {
+
+        debugger
         if(listData.includes(partNum))
         {
-            updateStore(partNum, form)
+            let updateRes = await updateStore(partNum, form)
+            console.log(updateRes);
+            
         }
         else
         {
-            createStore(form)
+            let createRes = await createStore(form)
+            console.log(createRes);
+            
         }
     }
 
@@ -61,26 +67,26 @@ const StoreAccComponent = () =>
     }
 
     // This function is used to display part num list reposne
-    useEffect(() => 
-    {
-        listAllStore().then(response => 
-            { 
-                let data = response.data
-                let list = []
+    // useEffect(() => 
+    // {
+    //     listAllStore().then(response => 
+    //         { 
+    //             let data = response.data
+    //             let list = []
 
-                for (let index = 0; index < data.length; index++) 
-                {
-                    list.push(data[index])   
-                }
+    //             for (let index = 0; index < data.length; index++) 
+    //             {
+    //                 list.push(data[index])   
+    //             }
 
-                setDropdownItems([...list])
-                setListData(list.join('~'));
+    //             setDropdownItems([...list])
+    //             setListData(list.join('~'));
 
-            }).catch(error => 
-            {
-                console.error("Error fetching stores:", error);
-            });
-    }, []);
+    //         }).catch(error => 
+    //         {
+    //             console.error("Error fetching stores:", error);
+    //         });
+    // }, []);
 
     // ############################ RETURN ################################
     return (
@@ -107,13 +113,13 @@ const StoreAccComponent = () =>
                                 <label htmlFor="partNum" className="col-md-4 mt-2">Part Number</label>
                                 <div className="col-md-8 d-flex p-0">
                                     <input className="form-control w-100" type="text" id="partNum" name="partNum" placeholder="Enter part number" value={form.partNum} onChange={handleChange} required  />
-                                    <div className="input-group-append">
+                                    {/* <div className="input-group-append">
                                         <button className="btn btn-sm btn-light shadow-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                                         <div className="dropdown-menu dropdown-menu-right" id="part-num-list" style={{zIndex: 1050, maxHeight: '350px', width: 'max-content', overflowY: 'auto' }}>
-                                            {/* <a className="dropdown-item editable-dropdown-item device-dropdown-item"  style={{ whiteSpace: 'normal', wordWrap: 'break-word', overflowWrap: 'break-word' }}></a> */}
+                                            <a className="dropdown-item editable-dropdown-item device-dropdown-item"  style={{ whiteSpace: 'normal', wordWrap: 'break-word', overflowWrap: 'break-word' }}></a>
                                             {dropdownItems.map((item) => ( <a key={item} onClick={(event)=> setSelectedPartNum(event, item)} className="dropdown-item editable-dropdown-item device-dropdown-item" style={{ whiteSpace: "normal", wordWrap: "break-word", overflowWrap: "break-word" }} > {item} </a> ))}
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>

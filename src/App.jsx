@@ -9,6 +9,7 @@ import ViewProduct from "./components/ViewProduct";
 import EditProduct from "./components/EditProduct";
 import SupplierRegistartion from "./components/SupplierRegistration";
 import ViewSupplierRegis from "./components/ViewSupplierRegis";
+import ViewStoreAcc from "./components/ViewStoreAcc";
 
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/viewProduct" element={<ViewProduct />} />
         <Route path="/editProduct" element={<EditProduct />} />
         <Route path="/storeAcceptance" element={<StoreAccComponent />} />
+        <Route path="/viewstoreAcceptance" element={<ViewStoreAcc />} />
         <Route path="/SupplierRegistration" element={<SupplierRegistartion />} />
         <Route path="/ViewSupplierRegistration" element={<ViewSupplierRegis />} />
       </Routes>

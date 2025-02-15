@@ -5,7 +5,7 @@ import { REST_API_BASE_URL } from "./base_services";
 // ######################### ROUTE #########################
 let STORE_URL       = REST_API_BASE_URL + "/storeAcceptance"
 let SUPPLIER_URL    = REST_API_BASE_URL + "/api/supplier"
-let PRODUCT_URL     = REST_API_BASE_URL + "/Product"
+let PRODUCT_URL     = REST_API_BASE_URL + "/api/product"
 
 
 
@@ -13,13 +13,24 @@ let PRODUCT_URL     = REST_API_BASE_URL + "/Product"
 
 // Store Acceptance
 export const createStore = (Store) => axios.post(STORE_URL, Store);
-export const listAllStore = () =>  axios.get(`${STORE_URL}/`);
+// export const listAllStore = () =>  axios.get(`${STORE_URL}/`);
 export const deleteStore = (StoreId) => axios.delete(`${STORE_URL}/${StoreId}`)
 export const updateStore = (StoreId, Store) => axios.put(`${STORE_URL}/${StoreId}`, Store)
 export const getStoreDetail = (StoreId) => axios.get(`${STORE_URL}/${StoreId}`)
 
+export const listAllStore = () => {
+  return axios.get(`${STORE_URL}/`)
+    .then(response => {
+      return response.data; // Return the data when the promise resolves
+    })
+    .catch(error => {
+      console.error('Error fetching store:', error); // Handle error
+      throw error; // Rethrow or handle the error
+    });
+};
+
 // Supplier Registration
-export const createSupplier = (Supplier) => axios.post(SUPPLIER_URL, Supplier);
+export const createSupplier = (Supplier) => axios.post(`${SUPPLIER_URL}/supplierReg`, Supplier);
 // export const listAllSupplier = () => axios.get(`${SUPPLIER_URL}/`);
 export const deleteSupplier = (SupplierId) => axios.delete(`${SUPPLIER_URL}/${SupplierId}`)
 export const updateSupplier = (SupplierId, Supplier) => axios.put(`${SUPPLIER_URL}/${SupplierId}`, Supplier)
@@ -37,8 +48,8 @@ export const listAllSupplier = () => {
   };
 
 // Product
-export const createProduct = (Product) => axios.post(PRODUCT_URL, Product);
-export const listAllProduct = () =>  axios.get(`${PRODUCT_URL}/`);
+export const createProduct = (Product) => axios.post(`${PRODUCT_URL}/create`, Product);
+export const listAllProduct = () => axios.get(`${PRODUCT_URL}/`);
 export const deleteProduct = (ProductId) => axios.delete(`${PRODUCT_URL}/${ProductId}`)
 export const updateProduct = (ProductId, Product) => axios.put(`${PRODUCT_URL}/${ProductId}`, Product)
 export const getProductDetail = (ProductId) => axios.get(`${PRODUCT_URL}/${ProductId}`)

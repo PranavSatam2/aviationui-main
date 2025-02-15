@@ -21,7 +21,7 @@ const Sidebar = () => {
           <div className="collapse bg-white rounded border mt-2" id="supplierReg-collapse">
             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
               <li className="mb-2"><span><i className="fa-solid fa-address-card"></i><Link to="/SupplierRegistration"       className="rounded mb-4 text-dark text-decoration-none">Registration </Link></span></li>
-              <li className="mb-2"><span><i className="fa-solid fa-eye">         </i><Link to="/view-supplier-registrtaion" className="rounded mb-4 text-dark text-decoration-none">View Supplier</Link></span></li>
+              <li className="mb-2"><span><i className="fa-solid fa-eye">         </i><Link to="/ViewSupplierRegistration" className="rounded mb-4 text-dark text-decoration-none">View Supplier</Link></span></li>
             </ul>
           </div>
         </li>
@@ -44,6 +44,7 @@ const Sidebar = () => {
           <div className="collapse bg-white rounded border mt-2" id="materialManagement-collapse">
             <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
             <li className="mb-2"><span><i className="fa-solid fa-address-card"></i><Link to="/storeAcceptance" className="rounded mb-4 text-dark text-decoration-none">Registration </Link></span></li>
+            <li className="mb-2"><span><i className="fa-solid fa-eye">         </i><Link to="/viewstoreAcceptance" className="rounded mb-4 text-dark text-decoration-none">View Store </Link></span></li>
             </ul>
           </div>
         </li>
