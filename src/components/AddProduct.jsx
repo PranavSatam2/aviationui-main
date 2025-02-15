@@ -61,12 +61,12 @@ const AddProduct = () => {
       {/* conetnt Begin*/}
       <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
-              <h5 className="h5 mx-3 mb-0 text-gray-800">Add Products</h5>
+              <h5 className="h5 mx-4 mb-0 text-gray-800">Add Products</h5>
           </div>
       </div>
-        <div className="card shadow mx-4 my-2 p-2">
+        <div className="my-2 p-2">
           <div className="container-fluid">
-            <div className="row mx-5 card border border-dark shadow-lg py-2">
+            <div className="row mx-1 card border border-dark shadow-lg py-2">
               <div className="col-md-12">
                 <form onSubmit={handleSubmit}>
                   <div className="col-md-12 p-2 d-flex">
@@ -197,7 +197,7 @@ const AddProduct = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-12 text-end m-2">
+                  <div className="col-md-12 text-end m-1 p-4">
                     <button type="submit" className="btn btn-primary">Add Product</button>
                   </div>
                 </form>
