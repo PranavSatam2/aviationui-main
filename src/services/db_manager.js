@@ -47,7 +47,7 @@ export const listAllSupplier = () => {
       });
   };
 
-// Product
+// ######################### PRODUCT #########################
 export const createProduct = (Product) => axios.post(`${PRODUCT_URL}/create`, Product);
 export const listAllProduct = () =>  axios.get(`${PRODUCT_URL}/`);
 export const deleteProduct = (ProductId) => axios.delete(`${PRODUCT_URL}/${ProductId}`)
@@ -63,11 +63,5 @@ let login_API = REST_API_BASE_URL + "/login"
 
 export const login = (loginData) => axios.post(login_API, loginData);
 
-// ######################### PRODUCT #####################
-// ######################### PRODUCT #####################
 
-let product_API = REST_API_BASE_URL + "/api/product"
-let product_API = REST_API_BASE_URL + "/api/product"
-
-// export const createProduct = (product) => axios.post(product_API, product);
 
