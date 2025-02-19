@@ -28,8 +28,7 @@ const Sidebar = () => {
           <div className="collapse bg-white rounded border mt-2" id="purchaseOrder-collapse">
           <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
               <li className='mb-2'><a href="AddProduct" className="rounded mb-4 text-dark">Add Product</a></li>
-              <li className='mb-2'><a href="ViewProduct" className="rounded mb-4 text-dark">View Product</a></li>
-              <li className='mb-2'><a href="EditProduct" className="rounded mb-4 text-dark">Edit Product</a></li>
+              <li className='mb-2'><a href="ProductList" className="rounded mb-4 text-dark">View Product</a></li>
             </ul>
           </div>
       </li>
