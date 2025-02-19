@@ -10,12 +10,11 @@ import QualityProcessTab from "./tabs/supplier_registration/QualityProcessTab";
 import DocAndProcControl from "./tabs/supplier_registration/DocAndProcControl";
 import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
 import { createSupplier, updateSupplier } from "../services/db_manager";
-import { useLocation } from "react-router-dom";
+import { data, useLocation } from "react-router-dom";
 
 const SupplierRegistration = () => 
 {
     // Variables
-    const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
     
     let formVariavles = {supplierName           : '',       phoneNumber     : '',       faxNum              : '',       email                       : '',           address                 : '',           qualityManagerName  : '',    
                         SaleResp                : '',       coreProcess     : '',       workYear            : '',       isoRegistered               : '',           dontKnow                : '',           isoStandard         : '',       
@@ -24,20 +23,31 @@ const SupplierRegistration = () =>
                         identificationMaintained: '',       sepInsMaterial  : '',       nonConMaterial      : '',       affectCusReq                : '',           instructionStation      : '',           documentedOperative : '',
                         finalInsAcc             : '',       statisMethod    : '',       suppliedDocument    : '',       includeMethod               : '',           qualityCapabilities     : '',           approvedSupplier    : '',
                         marketPrice             : '',       certifiedReport : '',       supplierCapable     : '',       equipCalibrated             : '',           recalibration           : '',           scopeOfWork         : '',
-                        safetyProgram           : '',       houseKeeping    : '',       qmEmail             : '',       qualityManagerPhoneNumber   : '' }
+                        safetyProgram           : '',       houseKeeping    : '',       qmEmail             : '',       qualityManagerPhoneNumber   : '',           formNum                 : ''}
 
     // ######################################### HOOK #######################################
-    const [dataMap, setDataMap] = useState(formVariavles)
 
-    const location                      = useLocation(); // Get location object
+    const [dataMap, setDataMap]         = useState(formVariavles)
+    const location                      = useLocation(); 
     const { supplierId, supplierData }  = location.state || {};  // Access the state passed through navigate
+    const [invalidFeedback, setInvalidFeedback] = useState('d-none text-danger')
 
     // ################################## HOOK-FUNCTION ###########################
 
     // This function is used to save Form data
     async function actionPerformed()
     {
-        debugger
+        let flds = isAllFldValidated()
+        if ( flds !== '' )
+        {
+            setInvalidFeedback('text-danger')
+            return
+        }
+        else
+        {
+            setInvalidFeedback('text-danger d-none')
+        }
+
         if ( supplierId === '' || supplierId == undefined )
         {
             setDataMap(formVariavles)
@@ -86,6 +96,28 @@ const SupplierRegistration = () =>
             [name]: value 
         }));
     };
+
+    // This function validate all mandatory fld are entered
+    function isAllFldValidated()
+    {
+        let flds                = ''
+        let keys                = Object.keys(dataMap)
+
+        keys.forEach((key) =>
+        {
+            let value = dataMap[key]
+
+            if ( value === '' )
+            {
+                if ( key != faxNum || key != workYear || key != dontKnow || key != registerCar || key != numEmp || key != numOpeShift)
+                {
+                    flds += `${key}, `
+                }
+            }
+        })
+
+        return flds
+    }
 
 
     // ########################### VALIDATION ################################
@@ -174,13 +206,16 @@ const SupplierRegistration = () =>
                         <a className="nav-link" id="Proc&Other-tab" data-bs-toggle="tab" href="#Proc&Other" role="tab" aria-controls="Proc&Other" aria-selected="false">Measuring Equipment & Other</a>
                     </li>
                 </ul>
-                <div className="tab-content mt-0 border" id="myTabsContent" style={{height : '450px'}}> 
+                <div className="tab-content mt-0 border" id="myTabsContent" style={{height : '420px'}}>
                     <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">    <GeneralTab             dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">          <SupplierAnalysisTab    dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">          <QualityProcessTab      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection-tab">    <IncomingInspectionTab  dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="Doc&Proc" role="tabpanel" aria-labelledby="Doc&Proc-tab">        <DocAndProcControl      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="Proc&Other" role="tabpanel" aria-labelledby="Proc&Other-tab">    <MaterialAndOther       dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen} actionPerformed={actionPerformed}/></div>
+                </div>
+                <div  className="mt-3">
+                    <p className={invalidFeedback}>*Please fill all mandatory fields</p>
                 </div>
               </div>
             </div>          

@@ -44,14 +44,10 @@ const StoreAccComponent = () =>
         if(listData.includes(partNum))
         {
             let updateRes = await updateStore(partNum, form)
-            console.log(updateRes);
-            
         }
         else
         {
             let createRes = await createStore(form)
-            console.log(createRes);
-            
         }
     }
 
@@ -66,28 +62,6 @@ const StoreAccComponent = () =>
         }
     }
 
-    // This function is used to display part num list reposne
-    // useEffect(() => 
-    // {
-    //     listAllStore().then(response => 
-    //         { 
-    //             let data = response.data
-    //             let list = []
-
-    //             for (let index = 0; index < data.length; index++) 
-    //             {
-    //                 list.push(data[index])   
-    //             }
-
-    //             setDropdownItems([...list])
-    //             setListData(list.join('~'));
-
-    //         }).catch(error => 
-    //         {
-    //             console.error("Error fetching stores:", error);
-    //         });
-    // }, []);
-
     // ############################ RETURN ################################
     return (
         <div className="wrapper ">
@@ -100,7 +74,7 @@ const StoreAccComponent = () =>
             {/* Content heading */}
             <div className="col-md-6">
                 <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-4">
-                    <h5 className="h5 mx-3 mb-0 text-gray-800">Supplier Registration</h5>
+                    <h5 className="h5 mx-3 mb-0 text-gray-800">Store Acceptance</h5>
                 </div>
             </div>
 
