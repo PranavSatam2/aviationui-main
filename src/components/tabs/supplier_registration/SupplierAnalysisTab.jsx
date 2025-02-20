@@ -1,4 +1,4 @@
-const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
+const   SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
     return (
         <div className="row m-2 p-2">
             <div className="col-md-12 d-flex align-items-center mb-3">
@@ -18,12 +18,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                         <div className="d-flex">
                             <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="isoRegistered1" name="isoRegistered" value={dataMap.isoRegistered} onChange={handleChange} onInput={() => validateDataType('coreProcess', 'A')}/>
-                                <label className="form-check-label pt-1" htmlFor="isoRegisteredYes" value="Y">Yes</label>
+                                <label className="form-check-label pt-1" htmlFor="isoRegistered1" value="Y">Yes</label>
                             </div>
 
                             <div className="form-check mx-3 p-0">
                                 <input className="form-check-input" type="radio" id="isoRegistered2" name="isoRegistered"  value={dataMap.isoRegistered} onChange={handleChange}/>
-                                <label className="form-check-label pt-1" htmlFor="isoRegisteredNo" value="N">No</label>
+                                <label className="form-check-label pt-1" htmlFor="isoRegistered2" value="N">No</label>
                             </div>
 
                             <div className="form-check mx-3 p-0">

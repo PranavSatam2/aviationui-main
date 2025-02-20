@@ -30,7 +30,7 @@ const SupplierRegistration = () =>
     const [dataMap, setDataMap]         = useState(formVariavles)
     const location                      = useLocation(); 
     const { supplierId, supplierData }  = location.state || {};  // Access the state passed through navigate
-    const [invalidFeedback, setInvalidFeedback] = useState('d-none text-danger')
+    const [invalidFeedback, setInvalidFeedback] = useState('d-none text-danger ')
 
     // ################################## HOOK-FUNCTION ###########################
 
@@ -40,12 +40,12 @@ const SupplierRegistration = () =>
         let flds = isAllFldValidated()
         if ( flds !== '' )
         {
-            setInvalidFeedback('text-danger')
+            setInvalidFeedback('text-danger col-md-4')
             return
         }
         else
         {
-            setInvalidFeedback('text-danger d-none')
+            setInvalidFeedback('text-danger d-none col-md-4')
         }
 
         if ( supplierId === '' || supplierId == undefined )
@@ -104,18 +104,19 @@ const SupplierRegistration = () =>
         let keys                = Object.keys(dataMap)
 
         keys.forEach((key) =>
-        {
+        {   debugger
             let value = dataMap[key]
 
             if ( value === '' )
             {
-                if ( key != faxNum || key != workYear || key != dontKnow || key != registerCar || key != numEmp || key != numOpeShift)
+                if ( key != 'faxNum' || key != 'workYear' || key != 'dontKnow' || key != 'registerCar' || key != 'numEmp' || key != 'numOpeShift')
                 {
                     flds += `${key}, `
                 }
             }
         })
-
+        console.log(flds);
+        
         return flds
     }
 
@@ -184,7 +185,7 @@ const SupplierRegistration = () =>
             </div>
 
             {/* Content Body */}
-            <div className="card border border-dark shadow mx-4 my-4 p-2" style={{height : '500px'}}>
+            <div className="card border border-dark shadow mx-4 my-4 p-2" style={{height : '530px'}}>
               <div className="col-md-12">
                 <ul className="nav nav-tabs" id="myTabs" role="tablist">
                     <li className="nav-item" role="presentation">
@@ -206,7 +207,7 @@ const SupplierRegistration = () =>
                         <a className="nav-link" id="Proc&Other-tab" data-bs-toggle="tab" href="#Proc&Other" role="tab" aria-controls="Proc&Other" aria-selected="false">Measuring Equipment & Other</a>
                     </li>
                 </ul>
-                <div className="tab-content mt-0 border" id="myTabsContent" style={{height : '420px'}}>
+                <div className="tab-content mt-0 border" id="myTabsContent" style={{height : '440px'}}>
                     <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">    <GeneralTab             dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">          <SupplierAnalysisTab    dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">          <QualityProcessTab      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
@@ -214,8 +215,12 @@ const SupplierRegistration = () =>
                     <div className="tab-pane fade" id="Doc&Proc" role="tabpanel" aria-labelledby="Doc&Proc-tab">        <DocAndProcControl      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="Proc&Other" role="tabpanel" aria-labelledby="Proc&Other-tab">    <MaterialAndOther       dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen} actionPerformed={actionPerformed}/></div>
                 </div>
-                <div  className="mt-3">
+                <div  className="mt-3 col-md-12 d-flex justify-content-end">
                     <p className={invalidFeedback}>*Please fill all mandatory fields</p>
+
+                    <div className="col-md-8 text-right align-items-end">
+                        <button type="button" className="btn btn-primary" onClick={actionPerformed}>Submit</button>
+                    </div>
                 </div>
               </div>
             </div>          

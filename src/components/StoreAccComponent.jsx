@@ -79,26 +79,19 @@ const StoreAccComponent = () =>
             </div>
 
             {/* Content Body */}
-            <div className="card border border-dark shadow mx-4 my-4 p-2" style={{height : '480px'}}>
-                <div className="col-md-12">
+            <div className="card border border-dark shadow mx-4 my-4 p-2" style={{height : '540px'}}>
+                <div className="col-md-12 p-0 overflow-auto">
                     <form>
                         <div className="col-md-12 my-3">
                             <div className="col-md-6 p-2 d-flex align-items-center">
                                 <label htmlFor="partNum" className="col-md-4 mt-2">Part Number</label>
                                 <div className="col-md-8 d-flex p-0">
                                     <input className="form-control w-100" type="text" id="partNum" name="partNum" placeholder="Enter part number" value={form.partNum} onChange={handleChange} required  />
-                                    {/* <div className="input-group-append">
-                                        <button className="btn btn-sm btn-light shadow-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-                                        <div className="dropdown-menu dropdown-menu-right" id="part-num-list" style={{zIndex: 1050, maxHeight: '350px', width: 'max-content', overflowY: 'auto' }}>
-                                            <a className="dropdown-item editable-dropdown-item device-dropdown-item"  style={{ whiteSpace: 'normal', wordWrap: 'break-word', overflowWrap: 'break-word' }}></a>
-                                            {dropdownItems.map((item) => ( <a key={item} onClick={(event)=> setSelectedPartNum(event, item)} className="dropdown-item editable-dropdown-item device-dropdown-item" style={{ whiteSpace: "normal", wordWrap: "break-word", overflowWrap: "break-word" }} > {item} </a> ))}
-                                        </div>
-                                    </div> */}
                                 </div>
                             </div>
                         </div>
 
-                        <hr className="border m-1" />
+                        <hr className="border m-0 p-0 "/>
 
                         <div className="col-md-12 d-flex mt-3">
                             <div className="col-md-6 p-2 d-flex">
@@ -112,28 +105,31 @@ const StoreAccComponent = () =>
                             </div>
                         </div>
 
-                        <div className="col-md-12 d-flex mt-3">
+                        <div className="col-md-12 d-flex mt-1">
                             <div className="col-md-6 p-2 d-flex">
                                 <label htmlFor="condition" className="col-md-4 mt-2">Condition</label>
-                                <div className="col-md-8 d-flex">
-                                    <div className="form-check col-md-4">
-                                        <input className="form-check-input" type="radio" name="condition" id="newRadio" />
-                                        <label className="form-check-label" htmlFor="newRadio">New</label>
+
+                                <div className="d-flex col-md-8">
+                                    <div className="form-check mx-4 p-0">
+                                        <input className="form-check-input" type="radio"  name="condition" />
+                                        <label className="form-check-label pt-1 ml-1" value="New">New</label>
                                     </div>
-                                    <div className="form-check col-md-4">
-                                        <input className="form-check-input" type="radio" name="condition" id="o_wRadio" />
-                                        <label className="form-check-label" htmlFor="o_wRadio">O/W</label>
+
+                                    <div className="form-check mx-4 p-0">
+                                        <input className="form-check-input" type="radio" name="condition" />
+                                        <label className="form-check-label pt-1 ml-1" value="0_w">O/W</label>
                                     </div>
-                                    <div className="form-check col-md-7">
-                                        <input className="form-check-input" type="radio" name="condition" id="repairedRadio" />
-                                        <label className="form-check-label" htmlFor="repairedRadio">Repaired</label>
+
+                                    <div className="form-check mx-4 p-0">
+                                        <input className="form-check-input" type="radio" name="condition" />
+                                        <label className="form-check-label pt-1" value="Repaired">Repaired</label>
                                     </div>
                                 </div>
 
                             </div>
                         </div>
 
-                        <div className="col-md-12 d-flex mt-3">
+                        <div className="col-md-12 d-flex mt-1">
                             <div className="col-md-6 p-2 d-flex">
                                 <label htmlFor="desc" className="col-md-4 mt-2">Supplier</label>
                                 <input className="form-control w-100" type="text"  id="supplier" name="supplier" placeholder="Enter supplier Name" value={form.supplier} onChange={handleChange} required />
@@ -184,12 +180,11 @@ const StoreAccComponent = () =>
                             </div>
                         </div>
 
-                        <hr className="border my-4" />
+                        <hr className="border mt-5" />
 
-                        <div className="col-md-12 text-end mt-1">
-                            <div className="text-end m-2">
-                                <button className="btn btn-primary m-0 mt-2 mx-2" onClick={(event) => sendSaveRequest(event)}>Save</button>
-                                <button className="btn btn-danger m-0 mt-2 mx-2" onClick={(event) => loadListResponse()}>Delete</button>
+                        <div className="col-md-12 text-right mt-1">
+                            <div className="text-end m-0">
+                                <button className="btn btn-primary m-0 mt-2 mx-2" onClick={(event) => sendSaveRequest(event)}>Save</button> 
                             </div>
                         </div>
                     </form>
