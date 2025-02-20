@@ -24,18 +24,29 @@ const ProductList = () => {
   }, []);
 
   // Handle delete action
+  let productId = products.id;
   const handleDelete = async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await deleteProduct(productId); // Delete the product using the API
-        setProducts(products.filter((product) => product.id !== productId)); // Remove deleted product from the state
+        const response = await deleteProduct(productId);
+        console.log('Delete response:', response); // Log the response
+        setProducts(products.filter((product) => product.id !== productId)); // Update the product list
         alert("Product deleted successfully!");
+
+        // Re-fetch the product list after successful deletion
+      const response1 = await listAllProduct(); // Fetch updated products
+      setProducts(response1.data); // Update the state with the new product list
       } catch (error) {
         console.error("Error deleting product:", error);
         alert("Failed to delete the product.");
       }
     }
   };
+
+  const handleEdit = (productId) => {
+    navigate(`/editProduct/${productId}`); // Programmatically navigate to the edit page
+  };
+  
 
   return (
     <div className="wrapper">
@@ -60,16 +71,16 @@ const ProductList = () => {
                 >
                   <thead className="position-sticky sticky-top bg-light">
                     <tr>
-                      <th style={{ width: "5%" }}>#</th>
-                      <th style={{ width: "10%" }}>Product ID</th>
-                      <th style={{ width: "15%" }}>Name</th>
-                      <th style={{ width: "20%" }}>Material Classification</th>
-                      <th style={{ width: "20%" }}>Description</th>
-                      <th style={{ width: "10%" }}>UOM</th>
+                      {/* <th style={{ width: "5%" }}>#</th> */}
+                      <th style={{ width: "3%" }}>ID</th>
+                      <th style={{ width: "9%" }}>Name</th>
+                      <th style={{ width: "15%" }}>Material Classification</th>
+                      <th style={{ width: "10%" }}>Description</th>
+                      <th style={{ width: "5%" }}>UOM</th>
                       <th style={{ width: "10%" }}>OEM</th>
                       <th style={{ width: "10%" }}>NHA</th>
                       <th style={{ width: "10%" }}>CMM Reference Number</th>
-                      <th style={{ width: "5%" }}>Date</th>
+                      <th style={{ width: "15%" }}>Date</th>
                       <th style={{ width: "10%" }}>Registered By</th>
                       <th style={{ width: "15%" }}>Actions</th>
                     </tr>
@@ -77,8 +88,8 @@ const ProductList = () => {
                   <tbody>
                     {products.length > 0 ? (
                       products.map((product, index) => (
-                        <tr key={product.id}>
-                          <td>{index + 1}</td>
+                        <tr key={product.id || index}> {/* Fallback to index if product.id is undefined or not unique */}
+                          {/* <td>{index + 1}</td> */}
                           <td>{product.productId}</td>
                           <td>{product.productName}</td>
                           <td>{product.materialClassification}</td>
@@ -86,20 +97,20 @@ const ProductList = () => {
                           <td>{product.unitOfMeasurement}</td>
                           <td>{product.oem}</td>
                           <td>{product.nha}</td>
-                          <td>{product.cmmReferenceNumber}</td>
-                          <td>{product.date}</td>
+                          <td>{product.cmmRef1}</td>
+                          <td>{product.registrationDate}</td>
                           <td>{product.registeredBy}</td>
                           <td>
                             {/* Edit Button */}
-                            <Link to={`/edit/${product.id}`} className="btn btn-warning btn-sm mx-1">
-                            <i class="fa-solid fa-pen-to-square">Edit</i>
-                            </Link>
+                            <button to={() => handleEdit(product.productId)} className="btn btn-warning btn-sm mx-1">
+                              <i className="fa-solid fa-pen-to-square"></i>
+                            </button>
                             {/* Delete Button */}
                             <button
-                              onClick={() => handleDelete(product.id)}
+                              onClick={() => handleDelete(product.productId)}
                               className="btn btn-danger btn-sm mx-1"
                             >
-                              <i class="fa-solid fa-trash">Delete</i>
+                              <i className="fa-solid fa-trash"></i>
                             </button>
                           </td>
                         </tr>

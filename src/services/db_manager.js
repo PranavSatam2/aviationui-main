@@ -49,8 +49,11 @@ export const listAllSupplier = () => {
 
 // ######################### PRODUCT #########################
 export const createProduct = (Product) => axios.post(`${PRODUCT_URL}/create`, Product);
-export const listAllProduct = () =>  axios.get(`${PRODUCT_URL}/`);
-export const deleteProduct = (ProductId) => axios.delete(`${PRODUCT_URL}/${ProductId}`)
+export const listAllProduct = () =>  axios.get(`${PRODUCT_URL}`);
+export const deleteProduct = (productId) => {
+  console.log(`Deleting product with ID: ${productId}`); // Log for debugging
+  return axios.delete(`${PRODUCT_URL}/${productId}`);
+}
 export const updateProduct = (ProductId, Product) => axios.put(`${PRODUCT_URL}/${ProductId}`, Product)
 export const getProductDetail = (ProductId) => axios.get(`${PRODUCT_URL}/${ProductId}`)
 
