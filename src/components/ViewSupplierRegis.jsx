@@ -76,6 +76,7 @@ const ViewSupplierRegis = () => {
                             <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed" }}>
                                 <thead className="position-sticky sticky-top bg-light">
                                     <tr>
+<<<<<<< Updated upstream
                                         <th style={{ width: "35px" }}>ID</th>
                                         <th className="overflow-auto" style={{ width: "200px" }}>Supplier Name</th>
                                         <th>Address</th>
@@ -90,6 +91,22 @@ const ViewSupplierRegis = () => {
                                         <th>S Email</th>
                                         <th>Core Product</th>
                                         <th>Action</th>
+=======
+                                    <th style={{ width: "35px" }}>Form ID</th>
+                                    <th style={{ width: "200px" }}>Supplier Name</th>
+                                    <th>Address</th>
+                                    <th>Number</th>
+                                    <th>Fax</th>
+                                    <th>Email Id</th>
+                                    <th>Quality Manager</th>
+                                    <th>QM Number</th>
+                                    <th>QM Email</th>
+                                    <th>Sale Rep</th>
+                                    <th>S Number</th>
+                                    <th>S Email</th>
+                                    <th>Core Product</th>
+                                    <th>Action</th>
+>>>>>>> Stashed changes
                                     </tr>
                                 </thead>
                                 <tbody className="overflow-auto w-100">
