@@ -30,10 +30,9 @@ const Sidebar = () => {
           <a className="mx-2 mb-2 btn-toggle align-items-center rounded collapsed text-white mb-3 font-weight-bold text-decoration-none" data-bs-toggle="collapse" data-bs-target="#purchaseOrder-collapse" aria-expanded="false"> Product </a>
           
           <div className="collapse bg-white rounded border mt-2" id="purchaseOrder-collapse">
-            <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
-              <li className='mb-2'><a href="AddProduct" className="rounded mb-4 text-dark text-decoration-none">Add Product</a></li>
-              <li className='mb-2'><a href="ViewProduct" className="rounded mb-4 text-dark text-decoration-none">View Product</a></li>
-              <li className='mb-2'><a href="EditProduct" className="rounded mb-4 text-dark text-decoration-none">Edit Product</a></li>
+          <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
+              <li className='mb-2'><a href="AddProduct" className="rounded mb-4 text-dark">Add Product</a></li>
+              <li className='mb-2'><a href="ProductList" className="rounded mb-4 text-dark">View Product</a></li>
             </ul>
           </div>
         </li>

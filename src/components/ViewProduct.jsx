@@ -3,7 +3,6 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import { listAllProduct } from "../services/db_manager";
 
 const ViewProduct = () => {
   const [products, setProducts] = useState([]); // State to store all products
@@ -23,8 +22,7 @@ const ViewProduct = () => {
     setError("");
 
     try {
-      debugger
-      const response = await listAllProduct();
+      const response = await axios.get("https://api.example.com/products");
       setProducts(response.data); // Assuming API returns an array of products
       setFilteredProducts(response.data); // Initialize filtered products with all products
     } catch (err) {
@@ -41,9 +39,7 @@ const ViewProduct = () => {
       return;
     }
 
-    const filtered = products.filter((product) =>
-      product.id.toString().includes(searchId)
-    );
+    const filtered = getProductDetail(searchId);
     setFilteredProducts(filtered);
 
     if (filtered.length === 0) {
@@ -65,15 +61,17 @@ const ViewProduct = () => {
     <div className="wrapper">
       <Sidebar />
 
+
       <div className="content">
         <Header />
-        {/* content Begin */}
+        {/* conetnt Begin*/}
         <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
             <h5 className="h5 mx-3 mb-0 text-gray-800">View Products</h5>
           </div>
         </div>
         <div className="card shadow mx-4 my-2 p-0">
+
           {/* Search by Product ID */}
           <div className="px-3 py-1 shadow-lg mb-1">
             <label className="form-label">Search by Product ID:</label>
@@ -102,11 +100,11 @@ const ViewProduct = () => {
           ) : (
             <div className="card p-4 shadow-lg">
               <div className="table-responsive overflow-auto px-0">
-                <table id="" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed", height: "390px",}} >
+                <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed", height: "275px" }}>
                   <thead className="position-sticky sticky-top bg-light">
                     <tr>
-                      <th style={{ width: "35px" }}>ID</th>
-                      <th style={{ width: "200px" }}>Material Classification</th>
+                      <th style={{width: "35px"}}>ID</th>
+                      <th style={{width: "200px"}}>Material Classification</th>
                       <th>Product Name</th>
                       <th>Description</th>
                       <th>Unit</th>
@@ -115,14 +113,12 @@ const ViewProduct = () => {
                       <th>CMM</th>
                       <th>Date</th>
                       <th>Registered By</th>
-                      <th>Action</th>
                     </tr>
                   </thead>
-                  
                   <tbody className="overflow-auto w-100">
                     {filteredProducts.map((product) => (
-                      <tr key={product.productId}>
-                        <td>{product.productId}</td>
+                      <tr key={product.id}>
+                        <td>{product.id}</td>
                         <td>{product.materialClassification}</td>
                         <td>{product.productName}</td>
                         <td>{product.productDescription}</td>
@@ -132,21 +128,17 @@ const ViewProduct = () => {
                         <td>{product.cmmReferenceNumber}</td>
                         <td>{product.date}</td>
                         <td>{product.registeredBy}</td>
-                        <td>
-                          <span className="ms-1 text-danger" onClick={()=> deleteSelectedElement('ElementID')}><i className="fa-solid fa-trash"></i></span>
-                          <span className="mx-1 text-primary" onClick={()=> editSelectedElement('ElementID')}><i className="fa-solid fa-pen-to-square"></i></span>
-                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+            </div>     
       </div>
-      <Footer />
-    </div>
+        <Footer />
+      </div>
   );
 };
 
