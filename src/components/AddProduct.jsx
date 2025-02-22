@@ -203,18 +203,18 @@ const AddProduct = () => {
                   </div>
 
 
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-3 mt-2">OEM</label>
-                      <textarea
-                        className="form-control w-100"
-                        type="text"
-                        name="oem"
-                        value={form.oem}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
+                  <div className="col-md-6 p-2 d-flex">
+                    <label className="col-md-3 mt-2">OEM</label>
+                    <textarea
+                      className="form-control w-100"
+                      type="text"
+                      name="oem"
+                      value={form.oem}
+                      onChange={handleChange}
+                      required
+                    />
                   </div>
+
 
                   <div className="col-md-12 d-flex">
                     <div className="col-md-6 p-2 d-flex">
