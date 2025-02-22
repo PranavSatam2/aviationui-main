@@ -3,10 +3,11 @@ import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import { Link } from "react-router-dom"; // Assuming you are using React Router for navigation
+import { useNavigate } from "react-router-dom";
 import { deleteProduct, listAllProduct } from "../services/db_manager"; // Assuming these functions are defined in your `db_manager`
 
 const ProductList = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -34,8 +35,8 @@ const ProductList = () => {
         alert("Product deleted successfully!");
 
         // Re-fetch the product list after successful deletion
-      const response1 = await listAllProduct(); // Fetch updated products
-      setProducts(response1.data); // Update the state with the new product list
+        const response1 = await listAllProduct(); // Fetch updated products
+        setProducts(response1.data); // Update the state with the new product list
       } catch (error) {
         console.error("Error deleting product:", error);
         alert("Failed to delete the product.");
@@ -44,9 +45,9 @@ const ProductList = () => {
   };
 
   const handleEdit = (productId) => {
-    navigate(`/editProduct/${productId}`); // Programmatically navigate to the edit page
+    navigate(`/editProduct/${productId}`); // Navigate to the edit page with productId as URL param
   };
-  
+
 
   return (
     <div className="wrapper">
@@ -102,7 +103,10 @@ const ProductList = () => {
                           <td>{product.registeredBy}</td>
                           <td>
                             {/* Edit Button */}
-                            <button to={() => handleEdit(product.productId)} className="btn btn-warning btn-sm mx-1">
+                            <button
+                              onClick={() => handleEdit(product.productId)} // Navigate when clicked
+                              className="btn btn-warning btn-sm mx-1"
+                            >
                               <i className="fa-solid fa-pen-to-square"></i>
                             </button>
                             {/* Delete Button */}
