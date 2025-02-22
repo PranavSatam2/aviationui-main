@@ -16,17 +16,7 @@ const SupplierRegistration = () =>
 {
 
     // Variables
-<<<<<<< Updated upstream
-    
-    let formVariavles = {supplierName           : '',       phoneNumber     : '',       faxNum              : '',       email                       : '',           address                 : '',           qualityManagerName  : '',    
-                        SaleResp                : '',       coreProcess     : '',       workYear            : '',       isoRegistered               : '',           dontKnow                : '',           isoStandard         : '',       
-                        registerCar             : '',       numEmp          : '',       numOpeShift         : '',       quaManual                   : '',           turnOver                : '',           independenceManuf   : '', 
-                        documentedProcedure     : '',       productShipment : '',       processDocumented   : '',       samplingIncomingInsp        : '',           objectiveEvidence       : '',           carApproval         : '',
-                        identificationMaintained: '',       sepInsMaterial  : '',       nonConMaterial      : '',       affectCusReq                : '',           instructionStation      : '',           documentedOperative : '',
-                        finalInsAcc             : '',       statisMethod    : '',       suppliedDocument    : '',       includeMethod               : '',           qualityCapabilities     : '',           approvedSupplier    : '',
-                        marketPrice             : '',       certifiedReport : '',       supplierCapable     : '',       equipCalibrated             : '',           recalibration           : '',           scopeOfWork         : '',
-                        safetyProgram           : '',       houseKeeping    : '',       qmEmail             : '',       qualityManagerPhoneNumber   : '',           formNum                 : ''}
-=======
+
     const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
     let formVariavles = {supplierName           : '',       
         phoneNumber           : '',       
@@ -132,7 +122,7 @@ const SupplierRegistration = () =>
         qmEmail               : '',       
         qualityManagerPhoneNumber: '' 
          }*/
->>>>>>> Stashed changes
+
 
     // ######################################### HOOK #######################################
 
