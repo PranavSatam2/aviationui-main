@@ -39,9 +39,7 @@ const ViewProduct = () => {
       return;
     }
 
-    const filtered = products.filter((product) =>
-      product.id.toString().includes(searchId)
-    );
+    const filtered = getProductDetail(searchId);
     setFilteredProducts(filtered);
 
     if (filtered.length === 0) {
@@ -51,9 +49,18 @@ const ViewProduct = () => {
     }
   };
 
+  // Initialize DataTable after products are loaded or filtered
+  useEffect(() => {
+    // Only initialize DataTable if table is rendered
+    if (window.$) {
+      window.$("#dataTable").DataTable(); // Initialize DataTable
+    }
+  }, [filteredProducts]); // Re-run whenever filteredProducts change
+
   return (
-    <div className="wrapper ">
+    <div className="wrapper">
       <Sidebar />
+
 
       <div className="content">
         <Header />

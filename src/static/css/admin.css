@@ -1,20 +1,9 @@
-@font-face {
-  font-family: 'Noto Serif';
-  src: url('/src/fonts/NotoSerif-Regular.woff2') format('woff2'),
-       url('/src/fonts/NotoSerif-Regular.woff') format('woff'),
-       url('/src/fonts/NotoSerif-Regular.ttf') format('truetype');
-  font-weight: 400; /* Regular */
-  font-style: normal;
+
+body {
+  font-family: 'Merriweather', serif;
+  font-weight: 500; /* Light weight */
 }
 
-@font-face {
-  font-family: 'Noto Serif';
-  src: url('/src/fonts/NotoSerif-Bold.woff2') format('woff2'),
-       url('/src/fonts/NotoSerif-Bold.woff') format('woff'),
-       url('/src/fonts/NotoSerif-Bold.ttf') format('truetype');
-  font-weight: 700; /* Bold */
-  font-style: normal;
-}
 
 html, body {
   height: 100%;
@@ -22,8 +11,7 @@ html, body {
 }
 
 * {
-  font-size: 13px;
-  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
 }
 
 .wrapper {
@@ -50,7 +38,7 @@ html, body {
   margin-left: 220px; 
   flex-grow: 1;
   padding: 0px; 
-  background-color: #f9f7f7; 
+  background-color: rgb(250, 247, 247)  ; 
   height: 100vh; 
   overflow: auto; 
 }
@@ -204,7 +192,9 @@ html, body {
     position: sticky;
     top: 0;
     z-index: 0;
-    background-color: #fff;
+    /* background-color: #c2c8cf; */
+    color: #797373;
+    border: 1px solid #bcc1c4;
 }
 
 .max-height-380 {

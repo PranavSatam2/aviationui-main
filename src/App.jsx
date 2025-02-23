@@ -8,6 +8,9 @@ import ListProducts from "./components/ListProducts";
 import ViewProduct from "./components/ViewProduct";
 import EditProduct from "./components/EditProduct";
 import SupplierRegistartion from "./components/SupplierRegistration";
+import ProductList from "./components/ProductList";
+import ViewSupplierRegis from "./components/ViewSupplierRegis";
+import ViewStoreAcc from "./components/ViewStoreAcc";
 const App = () => {
   return (
     <Router>
@@ -16,11 +19,14 @@ const App = () => {
         <Route path="/addProduct" element={<AddProduct />} />
         <Route path="/Store" element={<StoreAccComponent />} />
         <Route path="/" element={<LoginPage />} />
-        <Route path="/listProducts" element={<ListProducts />} />
+        {/* <Route path="/listProducts" element={<ListProducts />} /> */}
+        <Route path="/productList" element={<ProductList />} />
         <Route path="/viewProduct" element={<ViewProduct />} />
-        <Route path="/editProduct" element={<EditProduct />} />
+        <Route path="/editProduct/:productId" element={<EditProduct />} />
         <Route path="/storeAcceptance" element={<StoreAccComponent />} />
-        <Route path="/supplier" element={<SupplierRegistartion />} />
+        <Route path="/viewstoreAcceptance" element={<ViewStoreAcc />} />
+        <Route path="/SupplierRegistration" element={<SupplierRegistartion />} />
+        <Route path="/ViewSupplierRegistration" element={<ViewSupplierRegis />} />
       </Routes>
     </Router>
   );

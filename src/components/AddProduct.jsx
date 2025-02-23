@@ -3,11 +3,11 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import axios from "axios"; // Import axios if you are using axios
+import { createProduct } from "../services/db_manager";
 
 const AddProduct = () => {
   const [form, setForm] = useState({
     materialClassification: "",
-    productId: "",
     productName: "",
     productDescription: "",
     unitOfMeasurement: "",
@@ -23,19 +23,82 @@ const AddProduct = () => {
     setForm({ ...form, [name]: value });
   };
 
+  // Helper function to validate each field
+  const validateField = (fieldName, value, rules) => {
+    if (!value) return `${fieldName} is required.`;
+
+    if (rules.type === 'number' && isNaN(value)) {
+      return `${fieldName} should be a number.`;
+    }
+
+    if (rules.length && value.length > rules.length) {
+      return `${fieldName} should be at most ${rules.length} characters.`;
+    }
+
+    if (rules.regex && !rules.regex.test(value)) {
+      return `${fieldName} has invalid characters.`;
+    }
+
+    return null; // No error
+  };
+
+  // New validation rules object
+  const validationRules = {
+    productName: {
+      length: 255,
+      regex: /^[a-zA-Z0-9\s]*$/,
+    },
+    productDescription: {
+      length: 255,
+      regex: /^[a-zA-Z0-9\s]*$/,
+    },
+    unitOfMeasurement: {
+      length: 6,
+      regex: /^[a-zA-Z]*$/,
+    },
+    materialClassification: {
+      length: 30,
+      regex: /^[a-zA-Z0-9\s]*$/,
+    },
+    oem: {
+      length: 255,
+      regex: /^[a-zA-Z0-9\s]*$/,
+    },
+    nha: {
+      length: 255,
+      regex: /^[a-zA-Z0-9\s]*$/,
+    },
+    cmmReferenceNumber: {
+      type: 'number',
+      length: 12,
+    },
+    registeredBy: {
+      length: 255,
+      regex: /^[a-zA-Z\s]*$/,
+    },
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Use axios or fetch to send data to the backend
+    // Iterate through each field and validate
+    for (const [field, rules] of Object.entries(validationRules)) {
+      const error = validateField(field, form[field], rules);
+      if (error) {
+        alert(error);
+        return;
+      }
+    }
+
+    // If all validation passes, proceed with submitting
     try {
-      const response = await axios.post("https://your-api-endpoint.com/products", form);
+      const response = await createProduct(form);
       console.log("Product added successfully:", response.data);
       alert("Product Added Successfully!");
 
       // Reset the form after successful submission
       setForm({
         materialClassification: "",
-        productId: "",
         productName: "",
         productDescription: "",
         unitOfMeasurement: "",
@@ -52,50 +115,24 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="wrapper ">
+    <div className="wrapper">
       <Sidebar />
-      
       <div className="content">
-      <Header />
-      {/* conetnt Begin*/}
-      <div className="col-md-6">
+        <Header />
+        {/* content Begin */}
+        <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
-              <h5 className="h5 mx-3 mb-0 text-gray-800">Add Products</h5>
+            <h5 className="h5 mx-4 mb-0 text-gray-800">Add Products</h5>
           </div>
-      </div>
-        <div className="card shadow mx-4 my-2 p-2">
+        </div>
+        <div className="my-2 p-2">
           <div className="container-fluid">
-            <div className="row mx-5 card border border-dark shadow-lg py-2">
+            <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '540px'}}>
               <div className="col-md-12">
-                <form onSubmit={handleSubmit}>
-                  <div className="col-md-12 p-2 d-flex">
-                    <div className="col-md-6 p-1 d-flex">
-                      <label className="col-md-4 mt-1">Product ID</label>
-                      <input
-                        className="form-control w-100"
-                        type="text"
-                        name="productId"
-                        value={form.productId}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
+                <form onSubmit={handleSubmit} style={{height : '100%'}}>
                   <div className="col-md-12 p-2 d-flex">
                     <div className="col-md-6 p-2 d-flex">
-                    <label className="col-md-5 mt-2">Material Classification</label>
-                    <input
-                      className="form-control w-100"
-                      type="text"
-                      name="materialClassification"
-                      value={form.materialClassification}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-5 mt-1">Product Name</label>
+                      <label className="col-md-4 mt-1">Product Name</label>
                       <input
                         className="form-control w-100"
                         type="text"
@@ -105,7 +142,32 @@ const AddProduct = () => {
                         required
                       />
                     </div>
+                    <div className="col-md-6 p-2 d-flex">
+                      <label className="col-md-4 mt-2">Material Classification</label>
+                      <select
+                        className="form-control w-100"
+                        name="materialClassification"
+                        value={form.materialClassification}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select Material Classification</option>
+                        <option value="Consumable">Consumable</option>
+                        <option value="Spare part">Spare part</option>
+                        <option value="Hardware">Hardware</option>
+                        <option value="Chemical">Chemical</option>
+                        <option value="Tape">Tape</option>
+                        <option value="Adhesive">Adhesive</option>
+                        <option value="Sealant">Sealant</option>
+                        <option value="Fiber Cloths">Fiber Cloths</option>
+                        <option value="General">General</option>
+                        <option value="Miscellaneous">Miscellaneous</option>
+                        <option value="Finish Product">Finish Product</option>
+                      </select>
+                    </div>
                   </div>
+
+                  <hr className="mx-0 my-2 p-0 border" />
 
                   <div className="col-md-12 p-3 d-flex">
                     <label className="col-md-2 mt-2">Product Description</label>
@@ -114,33 +176,44 @@ const AddProduct = () => {
                       name="productDescription"
                       value={form.productDescription}
                       onChange={handleChange}
+                      style={{height : '70px'}}
                       required
                     ></textarea>
                   </div>
 
                   <div className="col-md-12 d-flex">
                     <div className="col-md-6 p-1 d-flex">
-                      <label className="col-md-6 mt-2">Unit of Measurement</label>
-                      <input
+                      <label className="col-md-4 mt-2">Unit of Measurement</label>
+                      <select
                         className="form-control w-100"
-                        type="text"
                         name="unitOfMeasurement"
                         value={form.unitOfMeasurement}
                         onChange={handleChange}
                         required
-                      />
+                      >
+                        <option value="">Select Unit</option>
+                        <option value="EA">EA</option>
+                        <option value="RL">RL</option>
+                        <option value="QT">QT</option>
+                        <option value="GAL">GAL</option>
+                        <option value="KIT">KIT</option>
+                        <option value="LTR">LTR</option>
+                        <option value="SHT">SHT</option>
+                        <option value="Sq.ft">Sq.ft</option>
+                        <option value="Sq.mtr">Sq.mtr</option>
+                      </select>
                     </div>
 
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-3 mt-2">OEM</label>
-                      <input
-                        className="form-control w-100"
-                        type="text"
-                        name="oem"
-                        value={form.oem}
-                        onChange={handleChange}
-                        required
-                      />
+                    <div className="col-md-6 d-flex">
+                    <label className="col-md-4 mt-2">OEM</label>
+                    <textarea
+                      className="form-control w-100"
+                      type="text"
+                      name="oem"
+                      value={form.oem}
+                      onChange={handleChange}
+                      required
+                    />
                     </div>
                   </div>
 
@@ -159,9 +232,9 @@ const AddProduct = () => {
 
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">CMM Reference Number</label>
-                      <textarea
+                      <input
                         className="form-control w-100"
-                        type="text"
+                        type="Number"
                         name="cmmReferenceNumber"
                         value={form.cmmReferenceNumber}
                         onChange={handleChange}
@@ -196,7 +269,7 @@ const AddProduct = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-12 text-end m-2">
+                  <div className="col-md-12 text-end m-1 p-4 text-right">
                     <button type="submit" className="btn btn-primary">Add Product</button>
                   </div>
                 </form>
@@ -204,9 +277,9 @@ const AddProduct = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div >
       <Footer />
-    </div>
+    </div >
   );
 };
 
