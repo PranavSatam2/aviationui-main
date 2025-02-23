@@ -42,6 +42,7 @@ const AddProduct = () => {
     return null; // No error
   };
 
+
   // New validation rules object
   const validationRules = {
     productName: {
@@ -77,6 +78,49 @@ const AddProduct = () => {
       regex: /^[a-zA-Z\s]*$/,
     },
   };
+  const validateDataType = (event, dataType) => 
+    {
+        document.getElementById('')
+        let value = event.target.value
+        if (dataType === 'A') 
+        {
+            value = value.replace(/[^a-zA-Z0-9 ]/g, '');
+            event.target.classList.add('is-valid')
+        } 
+        else if (dataType === 'N') 
+        {
+            value = value.replace(/[^0-9]/g, '');
+            event.target.classList.add('is-valid')
+        } 
+        else if (dataType === 'ANS') 
+        {
+            value = value.replace(/[^a-zA-Z0-9@.]/g, '');
+            event.target.classList.add('is-valid')
+        }
+    
+        event.target.value = value
+    };
+  function validateLen(event, minLen, maxLen) 
+    {
+        let value = event.target.value.substring(0,maxLen)
+        event.target.value = value
+        let elementLen = value.length
+        if (elementLen > maxLen) 
+        {
+            event.target.classList.remove('is-valid')
+            event.target.classList.add('is-invalid')
+        } 
+        else if (elementLen < minLen) 
+        {
+            event.target.classList.remove('is-valid')
+            event.target.classList.add('is-invalid')
+        } 
+        else 
+        {
+            event.target.classList.add('is-valid')
+            event.target.classList.remove('is-invalid')
+        }
+    }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,6 +181,7 @@ const AddProduct = () => {
                         className="form-control w-100"
                         type="text"
                         name="productName"
+                        onInput={(event) => {validateDataType(event,'A')}}
                         value={form.productName}
                         onChange={handleChange}
                         required
@@ -175,6 +220,7 @@ const AddProduct = () => {
                       className="form-control w-100"
                       name="productDescription"
                       value={form.productDescription}
+                      onInput={(event) => {validateDataType(event,'A')}}
                       onChange={handleChange}
                       style={{height : '70px'}}
                       required
@@ -206,10 +252,11 @@ const AddProduct = () => {
 
                     <div className="col-md-6 d-flex">
                     <label className="col-md-4 mt-2">OEM</label>
-                    <textarea
+                    <input
                       className="form-control w-100"
                       type="text"
                       name="oem"
+                      onInput={(event) => {validateDataType(event,'A')}}
                       value={form.oem}
                       onChange={handleChange}
                       required
@@ -220,11 +267,12 @@ const AddProduct = () => {
                   <div className="col-md-12 d-flex">
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">NHA</label>
-                      <textarea
+                      <input
                         className="form-control w-100"
                         type="text"
                         name="nha"
                         value={form.nha}
+                        onInput={(event) => {validateDataType(event,'A')}}
                         onChange={handleChange}
                         required
                       />
@@ -236,6 +284,7 @@ const AddProduct = () => {
                         className="form-control w-100"
                         type="Number"
                         name="cmmReferenceNumber"
+                        onInput={(event) => {validateLen(event,1,12)}}
                         value={form.cmmReferenceNumber}
                         onChange={handleChange}
                         required
@@ -263,6 +312,7 @@ const AddProduct = () => {
                         type="text"
                         name="registeredBy"
                         value={form.registeredBy}
+                        onInput={(event) => {validateDataType(event,'A')}}
                         onChange={handleChange}
                         required
                       />
