@@ -8,6 +8,10 @@ const IncomingInspectionTab = ({dataMap, handleChange, validateDataType}) =>
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-6">
             Is the incoming process documented?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -42,6 +46,10 @@ const IncomingInspectionTab = ({dataMap, handleChange, validateDataType}) =>
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-6">
             What sampling plan is used for incoming inspection?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -80,6 +88,10 @@ const IncomingInspectionTab = ({dataMap, handleChange, validateDataType}) =>
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-6">
             Is Objective evidence of receiving inspection results maintained in file?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -115,6 +127,10 @@ const IncomingInspectionTab = ({dataMap, handleChange, validateDataType}) =>
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-6" >
             Is lot number or other traceability identification maintained?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -153,6 +169,10 @@ const IncomingInspectionTab = ({dataMap, handleChange, validateDataType}) =>
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-6" >
             Is incoming material kept separate from inspected material?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -189,6 +209,10 @@ const IncomingInspectionTab = ({dataMap, handleChange, validateDataType}) =>
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-6">
             Is there any procedure for isolating nonconforming material?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -227,6 +251,10 @@ const IncomingInspectionTab = ({dataMap, handleChange, validateDataType}) =>
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-6">
             Are deviations that affect the customer's requirement referred to customers for disposition?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">

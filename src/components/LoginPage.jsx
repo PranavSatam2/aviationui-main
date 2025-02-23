@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
-// import "../static/css/LoginPage.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
 const LoginPage = () => {
@@ -56,16 +55,23 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <Header />
-      <div className="login-container">
-        <form className="login-form" onSubmit={handleLogin}>
-          <h2>Login</h2>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+    <div style={{ backgroundColor: "white", minHeight: "100vh" }}>
+  <div className="container d-flex justify-content-center align-items-center min-vh-100">
+    <div className="row w-100 justify-content-center">
+      <div className="col-md-4 col-sm-6">
+        <form
+          className="bg-light p-4 rounded shadow-sm"
+          style={{ backgroundColor: "#f7f7f7" }}
+          onSubmit={handleLogin}
+        >
+          <h2 className="text-center mb-4">Login</h2>
+          {errorMessage && <p className="text-danger">{errorMessage}</p>}
+          
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label">Username</label>
             <input
               type="text"
+              className="form-control"
               id="username"
               placeholder="Enter your username"
               value={username}
@@ -73,10 +79,12 @@ const LoginPage = () => {
               required
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label">Password</label>
             <input
               type="password"
+              className="form-control"
               id="password"
               placeholder="Enter your password"
               value={password}
@@ -84,13 +92,14 @@ const LoginPage = () => {
               required
             />
           </div>
-          <button type="submit" className="login-button">
-            Login
-          </button>
+          
+          <button type="submit" className="btn btn-primary w-100">Login</button>
         </form>
       </div>
-      <Footer />
     </div>
+  </div>
+</div>
+
   );
 };
 

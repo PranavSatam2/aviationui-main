@@ -3,12 +3,16 @@
 const DocAndProcControl = ({dataMap, handleChange, validateDataType}) => 
     {
         return (
-            <div className="row m-2 p-2 mt-4">
+            <div className="row m-2 p-2">
                 <div className="col-md-12">
                 <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6" >
+            <label className="col-form-label col-md-6 px-2 py-1" >
                 Are written work instructions available at work stations?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -42,8 +46,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
     
     <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6" >
+            <label className="col-form-label col-md-6 px-2 py-1" >
                 Does the finished product show evidence of final inspection acceptance?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -80,8 +88,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
                 <div className="col-md-12">
                 <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-6 px-2 py-1">
                 Are statistical methods used to control the process?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -115,8 +127,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
     
     <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-6 px-2 py-1">
                 Are procedures in place for control of customer-supplied documents?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -153,8 +169,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
                 <div className="col-md-12">
                 <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-6 px-2 py-1">
                 Does rage procedure include a method for handling revision changes & obsolete documents?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -188,8 +208,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
     
     <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6" >
+            <label className="col-form-label col-md-6 px-2 py-1" >
                 Are quality capabilities of suppliers evaluated prior to procurement?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -226,8 +250,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
                 <div className="col-md-12">
                 <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6" >
+            <label className="col-form-label col-md-6 px-2 py-1" >
                 Do you have an approved supplier list?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -261,8 +289,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
     
     <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
-                Is the supplier competent with respect to market price?
+            <label className="col-form-label col-md-6 px-2 py-1">
+                Is the supplier competent with respect to market price ?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -299,8 +331,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
                 <div className="col-md-12">
                 <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
-                Are certified test reports & certifications of conformance obtained on purchased material?
+            <label className="col-form-label col-md-6 px-2 py-1">
+                Are certified test reports & certifications of conformance obtained on purchased material ?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -334,8 +370,12 @@ const DocAndProcControl = ({dataMap, handleChange, validateDataType}) =>
     
     <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
-                Is the supplier capable of on-time delivery?
+            <label className="col-form-label col-md-6 px-2 py-1">
+                Is the supplier capable of on-time delivery ?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">

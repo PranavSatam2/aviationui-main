@@ -4,12 +4,16 @@ const QualityProcessTab = ({dataMap, handleChange, validateDataType}) =>
     {
         return (
             <div className="row m-2 p-2 mt-4">
-                <div className="col-md-12 mb-3">
+                <div className="col-md-12 mb-0">
                 <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-8 px-0">
                 Does quality assurance have independence from manufacturing?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
-            <div className="d-flex">
+            <div className="d-flex pl-1">
                 <div className="form-check mx-3 p-0">
                     <input 
                         className="form-check-input" 
@@ -37,10 +41,14 @@ const QualityProcessTab = ({dataMap, handleChange, validateDataType}) =>
                 </div>
             </div>
         </div>
-                    <div className="row">
+        <div className="row">
         <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6" >
+            <label className="col-form-label col-md-8" >
                 Do you have a documented operative system for internal and external corrective and preventive action?
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -77,8 +85,12 @@ const QualityProcessTab = ({dataMap, handleChange, validateDataType}) =>
                <div className="col-md-12 mb-3">
         <div className="row">
             <div className="col-md-12 d-flex">
-                <label className="col-form-label col-md-6">
+                <label className="col-form-label col-md-8">
                     Are there documented procedures for identification, collation, filing, storage, & maintenance of quality records?
+                    <span 
+                        className="text-danger mx-1" 
+                        style={{fontSize : '17px'}}>*
+                    </span>
                 </label>
                 <div className="d-flex">
                     <div className="form-check mx-3 p-0">
@@ -112,8 +124,12 @@ const QualityProcessTab = ({dataMap, handleChange, validateDataType}) =>
     
         <div className="row">
             <div className="col-md-12 d-flex">
-                <label className="col-form-label col-md-6" >
+                <label className="col-form-label col-md-8" >
                     Does your system assure that products shipped meet customer applicable revision of specifications?
+                    <span 
+                        className="text-danger mx-1" 
+                        style={{fontSize : '17px'}}>*
+                    </span>
                 </label>
                 <div className="d-flex">
                     <div className="form-check mx-3 p-0">

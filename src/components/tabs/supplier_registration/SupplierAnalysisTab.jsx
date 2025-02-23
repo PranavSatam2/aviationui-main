@@ -2,7 +2,11 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
     return (
         <div className="row m-2 p-2">
             <div className="col-md-12 d-flex align-items-center mb-3">
-                <label className="col-md-3 col-form-label" htmlFor="coreProcess">What are your core product/process</label>
+                <label className="col-md-3 col-form-label" htmlFor="coreProcess">What are your core product/process
+                    <span 
+                        className="text-danger mx-1" 
+                        style={{fontSize : '17px'}}>*
+                    </span></label>
                 <input className="form-control col-md-9" type="text" id="coreProcess" name="coreProcess" value={dataMap.coreProcess} onChange={handleChange} onInput={() => validateDataType('coreProcess', 'A')}/>
             </div>
 
@@ -13,7 +17,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
             <div className="col-md-12 mb-3">
     <div className="row">
         <div className="col-md-6 d-flex">
-            <label className="col-form-label col-md-6">Are you ISO Registered</label>
+            <label className="col-form-label col-md-6">Are you ISO Registered
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
+            </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
                     <input 
@@ -48,7 +57,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
     <div className="row">
         {/* ISO Registered Section */}
         <div className="col-md-6 d-flex">
-            <label className="col-form-label col-md-6">ISO Registered</label>
+            <label className="col-form-label col-md-6">ISO Registered
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
+            </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
                     <input 
@@ -80,7 +94,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
 
         {/* ISO Standard Section */}
         <div className="col-md-6 d-flex">
-            <label className="col-form-label col-md-6">ISO Standard</label>
+            <label className="col-form-label col-md-6">ISO Standard
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
+            </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
                     <input 
@@ -118,6 +137,10 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
         <div className="col-md-6 d-flex">
             <label className="col-form-label col-md-6" >
                 Having CAR 145/DGCA Approval
+                <span 
+                    className="text-danger mx-1" 
+                    style={{fontSize : '17px'}}>*
+                </span>
             </label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
@@ -185,6 +208,10 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                 <div className="col-md-6 d-flex">
         <label className="col-md-6 col-form-label" htmlFor="quaManual">
             Do you have current quality manuals?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -216,7 +243,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
     </div>
                     
                     <div className="col-md-6 d-flex">
-                        <label className="col-md-6 col-form-label" htmlFor="turnOver">Annual turnover </label>
+                        <label className="col-md-6 col-form-label" htmlFor="turnOver">Annual turnover 
+                            <span 
+                                className="text-danger mx-1" 
+                                style={{fontSize : '17px'}}>*
+                            </span>
+                        </label>
                         <input className="form-control col-md-6" type="number" id="turnOver" name="turnOver" value={dataMap.turnOver} onChange={handleChange}/>
                     </div>
                 </div>

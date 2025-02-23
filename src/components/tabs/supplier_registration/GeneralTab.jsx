@@ -53,7 +53,7 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                         <label className="col-md-4 pt-2" htmlFor="phoneNumber">Phone Number<span 
                                 className="text-danger mx-1" 
                                 style={{fontSize : '17px'}}>
-                            </span>*</label>
+                            *</span></label>
                         <input 
                             className="col-md-8 form-control" 
                             type="number" 

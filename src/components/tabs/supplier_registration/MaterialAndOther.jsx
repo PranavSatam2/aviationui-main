@@ -9,6 +9,10 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-7" >
             Are equipment calibrated?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -44,6 +48,10 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-7">
             Are gauges and test equipment periodically certified, and are records maintained for frequency of recalibration?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -82,6 +90,10 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-7">
             Are gauges, test equipment available and sufficient for our scope of work?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -117,6 +129,10 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-7" >
             Is there adequate area & safety programs in place?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
@@ -155,6 +171,10 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
     <div className="col-md-12 d-flex">
         <label className="col-form-label col-md-7" >
             Is there a procedure in place for housekeeping?
+            <span 
+                className="text-danger mx-1" 
+                style={{fontSize : '17px'}}>*
+            </span>
         </label>
         <div className="d-flex">
             <div className="form-check mx-3 p-0">
