@@ -64,19 +64,19 @@ const ViewSupplierRegis = () => {
                 <Header />
                 {/* Content heading */}
                 <div className="col-md-6">
-                    <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-4">
+                    <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-2">
                         <h5 className="h5 mx-3 mb-0 text-gray-800">View Supplier Registration</h5>
                     </div>
                 </div>
 
                 {/* Content Body */}
-                <div className="card border border-dark shadow mx-4 my-4 p-2" style={{ height: '500px' }}>
+                <div className="card border border-dark shadow mx-4 my-4 p-2" style={{ height: '540px' }}>
                     <div className="col-md-12">
                         <div className="table-responsive overflow-auto px-0 mt-4" style={{width : '100%'}}>
                             <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed" }}>
                                 <thead className="position-sticky sticky-top bg-light">
                                     <tr>
-                                      <th style={{ width: "35px" }}>Form ID</th>
+                                      <th style={{ width: "35px" }}>Id</th>
                                     <th style={{ width: "200px" }}>Supplier Name</th>
                                     <th>Address</th>
                                     <th>Number</th>
@@ -95,19 +95,19 @@ const ViewSupplierRegis = () => {
                                 <tbody className="overflow-auto w-100">
                                     {tableData && tableData.length > 0 ? tableData.map((supplier) => (
                                         <tr key={supplier.formId}>
-                                            <td>{supplier.formId}</td>
-                                            <td>{supplier.supplierName}</td>
-                                            <td>{supplier.address}</td>
-                                            <td>{supplier.phoneNumber}</td>
-                                            <td>{supplier.fax}</td>
-                                            <td>{supplier.emailId}</td>
-                                            <td>{supplier.qualityManagerName}</td>
-                                            <td>{supplier.qualityManagerPhoneNumber}</td>
-                                            <td>{supplier.qualityManagerEmailId}</td>
-                                            <td>{supplier.salesRepresentativeName}</td>
-                                            <td>{supplier.salePhoneNumber}</td>
-                                            <td>{supplier.saleEmailId}</td>
-                                            <td>{supplier.coreProducts}</td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.formId}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.supplierName}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.address}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.phoneNumber}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.faxNum}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.email}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.qualityManagerName}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.qualityManagerPhoneNumber}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.qualityManagerEmailId}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.saleRepresentativeName}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.saleRepresentativePhoneNumber}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.saleRepresentativeEmailId}</div></td>
+                                            <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.coreProcess}</div></td>
                                             <td>
                                                 <span className="ms-1 text-danger" onClick={() => deleteSelectedElement(`${supplier.formId}`)}><i className="fa-solid fa-trash"></i></span>
                                                 <span className="mx-1 text-primary" onClick={() => editSelectedElement(`${supplier.formId}`)}><i className="fa-solid fa-pen-to-square"></i></span>

@@ -18,7 +18,8 @@ const SupplierRegistration = () =>
     // Variables
 
     const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
-    let formVariavles = {supplierName           : '',       
+    let formVariavles = {supplierName           : '',  
+        formId               : '',     
         phoneNumber           : '',       
         faxNum                : '',       
         email                 : '',       
@@ -75,53 +76,6 @@ const SupplierRegistration = () =>
         safetyProgram         : '',       
         houseKeeping          : ''      
          }
-    /*let formVariavles = {supplierName           : '',       
-        phoneNumber           : '',       
-        faxNum                : '',       
-        email                 : '',       
-        address               : '',       
-        qualityManagerName    : '',    
-        SaleResp              : '',       
-        coreProcess           : '',       
-        workYear              : '',       
-        isoRegistered         : '',       
-        dontKnow              : '',       
-        isoStandard           : '',       
-        registerCar           : '',       
-        numEmp                : '',       
-        numOpeShift           : '',       
-        quaManual             : '',       
-        turnOver              : '',       
-        independenceManuf     : '', 
-        documentedProcedure   : '',       
-        productShipment       : '',       
-        processDocumented     : '',       
-        samplingIncomingInsp  : '',       
-        objectiveEvidence     : '',       
-        carApproval           : '',
-        identificationMaintained: '',       
-        sepInsMaterial        : '',       
-        nonConMaterial        : '',       
-        affectCusReq          : '',       
-        instructionStation    : '',       
-        documentedOperative   : '',
-        finalInsAcc           : '',       
-        statisMethod          : '',       
-        suppliedDocument      : '',       
-        includeMethod         : '',       
-        qualityCapabilities   : '',       
-        approvedSupplier      : '',
-        marketPrice           : '',       
-        certifiedReport       : '',       
-        supplierCapable       : '',       
-        equipCalibrated       : '',       
-        recalibration         : '',       
-        scopeOfWork           : '',
-        safetyProgram         : '',       
-        houseKeeping          : '',       
-        qmEmail               : '',       
-        qualityManagerPhoneNumber: '' 
-         }*/
 
 
     // ######################################### HOOK #######################################
@@ -130,13 +84,29 @@ const SupplierRegistration = () =>
     const location                      = useLocation(); 
     const { supplierId, supplierData }  = location.state || {};  
     const [invalidFeedback, setInvalidFeedback] = useState('d-none text-danger ')
+    const [invalidFeedbackMsg, setInvalidFeedbackMsg] = useState('')
+    let msg = {invalidFld : '*Please enter all mandatory fields', dataSaved : 'Data saved successfully'}
 
     // ################################## HOOK-FUNCTION ###########################
 
     // This function is used to save Form data
-    async function actionPerformed()
+    async function actionPerformed(action)
     {
+        if (action == 'clear')
+        {
+            debugger
+            let keys = Object.keys(formVariavles)
+            keys.forEach((key) =>
+            {
+                formVariavles[key] = ''
+            })
+
+            setDataMap(formVariavles)
+            return
+        }
+
         let flds = isAllFldValidated()
+        
         if ( flds !== '' )
         {
             setInvalidFeedback('text-danger col-md-4')
@@ -147,6 +117,7 @@ const SupplierRegistration = () =>
             setInvalidFeedback('text-danger d-none col-md-4')
         }
 
+        debugger
         if ( supplierId === '' || supplierId == undefined )
         {
             setDataMap(formVariavles)
@@ -163,8 +134,11 @@ const SupplierRegistration = () =>
             let response = await updateSupplier(supplierId, dataMap)
             if ( response )
             {
-                setDataMap(formVariavles)
-                window.location.reload();
+
+                setDataMap(response.data)
+                setInvalidFeedbackMsg(msg.dataSaved)
+                setInvalidFeedback('text-success col-md-4')
+                // window.location.reload();
             }
         }
     }
@@ -201,23 +175,43 @@ const SupplierRegistration = () =>
     {
         let flds                = ''
         let keys                = Object.keys(dataMap)
+        let isAllFldMandatory = true
 
-        keys.forEach((key) =>
-        {   debugger
+        for (let index = 0; index < keys.length; index++) 
+        {   
+            
+            let key = keys[index]
             let value = dataMap[key]
 
             if ( value === '' )
             {
-                if ( key != 'faxNum' || key != 'workYear' || key != 'dontKnow' || key != 'registerCar' || key != 'numEmp' || key != 'numOpeShift')
+                if ( key == 'faxNum' || key == 'workYear' || key == 'dontKnow' || key == 'registerCar' || key == 'numEmp' || key == 'numOpeShift')
                 {
-                    flds += `${key}, `
+                    continue
+                }
+                else
+                {   
+                    debugger
+                    flds += `${key},`
+                    isAllFldMandatory = false
                 }
             }
-        })
-        console.log(flds);
+        }
+
+        if (!isAllFldMandatory)
+        {   
+            setInvalidFeedback('text-danger col-md-4')
+            setInvalidFeedbackMsg(msg.invalidFld)
+        }
+        else
+        {
+            setInvalidFeedback('d-none text-danger col-md-4')
+        }
         
         return flds
     }
+
+
 
 
     // ########################### VALIDATION ################################
@@ -230,14 +224,17 @@ const SupplierRegistration = () =>
         if (dataType === 'A') 
         {
             value = value.replace(/[^a-zA-Z0-9 ]/g, '');
+            event.target.classList('is-valid')
         } 
         else if (dataType === 'N') 
         {
             value = value.replace(/[^0-9]/g, '');
+            event.target.classList('is-valid')
         } 
         else if (dataType === 'ANS') 
         {
-            value = value.replace(/[^a-zA-Z0-9@.]/g, '');
+            value = value.replace(/[^a-zA-Z0-9,. ]/g, '');
+            event.target.classList('is-valid')
         }
     
         event.target.value = value
@@ -315,10 +312,11 @@ const SupplierRegistration = () =>
                     <div className="tab-pane fade" id="Proc&Other" role="tabpanel" aria-labelledby="Proc&Other-tab">    <MaterialAndOther       dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen} actionPerformed={actionPerformed}/></div>
                 </div>
                 <div  className="mt-3 col-md-12 d-flex justify-content-end">
-                    <p className={invalidFeedback}>*Please fill all mandatory fields</p>
+                    <p className={invalidFeedback}>{invalidFeedbackMsg}</p>
 
                     <div className="col-md-8 text-right align-items-end">
-                        <button type="button" className="btn btn-primary" onClick={actionPerformed}>Submit</button>
+                        <button type="button" className="btn btn-warning mx-2" onClick={() => actionPerformed('clear')}>Clear</button>
+                        <button type="button" className="btn btn-success mx-2" onClick={() => actionPerformed('submit')}>Submit</button>
                     </div>
                 </div>
               </div>

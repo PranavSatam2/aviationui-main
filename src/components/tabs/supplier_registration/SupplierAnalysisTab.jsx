@@ -1,4 +1,4 @@
-const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
+const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType, validateLen}) => {
     return (
         <div className="row m-2 p-2">
             <div className="col-md-12 d-flex align-items-center mb-3">
@@ -7,12 +7,23 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                         className="text-danger mx-1" 
                         style={{fontSize : '17px'}}>*
                     </span></label>
-                <input className="form-control col-md-9" type="text" id="coreProcess" name="coreProcess" value={dataMap.coreProcess} onChange={handleChange} onInput={() => validateDataType('coreProcess', 'A')}/>
+                <input className="form-control col-md-9" 
+                type="text" 
+                id="coreProcess" 
+                name="coreProcess" 
+                value={dataMap.coreProcess} 
+                onChange={handleChange} 
+                onInput={(event) => { validateDataType(event, 'ANS'); validateLen(event, 0, 500); }} />
             </div>
 
             <div className="col-md-12 d-flex align-items-center mb-3">
                 <label className="col-md-3 col-form-label" htmlFor="workYear">How long have you been in this business doing this type of work</label>
-                <input className="form-control col-md-9" type="text" id="workYear" name="workYear"value={dataMap.workYear} onChange={handleChange}/>
+                <input className="form-control col-md-9" 
+                type="text" 
+                id="workYear" 
+                name="workYear"
+                value={dataMap.workYear} onChange={handleChange}
+                onInput={(event) => { validateDataType(event, 'ANS'); validateLen(event, 0, 500); }} />
             </div>
             <div className="col-md-12 mb-3">
     <div className="row">
@@ -183,6 +194,7 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                 name="isoRegistrationPlans"  
                 value={dataMap.isoRegistrationPlans} 
                 onChange={handleChange}
+                onInput={(event) => { validateDataType(event, 'ANS'); validateLen(event, 1, 50); }}
             />
         </div>
     </div>
@@ -193,12 +205,22 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                 <div className="row">
                     <div className="col-md-6 d-flex">
                         <label className="col-md-6 col-form-label" htmlFor="numEmp">Total number of employee's </label>
-                        <input className="form-control col-md-6" type="number" id="numEmp" name="numEmp" value={dataMap.numEmp} onChange={handleChange}/>
+                        <input className="form-control col-md-6" 
+                        type="number" 
+                        id="numEmp" 
+                        name="numEmp" 
+                        value={dataMap.numEmp} onChange={handleChange}
+                        onInput={(event) => { validateDataType(event, 'N'); validateLen(event, 0, 4); }} />
                     </div>
 
                     <div className="col-md-6 d-flex">
                         <label className="col-md-6 col-form-label" htmlFor="numOpeShift">Number of operating shift's </label>
-                        <input className="form-control col-md-6" type="number" id="numOpeShift" name="numOpeShift" value={dataMap.numOpeShift} onChange={handleChange}/>
+                        <input className="form-control col-md-6" 
+                        type="number" 
+                        id="numOpeShift"
+                         name="numOpeShift" 
+                         value={dataMap.numOpeShift} onChange={handleChange}
+                         onInput={(event) => { validateDataType(event, 'N'); validateLen(event, 0, 3); }} />
                     </div>
                 </div>
             </div>
@@ -249,7 +271,12 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
                                 style={{fontSize : '17px'}}>*
                             </span>
                         </label>
-                        <input className="form-control col-md-6" type="number" id="turnOver" name="turnOver" value={dataMap.turnOver} onChange={handleChange}/>
+                        <input className="form-control col-md-6" 
+                        type="number" 
+                        id="turnOver" 
+                        name="turnOver" 
+                        value={dataMap.turnOver} onChange={handleChange}
+                        onInput={(event) => { validateDataType(event, 'N'); validateLen(event, 0, 10); }} />
                     </div>
                 </div>
             </div>
