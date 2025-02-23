@@ -1,11 +1,14 @@
 const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) => {
     return (
-        <div className="m-2 p-2 mt-4">
+        <div className="m-2 p-2 mt-2">
             {/* Supplier/Sub-Contractor Details */}
-            <div className="col-md-12 mb-3">
+            <div className="col-md-12 mb-1 d-flex">
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="supplierName">Supplier/Sub-Contractor Name</label>
+                        <label className="col-md-4 pt-2" htmlFor="supplierName">Supplier/Sub-Contractor Name<span 
+                                    className="text-danger mx-1 " 
+                                    style={{fontSize : '17px'}}>*
+                                </span></label>
                         <input 
                             className="col-md-8 form-control" 
                             type="text" 
@@ -18,15 +21,39 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                         />
                     </div>
                 </div>
+
+                <div className="col-md-6 ">
+                        <div className="row">
+                            <label className="col-md-4 pt-2" 
+                                htmlFor="name">Form 
+                                <span 
+                                    className="text-danger mx-1 " 
+                                    style={{fontSize : '17px'}}>*
+                                </span>
+                            </label>
+                            <input 
+                                className="col-md-8 form-control" 
+                                type="text" 
+                                name="formNum" 
+                                id="formNum" 
+                                placeholder="Form Number" 
+                                value={dataMap.formNum } 
+                                onChange={handleChange} 
+                                onInput={(event) => {validateDataType(event, 'AN');validateLen(event, 0, 10);}}/>
+                        </div>
+                    </div>
             </div>
 
-            <hr className="mx-0 my-3 p-0 border border-dark" />
+            <hr className="mx-0 my-2 p-0 border" />
 
             {/* Contact Details */}
-            <div className="col-md-12 d-flex mb-3">
+            <div className="col-md-12 d-flex mb-1">
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="phoneNumber">Phone Number</label>
+                        <label className="col-md-4 pt-2" htmlFor="phoneNumber">Phone Number<span 
+                                className="text-danger mx-1" 
+                                style={{fontSize : '17px'}}>
+                            </span>*</label>
                         <input 
                             className="col-md-8 form-control" 
                             type="number" 
@@ -40,7 +67,12 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                 </div>
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="faxNum">Fax Number</label>
+                        <label className="col-md-4 pt-2" htmlFor="faxNum">Fax Number
+                            <span 
+                                className="text-danger mx-1" 
+                                style={{fontSize : '17px'}}>*
+                            </span>
+                        </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="number" 
@@ -57,7 +89,12 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
             <div className="col-md-12 d-flex mb-3">
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="email">Email ID</label>
+                        <label className="col-md-4 pt-2" htmlFor="email">Email ID
+                        <span 
+                            className="text-danger mx-1" 
+                            style={{fontSize : '17px'}}>*
+                        </span>
+                        </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="email" 
@@ -71,7 +108,12 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                 </div>
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="address">Address</label>
+                        <label className="col-md-4 pt-2" htmlFor="address">Address
+                        <span 
+                            className="text-danger mx-1" 
+                            style={{fontSize : '17px'}}>*
+                        </span>
+                        </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="text" 
@@ -84,14 +126,20 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                 </div>
             </div>
 
-            <hr className="mx-0 my-3 p-0 border border-dark" />
+            <hr className="mx-0 my-2 p-0 border " />
 
             {/* Quality Manager Details */}
-            <h5 className="mb-3 fw-bold text-dark">Quality Manager Details</h5>
-            <div className="col-md-12 d-flex mb-3">
+            <h5 className="mb-3 fw-bold text-dark">Quality Manager Details
+            </h5>
+            <div className="col-md-12 d-flex">
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="qualityManagerName">Name</label>
+                        <label className="col-md-4 pt-2" htmlFor="qualityManagerName">Name
+                        <span 
+                            className="text-danger mx-1 " 
+                            style={{fontSize : '17px'}}>*
+                        </span>
+                        </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="text" 
@@ -104,7 +152,12 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                 </div>
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="qualityManagerPhoneNumber">Phone Number</label>
+                        <label className="col-md-4 pt-2" htmlFor="qualityManagerPhoneNumber">Phone Number
+                        <span 
+                            className="text-danger mx-1" 
+                            style={{fontSize : '17px'}}>*
+                        </span>
+                        </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="number" 
@@ -116,10 +169,15 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                     </div>
                 </div>
             </div>
-            <div className="col-md-12 mb-3">
+            <div className="col-md-12">
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="qualityManagerEmailId">Email ID</label>
+                        <label className="col-md-4 pt-2" htmlFor="qualityManagerEmailId">Email ID
+                        <span 
+                            className="text-danger mx-1" 
+                            style={{fontSize : '17px'}}>*
+                        </span>
+                        </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="email" 
@@ -132,14 +190,20 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                 </div>
             </div>
 
-            <hr className="mx-0 my-3 p-0 border border-dark" />
+            <hr className="mx-0 my-2 p-0 border " />
 
             {/* Sales Representative Details */}
-            <h5 className="mb-3 fw-bold text-dark">Sales Representative Details</h5>
-            <div className="col-md-12 d-flex mb-3">
+            <h5 className="mb-3 fw-bold text-dark">Sales Representative Details
+            </h5>
+            <div className="col-md-12 d-flex">
                      <div className="col-md-6">
                         <div className="row">
-                    <label className="col-md-4 pt-2" htmlFor="saleRepresentativeName">Name</label>
+                    <label className="col-md-4 pt-2" htmlFor="saleRepresentativeName">Name
+                    <span 
+                        className="text-danger mx-1" 
+                        style={{fontSize : '17px'}}>*
+                    </span>
+                    </label>
                     <input 
                           className="col-md-8 form-control" 
                              type="text" 
@@ -152,7 +216,12 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                         </div>
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="saleRepresentativeEmailId">Email ID</label>
+                        <label className="col-md-4 pt-2" htmlFor="saleRepresentativeEmailId">Email ID
+                        <span 
+                            className="text-danger mx-1" 
+                            style={{fontSize : '17px'}}>*
+                        </span>
+                        </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="email" 
@@ -168,7 +237,12 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
             <div className="col-md-12 mb-2">
                 <div className="col-md-6">
                     <div className="row">
-                        <label className="col-md-4 pt-2" htmlFor="saleRepresentativePhoneNumber">Phone Number</label>
+                        <label className="col-md-4 pt-2" htmlFor="saleRepresentativePhoneNumber">Phone Number
+                        <span 
+                            className="text-danger mx-1" 
+                            style={{fontSize : '17px'}}>*
+                        </span>
+                        </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="number" 

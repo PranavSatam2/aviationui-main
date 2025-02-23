@@ -7,7 +7,7 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
                 <div className="col-md-12">
                 <div className="row">
     <div className="col-md-12 d-flex">
-        <label className="col-form-label col-md-7" htmlFor="equipCalibrated">
+        <label className="col-form-label col-md-7" >
             Are equipment calibrated?
         </label>
         <div className="d-flex">
@@ -15,26 +15,26 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="equipCalibrated" 
+                    id="equipCalibrated1" 
                     name="equipCalibrated" 
                     value="Yes" 
                     checked={dataMap.equipCalibrated === "Yes"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="equipCalibrated">Yes</label>
+                <label className="form-check-label pt-1" htmlFor="equipCalibrated1">Yes</label>
             </div>
 
             <div className="form-check mx-3 p-0">
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="equipCalibrated" 
+                    id="equipCalibrated2" 
                     name="equipCalibrated" 
                     value="No" 
                     checked={dataMap.equipCalibrated === "No"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="equipCalibrated">No</label>
+                <label className="form-check-label pt-1" htmlFor="equipCalibrated2">No</label>
             </div>
         </div>
     </div>
@@ -42,7 +42,7 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
 
 <div className="row">
     <div className="col-md-12 d-flex">
-        <label className="col-form-label col-md-7" htmlFor="recalibration">
+        <label className="col-form-label col-md-7">
             Are gauges and test equipment periodically certified, and are records maintained for frequency of recalibration?
         </label>
         <div className="d-flex">
@@ -50,26 +50,26 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="recalibration" 
+                    id="recalibration1" 
                     name="recalibration" 
                     value="Yes" 
                     checked={dataMap.recalibration === "Yes"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="recalibration">Yes</label>
+                <label className="form-check-label pt-1" htmlFor="recalibration1">Yes</label>
             </div>
 
             <div className="form-check mx-3 p-0">
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="recalibration" 
+                    id="recalibration2" 
                     name="recalibration" 
                     value="No" 
                     checked={dataMap.recalibration === "No"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="recalibration">No</label>
+                <label className="form-check-label pt-1" htmlFor="recalibration2">No</label>
             </div>
         </div>
     </div>
@@ -80,7 +80,7 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
             <div className="col-md-12">
             <div className="row">
     <div className="col-md-12 d-flex">
-        <label className="col-form-label col-md-7" htmlFor="scopeOfWork">
+        <label className="col-form-label col-md-7">
             Are gauges, test equipment available and sufficient for our scope of work?
         </label>
         <div className="d-flex">
@@ -88,26 +88,26 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="scopeOfWork" 
+                    id="scopeOfWork1" 
                     name="scopeOfWork" 
                     value="Yes" 
                     checked={dataMap.scopeOfWork === "Yes"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="scopeOfWork">Yes</label>
+                <label className="form-check-label pt-1" htmlFor="scopeOfWork1">Yes</label>
             </div>
 
             <div className="form-check mx-3 p-0">
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="scopeOfWork" 
+                    id="scopeOfWork2" 
                     name="scopeOfWork" 
                     value="No" 
                     checked={dataMap.scopeOfWork === "No"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="scopeOfWork">No</label>
+                <label className="form-check-label pt-1" htmlFor="scopeOfWork2">No</label>
             </div>
         </div>
     </div>
@@ -115,7 +115,7 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
 
 <div className="row">
     <div className="col-md-12 d-flex">
-        <label className="col-form-label col-md-7" htmlFor="safetyProgram">
+        <label className="col-form-label col-md-7" >
             Is there adequate area & safety programs in place?
         </label>
         <div className="d-flex">
@@ -123,26 +123,26 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="safetyProgram" 
+                    id="safetyProgram1" 
                     name="safetyProgram" 
                     value="Yes" 
                     checked={dataMap.safetyProgram === "Yes"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="safetyProgram">Yes</label>
+                <label className="form-check-label pt-1" htmlFor="safetyProgram1">Yes</label>
             </div>
 
             <div className="form-check mx-3 p-0">
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="safetyProgram" 
+                    id="safetyProgram2" 
                     name="safetyProgram" 
                     value="No" 
                     checked={dataMap.safetyProgram === "No"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="safetyProgram">No</label>
+                <label className="form-check-label pt-1" htmlFor="safetyProgram2">No</label>
             </div>
         </div>
     </div>
@@ -153,7 +153,7 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
             <div className="col-md-12">
             <div className="row">
     <div className="col-md-12 d-flex">
-        <label className="col-form-label col-md-7" htmlFor="houseKeeping">
+        <label className="col-form-label col-md-7" >
             Is there a procedure in place for housekeeping?
         </label>
         <div className="d-flex">
@@ -161,35 +161,31 @@ const MaterialAndOther = ({dataMap, handleChange, validateDataType, actionPerfor
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="houseKeeping" 
+                    id="houseKeeping1" 
                     name="houseKeeping" 
                     value="Yes" 
                     checked={dataMap.houseKeeping === "Yes"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="houseKeeping">Yes</label>
+                <label className="form-check-label pt-1" htmlFor="houseKeeping1">Yes</label>
             </div>
 
             <div className="form-check mx-3 p-0">
                 <input 
                     className="form-check-input" 
                     type="radio" 
-                    id="houseKeeping" 
+                    id="houseKeeping2" 
                     name="houseKeeping" 
                     value="No" 
                     checked={dataMap.houseKeeping === "No"} 
                     onChange={handleChange}
                 />
-                <label className="form-check-label pt-1" htmlFor="houseKeeping">No</label>
+                <label className="form-check-label pt-1" htmlFor="houseKeeping2">No</label>
             </div>
         </div>
     </div>
 </div>
 
-            </div>
-
-            <div className="col-md-12 text-right align-items-end">
-                <button type="button" className="btn btn-primary" onClick={actionPerformed}>Submit</button>
             </div>
         </div>
         )

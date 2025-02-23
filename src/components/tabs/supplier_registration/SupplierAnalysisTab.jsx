@@ -13,33 +13,32 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
             <div className="col-md-12 mb-3">
     <div className="row">
         <div className="col-md-6 d-flex">
-            <label className="col-form-label col-md-6" htmlFor="areYouIsoRegistered">Are you ISO Registered</label>
+            <label className="col-form-label col-md-6">Are you ISO Registered</label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
                     <input 
                         className="form-check-input" 
                         type="radio" 
-                        id="areYouIsoRegistered"  
+                        id="areYouIsoRegistered1"  
                         name="areYouIsoRegistered" 
                         value="Yes" 
                         checked={dataMap.areYouIsoRegistered === "Yes"}
                         onChange={handleChange} 
-                        onInput={() => validateDataType('coreProcess', 'A')}
                     />
-                    <label className="form-check-label pt-1" htmlFor="areYouIsoRegistered">Yes</label>
+                    <label className="form-check-label pt-1" htmlFor="areYouIsoRegistered1">Yes</label>
                 </div>
 
                 <div className="form-check mx-3 p-0">
                     <input 
                         className="form-check-input" 
                         type="radio" 
-                        id="areYouIsoRegistered"  
+                        id="areYouIsoRegistered2"  
                         name="areYouIsoRegistered" 
                         value="No"  
                         checked={dataMap.areYouIsoRegistered === "No"}
                         onChange={handleChange} 
                     />
-                    <label className="form-check-label pt-1" htmlFor="areYouIsoRegistered">No</label>
+                    <label className="form-check-label pt-1" htmlFor="areYouIsoRegistered2">No</label>
                 </div>
             </div>
         </div>
@@ -49,64 +48,64 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
     <div className="row">
         {/* ISO Registered Section */}
         <div className="col-md-6 d-flex">
-            <label className="col-form-label col-md-6" htmlFor="isoRegistered">ISO Registered</label>
+            <label className="col-form-label col-md-6">ISO Registered</label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
                     <input 
                         className="form-check-input" 
                         type="radio" 
-                        id="isoRegistered" 
+                        id="isoRegistered1" 
                         name="isoRegistered" 
                         value="Yes" 
                         checked={dataMap.isoRegistered === "Yes"} 
                         onChange={handleChange}
                     />
-                    <label className="form-check-label pt-1" htmlFor="isoRegistered">Yes</label>
+                    <label className="form-check-label pt-1" htmlFor="isoRegistered1">Yes</label>
                 </div>
 
                 <div className="form-check mx-3 p-0">
                     <input 
                         className="form-check-input" 
                         type="radio" 
-                        id="isoRegistered"  
+                        id="isoRegistered2"  
                         name="isoRegistered" 
                         value="No"  
                         checked={dataMap.isoRegistered === "No"}  
                         onChange={handleChange}
                     />
-                    <label className="form-check-label pt-1" htmlFor="isoRegistered">No</label>
+                    <label className="form-check-label pt-1" htmlFor="isoRegistered2">No</label>
                 </div>
             </div>
         </div>
 
         {/* ISO Standard Section */}
         <div className="col-md-6 d-flex">
-            <label className="col-form-label col-md-6" htmlFor="isoStandard">ISO Standard</label>
+            <label className="col-form-label col-md-6">ISO Standard</label>
             <div className="d-flex">
                 <div className="form-check mx-3 p-0">
                     <input 
                         className="form-check-input" 
                         type="radio" 
-                        id="isoStandard"  
+                        id="isoStandard1"  
                         name="isoStandard" 
                         value="Yes" 
                         checked={dataMap.isoStandard === "Yes"}  
                         onChange={handleChange}
                     />
-                    <label className="form-check-label pt-1" htmlFor="isoStandard">Yes</label>
+                    <label className="form-check-label pt-1" htmlFor="isoStandard1">Yes</label>
                 </div>
 
                 <div className="form-check mx-3 p-0">
                     <input 
                         className="form-check-input" 
                         type="radio" 
-                        id="isoStandard" 
+                        id="isoStandard2" 
                         name="isoStandard" 
                         value="No" 
                         checked={dataMap.isoStandard === "No"} 
                         onChange={handleChange}
                     />
-                    <label className="form-check-label pt-1" htmlFor="isoStandard">No</label>
+                    <label className="form-check-label pt-1" htmlFor="isoStandard2">No</label>
                 </div>
             </div>
         </div>
@@ -117,7 +116,7 @@ const SupplierAnalysisTab = ({dataMap, handleChange, validateDataType}) => {
     <div className="row">
         {/* CAR 145/DGCA Approval Section */}
         <div className="col-md-6 d-flex">
-            <label className="col-form-label col-md-6" htmlFor="carDgcaApproval">
+            <label className="col-form-label col-md-6" >
                 Having CAR 145/DGCA Approval
             </label>
             <div className="d-flex">

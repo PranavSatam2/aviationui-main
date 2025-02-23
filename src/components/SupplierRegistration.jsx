@@ -4,9 +4,9 @@ import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 
 import GeneralTab from "./tabs/supplier_registration/GeneralTab";
-import IncomingInspectionTab from "./tabs/supplier_registration/IncomingInspectionTab";
 import SupplierAnalysisTab from "./tabs/supplier_registration/SupplierAnalysisTab";
 import QualityProcessTab from "./tabs/supplier_registration/QualityProcessTab";
+import IncomingInspectionTab from "./tabs/supplier_registration/IncomingInspectionTab";
 import DocAndProcControl from "./tabs/supplier_registration/DocAndProcControl";
 import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
 import { createSupplier, updateSupplier } from "../services/db_manager";
@@ -128,7 +128,7 @@ const SupplierRegistration = () =>
 
     const [dataMap, setDataMap]         = useState(formVariavles)
     const location                      = useLocation(); 
-    const { supplierId, supplierData }  = location.state || {};  // Access the state passed through navigate
+    const { supplierId, supplierData }  = location.state || {};  
     const [invalidFeedback, setInvalidFeedback] = useState('d-none text-danger ')
 
     // ################################## HOOK-FUNCTION ###########################
@@ -278,13 +278,13 @@ const SupplierRegistration = () =>
 
             {/* Content heading */}
             <div className="col-md-6">
-                <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-4">
+                <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-2">
                     <h5 className="h5 mx-3 mb-0 text-gray-800">Supplier Registration</h5>
                 </div>
             </div>
 
             {/* Content Body */}
-            <div className="card border border-dark shadow mx-4 my-4 p-2" style={{height : '530px'}}>
+            <div className="card border border-dark shadow mx-4 my-2 p-2" style={{height : '540px'}}>
               <div className="col-md-12">
                 <ul className="nav nav-tabs" id="myTabs" role="tablist">
                     <li className="nav-item" role="presentation">
@@ -306,7 +306,7 @@ const SupplierRegistration = () =>
                         <a className="nav-link" id="Proc&Other-tab" data-bs-toggle="tab" href="#Proc&Other" role="tab" aria-controls="Proc&Other" aria-selected="false">Measuring Equipment & Other</a>
                     </li>
                 </ul>
-                <div className="tab-content mt-0 border" id="myTabsContent" style={{height : '440px'}}>
+                <div className="tab-content mt-0 border" id="myTabsContent" style={{height : '445px'}}>
                     <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">    <GeneralTab             dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">          <SupplierAnalysisTab    dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
                     <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">          <QualityProcessTab      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
