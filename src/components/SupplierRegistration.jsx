@@ -107,7 +107,7 @@ const SupplierRegistration = () =>
 
         let flds = isAllFldValidated()
         
-        if ( flds !== '' )
+        if ( !flds)
         {
             setInvalidFeedback('text-danger col-md-4')
             return
@@ -198,6 +198,14 @@ const SupplierRegistration = () =>
             }
         }
 
+        let textFlds = document.querySelectorAll('.is-invalid')
+
+        debugger
+        if (textFlds.length >= 1)
+        {
+            isAllFldMandatory = false
+        }
+
         if (!isAllFldMandatory)
         {   
             setInvalidFeedback('text-danger col-md-4')
@@ -208,7 +216,7 @@ const SupplierRegistration = () =>
             setInvalidFeedback('d-none text-danger col-md-4')
         }
         
-        return flds
+        return isAllFldMandatory
     }
 
 
@@ -219,22 +227,21 @@ const SupplierRegistration = () =>
     // This function validate the dataType
     const validateDataType = (event, dataType) => 
     {
-        document.getElementById('')
         let value = event.target.value
         if (dataType === 'A') 
         {
             value = value.replace(/[^a-zA-Z0-9 ]/g, '');
-            event.target.classList('is-valid')
+            event.target.classList.add('is-valid')
         } 
         else if (dataType === 'N') 
         {
             value = value.replace(/[^0-9]/g, '');
-            event.target.classList('is-valid')
+            event.target.classList.add('is-valid')
         } 
         else if (dataType === 'ANS') 
         {
             value = value.replace(/[^a-zA-Z0-9,. ]/g, '');
-            event.target.classList('is-valid')
+            event.target.classList.add('is-valid')
         }
     
         event.target.value = value
