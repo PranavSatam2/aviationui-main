@@ -19,7 +19,7 @@ const SupplierRegistration = () =>
 
     const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
     let formVariavles = {supplierName           : '',  
-        formId               : '',     
+        formId                : '',     
         phoneNumber           : '',       
         faxNum                : '',       
         email                 : '',       
@@ -94,7 +94,6 @@ const SupplierRegistration = () =>
     {
         if (action == 'clear')
         {
-            debugger
             let keys = Object.keys(formVariavles)
             keys.forEach((key) =>
             {
@@ -117,7 +116,6 @@ const SupplierRegistration = () =>
             setInvalidFeedback('text-danger d-none col-md-4')
         }
 
-        debugger
         if ( supplierId === '' || supplierId == undefined )
         {
             setDataMap(formVariavles)
@@ -138,7 +136,7 @@ const SupplierRegistration = () =>
                 setDataMap(response.data)
                 setInvalidFeedbackMsg(msg.dataSaved)
                 setInvalidFeedback('text-success col-md-4')
-                // window.location.reload();
+                window.location.reload();
             }
         }
     }
@@ -191,7 +189,6 @@ const SupplierRegistration = () =>
                 }
                 else
                 {   
-                    debugger
                     flds += `${key},`
                     isAllFldMandatory = false
                 }
@@ -200,7 +197,6 @@ const SupplierRegistration = () =>
 
         let textFlds = document.querySelectorAll('.is-invalid')
 
-        debugger
         if (textFlds.length >= 1)
         {
             isAllFldMandatory = false

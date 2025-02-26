@@ -52,12 +52,12 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             <input 
                                 className="col-md-8 form-control" 
                                 type="text" 
-                                name="formNum" 
-                                id="formNum" 
+                                name="formId" 
+                                id="formId" 
                                 placeholder="Form Number" 
                                 value={dataMap.formId } 
                                 onChange={handleChange} 
-                                onInput={(event) => {validateDataType(event, 'ANS'); validateLen(event, 0, 10);}}/>
+                                onInput={(event) => {validateDataType(event, 'ANS'); validateLen(event, 1, 10);}}/>
                         </div>
                     </div>
             </div>
@@ -188,7 +188,7 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             placeholder="Quality Manager Number"
                             value={dataMap.qualityManagerPhoneNumber} 
                             onChange={handleChange} 
-                            onInput={(event) => {validateDataType(event, 'N');validateLen(event, 0, 10);}}
+                            onInput={(event) => {validateDataType(event, 'N');validateLen(event, 10, 10);}}
                         />
                     </div>
                 </div>

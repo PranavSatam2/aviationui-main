@@ -72,7 +72,7 @@ const ViewSupplierRegis = () => {
                 {/* Content Body */}
                 <div className="card border border-dark shadow mx-4 my-4 p-2" style={{ height: '540px' }}>
                     <div className="col-md-12">
-                        <div className="table-responsive overflow-auto px-0 mt-4" style={{width : '100%'}}>
+                        <div className="table-responsive px-0 mt-4" style={{width : '100%'}}>
                             <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed" }}>
                                 <thead className="position-sticky sticky-top bg-light">
                                     <tr>
@@ -92,7 +92,7 @@ const ViewSupplierRegis = () => {
                                     <th>Action</th>
                                  </tr>
                                 </thead>
-                                <tbody className="overflow-auto w-100">
+                                <tbody className="overflow-auto ">
                                     {tableData && tableData.length > 0 ? tableData.map((supplier) => (
                                         <tr key={supplier.formId}>
                                             <td style={{maxWidth : '50px',  overflowX : "auto", padding : '2px'}}><div style={{whiteSpace : 'nowrap' , overflowX : 'auto', color : 'black', padding : '2px'}}>{supplier.formId}</div></td>
@@ -113,6 +113,8 @@ const ViewSupplierRegis = () => {
                                                 <span className="mx-1 text-primary" onClick={() => editSelectedElement(`${supplier.formId}`)}><i className="fa-solid fa-pen-to-square"></i></span>
                                             </td>
                                         </tr>
+
+                                        
                                     )) : (
                                         <tr>
                                             <td colSpan="14" className="text-center">No data available</td>
