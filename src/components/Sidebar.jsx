@@ -84,6 +84,23 @@ const Sidebar = () => {
             </ul>
           </div>
         </li>
+
+           {/* Material Note  */}
+       <li className="mb-4">
+          <a
+            className="mx-2 mb-2 btn-toggle align-items-center rounded text-white mb-3 font-weight-bold text-decoration-none"
+            onClick={() => toggleCollapse('MaterialNote')}
+            aria-expanded={collapseState.MaterialNote ? 'true' : 'false'}
+          >
+            Material Note
+          </a>
+          <div className={`collapse ${collapseState.MaterialNote ? 'show' : ''} bg-white rounded border mt-2`} id="MaterialNote-collapse">
+            <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small p-3">
+              <li className="mb-2"><a href="materialPage" className="rounded mb-4 text-dark text-decoration-none">Add MaterialNote</a></li>
+              <li className="mb-2"><a href="viewmaterialPage" className="rounded mb-4 text-dark text-decoration-none">View MaterialNote</a></li>
+            </ul>
+          </div>
+        </li>
       </ul>
     </div>
   );

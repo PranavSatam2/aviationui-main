@@ -6,6 +6,7 @@ import { REST_API_BASE_URL } from "./base_services";
 let STORE_URL       = REST_API_BASE_URL + "/storeAcceptance"
 let SUPPLIER_URL    = REST_API_BASE_URL + "/api/supplier"
 let PRODUCT_URL     = REST_API_BASE_URL + "/api/product"
+let MATERIAL_URL    = REST_API_BASE_URL  + "/api/mrn"
 
 
 
@@ -57,8 +58,15 @@ export const deleteProduct = (productId) => {
 export const updateProduct = (ProductId, Product) => axios.put(`${PRODUCT_URL}/${ProductId}`, Product)
 export const getProductDetail = (ProductId) => axios.get(`${PRODUCT_URL}/${ProductId}`)
 
-
-
+// ######################### MATERIAL #########################
+export const addMaterialNote = (Material) => axios.post(`${MATERIAL_URL}`, Material);
+export const listAllMaterials = () =>  axios.get(`${MATERIAL_URL}`);
+export const deleteMaterial = (materialId) => {
+  console.log(`Deleting material with ID: ${materialId}`); // Log for debugging
+  return axios.delete(`${MATERIAL_URL}/${materialId}`);
+}
+export const updateMaterial = (MaterialId, Material) => axios.put(`${MATERIAL_URL}/${MaterialId}`, Material)
+export const getMaterialDetail = (MaterialId) => axios.get(`${MATERIAL_URL}/${MaterialId}`)
 // ######################### LOGIN #####################
 
 let login_API = REST_API_BASE_URL + "/login"
