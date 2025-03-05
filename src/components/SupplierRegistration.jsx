@@ -271,69 +271,317 @@ const SupplierRegistration = () =>
     }
        
 
-    // ############################### RETURN-COMPONENT #############################
+    // ############################### RETURN-COMPONENT ############################
     return (
-    <div className="wrapper ">
-        <Sidebar/>
-      
-      <div className="content">
-        <Header />
-          {/* conetnt Begin*/}
-
-            {/* Content heading */}
-            <div className="col-md-6">
-                <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-2">
-                    <h5 className="h5 mx-3 mb-0 text-gray-800">Supplier Registration</h5>
-                </div>
+        <div className="wrapper" style={{ display: 'flex', width: '100%', minHeight: '100vh' }}>
+          <Sidebar />
+          
+          <div className="content" style={{ 
+            flex: '1',
+            marginLeft: '280px', // Match sidebar width
+            backgroundColor: '#f0f6ff' // Light blue background
+          }}>
+            <Header />
+            
+            {/* Title Header */}
+            <div className="d-flex align-items-center px-4 py-3" style={{ 
+              background: 'linear-gradient(to right, #1B74E4, #0D63CF)', 
+              color: 'white',
+              borderBottom: '1px solid #0b5ed7'
+            }}>
+              <div>
+                <h5 className="fw-semibold mb-1">Supplier Registration</h5>
+                <p className="mb-0 opacity-80" style={{ fontSize: '14px' }}>Register and manage supplier information</p>
+              </div>
             </div>
-
-            {/* Content Body */}
-            <div className="card border border-dark shadow mx-4 my-2 p-2" style={{height : '540px'}}>
-              <div className="col-md-12">
-                <ul className="nav nav-tabs" id="myTabs" role="tablist">
+            
+            {/* Main Content Area */}
+            <div className="main-content-area p-4">
+              {/* Content Body */}
+              <div className="card border-0 shadow-sm" style={{ 
+                borderRadius: '10px', 
+                overflow: 'hidden',
+                borderTop: '3px solid #1B74E4', // Blue accent top border
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+              }}>
+                <div className="card-body p-0">
+                  <ul className="nav nav-tabs" id="myTabs" role="tablist" style={{
+                    backgroundColor: '#e0ecff', // Light blue tab background
+                    padding: '12px 16px 0',
+                    border: 'none',
+                    borderBottom: '1px solid #c9dcff' // Blue border
+                  }}>
                     <li className="nav-item" role="presentation">
-                        <a className="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">General</a>
+                      <a 
+                        className="nav-link active px-4 py-2" 
+                        id="home-tab" 
+                        data-bs-toggle="tab" 
+                        href="#home" 
+                        role="tab"
+                        style={{ 
+                          fontWeight: 500,
+                          borderTopLeftRadius: '8px',
+                          borderTopRightRadius: '8px',
+                          border: '1px solid transparent',
+                          backgroundColor: '#fff',
+                          color: '#1B74E4', // Blue text for active tab
+                          borderBottom: '2px solid #1B74E4' // Blue indicator for active tab
+                        }}
+                      >
+                        General
+                      </a>
                     </li>
                     <li className="nav-item" role="presentation">
-                        <a className="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Quality Analysis</a>
+                      <a 
+                        className="nav-link px-4 py-2" 
+                        id="profile-tab" 
+                        data-bs-toggle="tab" 
+                        href="#profile" 
+                        role="tab"
+                        style={{ 
+                          fontWeight: 500,
+                          borderTopLeftRadius: '8px',
+                          borderTopRightRadius: '8px',
+                          color: '#495057',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(27, 116, 228, 0.1)';
+                          e.currentTarget.style.color = '#1B74E4';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = '';
+                          e.currentTarget.style.color = '#495057';
+                        }}
+                      >
+                        Quality Analysis
+                      </a>
                     </li>
                     <li className="nav-item" role="presentation">
-                        <a className="nav-link" id="contact-tab" data-bs-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Quality Process</a>
+                      <a 
+                        className="nav-link px-4 py-2" 
+                        id="contact-tab" 
+                        data-bs-toggle="tab" 
+                        href="#contact" 
+                        role="tab"
+                        style={{ 
+                          fontWeight: 500,
+                          borderTopLeftRadius: '8px',
+                          borderTopRightRadius: '8px',
+                          color: '#495057',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(27, 116, 228, 0.1)';
+                          e.currentTarget.style.color = '#1B74E4';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = '';
+                          e.currentTarget.style.color = '#495057';
+                        }}
+                      >
+                        Quality Process
+                      </a>
                     </li>
                     <li className="nav-item" role="presentation">
-                        <a className="nav-link" id="inspection-tab" data-bs-toggle="tab" href="#inspection" role="tab" aria-controls="inspection" aria-selected="true">Incoming Inspection</a>
+                      <a 
+                        className="nav-link px-4 py-2" 
+                        id="inspection-tab" 
+                        data-bs-toggle="tab" 
+                        href="#inspection" 
+                        role="tab"
+                        style={{ 
+                          fontWeight: 500,
+                          borderTopLeftRadius: '8px',
+                          borderTopRightRadius: '8px',
+                          color: '#495057',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(27, 116, 228, 0.1)';
+                          e.currentTarget.style.color = '#1B74E4';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = '';
+                          e.currentTarget.style.color = '#495057';
+                        }}
+                      >
+                        Incoming Inspection
+                      </a>
                     </li>
                     <li className="nav-item" role="presentation">
-                        <a className="nav-link" id="Doc&Proc-tab" data-bs-toggle="tab" href="#Doc&Proc" role="tab" aria-controls="Doc&Proc" aria-selected="false">Process / Document / Procurement Control</a>
+                      <a 
+                        className="nav-link px-4 py-2" 
+                        id="Doc&Proc-tab" 
+                        data-bs-toggle="tab" 
+                        href="#Doc&Proc" 
+                        role="tab"
+                        style={{ 
+                          fontWeight: 500,
+                          borderTopLeftRadius: '8px',
+                          borderTopRightRadius: '8px',
+                          color: '#495057',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(27, 116, 228, 0.1)';
+                          e.currentTarget.style.color = '#1B74E4';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = '';
+                          e.currentTarget.style.color = '#495057';
+                        }}
+                      >
+                        Process/Document Control
+                      </a>
                     </li>
                     <li className="nav-item" role="presentation">
-                        <a className="nav-link" id="Proc&Other-tab" data-bs-toggle="tab" href="#Proc&Other" role="tab" aria-controls="Proc&Other" aria-selected="false">Measuring Equipment & Other</a>
+                      <a 
+                        className="nav-link px-4 py-2" 
+                        id="Proc&Other-tab" 
+                        data-bs-toggle="tab" 
+                        href="#Proc&Other" 
+                        role="tab"
+                        style={{ 
+                          fontWeight: 500,
+                          borderTopLeftRadius: '8px',
+                          borderTopRightRadius: '8px',
+                          color: '#495057',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(27, 116, 228, 0.1)';
+                          e.currentTarget.style.color = '#1B74E4';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = '';
+                          e.currentTarget.style.color = '#495057';
+                        }}
+                      >
+                        Equipment & Other
+                      </a>
                     </li>
-                </ul>
-                <div className="tab-content mt-0 border" id="myTabsContent" style={{height : '445px'}}>
-                    <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">    <GeneralTab             dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
-                    <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">          <SupplierAnalysisTab    dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
-                    <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">          <QualityProcessTab      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
-                    <div className="tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection-tab">    <IncomingInspectionTab  dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
-                    <div className="tab-pane fade" id="Doc&Proc" role="tabpanel" aria-labelledby="Doc&Proc-tab">        <DocAndProcControl      dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen}/></div>
-                    <div className="tab-pane fade" id="Proc&Other" role="tabpanel" aria-labelledby="Proc&Other-tab">    <MaterialAndOther       dataMap= {dataMap} handleChange={handleChange} validateDataType = {validateDataType} validateLen = {validateLen} actionPerformed={actionPerformed}/></div>
-                </div>
-                <div  className="mt-3 col-md-12 d-flex justify-content-end">
-                    <p className={invalidFeedback}>{invalidFeedbackMsg}</p>
-
-                    <div className="col-md-8 text-right align-items-end">
-                        <button type="button" className="btn btn-warning mx-2" onClick={() => actionPerformed('clear')}>Clear</button>
-                        <button type="button" className="btn btn-success mx-2" onClick={() => actionPerformed('submit')}>Submit</button>
+                  </ul>
+                  
+                  <div className="tab-content border-0" id="myTabsContent" style={{ 
+                    minHeight: '450px',
+                    padding: '24px',
+                    backgroundColor: 'white'
+                  }}>
+                    <div className="tab-pane fade show active" id="home" role="tabpanel">
+                      <div className="row mb-4">
+                        <div className="col-12 mb-3">
+                          <h6 className="text-primary mb-3" style={{ color: '#1B74E4', fontWeight: '600' }}>Supplier Information</h6>
+                          <div style={{ height: '1px', backgroundColor: '#e0ecff', marginBottom: '15px' }}></div>
+                        </div>
+                      </div>
+                      <GeneralTab dataMap={dataMap} handleChange={handleChange} validateDataType={validateDataType} validateLen={validateLen} />
                     </div>
+                    <div className="tab-pane fade" id="profile" role="tabpanel">
+                      <div className="row mb-4">
+                        <div className="col-12 mb-3">
+                          <h6 className="text-primary mb-3" style={{ color: '#1B74E4', fontWeight: '600' }}>Quality Analysis</h6>
+                          <div style={{ height: '1px', backgroundColor: '#e0ecff', marginBottom: '15px' }}></div>
+                        </div>
+                      </div>
+                      <SupplierAnalysisTab dataMap={dataMap} handleChange={handleChange} validateDataType={validateDataType} validateLen={validateLen} />
+                    </div>
+                    <div className="tab-pane fade" id="contact" role="tabpanel">
+                      <div className="row mb-4">
+                        <div className="col-12 mb-3">
+                          <h6 className="text-primary mb-3" style={{ color: '#1B74E4', fontWeight: '600' }}>Quality Process</h6>
+                          <div style={{ height: '1px', backgroundColor: '#e0ecff', marginBottom: '15px' }}></div>
+                        </div>
+                      </div>
+                      <QualityProcessTab dataMap={dataMap} handleChange={handleChange} validateDataType={validateDataType} validateLen={validateLen} />
+                    </div>
+                    <div className="tab-pane fade" id="inspection" role="tabpanel">
+                      <div className="row mb-4">
+                        <div className="col-12 mb-3">
+                          <h6 className="text-primary mb-3" style={{ color: '#1B74E4', fontWeight: '600' }}>Incoming Inspection</h6>
+                          <div style={{ height: '1px', backgroundColor: '#e0ecff', marginBottom: '15px' }}></div>
+                        </div>
+                      </div>
+                      <IncomingInspectionTab dataMap={dataMap} handleChange={handleChange} validateDataType={validateDataType} validateLen={validateLen} />
+                    </div>
+                    <div className="tab-pane fade" id="Doc&Proc" role="tabpanel">
+                      <div className="row mb-4">
+                        <div className="col-12 mb-3">
+                          <h6 className="text-primary mb-3" style={{ color: '#1B74E4', fontWeight: '600' }}>Process/Document Control</h6>
+                          <div style={{ height: '1px', backgroundColor: '#e0ecff', marginBottom: '15px' }}></div>
+                        </div>
+                      </div>
+                      <DocAndProcControl dataMap={dataMap} handleChange={handleChange} validateDataType={validateDataType} validateLen={validateLen} />
+                    </div>
+                    <div className="tab-pane fade" id="Proc&Other" role="tabpanel">
+                      <div className="row mb-4">
+                        <div className="col-12 mb-3">
+                          <h6 className="text-primary mb-3" style={{ color: '#1B74E4', fontWeight: '600' }}>Equipment & Other</h6>
+                          <div style={{ height: '1px', backgroundColor: '#e0ecff', marginBottom: '15px' }}></div>
+                        </div>
+                      </div>
+                      <MaterialAndOther dataMap={dataMap} handleChange={handleChange} validateDataType={validateDataType} validateLen={validateLen} actionPerformed={actionPerformed} />
+                    </div>
+                  </div>
+                  
+                  <div className="d-flex justify-content-between align-items-center p-4" style={{ 
+                    backgroundColor: '#e0ecff', // Light blue footer
+                    borderTop: '1px solid #c9dcff' // Blue border
+                  }}>
+                    <p className={`${invalidFeedback} mb-0`} style={{ color: '#dc3545' }}>{invalidFeedbackMsg}</p>
+                    
+                    <div className="d-flex" style={{ gap: '15px' }}>
+                      <button 
+                        type="button" 
+                        className="btn btn-outline-primary px-4 py-2" 
+                        onClick={() => actionPerformed('clear')}
+                        style={{
+                          borderRadius: '6px',
+                          borderColor: '#1B74E4',
+                          color: '#1B74E4',
+                          fontWeight: 500,
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(27, 116, 228, 0.1)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        Clear
+                      </button>
+                      <button 
+                        type="button" 
+                        className="btn btn-primary px-4 py-2" 
+                        onClick={() => actionPerformed('submit')}
+                        style={{
+                          borderRadius: '6px',
+                          backgroundColor: '#1B74E4',
+                          border: 'none',
+                          fontWeight: 500,
+                          boxShadow: '0 2px 5px rgba(27, 116, 228, 0.3)',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = '#0b5ed7';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = '#1B74E4';
+                        }}
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>          
-        {/* Content End */}
-      <Footer />
-      </div>
-      
-    </div>
-    )
+            </div>
+            
+            <Footer />
+          </div>
+        </div>
+      );
 }
 
 export default SupplierRegistration;

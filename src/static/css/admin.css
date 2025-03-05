@@ -283,3 +283,7 @@ td .scrollable-content {
 .nav-tabs .nav-link {
   color: #000; /* Optional: Set the default text color for inactive tabs */
 }
+
+.custom-icon-gap {
+  margin-right: 10px; /* Adjust the value as needed */
+}
