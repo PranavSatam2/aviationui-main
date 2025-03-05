@@ -1,4 +1,22 @@
 const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) => {
+
+    function validateMailId(event) 
+        {
+            const email = event.target.value;
+            const emailValidator = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            if (!emailValidator.test(email)) 
+            {
+                event.target.classList.add('is-invalid')
+                event.target.classList.remove('is-valid')
+            } 
+            else 
+            {
+                event.target.classList.remove('is-invalid')
+                event.target.classList.add('is-valid')
+            }
+        }
+
     return (
         <div className="m-2 p-2 mt-2">
             {/* Supplier/Sub-Contractor Details */}
@@ -14,10 +32,10 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="text" 
                             name="supplierName" 
                             id="supplierName" 
-                            placeholder="Full Name" 
+                            placeholder="Supplier/Sub-Contractor Name" 
                             value={dataMap.supplierName} 
                             onChange={handleChange} 
-                            onInput={(event) => { validateDataType(event, 'A'); validateLen(event, 0, 100); }} 
+                            onInput={(event) => { validateDataType(event, 'A'); validateLen(event, 0, 50); }} 
                         />
                     </div>
                 </div>
@@ -37,9 +55,9 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                                 name="formNum" 
                                 id="formNum" 
                                 placeholder="Form Number" 
-                                value={dataMap.formNum } 
+                                value={dataMap.formId } 
                                 onChange={handleChange} 
-                                onInput={(event) => {validateDataType(event, 'AN');validateLen(event, 0, 10);}}/>
+                                onInput={(event) => {validateDataType(event, 'ANS'); validateLen(event, 0, 10);}}/>
                         </div>
                     </div>
             </div>
@@ -59,6 +77,7 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="number" 
                             name="phoneNumber" 
                             id="phoneNumber" 
+                            placeholder="Phone Number"
                             value={dataMap.phoneNumber} 
                             onChange={handleChange} 
                             onInput={(event) => { validateDataType(event, 'N'); validateLen(event, 10, 10); }} 
@@ -68,16 +87,13 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                 <div className="col-md-6">
                     <div className="row">
                         <label className="col-md-4 pt-2" htmlFor="faxNum">Fax Number
-                            <span 
-                                className="text-danger mx-1" 
-                                style={{fontSize : '17px'}}>*
-                            </span>
                         </label>
                         <input 
                             className="col-md-8 form-control" 
                             type="number" 
                             name="faxNum" 
                             id="faxNum" 
+                            placeholder="Fax Number"
                             value={dataMap.faxNum} 
                             onChange={handleChange} 
                         />
@@ -100,9 +116,11 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="email" 
                             name="email" 
                             id="email" 
-                            required 
+                            placeholder="Email ID" 
                             value={dataMap.email} 
                             onChange={handleChange} 
+                            onInput={(event) => {validateMailId(event);}}
+                            required
                         />
                     </div>
                 </div>
@@ -119,8 +137,10 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="text" 
                             name="address" 
                             id="address" 
+                            placeholder="Address"
                             value={dataMap.address} 
                             onChange={handleChange} 
+                            onInput={(event) => {validateLen(event, 1, 150);}}
                         />
                     </div>
                 </div>
@@ -145,8 +165,10 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="text" 
                             name="qualityManagerName" 
                             id="qualityManagerName" 
+                            placeholder="Quality Manager Name"
                             value={dataMap.qualityManagerName} 
                             onChange={handleChange} 
+                            onInput={(event) => {validateDataType(event, 'A');validateLen(event, 0, 30);}}
                         />
                     </div>
                 </div>
@@ -163,8 +185,10 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="number" 
                             name="qualityManagerPhoneNumber" 
                             id="qualityManagerPhoneNumber" 
+                            placeholder="Quality Manager Number"
                             value={dataMap.qualityManagerPhoneNumber} 
                             onChange={handleChange} 
+                            onInput={(event) => {validateDataType(event, 'N');validateLen(event, 0, 10);}}
                         />
                     </div>
                 </div>
@@ -183,8 +207,10 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="email" 
                             name="qualityManagerEmailId"
                             id="qualityManagerEmailId"
+                            placeholder="Quality Manager Email"
                             value={dataMap.qualityManagerEmailId} 
                             onChange={handleChange} 
+                            onInput={(event) => {validateMailId(event);}}
                         />
                     </div>
                 </div>
@@ -209,8 +235,10 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                              type="text" 
                             name="saleRepresentativeName" 
                             id="saleRepresentativeName" 
+                            placeholder="Sales Representative Name"
                             value={dataMap.saleRepresentativeName} 
                             onChange={handleChange} 
+                            onInput={(event) => {validateDataType(event, 'A');validateLen(event, 0, 100);}}
                             />
                         </div>
                         </div>
@@ -227,9 +255,11 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="email" 
                             name="saleRepresentativeEmailId" 
                             id="saleRepresentativeEmailId" 
-                            required 
+                            placeholder="Sales Representative Email"
                             value={dataMap.saleRepresentativeEmailId} 
                             onChange={handleChange} 
+                            onInput={(event) => {validateMailId(event);}}
+                            required 
                         />
                     </div>
                 </div>
@@ -248,8 +278,10 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                             type="number" 
                             name="saleRepresentativePhoneNumber" 
                             id="saleRepresentativePhoneNumber" 
+                            placeholder="Sales Representative Number"
                             value={dataMap.saleRepresentativePhoneNumber} 
                             onChange={handleChange} 
+                            onInput={(event) => { validateDataType(event, 'N'); validateLen(event, 10, 10); }} 
                         />
                     </div>
                 </div>

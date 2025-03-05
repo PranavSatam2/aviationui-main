@@ -11,6 +11,9 @@ import SupplierRegistartion from "./components/SupplierRegistration";
 import ProductList from "./components/ProductList";
 import ViewSupplierRegis from "./components/ViewSupplierRegis";
 import ViewStoreAcc from "./components/ViewStoreAcc";
+import MaterialReceiptNoteForm from './components/AddMaterialNote';
+import ViewMaterialPage from './components/ViewMaterialNotePage';
+
 const App = () => {
   return (
     <Router>
@@ -27,6 +30,8 @@ const App = () => {
         <Route path="/viewstoreAcceptance" element={<ViewStoreAcc />} />
         <Route path="/SupplierRegistration" element={<SupplierRegistartion />} />
         <Route path="/ViewSupplierRegistration" element={<ViewSupplierRegis />} />
+        <Route path="/materialPage" element={<MaterialReceiptNoteForm />} />
+        <Route path="/viewmaterialPage" element={<ViewMaterialPage />} />
       </Routes>
     </Router>
   );
