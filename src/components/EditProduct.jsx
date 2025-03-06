@@ -255,7 +255,7 @@ const EditProduct = () => {
                         className="form-control w-100"
                         type="date"
                         name="date"
-                        value={form.registration_date}
+                        value={form.date}
                         onChange={handleChange}
                         required
                       />

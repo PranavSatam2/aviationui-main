@@ -1,31 +1,59 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Header from "./Header";
+import { useEffect, useRef, useState } from "react";
 import Footer from "./Footer";
+import Header from "./Header";
 import Sidebar from "./Sidebar";
+import { deleteMaterial, deleteProduct, getMaterialDetail, getProductDetail, listAllProduct } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
-import { deleteProduct, listAllProduct } from "../services/db_manager"; // Assuming these functions are defined in your `db_manager`
+import $ from 'jquery';
+import 'datatables.net';
 
 const ProductList = () => {
+  const [tableData, setTableData] = useState([]);
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
+  const tableRef = useRef(null);
+  const dataTableInstance = useRef(null);
 
   useEffect(() => {
-    // Fetch all products when the component is mounted
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await listAllProduct(); // Fetch products from the database
-        setProducts(response.data); // Assuming response.data contains the list of products
+        const response = await listAllProduct();
+        console.log("API Response:", response);  // Debug log
+        setTableData(response.data || []);
+        //setTableData(response || []);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching materials", error);
       }
     };
-
-    fetchProducts();
+    fetchData();
   }, []);
 
+  useEffect(() => {
+    console.log("Current table data:", tableData);  // Debug log
+
+    if (tableData.length > 0) {
+      if (dataTableInstance.current) {
+        console.log("Destroying existing DataTable");
+        dataTableInstance.current.destroy();
+      }
+
+      setTimeout(() => {
+        if (tableRef.current) {
+          console.log("Initializing DataTable");
+          dataTableInstance.current = $(tableRef.current).DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            responsive: true,
+            destroy: true
+          });
+        } else {
+          console.error("TableRef is null, DataTable cannot initialize.");
+        }
+      }, 100);  // Add slight delay to ensure table is in DOM
+    }
+  }, [tableData]);
+
   // Handle delete action
-  let productId = products.id;
   const handleDelete = async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
@@ -44,96 +72,107 @@ const ProductList = () => {
     }
   };
 
+
   const handleEdit = (productId) => {
     navigate(`/editProduct/${productId}`); // Navigate to the edit page with productId as URL param
   };
 
+  // const deleteSelectedElement = async (materialId) => {
+  //     if (window.confirm("Are you sure you want to delete this item?")) {
+  //         try {
+  //             await deleteMaterial(materialId);
+
+  //             // Directly filter out the deleted material from tableData
+  //             setTableData(prevData => prevData.filter(material => material.materialId !== materialId));
+
+  //         } catch (error) {
+  //             console.error("Failed to delete material", error);
+  //             alert("Failed to delete material. Please try again.");
+  //         }
+  //     }
+  // };
+
+  const editSelectedElement = async (productId) => {
+    try {
+      const response = await getProductDetail(productId);
+      const ProductData = response?.data;
+
+
+      if (ProductData) {
+        navigate('/EditProduct', { state: { productId, ProductData } });
+      }
+    } catch (error) {
+      console.error("Error fetching material details: ", error);
+    }
+  };
 
   return (
     <div className="wrapper">
       <Sidebar />
       <div className="content">
         <Header />
-        <div className="container-fluid">
-          <div className="row mx-1 card border border-dark shadow-lg py-2">
-            <div className="col-md-12">
-              <h5 className="text-center">Product List</h5>
-              {/* Table with responsive scrolling */}
-              <div className="table-responsive overflow-auto px-0">
-                <table
-                  id="dataTable"
-                  className="table border"
-                  style={{
-                    width: "100%",
-                    cellspacing: "0",
-                    tableLayout: "fixed",
-                    height: "275px", // Adjust the height as needed
-                  }}
-                >
-                  <thead className="position-sticky sticky-top bg-light">
-                    <tr>
-                      {/* <th style={{ width: "5%" }}>#</th> */}
-                      <th style={{ width: "3%" }}>ID</th>
-                      <th style={{ width: "9%" }}>Name</th>
-                      <th style={{ width: "15%" }}>Material Classification</th>
-                      <th style={{ width: "10%" }}>Description</th>
-                      <th style={{ width: "5%" }}>UOM</th>
-                      <th style={{ width: "10%" }}>OEM</th>
-                      <th style={{ width: "10%" }}>NHA</th>
-                      <th style={{ width: "10%" }}>CMM Reference Number</th>
-                      <th style={{ width: "15%" }}>Date</th>
-                      <th style={{ width: "10%" }}>Registered By</th>
-                      <th style={{ width: "15%" }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {products.length > 0 ? (
-                      products.map((product, index) => (
-                        <tr key={product.id || index}> {/* Fallback to index if product.id is undefined or not unique */}
-                          {/* <td>{index + 1}</td> */}
-                          <td>{product.productId}</td>
-                          <td>{product.productName}</td>
-                          <td>{product.materialClassification}</td>
-                          <td>{product.productDescription}</td>
-                          <td>{product.unitOfMeasurement}</td>
-                          <td>{product.oem}</td>
-                          <td>{product.nha}</td>
-                          <td>{product.cmmRef1}</td>
-                          <td>{product.registrationDate}</td>
-                          <td>{product.registeredBy}</td>
-                          <td>
-                            {/* Edit Button */}
-                            <button
-                              onClick={() => handleEdit(product.productId)} // Navigate when clicked
-                              className="btn btn-warning btn-sm mx-1"
-                            >
-                              <i className="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            {/* Delete Button */}
-                            <button
-                              onClick={() => handleDelete(product.productId)}
-                              className="btn btn-danger btn-sm mx-1"
-                            >
-                              <i className="fa-solid fa-trash"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="12" className="text-center">
-                          No products available.
+        <div className="col-md-6">
+          <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-4">
+            <h5 className="h5 mx-3 mb-0 text-gray-800">View Product</h5>
+          </div>
+        </div>
+
+        <div className="card border border-dark shadow mx-4 my-4 p-2" style={{ height: '500px' }}>
+          <div className="col-md-12">
+            <div className="table-responsive overflow-auto px-0 mt-4" style={{ width: '100%' }}>
+              <table ref={tableRef} className="table border" style={{ width: "100%", tableLayout: "fixed" }}>
+                <thead className="position-sticky sticky-top bg-light">
+                  <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Material Classification</th>
+                    <th>Description</th>
+                    <th>UOM</th>
+                    <th>OEM</th>
+                    <th>NHA</th>
+                    <th>CMM Reference Number</th>
+                    <th>Date</th>
+                    <th>Registered By</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.length > 0 ? (
+                    tableData.map((product) => (
+                      <tr key={product.productId}>
+                        <td>{product.productId}</td>
+                        <td>{product.productName}</td>
+                        <td>{product.materialClassification}</td>
+                        <td>{product.productDescription}</td>
+                        <td>{product.unitOfMeasurement}</td>
+                        <td>{product.oem}</td>
+                        <td>{product.nha}</td>
+                        <td>{product.cmmRef1}</td>
+                        <td>{product.registrationDate}</td>
+                        <td>{product.registeredBy}</td>
+                        <td>
+                          <span className="ms-1 text-danger" onClick={() => handleDelete(product.productId)}>
+                            <i className="fa-solid fa-trash"></i>
+                          </span>
+                          <span className="mx-1 text-primary" onClick={() => handleEdit(product.productId)}>
+                            <i className="fa-solid fa-pen-to-square"></i>
+                          </span>
                         </td>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="10" className="text-center">No data available</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
+
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 };

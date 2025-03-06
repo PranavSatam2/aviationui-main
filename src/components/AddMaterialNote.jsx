@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import Footer from './Footer';
-
-// Import only `addMaterialNote` service, since fetch is removed
 import { addMaterialNote } from "../services/db_manager";
 
 const MaterialReceiptNoteForm = () => {
@@ -20,6 +18,29 @@ const MaterialReceiptNoteForm = () => {
         qualityAcceptance: ''
     });
 
+    const [errors, setErrors] = useState({});
+
+    const validateForm = () => {
+        let newErrors = {};
+
+        // Numeric fields validation
+        if (!/^\d{1,15}$/.test(form.mrnNo)) newErrors.mrnNo = "MRN No must be a number (max 15 digits)";
+        if (!/^\d{1,20}$/.test(form.orderNumber)) newErrors.orderNumber = "Order Number must be a number (max 20 digits)";
+        if (!/^\d{1,20}$/.test(form.partNumber)) newErrors.partNumber = "Part Number must be a number (max 20 digits)";
+        if (!/^\d{1,10}$/.test(form.quantity)) newErrors.quantity = "Quantity must be a number (max 10 digits)";
+
+        // Alphanumeric fields validation
+        if (!/^[a-zA-Z0-9 ]{1,100}$/.test(form.supplierName)) newErrors.supplierName = "Supplier Name must contain only alphabet and number (max 100 characters)";
+        if (!/^[a-zA-Z0-9 ]{1,50}$/.test(form.challanNo)) newErrors.challanNo = "Challan No must be alphanumeric (max 50 characters)";
+        if (!/^[a-zA-Z0-9 ]{1,200}$/.test(form.partDescription)) newErrors.partDescription = "Part Description must be alphanumeric (max 200 characters)";
+
+        // Required field validation
+        if (!form.receiptDate) newErrors.receiptDate = "Receipt Date is required";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prevForm) => ({
@@ -30,6 +51,7 @@ const MaterialReceiptNoteForm = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
 
         try {
             await addMaterialNote(form);
@@ -52,9 +74,9 @@ const MaterialReceiptNoteForm = () => {
             partDescription: '',
             quantity: '',
             storeInchargeSign: '',
-            qualityAcceptance: '',
-            materialId:''
+            qualityAcceptance: ''
         });
+        setErrors({});
     };
 
     return (
@@ -67,79 +89,37 @@ const MaterialReceiptNoteForm = () => {
                     <h5 className="mx-3 mt-4">Material Receipt Note Form</h5>
                 </div>
 
-                <div className="card border border-dark shadow mx-4 my-4 p-2" style={{ height: 'auto' }}>
+                <div className="card border border-dark shadow mx-4 my-4 p-2" style={{ height: '397px' }}>
                     <form>
                         <div className="col-md-12">
                             <div className="row">
-                                {/* MRN No */}
-                                <div className="col-md-6 p-2">
-                                    <label>MRN No</label>
-                                    <input type="text" className="form-control" name="mrnNo" value={form.mrnNo} onChange={handleChange} />
-                                </div>
-
-                                {/* Supplier Name */}
-                                <div className="col-md-6 p-2">
-                                    <label>Supplier Name</label>
-                                    <input type="text" className="form-control" name="supplierName" value={form.supplierName} onChange={handleChange} />
-                                </div>
-
-                                {/* Order Number */}
-                                <div className="col-md-6 p-2">
-                                    <label>Order Number</label>
-                                    <input type="text" className="form-control" name="orderNumber" value={form.orderNumber} onChange={handleChange} />
-                                </div>
-
-                                {/* Challan No */}
-                                <div className="col-md-6 p-2">
-                                    <label>Challan No</label>
-                                    <input type="text" className="form-control" name="challanNo" value={form.challanNo} onChange={handleChange} />
-                                </div>
-
-                                {/* Receipt Date */}
-                                <div className="col-md-6 p-2">
-                                    <label>Receipt Date</label>
-                                    <input type="date" className="form-control" name="receiptDate" value={form.receiptDate} onChange={handleChange} />
-                                </div>
-
-                                {/* Part Number */}
-                                <div className="col-md-6 p-2">
-                                    <label>Part Number</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        name="partNumber"
-                                        value={form.partNumber}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-
-                                {/* Part Description */}
-                                <div className="col-md-6 p-2">
-                                    <label>Part Description</label>
-                                    <input type="text" className="form-control" name="partDescription" value={form.partDescription} onChange={handleChange} />
-                                </div>
-
-                                {/* Quantity */}
-                                <div className="col-md-6 p-2">
-                                    <label>Quantity</label>
-                                    <input type="number" className="form-control" name="quantity" value={form.quantity} onChange={handleChange} />
-                                </div>
-
-                                {/* Store Incharge Sign */}
-                                <div className="col-md-6 p-2">
-                                    <label>Store Incharge Sign</label>
-                                    <input type="text" className="form-control" name="storeInchargeSign" value={form.storeInchargeSign} onChange={handleChange} />
-                                </div>
-
-                                {/* Quality Acceptance */}
-                                <div className="col-md-6 p-2">
-                                    <label>Quality Acceptance</label>
-                                    <input type="text" className="form-control" name="qualityAcceptance" value={form.qualityAcceptance} onChange={handleChange} />
-                                </div>
+                                {[
+                                    { label: "MRN No", name: "mrnNo", type: "text" },
+                                    { label: "Supplier Name", name: "supplierName", type: "text" },
+                                    { label: "Order Number", name: "orderNumber", type: "number" },
+                                    { label: "Challan No", name: "challanNo", type: "text" },
+                                    { label: "Receipt Date", name: "receiptDate", type: "date" },
+                                    { label: "Part Number", name: "partNumber", type: "number" },
+                                    { label: "Part Description", name: "partDescription", type: "text" },
+                                    { label: "Quantity", name: "quantity", type: "number" },
+                                    { label: "Store Incharge Sign", name: "storeInchargeSign", type: "text" },
+                                    { label: "Quality Acceptance", name: "qualityAcceptance", type: "text" },
+                                ].map(({ label, name, type }) => (
+                                    <div className="col-md-6 p-2" key={name}>
+                                        <label>{label}</label>
+                                        <input
+                                            type={type}
+                                            className="form-control"
+                                            name={name}
+                                            value={form[name]}
+                                            onChange={handleChange}
+                                        />
+                                        {errors[name] && <span className="text-danger">{errors[name]}</span>}
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Save Button */}
                         <div className="col-md-12 text-right mt-3">
                             <button type="submit" className="btn btn-primary" onClick={handleSave}>
                                 Save

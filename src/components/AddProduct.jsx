@@ -171,7 +171,7 @@ const AddProduct = () => {
         </div>
         <div className="my-2 p-2">
           <div className="container-fluid">
-            <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '540px'}}>
+            <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '397px'}}>
               <div className="col-md-12">
                 <form onSubmit={handleSubmit} style={{height : '100%'}}>
                   <div className="col-md-12 p-2 d-flex">
