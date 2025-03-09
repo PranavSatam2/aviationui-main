@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { deleteMaterial, deleteProduct, getMaterialDetail, getProductDetail, listAllProduct } from "../services/db_manager";
+import { deleteProduct, getProductDetail, listAllProduct } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
 import 'datatables.net';
@@ -147,7 +147,7 @@ const ProductList = () => {
                         <td>{product.unitOfMeasurement}</td>
                         <td>{product.oem}</td>
                         <td>{product.nha}</td>
-                        <td>{product.cmmRef1}</td>
+                        <td>{product.cmmReferenceNumber}</td>
                         <td>{product.registrationDate}</td>
                         <td>{product.registeredBy}</td>
                         <td>

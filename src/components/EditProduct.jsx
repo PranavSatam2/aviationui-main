@@ -17,7 +17,7 @@ const EditProduct = () => {
     oem: "",
     nha: "",
     cmmReferenceNumber: "",
-    date: "",
+    registrationDate: "",
     registeredBy: "",
   });
 
@@ -255,7 +255,7 @@ const EditProduct = () => {
                         className="form-control w-100"
                         type="date"
                         name="date"
-                        value={form.date}
+                        value={form.registrationDate}
                         onChange={handleChange}
                         required
                       />
