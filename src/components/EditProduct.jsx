@@ -17,7 +17,7 @@ const EditProduct = () => {
     oem: "",
     nha: "",
     cmmReferenceNumber: "",
-    date: "",
+    registrationDate: "",
     registeredBy: "",
   });
 
@@ -130,28 +130,29 @@ const EditProduct = () => {
         {/* content Begin */}
         <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
-            <h5 className="h5 mx-4 mb-0 text-gray-800">Edit Product</h5>
+            <h5 className="h5 mx-4 mb-0 text-gray-800">Edit Products</h5>
           </div>
         </div>
         <div className="my-2 p-2">
           <div className="container-fluid">
-            <div className="row mx-1 card border border-dark shadow-lg py-2">
+            <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '397px'}}>
               <div className="col-md-12">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} style={{height : '100%'}}>
                   <div className="col-md-12 p-2 d-flex">
                     <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-5 mt-1">Product Name</label>
+                      <label className="col-md-4 mt-1">Product Name</label>
                       <input
                         className="form-control w-100"
                         type="text"
                         name="productName"
+                        onInput={(event) => {validateDataType(event,'A')}}
                         value={form.productName}
                         onChange={handleChange}
                         required
                       />
                     </div>
                     <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-5 mt-2">Material Classification</label>
+                      <label className="col-md-4 mt-2">Material Classification</label>
                       <select
                         className="form-control w-100"
                         name="materialClassification"
@@ -175,20 +176,24 @@ const EditProduct = () => {
                     </div>
                   </div>
 
+                  <hr className="mx-0 my-2 p-0 border" />
+
                   <div className="col-md-12 p-3 d-flex">
                     <label className="col-md-2 mt-2">Product Description</label>
                     <textarea
                       className="form-control w-100"
                       name="productDescription"
                       value={form.productDescription}
+                      onInput={(event) => {validateDataType(event,'A')}}
                       onChange={handleChange}
+                      style={{height : '70px'}}
                       required
                     ></textarea>
                   </div>
 
                   <div className="col-md-12 d-flex">
                     <div className="col-md-6 p-1 d-flex">
-                      <label className="col-md-6 mt-2">Unit of Measurement</label>
+                      <label className="col-md-4 mt-2">Unit of Measurement</label>
                       <select
                         className="form-control w-100"
                         name="unitOfMeasurement"
@@ -204,32 +209,34 @@ const EditProduct = () => {
                         <option value="KIT">KIT</option>
                         <option value="LTR">LTR</option>
                         <option value="SHT">SHT</option>
-                        <option value="Sq. ft">Sq. ft</option>
+                        <option value="Sq.ft">Sq.ft</option>
                         <option value="Sq.mtr">Sq.mtr</option>
                       </select>
                     </div>
 
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-3 mt-2">OEM</label>
-                      <textarea
-                        className="form-control w-100"
-                        type="text"
-                        name="oem"
-                        value={form.oem}
-                        onChange={handleChange}
-                        required
-                      />
+                    <div className="col-md-6 d-flex">
+                    <label className="col-md-4 mt-2">OEM</label>
+                    <input
+                      className="form-control w-100"
+                      type="text"
+                      name="oem"
+                      onInput={(event) => {validateDataType(event,'A')}}
+                      value={form.oem}
+                      onChange={handleChange}
+                      required
+                    />
                     </div>
                   </div>
 
                   <div className="col-md-12 d-flex">
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">NHA</label>
-                      <textarea
+                      <input
                         className="form-control w-100"
                         type="text"
                         name="nha"
                         value={form.nha}
+                        onInput={(event) => {validateDataType(event,'A')}}
                         onChange={handleChange}
                         required
                       />
@@ -241,6 +248,7 @@ const EditProduct = () => {
                         className="form-control w-100"
                         type="Number"
                         name="cmmReferenceNumber"
+                        onInput={(event) => {validateLen(event,1,12)}}
                         value={form.cmmReferenceNumber}
                         onChange={handleChange}
                         required
@@ -255,7 +263,7 @@ const EditProduct = () => {
                         className="form-control w-100"
                         type="date"
                         name="date"
-                        value={form.date}
+                        value={form.registrationDate}
                         onChange={handleChange}
                         required
                       />
@@ -268,23 +276,24 @@ const EditProduct = () => {
                         type="text"
                         name="registeredBy"
                         value={form.registeredBy}
+                        onInput={(event) => {validateDataType(event,'A')}}
                         onChange={handleChange}
                         required
                       />
                     </div>
                   </div>
 
-                  <div className="col-md-12 text-end m-1 p-4">
-                    <button type="submit" className="btn btn-primary">Save Changes</button>
+                  <div className="col-md-12 text-end m-1 p-4 text-right">
+                    <button type="submit" className="btn btn-primary">Edit Product</button>
                   </div>
                 </form>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div >
       <Footer />
-    </div>
+    </div >
   );
 };
 

@@ -14,7 +14,7 @@ const AddProduct = () => {
     oem: "",
     nha: "",
     cmmReferenceNumber: "",
-    date: "",
+    registrationDate: "",
     registeredBy: "",
   });
 
@@ -139,6 +139,7 @@ const AddProduct = () => {
       const response = await createProduct(form);
       console.log("Product added successfully:", response.data);
       alert("Product Added Successfully!");
+      location.reload();
 
       // Reset the form after successful submission
       setForm({
@@ -149,7 +150,7 @@ const AddProduct = () => {
         oem: "",
         nha: "",
         cmmReferenceNumber: "",
-        date: "",
+        registrationDate: "",
         registeredBy: "",
       });
     } catch (error) {
@@ -299,7 +300,7 @@ const AddProduct = () => {
                         className="form-control w-100"
                         type="date"
                         name="date"
-                        value={form.date}
+                        value={form.registrationDate}
                         onChange={handleChange}
                         required
                       />
