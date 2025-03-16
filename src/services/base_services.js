@@ -1,5 +1,5 @@
 // BASE URL of server
-export const REST_API_BASE_URL = "http://localhost:8082"
+export const REST_API_BASE_URL = "http://localhost:8080"
 
 
 // ############################## URL_SAMPLE ##########################
