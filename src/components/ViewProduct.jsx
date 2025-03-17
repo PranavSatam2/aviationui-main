@@ -126,7 +126,7 @@ const ViewProduct = () => {
                         <td>{product.oem}</td>
                         <td>{product.nha}</td>
                         <td>{product.cmmReferenceNumber}</td>
-                        <td>{product.date}</td>
+                        <td>{product.registrationDate}</td>
                         <td>{product.registeredBy}</td>
                       </tr>
                     ))}

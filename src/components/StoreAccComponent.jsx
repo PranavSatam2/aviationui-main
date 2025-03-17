@@ -9,7 +9,7 @@ import Footer from "./Footer";
 const StoreAccComponent = () =>
 {
     // Variable
-    const [form, setForm] = useState({partNum : '', description : '' , batch: '', supplier : '', quantity : '', dom : '', doe : '', dateOfRecipet : '', document : '', nameOfQualityInsp : '', signatureOfQualityInsp : ''})
+    const [form, setForm] = useState({partNum : '', description : '' , batch: '', condition: '', supplier : '', quantity : '', dom : '', doe : '', dateOfRecipet : '', document : '', nameOfQualityInsp : '', signatureOfQualityInsp : ''})
     const [dropdownItems, setDropdownItems] = useState([])
     const [listData, setListData] = useState('');
 

@@ -40,7 +40,7 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                     </div>
                 </div>
 
-                <div className="col-md-6 ">
+                {/* <div className="col-md-6 ">
                         <div className="row">
                             <label className="col-md-4 pt-2" 
                                 htmlFor="name">Form 
@@ -59,7 +59,7 @@ const GeneralTab = ({ dataMap, handleChange, validateDataType, validateLen }) =>
                                 onChange={handleChange} 
                                 onInput={(event) => {validateDataType(event, 'ANS'); validateLen(event, 0, 10);}}/>
                         </div>
-                    </div>
+                    </div> */}
             </div>
 
             <hr className="mx-0 my-2 p-0 border" />

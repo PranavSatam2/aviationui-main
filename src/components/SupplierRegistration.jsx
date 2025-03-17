@@ -19,7 +19,7 @@ const SupplierRegistration = () =>
 
     const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/
     let formVariavles = {supplierName           : '',  
-        formId               : '',     
+        // formId               : '',     
         phoneNumber           : '',       
         faxNum                : '',       
         email                 : '',       
