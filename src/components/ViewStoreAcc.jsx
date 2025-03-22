@@ -11,6 +11,7 @@ import MyModalComponent from "./partials/MyModalComponent";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { toast } from "react-toastify";
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 
 const ViewSupplierRegis = () => {
   // State
@@ -18,7 +19,7 @@ const ViewSupplierRegis = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("partNum");
+  const [sortField, setSortField] = useState("id");
   const [sortDirection, setSortDirection] = useState("asc");
   
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ const ViewSupplierRegis = () => {
         const response = await deleteStore(elementId);
         if (response) {
           setTableData((prevData) =>
-            prevData.filter((item) => item.partNum !== elementId)
+            prevData.filter((item) => item.id !== elementId)
           );
           toast.success("Item deleted successfully");
         }
@@ -139,6 +140,7 @@ const ViewSupplierRegis = () => {
 
   // Column definitions for the table
   const columns = [
+    {field: "id", label: "ID", width: "80px"},
     { field: "partNum", label: "Part Num", width: "80px" },
     { field: "description", label: "Description", width: "200px" },
     { field: "batch", label: "Batch" },
@@ -223,10 +225,10 @@ const ViewSupplierRegis = () => {
                 <tbody>
                   {currentItems.length > 0 ? (
                     currentItems.map((store) => (
-                      <tr key={store.partNum}>
+                      <tr key={store.id}>
                         {columns.map((column) => (
                           <td 
-                            key={`${store.partNum}-${column.field}`}
+                            key={`${store.id}-${column.field}`}
                             className="text-nowrap overflow-hidden text-truncate"
                             style={{ maxWidth: "150px" }}
                             title={store[column.field]}
@@ -237,14 +239,14 @@ const ViewSupplierRegis = () => {
                         <td style={{display: "flex",justifyContent:'space-evenly'}}>
                           <button
                             className="btn btn-sm btn-danger me-1"
-                            onClick={() => deleteSelectedElement(store.partNum)}
+                            onClick={() => deleteSelectedElement(store.id)}
                             title="Delete"
                           >
                             <i className="fa-solid fa-trash"></i>
                           </button>
                           <button
                             className="btn btn-sm btn-primary"
-                            onClick={() => editSelectedElement(store.partNum)}
+                            onClick={() => editSelectedElement(store.id)}
                             title="Edit"
                           >
                             <i className="fa-solid fa-pen-to-square"></i>
