@@ -4,173 +4,314 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { deleteProduct, getProductDetail, listAllProduct } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
-import $ from 'jquery';
-import 'datatables.net';
+import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import { toast } from "react-toastify";
 
 const ProductList = () => {
-  const [tableData, setTableData] = useState([]);
+  // State
+  const [tableData, setTableData] = useState([]); // Product data
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [sortField, setSortField] = useState("productId");
+  const [sortDirection, setSortDirection] = useState("asc");
+  
   const navigate = useNavigate();
-  const tableRef = useRef(null);
-  const dataTableInstance = useRef(null);
 
+  // Fetching data when the component is mounted
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await listAllProduct();
-        console.log("API Response:", response);  // Debug log
-        setTableData(response.data || []);
-        //setTableData(response || []);
+        if (response && response.data) {
+          setTableData(response.data); // Update state with response data
+        }
       } catch (error) {
-        console.error("Error fetching materials", error);
+        console.error("Error fetching products", error);
+        toast.error("Failed to load product data");
       }
     };
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log("Current table data:", tableData);  // Debug log
-
-    if (tableData.length > 0) {
-      if (dataTableInstance.current) {
-        console.log("Destroying existing DataTable");
-        dataTableInstance.current.destroy();
-      }
-
-      setTimeout(() => {
-        if (tableRef.current) {
-          console.log("Initializing DataTable");
-          dataTableInstance.current = $(tableRef.current).DataTable({
-            paging: true,
-            searching: true,
-            ordering: true,
-            responsive: true,
-            destroy: true
-          });
-        } else {
-          console.error("TableRef is null, DataTable cannot initialize.");
-        }
-      }, 100);  // Add slight delay to ensure table is in DOM
-    }
-  }, [tableData]);
-
-  // Handle delete action
-  const handleDelete = async (productId) => {
+  // Delete the selected product
+  async function handleDelete(productId) {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const response = await deleteProduct(productId);
-        console.log('Delete response:', response); // Log the response
-        setProducts(products.filter((product) => product.id !== productId)); // Update the product list
-        alert("Product deleted successfully!");
-
-        // Re-fetch the product list after successful deletion
-        const response1 = await listAllProduct(); // Fetch updated products
-        setProducts(response1.data); // Update the state with the new product list
+        if (response) {
+          setTableData((prevData) =>
+            prevData.filter((item) => item.productId !== productId)
+          );
+          toast.success("Product deleted successfully");
+        }
       } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Failed to delete the product.");
+        console.error("Failed to delete product", error);
+        toast.error("Failed to delete product. Please try again.");
       }
     }
-  };
+  }
 
-
-  const handleEdit = (productId) => {
-    navigate(`/editProduct/${productId}`); // Navigate to the edit page with productId as URL param
-  };
-
-  // const deleteSelectedElement = async (materialId) => {
-  //     if (window.confirm("Are you sure you want to delete this item?")) {
-  //         try {
-  //             await deleteMaterial(materialId);
-
-  //             // Directly filter out the deleted material from tableData
-  //             setTableData(prevData => prevData.filter(material => material.materialId !== materialId));
-
-  //         } catch (error) {
-  //             console.error("Failed to delete material", error);
-  //             alert("Failed to delete material. Please try again.");
-  //         }
-  //     }
-  // };
-
-  const editSelectedElement = async (productId) => {
+  // Edit the selected product
+  async function handleEdit(productId) {
     try {
       const response = await getProductDetail(productId);
-      const ProductData = response?.data;
-
-
-      if (ProductData) {
-        navigate('/EditProduct', { state: { productId, ProductData } });
+      const productData = response?.data;
+      if (productData) {
+        navigate(`/editProduct/${productId}`);
       }
     } catch (error) {
-      console.error("Error fetching material details: ", error);
+      console.error("Error fetching product details: ", error);
+      toast.error("Failed to fetch product details");
+    }
+  }
+
+  // Search functionality
+  const filteredData = tableData.filter((product) => {
+    return Object.values(product).some(
+      (value) => 
+        value && 
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  // Sorting functionality
+  const sortedData = [...filteredData].sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    
+    if (sortDirection === "asc") {
+      return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+    } else {
+      return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+    }
+  });
+
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
     }
   };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPageButtons = 5;
+    
+    let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+    
+    if (endPage - startPage + 1 < maxPageButtons) {
+      startPage = Math.max(1, endPage - maxPageButtons + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>
+          <button
+            className="page-link"
+            onClick={() => setCurrentPage(i)}
+          >
+            {i}
+          </button>
+        </li>
+      );
+    }
+    
+    return pageNumbers;
+  };
+
+  // Column definitions for the table
+  const columns = [
+    { field: "productId", label: "ID", width: "60px" },
+    { field: "productName", label: "Name", width: "150px" },
+    { field: "materialClassification", label: "Material Classification", width: "180px" },
+    { field: "productDescription", label: "Description", width: "200px" },
+    { field: "unitOfMeasurement", label: "UOM", width: "80px" },
+    { field: "oem", label: "OEM", width: "100px" },
+    { field: "nha", label: "NHA", width: "100px" },
+    { field: "cmmReferenceNumber", label: "CMM Reference Number", width: "180px" },
+    { field: "registrationDate", label: "Date", width: "120px" },
+    { field: "registeredBy", label: "Registered By", width: "150px" }
+  ];
 
   return (
     <div className="wrapper">
       <Sidebar />
       <div className="content">
         <Header />
-        <div className="col-md-6">
-          <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-4">
-            <h5 className="h5 mx-3 mb-0 text-gray-800">View Product</h5>
-          </div>
-        </div>
+        <div style={{ marginTop: "10px" }}>
+        <CustomBreadcrumb breadcrumbsLabel="View Product" />
 
-        <div className="card border border-dark shadow mx-4 my-4 p-2" style={{ height: '500px' }}>
-          <div className="col-md-12">
-            <div className="table-responsive overflow-auto px-0 mt-4" style={{ width: '100%' }}>
-              <table ref={tableRef} className="table border" style={{ width: "100%", tableLayout: "fixed" }}>
-                <thead className="position-sticky sticky-top bg-light">
+        <div className="card border border-dark shadow mx-4 my-4 p-2">
+          <div className="card-body">
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="fa fa-search"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3 ms-auto">
+                <div className="d-flex align-items-center">
+                  <label className="me-2">Show</label>
+                  <select
+                    className="form-select"
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className="ms-2">entries</label>
+                </div>
+              </div>
+            </div>
+
+            <div className="table-responsive">
+              <table className="table table-bordered table-hover">
+                <thead className="table-light sticky-top">
                   <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Material Classification</th>
-                    <th>Description</th>
-                    <th>UOM</th>
-                    <th>OEM</th>
-                    <th>NHA</th>
-                    <th>CMM Reference Number</th>
-                    <th>Date</th>
-                    <th>Registered By</th>
-                    <th>Action</th>
+                    {columns.map((column) => (
+                      <th 
+                        key={column.field} 
+                        className="position-sticky"
+                        onClick={() => handleSort(column.field)}
+                        style={{ 
+                          cursor: "pointer", 
+                          width: column.width || "auto" 
+                        }}
+                      >
+                        {column.label}
+                        {sortField === column.field && (
+                          <i className={`ms-1 fa fa-sort-${sortDirection === "asc" ? "up" : "down"}`}></i>
+                        )}
+                      </th>
+                    ))}
+                    <th style={{ width: "80px" }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {tableData.length > 0 ? (
-                    tableData.map((product) => (
+                  {currentItems.length > 0 ? (
+                    currentItems.map((product) => (
                       <tr key={product.productId}>
-                        <td>{product.productId}</td>
-                        <td>{product.productName}</td>
-                        <td>{product.materialClassification}</td>
-                        <td>{product.productDescription}</td>
-                        <td>{product.unitOfMeasurement}</td>
-                        <td>{product.oem}</td>
-                        <td>{product.nha}</td>
-                        <td>{product.cmmReferenceNumber}</td>
-                        <td>{product.registrationDate}</td>
-                        <td>{product.registeredBy}</td>
-                        <td>
-                          <span className="ms-1 text-danger" onClick={() => handleDelete(product.productId)}>
+                        {columns.map((column) => (
+                          <td 
+                            key={`${product.productId}-${column.field}`}
+                            className="text-nowrap overflow-hidden text-truncate"
+                            style={{ maxWidth: "150px" }}
+                            title={product[column.field]}
+                          >
+                            {product[column.field]}
+                          </td>
+                        ))}
+                        <td style={{display: "flex",justifyContent:'space-evenly'}}>
+                          <button
+                            className="btn btn-sm btn-danger me-1"
+                            onClick={() => handleDelete(product.productId)}
+                            title="Delete"
+                          >
                             <i className="fa-solid fa-trash"></i>
-                          </span>
-                          <span className="mx-1 text-primary" onClick={() => handleEdit(product.productId)}>
+                          </button>
+                          <button
+                            className="btn btn-sm btn-primary"
+                            onClick={() => handleEdit(product.productId)}
+                            title="Edit"
+                          >
                             <i className="fa-solid fa-pen-to-square"></i>
-                          </span>
+                          </button>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="10" className="text-center">No data available</td>
+                      <td colSpan={columns.length + 1} className="text-center">
+                        {searchTerm ? "No matching records found" : "No data available"}
+                      </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
+
+            <div className="row mt-3">
+              <div className="col-md-6">
+                <p>
+                  Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, sortedData.length)} of {sortedData.length} entries
+                  {searchTerm && ` (filtered from ${tableData.length} total entries)`}
+                </p>
+              </div>
+              <div className="col-md-6">
+                <nav aria-label="Page navigation">
+                  <ul className="pagination justify-content-end">
+                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
+                      >
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
+                      >
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
+                    
+                    {renderPageNumbers()}
+                    
+                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
+                      >
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
+                      >
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
           </div>
         </div>
-
+        </div>
         <Footer />
       </div>
     </div>

@@ -1,6 +1,5 @@
 // BASE URL of server
-export const REST_API_BASE_URL = "http://localhost:8081"
-
+export const REST_API_BASE_URL = "http://localhost:8082";
 
 // ############################## URL_SAMPLE ##########################
 // export const listEmployee = () =>  axios.get(REST_API_BASE_URL);

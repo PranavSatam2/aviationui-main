@@ -1,0 +1,273 @@
+/* Header.module.css */
+.headerContainer {
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 6vh;
+  padding-right: 24px;
+  background: linear-gradient(to right, #727376, #0c1f48);
+}
+
+/* Left Section */
+.leftSection {
+  display: flex;
+  align-items: center;
+}
+
+.appLogo {
+  font-weight: 700;
+  font-size: 20px;
+  color: #2563eb;
+  margin-right: 32px;
+}
+
+.mainNav {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mainNav {
+    display: flex;
+    gap: 4px;
+  }
+}
+
+.navButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4b5563;
+}
+
+.navButton:hover {
+  background-color: #f3f4f6;
+}
+
+.activeTab {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* Right Section */
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  justify-content: end;
+}
+
+.searchContainer {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .searchContainer {
+    display: block;
+  }
+}
+
+.searchWrapper {
+  position: relative;
+}
+
+.searchInput {
+  padding: 6px 12px;
+  padding-right: 32px;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  font-size: 14px;
+  width: 192px;
+  border: 1px solid transparent;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.shortcutKey {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.iconButton {
+  position: relative;
+  padding: 6px;
+  border-radius: 50%;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButton:hover {
+  background-color: #f3f4f6;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #ef4444;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+}
+
+.divider {
+  height: 32px;
+  width: 1px;
+  background-color: #e5e7eb;
+}
+
+.profileContainer {
+  position: relative;
+}
+
+.profileButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.avatarContainer {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userInfo {
+  display: none;
+  text-align: left;
+  color: white;
+}
+
+@media (min-width: 768px) {
+  .userInfo {
+    display: block;
+  }
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.userRole {
+  font-size: 12px;
+  color: #6b7280;
+  
+}
+
+.dropdownIcon {
+  color: #9ca3af;
+}
+
+.dropdownMenu {
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  width: 224px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 9999;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dropdownHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.dropdownName {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.dropdownEmail {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 4px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #4b5563;
+  text-decoration: none;
+}
+
+.dropdownItem:hover {
+  background-color: #f3f4f6;
+}
+
+.dropdownItemIcon {
+  margin-right: 8px;
+}
+
+.dropdownDivider {
+  height: 1px;
+  background-color: #f3f4f6;
+  margin: 4px 0;
+}
+
+.dropdownItemDanger {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #dc2626;
+  text-decoration: none;
+}
+
+.dropdownItemDanger:hover {
+  background-color: #f3f4f6;
+}

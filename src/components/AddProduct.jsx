@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import axios from "axios"; // Import axios if you are using axios
 import { createProduct } from "../services/db_manager";
+import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const AddProduct = () => {
   const [form, setForm] = useState({
@@ -164,12 +165,15 @@ const AddProduct = () => {
       <Sidebar />
       <div className="content">
         <Header />
+        <div style={{ marginTop: "10px" }}>
+        <CustomBreadcrumb breadcrumbsLabel="Add Products"  isBack={true}/>
+
         {/* content Begin */}
-        <div className="col-md-6">
+        {/* <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
             <h5 className="h5 mx-4 mb-0 text-gray-800">Add Products</h5>
           </div>
-        </div>
+        </div> */}
         <div className="my-2 p-2">
           <div className="container-fluid">
             <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '397px'}}>
@@ -329,6 +333,7 @@ const AddProduct = () => {
           </div>
         </div>
       </div >
+      </div>
       <Footer />
     </div >
   );

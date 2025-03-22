@@ -12,7 +12,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
-const StoreAccComponent = () => {
+const EditStoreAcceptance = () => {
   // Variable
   const [form, setForm] = useState({
     partNum: "",
@@ -80,12 +80,12 @@ const StoreAccComponent = () => {
         <Header />
         <div style={{ marginTop: "10px" }}>
         {/* conetnt Begin*/}
-        <CustomBreadcrumb breadcrumbsLabel="Store Acceptance" isBack={true}/>
+        <CustomBreadcrumb breadcrumbsLabel="Edit Store Acceptance" isBack={true} />
 
         {/* Content heading */}
         {/* <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-4">
-            <h5 className="h5 mx-3 mb-0 text-gray-800">Store Acceptance</h5>
+            <h5 className="h5 mx-3 mb-0 text-gray-800">Edit Store Acceptance</h5>
           </div>
         </div> */}
 
@@ -163,9 +163,6 @@ const StoreAccComponent = () => {
                         className="form-check-input"
                         type="radio"
                         name="condition"
-                        value="New"
-                        checked={form.condition === "New"}
-                        onChange={handleChange}
                       />
                       <label className="form-check-label pt-1 ml-1" value="New">
                         New
@@ -177,9 +174,6 @@ const StoreAccComponent = () => {
                         className="form-check-input"
                         type="radio"
                         name="condition"
-                        value="O/W"
-                        checked={form.condition === "O/W"}
-                        onChange={handleChange}
                       />
                       <label className="form-check-label pt-1 ml-1" value="0_w">
                         O/W
@@ -191,9 +185,6 @@ const StoreAccComponent = () => {
                         className="form-check-input"
                         type="radio"
                         name="condition"
-                        value="Repaired"
-                        checked={form.condition === "Repaired"}
-                        onChange={handleChange}
                       />
                       <label className="form-check-label pt-1" value="Repaired">
                         Repaired
@@ -345,7 +336,7 @@ const StoreAccComponent = () => {
                     className="btn btn-primary m-0 mt-2 mx-2"
                     onClick={(event) => sendSaveRequest(event)}
                   >
-                    Save
+                    Update
                   </button>
                 </div>
               </div>
@@ -361,4 +352,4 @@ const StoreAccComponent = () => {
   );
 };
 
-export default StoreAccComponent;
+export default EditStoreAcceptance;

@@ -1,0 +1,55 @@
+.breadcrumb {
+  width: calc(100vw - 250px);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.breadcrumb ol {
+  margin-bottom: 0 !important;
+  width: 100%;
+  padding: 5px !important;
+}
+
+.backContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.backArrow {
+  width: 21px;
+  height: 13.5px;
+}
+
+.labeltext {
+  margin: 0 10px;
+  font-weight: 600;
+  color: rgb(69, 66, 66);
+  height: 3vh;
+}
+
+.back {
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: rgb(69, 66, 66);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.divider {
+  height: 3vh;
+  border: 1px solid;
+  background: linear-gradient(to right, #f24f55, #000000);
+}
+
+@media (max-width: 767px) {
+  .breadcrumb {
+    position: fixed;
+    width: 100%;
+    padding: 10px !important;
+    z-index: 1000;
+  }
+}
