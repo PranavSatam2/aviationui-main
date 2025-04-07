@@ -1,14 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./sidebar.module.css"; // Importing CSS modules
 import AviationLogo from "../static/img/AviationLogo.png";
-
+//import decode from "jwt-decode";
+//import jwt_decode from "jwt-decode";
+import {jwtDecode as jwt_decode} from 'jwt-decode';
 const Sidebar = () => {
   const [collapseState, setCollapseState] = useState({
     supplierReg: false,
     purchaseOrder: false,
     materialManagement: false,
     MaterialNote: false,
+    userManagement: false,
   });
+
+  const useUserRoles = () => {
+    const [roles, setRoles] = useState([]);
+  
+    useEffect(() => {
+      const token = localStorage.getItem("jwt_token");
+      if (token) {
+        const decodedToken = jwt_decode(token);
+        setRoles(decodedToken.roles || []);
+      }
+    }, []);
+  
+    const hasRole = (role) => roles.includes(role);
+    return { roles, hasRole };
+  };
 
   const toggleCollapse = (section) => {
     setCollapseState((prevState) => ({
@@ -16,6 +34,9 @@ const Sidebar = () => {
       [section]: !prevState[section],
     }));
   };
+
+   // Utility function to check if the current user has a specific role
+   const { hasRole } = useUserRoles();
 
   return (
     <div className={styles.sidebar}>
@@ -30,6 +51,57 @@ const Sidebar = () => {
 
       <div className={styles.sidebarMenu}>
         <ul className={styles.menuList}>
+
+          {/* User Management */}
+          {hasRole("Admin") && (
+          <li className={styles.menuItem}>
+            <a
+              className={styles.menuToggle}
+              onClick={() => toggleCollapse("userManagement")}
+              aria-expanded={collapseState.userManagement ?"true" : "false"}
+            >
+              User Management
+              <span
+                className={`${styles.toggleIcon} ${
+                  collapseState.userManagement ? styles.open : ""
+                }`}
+              >
+                ▶
+              </span>
+            </a>
+
+            <div
+              className={`${styles.submenu} ${
+                collapseState.userManagement ? styles.show : ""
+              }`}
+              id="userManagement-collapse"
+            >
+              <ul className={styles.submenuList}>
+                <li className={styles.submenuItem}>
+                  <a href="/AddUser" className={styles.submenuLink}>
+                    Add User
+                  </a>
+                </li>
+                <li className={styles.submenuItem}>
+                  <a href="/ViewUser" className={styles.submenuLink}>
+                    View User
+                  </a>
+                </li>
+                <li className={styles.submenuItem}>
+                  <a href="/AddRole" className={styles.submenuLink}>
+                    Add Role
+                  </a>
+                </li>
+                <li className={styles.submenuItem}>
+                  <a href="/RoleMenuMapping" className={styles.submenuLink}>
+                    Role Menu Mapping
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          )}
+          
           {/* Supplier Registration */}
           <li className={styles.menuItem}>
             <a
