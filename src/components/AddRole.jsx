@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Header from "./Header";
 import Footer from "./Footer";
@@ -36,9 +36,9 @@ const AddRole= () => {
     try {
       // Send the new role data to the backend
       const response = await axios.post('http://localhost:8082/api/roles/addRole', {
-        name: roleName,
-        code: roleCode,
-        description: roleDescription,
+        roleName,
+        roleCode,
+        roleDescription,
        }, {
             headers: {
               "Authorization": `Bearer ${token}`,
