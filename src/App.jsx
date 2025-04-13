@@ -1,40 +1,95 @@
-import React from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import HomePage from "./components/HomePage";
-import AddProduct from "./components/AddProduct";
-import StoreAccComponent from "./components/StoreAccComponent";
-import LoginPage from "./components/LoginPage";
-import ListProducts from "./components/ListProducts";
-import ViewProduct from "./components/ViewProduct";
-import EditProduct from "./components/EditProduct";
-import SupplierRegistartion from "./components/SupplierRegistration";
-import ProductList from "./components/ProductList";
-import ViewSupplierRegis from "./components/ViewSupplierRegis";
-import ViewStoreAcc from "./components/ViewStoreAcc";
-import MaterialReceiptNoteForm from "./components/AddMaterialNote";
-import ViewMaterialPage from "./components/ViewMaterialNotePage";
+ import HomePage from "./components/HomePage";
+// import AddProduct from "./components/AddProduct";
+// import StoreAccComponent from "./components/StoreAccComponent";
+ import LoginPage from "./components/LoginPage";
+// import ListProducts from "./components/ListProducts";
+// import ViewProduct from "./components/ViewProduct";
+// import EditProduct from "./components/EditProduct";
+// import SupplierRegistartion from "./components/SupplierRegistration";
+// import ProductList from "./components/ProductList";
+// import ViewSupplierRegis from "./components/ViewSupplierRegis";
+// import ViewStoreAcc from "./components/ViewStoreAcc";
+// import MaterialReceiptNoteForm from "./components/AddMaterialNote";
+// import ViewMaterialPage from "./components/ViewMaterialNotePage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import EditMaterialNote from "./components/EditMaterialNote";
-import EditStoreAcceptance from "./components/EditStoreAcceptance";
-import AddUser from './components/AddUser';
-import ViewUser from './components/ViewUser';
+// import EditMaterialNote from "./components/EditMaterialNote";
+// import EditStoreAcceptance from "./components/EditStoreAcceptance";
+// import AddUser from './components/AddUser';
+// import ViewUser from './components/ViewUser';
 import PasswordChange from './components/PasswordChange.jsx';
-import RoleMenuMapping from './components/RoleMenuMapping.jsx';
-import AddRole from './components/AddRole.jsx';
-import PrivateRoute from "./components/PrivateRoute"; // Import the PrivateRoute component
+// import RoleMenuMapping from './components/RoleMenuMapping.jsx';
+// import AddRole from './components/AddRole.jsx';
+import componentsMap from './components/componentsMap.jsx';
+//import PrivateRoute from "./components/PrivateRoute"; // Import the PrivateRoute component
 
 const App = () => {
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+    const roleId = localStorage.getItem('roleId');
+    const token = localStorage.getItem('jwt_token');
+    useEffect(() => {
+      async function fetchMenu() {
+      try {
+        const res = await fetch(`http://localhost:8082/api/roles/roleMenus/${roleId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+  
+        const data = await res.json();
+        console.log(data);
+        setMenuItems(data);
+      } catch (error) {
+        console.error("Failed to fetch menu items:", error);
+      }finally {
+        setLoading(false);
+      }
+    };
+  
+    if (roleId) {
+      fetchMenu();
+    }
+  }, [roleId, token]);
+  if (loading) {
+    return <div style={{ padding: "2rem" }}>Loading menus...</div>;
+  }
   return (
     <>
       <Router>
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/passwordChange" element={<PasswordChange />} />
+        <Route path="/homePage" element={<HomePage />} />
+            
+          
+
+  {menuItems.flatMap((menu) =>
+      menu.subMenus.map((sub) => {
+        const Component = componentsMap[sub.component]; // component = "AddUser" or "RoleMenuMapping"
+        if (!Component) return null;
+        return (
+          <Route
+            key={sub.path}
+            path={sub.path}
+            element={<Component />}
+          />
+        );
+      })
+    )}
+
+
                     {/* Public Route */}
-                    <Route path="/" element={<LoginPage />} />
-                    <Route path="/passwordChange" element={<PasswordChange />} />
+                    {/* <Route path="/" element={<LoginPage />} />
+                    <Route path="/passwordChange" element={<PasswordChange />} /> */}
           
           {/* Private Routes */}
-          <Route
+          {/* <Route
             path="/homePage"
             element={
               <PrivateRoute requiredRoles={['USER', 'Admin']} element={<HomePage />} />
@@ -141,8 +196,11 @@ const App = () => {
             element={
               <PrivateRoute requiredRoles={['MATERIAL', 'Admin']} element={<ViewMaterialPage />} />
             }
-          />
+          /> */}
+           {/* Fallback Route */}
+      <Route path="*" element={<div style={{ padding: "2rem" }}>404 - Page Not Found</div>} />
           </Routes>
+          </Suspense>
       </Router>
       <ToastContainer />
     </>

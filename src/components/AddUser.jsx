@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -21,6 +21,21 @@ const AddUser = () => {
     state: "",
     country: "",
   });
+  const [roles, setRoles] = useState([]); // NEW STATE
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt_token");
+    axios.get("http://localhost:8082/api/roles/role",{
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => {
+        console.log("Fetched roles:", response.data);
+        setRoles(response.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch roles", error);
+      });
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -244,19 +259,19 @@ const validationRules = {
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">User Type</label>
                       <select
-                        className="form-control w-100"
-                        name="role"
-                        value={form.role}
-                        onChange={handleChange}
-                        required
+                         className="form-control w-100"
+                          name="role"
+                          value={form.role}
+                           onChange={handleChange}
+                             required
                       >
                         <option value="">Select</option>
-                        <option value="admin">Admin</option>
-                        <option value="maker">Maker</option>
-                        <option value="checker">Checker</option>
-                        <option value="user">User</option>
-                        <option value="view">View</option>
-                      </select>
+                         {roles.map((role) => (
+                          <option key={role.id} value={role.roleName}>
+                            {role.roleName}
+                            </option>
+                            ))}
+                    </select>
                     </div>
                     <div className="col-md-6 p-2 d-flex">
                     <label className="col-md-2 mt-2">Date Of Birth</label>

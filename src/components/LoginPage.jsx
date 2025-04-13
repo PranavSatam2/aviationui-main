@@ -75,20 +75,36 @@ const LoginPage = () => {
         // If login is successful and no password change is needed
       // Check if the token is present in response.data.token
       if (response && response.data && response.data.token) {
+        console.log("Removing menuItems...",localStorage.getItem("menuItems"));
+localStorage.removeItem("menuItems");
+console.log("menuItems after remove:", localStorage.getItem("menuItems"));
+        localStorage.removeItem("menuItems");
         // Save JWT token if login is successful
-        const { token, passwordExpired, username } = response.data;
+        const { token, passwordExpired, username, role} = response.data;
 
         // Save the token and username to localStorage
         localStorage.setItem('username', username); 
         localStorage.setItem("jwt_token", token); // Store JWT token
+
         if (passwordExpired) {
           alert('Please change your password!');
           navigate('/passwordChange');
         
       } else {
-        navigate("/homePage"); // Redirect after successful login
-        // console.error("No token returned from the API");
-        // setErrorMessage("An error occurred. Please try again later.");
+ 
+  const roleResponse = await axios.get(`http://localhost:8082/api/roles/byname/${role}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (roleResponse?.data?.id) {
+    console.log(roleResponse.data);
+    localStorage.setItem("roleId", roleResponse.data.id);
+  } else {
+    console.error("Role not found or invalid response");
+  }
+  setTimeout(() => {
+    console.log("Navigating to /homePage now...");
+    navigate("/homePage");
+  }, 2000);
       }
     }
   }

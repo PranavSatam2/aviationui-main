@@ -9,6 +9,7 @@ const PasswordChange = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   // State for error messages
   const [error, setError] = useState('');
@@ -22,22 +23,23 @@ const PasswordChange = () => {
   // Handle form submission
 const handleSubmit = async (e) => {
   e.preventDefault();
+  setErrorMessage("");
 
   if (!currentPassword || !newPassword || !confirmPassword) {
-    setError('All fields are required');
+    setErrorMessage('All fields are required');
     return;
   }
   if (!validatePassword(newPassword)) {
-    setError('New password must be at least 8 characters long and contain a mix of letters, numbers, and symbols.');
+    setErrorMessage('New password must be at least 8 characters long and contain a mix of letters, numbers, and symbols.');
     return;
   }
   if (newPassword !== confirmPassword) {
-    setError('New password and confirm password do not match');
+    setErrorMessage('New password and confirm password do not match');
     return;
   }
   const token = localStorage.getItem("jwt_token");
   if (!token) {
-    setError('You need to be logged in to change your password');
+    setErrorMessage('You need to be logged in to change your password');
     return;
   }
   try {
@@ -52,14 +54,14 @@ const handleSubmit = async (e) => {
     });
 
     if (response.data.success) {
-      setSuccess('Password changed successfully!');
+      //setSuccess('Password changed successfully!');
       alert("Password changed user.");
       navigate('/');
     } else {
-      setError('Failed to change password');
+      setErrorMessage('Failed to change password');
     }
   } catch (error) {
-    setError('An error occurred while changing the password');
+    setErrorMessage('An error occurred while changing the password');
   }
 };
 

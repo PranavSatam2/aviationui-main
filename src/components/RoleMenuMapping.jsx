@@ -1,152 +1,312 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Header from "./Header";
+import Footer from "./Footer";
+import Sidebar from "./Sidebar";
+import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const RoleMenuMapping = () => {
   const [roles, setRoles] = useState([]);
   const [menus, setMenus] = useState([]);
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedRole, setSelectedRole] = useState('');
   const [roleMenuMapping, setRoleMenuMapping] = useState({});
   const [error, setError] = useState('');
 
+  const token = localStorage.getItem("jwt_token");
+
   useEffect(() => {
-    const token = localStorage.getItem("jwt_token");
     if (!token) {
-      setError('You need to be logged in to change your password');
+      setError('You need to be logged in to access this page.');
       return;
     }
 
-    // Fetch roles
     const fetchRoles = async () => {
       try {
-        const response = await axios.get('http://localhost:8082/api/roles/role', {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          }
+        const res = await axios.get('http://localhost:8082/api/roles/role', {
+          headers: { "Authorization": `Bearer ${token}` },
         });
-        setRoles(response.data);
-      } catch (error) {
-        console.error('Error fetching roles:', error);
-        alert("There was an error fetching roles.");
+        console.log("Role data:", res.data);
+        setRoles(res.data);
+      } catch (err) {
+        console.error('Error fetching roles:', err);
       }
     };
 
-    // Fetch menus
     const fetchMenus = async () => {
       try {
-        const response = await axios.get('http://localhost:8082/api/roles/menus', {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          }
+        const res = await axios.get('http://localhost:8082/api/roles/menus', {
+          headers: { "Authorization": `Bearer ${token}` },
         });
-        setMenus(response.data);
-      } catch (error) {
-        console.error('Error fetching menus:', error);
-        alert("There was an error fetching menus.");
+        console.log("Menu data:", res.data);
+        setMenus(res.data);
+      } catch (err) {
+        console.error('Error fetching menus:', err);
       }
     };
 
     fetchRoles();
     fetchMenus();
-  }, []);
-
-  // Handle change in role selection
-  const handleRoleChange = (event) => {
-    const roleId = event.target.value;
-    setSelectedRole(roleId);
-    setRoleMenuMapping((prevState) => ({
-      ...prevState,
-      [roleId]: prevState[roleId] || {},
-    }));
-  };
-
-  // Handle checkbox change
-  const handleCheckboxChange = (menuId, isChecked) => {
-    setRoleMenuMapping((prevState) => ({
-      ...prevState,
-      [selectedRole]: {
-        ...prevState[selectedRole],
-        [menuId]: isChecked,
-      },
-    }));
-  };
-
-  // Recursive function to render menus and submenus
-  const renderMenu = (menu) => {
-    return (
-      <div key={menu.id} style={{ marginLeft: '20px' }}>
-        <label>
-          <input
-            type="checkbox"
-            checked={roleMenuMapping[selectedRole]?.[menu.id] || false}
-            onChange={(e) => handleCheckboxChange(menu.id, e.target.checked)}
-          />
-          {menu.name}
-        </label>
-        {menu.submenus && menu.submenus.length > 0 && (
-          <div style={{ marginLeft: '20px' }}>
-            {menu.submenus.map((submenu) => renderMenu(submenu))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Handle saving mappings
-  const handleSaveMappings = async () => {
-    if (!selectedRole) {
-      alert('Please select a role to save mappings.');
-      return;
-    }
-
-    const mappings = [];
-    const roleMenus = roleMenuMapping[selectedRole] || {};
-
-    Object.keys(roleMenus).forEach((menuId) => {
-      mappings.push({
-        roleId: parseInt(selectedRole),
-        menuId: parseInt(menuId),
-        accessible: roleMenus[menuId],
+  }, [token]);
+  const fetchRoleMenuMapping = async (roleId) => {
+    try {
+      const res = await axios.get(`http://localhost:8082/api/roles/roleMenus/${roleId}`, {
+        headers: { "Authorization": `Bearer ${token}` },
       });
+  
+      const mapping = {};
+      res.data.forEach(({ menuId, accessible }) => {
+        mapping[menuId] = accessible;
+      });
+  
+      setRoleMenuMapping((prev) => ({
+        ...prev,
+        [roleId]: mapping,
+      }));
+    } catch (err) {
+      console.error("Error fetching role-menu mapping:", err);
+      alert("Failed to fetch role-menu mapping.");
+    }
+  };
+  
+  const handleRoleChange = async (e) => {
+    const roleId = e.target.value;
+    console.log("Selected Role ID:", roleId);
+    setSelectedRole(roleId);
+    if (roleId) {
+      await fetchRoleMenuMapping(roleId);
+    }
+    //setRoleMenuMapping((prev) => ({ ...prev, [roleId]: prev[roleId] || {} }));
+  };
+
+  const handleParentCheck = (menuId, checked, subMenus = []) => {
+    handleCheckboxChange(menuId, checked, subMenus);
+  };
+  
+  const handleCheckboxChange = (menuId, checked, subMenus = [], parentId = null) => {
+    setRoleMenuMapping((prev) => {
+      const updated = {
+        ...prev,
+        [selectedRole]: {
+          ...prev[selectedRole],
+          [menuId]: checked,
+        },
+      };
+  
+      // Uncheck all submenus if parent is unchecked
+      subMenus.forEach((sub) => {
+        if (sub?.id !== undefined) {
+          updated[selectedRole][sub.id] = false;
+        } else {
+          console.warn("⚠️ Submenu item has no id:", sub);
+        }
+      });
+  
+      // If a submenu is checked, ensure parent is checked too
+      if (checked && parentId !== null && parentId !== undefined) {
+        updated[selectedRole][parentId] = true;
+      }
+  
+      return updated;
     });
+  };
+  
+
+
+  const handleSaveMappings = async (e) => {
+    e.preventDefault();
+    if (!selectedRole) return alert("Please select a role.");
+
+    const roleMenus = roleMenuMapping[selectedRole] || {};
+    const mappings = Object.entries(roleMenus).map(([menuId, accessible]) => ({
+      roleId: parseInt(selectedRole),
+      menuId: parseInt(menuId),
+      accessible,
+    }));
 
     try {
-      await axios.post('http://localhost:8082/api/roles/saveMapping', mappings);
-      alert('Role-Menu mappings saved successfully!');
+      await axios.post(
+        'http://localhost:8082/api/roles/saveMapping',
+        mappings,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      alert("Role-Menu mapping saved successfully!");
     } catch (error) {
-      console.error('Error saving mappings:', error);
-      alert("There was an error saving the mappings.");
+      console.error("Error saving mappings:", error);
+      alert("Failed to save mappings.");
     }
   };
 
-  return (
-    <div>
-      <h1>Role-Menu Mapping</h1>
+  const renderMenus = (menuList) =>
+    menuList.map((menu) => {
+      console.log("Selected Role:", selectedRole);
+console.log("Menu ID:", menu.id);
+console.log("roleMenuMapping:", roleMenuMapping);
+console.log("Mapped Value:", roleMenuMapping[selectedRole]?.[menu.id]);
+      const subMenus = menu.subMenus || menu.submenus || [];
+      const isParentChecked = roleMenuMapping[selectedRole]?.[menu.id] === true;
+      //const isParentChecked = roleMenuMapping[selectedRole]?.[menu.id] || false;
+      //const isParentChecked = !!roleMenuMapping[selectedRole]?.[String(menu.id)];
+      console.log("Parent",isParentChecked);
+  
+      return (
+        <div key={menu.id} style={{ margin: '10px 0' }}>
+          <label>
+            <input
+              type="checkbox"
+              checked={!!roleMenuMapping[selectedRole]?.[menu.id]}
+             onChange={(e) => handleParentCheck(menu.id, e.target.checked)}
+              // checked={isParentChecked}
+              // onChange={(e) =>
+              //   handleCheckboxChange(menu.id, e.target.checked, subMenus)
+             // }
+            />
+            <strong style={{ marginLeft: '8px' }}>{menu.name}</strong>
+          </label>
+  
+          {subMenus.length > 0 && isParentChecked && (
 
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-
-      {/* Dropdown for selecting role */}
-      <div>
-        <label htmlFor="roleDropdown">Select Role: </label>
-        <select id="roleDropdown" onChange={handleRoleChange} value={selectedRole || ''}>
-          <option value="" disabled>Select a Role</option>
-          {roles.map((role) => (
-            <option key={role.id} value={role.id}>
-              {role.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Show menus and checkboxes only if a role is selected */}
-      {selectedRole && (
-        <div>
-          <h3>Assign Menus to Role</h3>
-          {menus.map((menu) => renderMenu(menu))} {/* Render root menus */}
+<div style={{ marginLeft: '25px', marginTop: '5px' }}>
+{subMenus.map((sub) => (
+  <div key={sub.id} className="form-check">
+    <input
+      className="form-check-input"
+      type="checkbox"
+      id={`sub-${sub.id}`}
+      checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
+      onChange={(e) =>
+        handleCheckboxChange(sub.id, e.target.checked, [], menu.id)
+      }
+    />
+    <label className="form-check-label" htmlFor={`sub-${sub.id}`}>
+      {sub.name}
+    </label>
+  </div>
+))}
+</div>
+          )}
         </div>
-      )}
+      );
+    });
+  
+  
+  // const renderMenus = (menuList) =>
+  //   menuList.map((menu) => {
+  //     const subMenus = menu.subMenus || menu.submenus || [];
+  
+  //     const isMenuChecked = roleMenuMapping[selectedRole]?.[menu.id] || false;
+  
+  //     return (
+  //       <div key={menu.id} style={{ margin: '10px 0' }}>
+  //         <label>
+  //           <input
+  //             type="checkbox"
+  //             checked={isMenuChecked}
+  //             onChange={(e) =>
+  //               handleCheckboxChange(menu.id, e.target.checked, subMenus)
+  //             }
+  //           />
+  //           <strong style={{ marginLeft: '8px' }}>{menu.name}</strong>
+  //         </label>
+  
+  //         {/* Only render submenus if the parent menu is checked */}
+  //         {isMenuChecked && subMenus.length > 0 && (
+  //           <div style={{ marginLeft: '25px', marginTop: '5px' }}>
+  //             {subMenus.map((sub) => (
+  //               <div key={sub.id}>
+  //                 <label>
+  //                   <input
+  //                     type="checkbox"
+  //                     checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
+  //                     onChange={(e) =>
+  //                       handleCheckboxChange(sub.id, e.target.checked)
+  //                     }
+  //                   />
+  //                   <span style={{ marginLeft: '8px' }}>{sub.name}</span>
+  //                 </label>
+  //               </div>
+  //             ))}
+  //           </div>
+  //         )}
+  //       </div>
+  //     );
+  //   });
 
-      <button onClick={handleSaveMappings}>Save Mappings</button>
-    </div>
+  console.log("Menus to render:", menus);
+
+  return (
+    <div className="wrapper">
+      <Sidebar />
+      <div className="content">
+        <Header />
+        <div style={{ marginTop: "10px" }}>
+        <CustomBreadcrumb breadcrumbsLabel="Role Menu Mapping"  isBack={true}/>
+        <div className="my-2 p-2">
+          <div className="container-fluid">
+            <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '397px'}}>
+              <div className="col-md-12">
+                <form style={{height : '100%'}}>
+                  <div className="col-md-12 p-2 d-flex">
+                    <div className="col-md-6 p-2 d-flex">
+                
+        <label className="col-md-4 mt-2" htmlFor="roleDropdown">Select Role:</label>
+        <select
+          className="form-control w-100"
+          id="roleDropdown"
+          value={selectedRole}
+          onChange={handleRoleChange}
+          style={{ marginLeft: '10px', padding: '5px' }}
+        >
+          <option value="">-- Choose Role --</option>
+          {roles.map(({ id, roleName }) => (
+          <option key={id} value={id}>{roleName}</option>
+          ))}
+</select>
+      </div>
+</div>
+
+      {/* //{selectedRole && ( */}
+        <>
+          <div style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '10px' }}>
+            {menus.length === 0 ? (
+              <p>Loading menu data...</p>
+            ) : (
+              renderMenus(menus)
+            )}
+          </div>
+          <div style={{ marginTop: '15px' }}>
+            <button className="btn btn-primary" onClick={(e) => handleSaveMappings(e)}>
+              Save Mapping
+            </button>
+            </div>          {/* <button
+            onClick={handleSaveMappings}
+            style={{
+              marginTop: '20px',
+              padding: '10px 20px',
+              backgroundColor: '#1976d2',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+            }}
+          >
+              Save Mappings
+          </button> */}
+        </>
+                </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div >
+      
+      <Footer />
+    </div >
   );
 };
 

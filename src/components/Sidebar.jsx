@@ -4,13 +4,17 @@ import AviationLogo from "../static/img/AviationLogo.png";
 //import decode from "jwt-decode";
 //import jwt_decode from "jwt-decode";
 import {jwtDecode as jwt_decode} from 'jwt-decode';
-const Sidebar = () => {
+
+const storedMenuItems = localStorage.getItem("menuItems");
+  const menuItems = storedMenuItems ? JSON.parse(storedMenuItems) : [];
+const Sidebar = () => {  //() => {
+  console.log("Menu Items being passed:", menuItems);
   const [collapseState, setCollapseState] = useState({
-    supplierReg: false,
-    purchaseOrder: false,
-    materialManagement: false,
-    MaterialNote: false,
-    userManagement: false,
+    // supplierReg: false,
+    // purchaseOrder: false,
+    // materialManagement: false,
+    // MaterialNote: false,
+    // userManagement: false,
   });
 
   const useUserRoles = () => {
@@ -37,6 +41,10 @@ const Sidebar = () => {
 
    // Utility function to check if the current user has a specific role
    const { hasRole } = useUserRoles();
+   
+
+  console.log("Menu Items being passed in sidbar:", menuItems);
+
 
   return (
     <div className={styles.sidebar}>
@@ -51,9 +59,62 @@ const Sidebar = () => {
 
       <div className={styles.sidebarMenu}>
         <ul className={styles.menuList}>
+          {menuItems.map((menu) => {
+            //if (!hasRole(menu.roles)) return null;
+
+            const isOpen = collapseState[menu.id];
+
+            return (
+              <li key={menu.id} className={styles.menuItem}>
+                <a
+                  className={styles.menuToggle}
+                  onClick={() => toggleCollapse(menu.id)}
+                  aria-expanded={isOpen ? "true" : "false"}
+                >
+                  {menu.name}
+                  <span
+                    className={`${styles.toggleIcon} ${
+                      isOpen ? styles.open : ""
+                    }`}
+                  >
+                    ▶
+                  </span>
+                </a>
+
+                {menu.subMenus && menu.subMenus.length > 0 && (
+                  <div
+                    className={`${styles.submenu} ${
+                      isOpen ? styles.show : ""
+                    }`}
+                    id={`${menu.name}-collapse`}
+                  >
+                    <ul className={styles.submenuList}>
+                      {menu.subMenus.map((sub) => (
+                        <li key={sub.id} className={styles.submenuItem}>
+                          <a href={sub.path} className={styles.submenuLink}>
+                            {sub.name}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div className={styles.sidebarFooter}>Dashboard v1.0</div>
+    </div>
+  );
+};
+
+export default Sidebar;
+
 
           {/* User Management */}
-          {hasRole("Admin") && (
+          {/* {hasRole("Admin") && (
           <li className={styles.menuItem}>
             <a
               className={styles.menuToggle}
@@ -100,10 +161,10 @@ const Sidebar = () => {
               </ul>
             </div>
           </li>
-          )}
+          )} */}
           
           {/* Supplier Registration */}
-          <li className={styles.menuItem}>
+          {/* <li className={styles.menuItem}>
             <a
               className={styles.menuToggle}
               onClick={() => toggleCollapse("supplierReg")}
@@ -144,10 +205,10 @@ const Sidebar = () => {
                 </li>
               </ul>
             </div>
-          </li>
+          </li> */}
 
           {/* Product Order */}
-          <li className={styles.menuItem}>
+          {/* <li className={styles.menuItem}>
             <a
               className={styles.menuToggle}
               onClick={() => toggleCollapse("purchaseOrder")}
@@ -182,10 +243,10 @@ const Sidebar = () => {
                 </li>
               </ul>
             </div>
-          </li>
+          </li> */}
 
           {/* Store Acceptance */}
-          <li className={styles.menuItem}>
+          {/* <li className={styles.menuItem}>
             <a
               className={styles.menuToggle}
               onClick={() => toggleCollapse("materialManagement")}
@@ -222,10 +283,10 @@ const Sidebar = () => {
                 </li>
               </ul>
             </div>
-          </li>
+          </li> */}
 
           {/* Material Note */}
-          <li className={styles.menuItem}>
+          {/* <li className={styles.menuItem}>
             <a
               className={styles.menuToggle}
               onClick={() => toggleCollapse("MaterialNote")}
@@ -260,13 +321,13 @@ const Sidebar = () => {
                 </li>
               </ul>
             </div>
-          </li>
-        </ul>
-      </div>
+          </li> */}
+//         </ul>
+//       </div>
 
-      <div className={styles.sidebarFooter}>Dashboard v1.0</div>
-    </div>
-  );
-};
+//       <div className={styles.sidebarFooter}>Dashboard v1.0</div>
+//     </div>
+//   );
+// };
 
-export default Sidebar;
+// export default Sidebar;
