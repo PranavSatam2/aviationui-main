@@ -70,8 +70,16 @@ export const getMaterialDetail = (MaterialId) => axios.get(`${MATERIAL_URL}/${Ma
 // ######################### LOGIN #####################
 
 let login_API = REST_API_BASE_URL + "/login"
+let USER_API = REST_API_BASE_URL + "/auth/addUser"
+let VIEW_USER_API = REST_API_BASE_URL + "/auth/viewUser"
+let ROLE_API = REST_API_BASE_URL + "/api/roles"
 
 export const login = (loginData) => axios.post(login_API, loginData);
+export const  createUser = (Login) => axios.post(USER_API, Login);
+export const listAllUser = () =>  axios.get(`${VIEW_USER_API}`);
+export const addRole = () =>  axios.get(`${ROLE_API}/addRole`,Role);
+
+
 
 
 

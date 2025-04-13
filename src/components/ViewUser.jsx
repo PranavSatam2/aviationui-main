@@ -2,20 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import {
-  deleteStore,
-  getStoreDetail,
-  listAllStore,
-} from "../services/db_manager";
-import MyModalComponent from "./partials/MyModalComponent";
+import { deleteProduct, getProductDetail, listAllUser } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { toast } from "react-toastify";
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 
-const ViewSupplierRegis = () => {
+const ViewUser = () => {
   // State
-  const [tableData, setTableData] = useState([]); // Store data
+  const [tableData, setTableData] = useState([]); // User data
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -23,61 +17,58 @@ const ViewSupplierRegis = () => {
   const [sortDirection, setSortDirection] = useState("asc");
   
   const navigate = useNavigate();
-  const modalRef = useRef(); // Modal reference
 
   // Fetching data when the component is mounted
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await listAllStore();
-        if (response) {
-          setTableData(response); // Update state with response data
+        const response = await listAllUser();
+        if (response && response.data) {
+          setTableData(response.data); // Update state with response data
         }
       } catch (error) {
-        console.error("Error fetching data", error);
-        toast.error("Failed to load store data");
+        console.error("Error fetching user", error);
+        toast.error("Failed to load user data");
       }
     };
     fetchData();
   }, []);
 
-  // Delete the selected supplier
-  async function deleteSelectedElement(elementId) {
-    if (window.confirm("Are you sure you want to delete this item?")) {
+  // Delete the selected product
+  async function handleDelete(id) {
+    if (window.confirm("Are you sure you want to delete this User?")) {
       try {
-        const response = await deleteStore(elementId);
+        const response = await deleteUser(id);
         if (response) {
           setTableData((prevData) =>
-            prevData.filter((item) => item.id !== elementId)
+            prevData.filter((item) => item.id !== id)
           );
-          toast.success("Item deleted successfully");
+          toast.success("User deleted successfully");
         }
       } catch (error) {
-        console.error("Failed to delete item", error);
-        toast.error("Failed to delete item. Please try again.");
+        console.error("Failed to delete user", error);
+        toast.error("Failed to delete user. Please try again.");
       }
     }
   }
 
-  // Edit the selected supplier
-  async function editSelectedElement(elementId) {
+  // Edit the selected product
+  async function handleEdit(id) {
     try {
-      const response = await getStoreDetail(elementId);
-      const supplierData = response.data;
-      if (supplierData) {
-        navigate("/editstoreAcceptance", {
-          state: { elementId, supplierData },
-        });
+      const response = await getUserDetail(id);
+      const userData = response?.data;
+      if (userData) {
+        navigate(`/editUser/${id}`);
       }
     } catch (error) {
-      console.error("Error fetching store details: ", error);
-      toast.error("Failed to fetch store details");
+      console.error("Error fetching User details: ", error);
+      toast.error("Failed to fetch User details");
     }
   }
 
   // Search functionality
-  const filteredData = tableData.filter((store) => {
-    return Object.values(store).some(
+  const filteredData = tableData.filter((login) => {
+    return Object.values(login).some(
       (value) => 
         value && 
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -140,16 +131,18 @@ const ViewSupplierRegis = () => {
 
   // Column definitions for the table
   const columns = [
-    {field: "id", label: "ID", width: "80px"},
-    { field: "partNum", label: "Part Num", width: "80px" },
-    { field: "description", label: "Description", width: "200px" },
-    { field: "batch", label: "Batch" },
-    { field: "supplier", label: "Supplier" },
-    { field: "quantity", label: "Quantity" },
-    { field: "dom", label: "DOM" },
-    { field: "doe", label: "DOE" },
-    { field: "dateOfRecipet", label: "Receipt Date" },
-    { field: "nameOfQualityInsp", label: "Quality Inspector" }
+    { field: "id", label: "ID", width: "60px" },
+    { field: "firstName", label: "FirstName", width: "150px" },
+    { field: "middleName", label: "MiddleName", width: "180px" },
+    { field: "lastName", label: "LastName", width: "200px" },
+    { field: "userName", label: "UserName", width: "80px" },
+    { field: "dob", label: "DateOfBirth", width: "100px" },
+    { field: "mobileNumber", label: "MobileNumber", width: "100px" },
+    { field: "email", label: "Email", width: "180px" },
+    { field: "address", label: "Address", width: "120px" },
+    { field: "city", label: "City", width: "150px" },
+    { field: "state", label: "State", width: "150px" },
+    { field: "country", label: "Country", width: "150px" }
   ];
 
   return (
@@ -158,7 +151,7 @@ const ViewSupplierRegis = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-        <CustomBreadcrumb breadcrumbsLabel="View Store Acceptance" />
+        <CustomBreadcrumb breadcrumbsLabel="View User" />
 
         <div className="card border border-dark shadow mx-4 my-4 p-2">
           <div className="card-body">
@@ -171,7 +164,7 @@ const ViewSupplierRegis = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Search items..."
+                    placeholder="Search User..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -224,29 +217,29 @@ const ViewSupplierRegis = () => {
                 </thead>
                 <tbody>
                   {currentItems.length > 0 ? (
-                    currentItems.map((store) => (
-                      <tr key={store.id}>
+                    currentItems.map((login) => (
+                      <tr key={login.id}>
                         {columns.map((column) => (
                           <td 
-                            key={`${store.id}-${column.field}`}
+                            key={`${login.id}-${column.field}`}
                             className="text-nowrap overflow-hidden text-truncate"
                             style={{ maxWidth: "150px" }}
-                            title={store[column.field]}
+                            title={login[column.field]}
                           >
-                            {store[column.field]}
+                            {login[column.field]}
                           </td>
                         ))}
                         <td style={{display: "flex",justifyContent:'space-evenly'}}>
                           <button
                             className="btn btn-sm btn-danger me-1"
-                            onClick={() => deleteSelectedElement(store.id)}
+                            onClick={() => handleDelete(login.id)}
                             title="Delete"
                           >
                             <i className="fa-solid fa-trash"></i>
                           </button>
                           <button
                             className="btn btn-sm btn-primary"
-                            onClick={() => editSelectedElement(store.id)}
+                            onClick={() => handleEdit(login.id)}
                             title="Edit"
                           >
                             <i className="fa-solid fa-pen-to-square"></i>
@@ -320,13 +313,6 @@ const ViewSupplierRegis = () => {
             </div>
           </div>
         </div>
-        
-        <MyModalComponent
-          ref={modalRef}
-          modalTitle="My Custom Modal Title"
-          modalBodyContent="This is a custom body for the modal."
-          buttonLabel="Open Modal"
-        />
         </div>
         <Footer />
       </div>
@@ -334,4 +320,4 @@ const ViewSupplierRegis = () => {
   );
 };
 
-export default ViewSupplierRegis;
+export default ViewUser;
