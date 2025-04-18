@@ -3,13 +3,14 @@ const IncomingInspectionTab = ({
   handleChange,
   validateDataType,
   errors,
+  disabledField
 }) => {
   return (
     <div className="row m-2 p-2 mt-4">
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-8">
               Is the incoming process documented?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -25,6 +26,7 @@ const IncomingInspectionTab = ({
                   value="Yes"
                   checked={dataMap.processDocumented === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -43,6 +45,7 @@ const IncomingInspectionTab = ({
                   value="No"
                   checked={dataMap.processDocumented === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -59,7 +62,7 @@ const IncomingInspectionTab = ({
         </div>
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-8">
               What sampling plan is used for incoming inspection?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -75,6 +78,7 @@ const IncomingInspectionTab = ({
                   value="Yes"
                   checked={dataMap.samplingIncomingInsp === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -93,6 +97,7 @@ const IncomingInspectionTab = ({
                   value="No"
                   checked={dataMap.samplingIncomingInsp === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -112,7 +117,7 @@ const IncomingInspectionTab = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-8">
               Is Objective evidence of receiving inspection results maintained
               in file?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -129,6 +134,7 @@ const IncomingInspectionTab = ({
                   value="Yes"
                   checked={dataMap.receivingInspectionResultsOnFile === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -147,6 +153,7 @@ const IncomingInspectionTab = ({
                   value="No"
                   checked={dataMap.receivingInspectionResultsOnFile === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -164,7 +171,7 @@ const IncomingInspectionTab = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-8">
               Is lot number or other traceability identification maintained?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -180,6 +187,7 @@ const IncomingInspectionTab = ({
                   value="Yes"
                   checked={dataMap.identificationMaintained === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -198,6 +206,7 @@ const IncomingInspectionTab = ({
                   value="No"
                   checked={dataMap.identificationMaintained === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -217,7 +226,7 @@ const IncomingInspectionTab = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-8">
               Is incoming material kept separate from inspected material?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -233,6 +242,7 @@ const IncomingInspectionTab = ({
                   value="Yes"
                   checked={dataMap.sepInsMaterial === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -251,6 +261,7 @@ const IncomingInspectionTab = ({
                   value="No"
                   checked={dataMap.sepInsMaterial === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -268,7 +279,7 @@ const IncomingInspectionTab = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-8">
               Is there any procedure for isolating nonconforming material?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -284,6 +295,7 @@ const IncomingInspectionTab = ({
                   value="Yes"
                   checked={dataMap.nonConMaterial === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -302,6 +314,7 @@ const IncomingInspectionTab = ({
                   value="No"
                   checked={dataMap.nonConMaterial === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -321,7 +334,7 @@ const IncomingInspectionTab = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6">
+            <label className="col-form-label col-md-8">
               Are deviations that affect the customer's requirement referred to
               customers for disposition?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -338,6 +351,7 @@ const IncomingInspectionTab = ({
                   value="Yes"
                   checked={dataMap.affectCusReq === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -356,6 +370,7 @@ const IncomingInspectionTab = ({
                   value="No"
                   checked={dataMap.affectCusReq === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"

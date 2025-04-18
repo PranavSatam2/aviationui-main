@@ -7,17 +7,23 @@ import {
   HelpCircle,
   User,
   ChevronDown,
+  LogOut,
 } from "lucide-react";
 import styles from "./Header.module.css";
 import ProfileLogo from "../static/img/prfileLogo.png";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const navigate = useNavigate();
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-
+  const handlelogout = () => {
+    navigate("/");
+    toast.success("Log out Successful");
+  };
   return (
     <div className={styles.headerContainer}>
       <div className={styles.headerContent}>
@@ -40,11 +46,6 @@ const Header = () => {
           {/* Help Icon */}
           <button className={styles.iconButton}>
             <HelpCircle size={20} />
-          </button>
-
-          {/* Settings Icon */}
-          <button className={styles.iconButton}>
-            <Settings size={20} />
           </button>
 
           {/* Divider */}
@@ -74,12 +75,12 @@ const Header = () => {
                   <User size={16} className={styles.dropdownItemIcon} />
                   Your Profile
                 </a>
-                <a href="#" className={styles.dropdownItem}>
-                  <Settings size={16} className={styles.dropdownItemIcon} />
-                  Settings
-                </a>
                 <div className={styles.dropdownDivider}></div>
-                <a href="#" className={styles.dropdownItemDanger}>
+                <a
+                  // href="/"
+                  className={styles.dropdownItemDanger}
+                  onClick={handlelogout}
+                >
                   Log out
                 </a>
               </div>

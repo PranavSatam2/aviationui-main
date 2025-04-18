@@ -17,6 +17,13 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditMaterialNote from "./components/EditMaterialNote";
 import EditStoreAcceptance from "./components/EditStoreAcceptance";
+import AddRequisition from "./components/MaterialRequisition/AddMaterialRequisition/AddMaterialRequisition";
+import ViewMaterialRequisitionPage from "./components/MaterialRequisition/ViewMaterialRequisition";
+import EditMaterialRequisition from "./components/MaterialRequisition/EditMaterialRequisition/EditMaterialRequisition";
+import ViewPurchaseRequisitionPage from "./components/PurchaseRequisition/ViewPurchaseRequisition";
+import AddPurchaseRequisition from "./components/PurchaseRequisition/AddpurchaseRequisition/Addpurchase";
+import Checker from "./components/Checker/CheckerTable";
+import ViewSupplierRegistration from "./components/Checker/CheckerSupplierRegistration/ViewSupplierRegistration";
 const App = () => {
   return (
     <>
@@ -31,7 +38,10 @@ const App = () => {
           <Route path="/viewProduct" element={<ViewProduct />} />
           <Route path="/editProduct/:productId" element={<EditProduct />} />
           <Route path="/storeAcceptance" element={<StoreAccComponent />} />
-          <Route path="/editstoreAcceptance" element={<EditStoreAcceptance />} />
+          <Route
+            path="/editstoreAcceptance"
+            element={<EditStoreAcceptance />}
+          />
           <Route path="/viewstoreAcceptance" element={<ViewStoreAcc />} />
           <Route path="/editmaterial" element={<EditMaterialNote />} />
           <Route
@@ -44,6 +54,26 @@ const App = () => {
           />
           <Route path="/materialPage" element={<MaterialReceiptNoteForm />} />
           <Route path="/viewmaterialPage" element={<ViewMaterialPage />} />
+
+          <Route path="/addmaterialrequisition" element={<AddRequisition />} />
+          <Route
+            path="/Viewmaterialrequisition"
+            element={<ViewMaterialRequisitionPage />}
+          />
+          <Route
+            path="/editmaterialrequisition"
+            element={<EditMaterialRequisition />}
+          />
+          <Route
+            path="/ViewPurchaseRequisition"
+            element={<ViewPurchaseRequisitionPage />}
+          />
+          <Route
+            path="/addPurchaseRequisition"
+            element={<AddPurchaseRequisition />}
+          />
+          <Route path="/approvesupplier" element={<Checker />} />
+          <Route path="/ViewSupplier" element={<ViewSupplierRegistration />} />
         </Routes>
       </Router>
       <ToastContainer />

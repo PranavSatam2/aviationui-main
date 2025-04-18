@@ -4,13 +4,14 @@ const MaterialAndOther = ({
   validateDataType,
   actionPerformed,
   errors,
+  disabledField,
 }) => {
   return (
     <div className="row m-2 p-2 mt-4">
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-7">
+            <label className="col-form-label col-md-8">
               Are equipment calibrated?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -26,6 +27,7 @@ const MaterialAndOther = ({
                   value="Yes"
                   checked={dataMap.equipCalibrated === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -44,6 +46,7 @@ const MaterialAndOther = ({
                   value="No"
                   checked={dataMap.equipCalibrated === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -61,7 +64,7 @@ const MaterialAndOther = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-7">
+            <label className="col-form-label col-md-8">
               Are gauges and test equipment periodically certified, and are
               records maintained for frequency of recalibration?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -78,6 +81,7 @@ const MaterialAndOther = ({
                   value="Yes"
                   checked={dataMap.recalibration === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -96,6 +100,7 @@ const MaterialAndOther = ({
                   value="No"
                   checked={dataMap.recalibration === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -115,7 +120,7 @@ const MaterialAndOther = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-7">
+            <label className="col-form-label col-md-8">
               Are gauges, test equipment available and sufficient for our scope
               of work?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -132,6 +137,7 @@ const MaterialAndOther = ({
                   value="Yes"
                   checked={dataMap.scopeOfWork === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label className="form-check-label pt-1" htmlFor="scopeOfWork1">
                   Yes
@@ -147,6 +153,7 @@ const MaterialAndOther = ({
                   value="No"
                   checked={dataMap.scopeOfWork === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label className="form-check-label pt-1" htmlFor="scopeOfWork2">
                   No
@@ -161,7 +168,7 @@ const MaterialAndOther = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-7">
+            <label className="col-form-label col-md-8">
               Is there adequate area & safety programs in place?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -177,6 +184,7 @@ const MaterialAndOther = ({
                   value="Yes"
                   checked={dataMap.safetyProgram === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -195,6 +203,7 @@ const MaterialAndOther = ({
                   value="No"
                   checked={dataMap.safetyProgram === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -214,7 +223,7 @@ const MaterialAndOther = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-7">
+            <label className="col-form-label col-md-8">
               Is there a procedure in place for housekeeping?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -230,6 +239,7 @@ const MaterialAndOther = ({
                   value="Yes"
                   checked={dataMap.houseKeeping === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -248,6 +258,7 @@ const MaterialAndOther = ({
                   value="No"
                   checked={dataMap.houseKeeping === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"

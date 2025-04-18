@@ -3,13 +3,14 @@ const DocAndProcControl = ({
   handleChange,
   validateDataType,
   errors,
+  disabledField
 }) => {
   return (
     <div className="row m-2 p-2">
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Are written work instructions available at work stations?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -27,6 +28,7 @@ const DocAndProcControl = ({
                     dataMap.writtenWorkInstructionsAvaibleInStation === "Yes"
                   }
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -47,6 +49,7 @@ const DocAndProcControl = ({
                     dataMap.writtenWorkInstructionsAvaibleInStation === "No"
                   }
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -66,7 +69,7 @@ const DocAndProcControl = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Does the finished product show evidence of final inspection
               acceptance?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -83,6 +86,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.finalInspectionEvidence === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -101,6 +105,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.finalInspectionEvidence === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -122,7 +127,7 @@ const DocAndProcControl = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Are statistical methods used to control the process?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -138,6 +143,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.statisMethod === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -156,6 +162,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.statisMethod === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -173,7 +180,7 @@ const DocAndProcControl = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Are procedures in place for control of customer-supplied
               documents?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -190,6 +197,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.suppliedDocument === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -208,6 +216,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.suppliedDocument === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -227,7 +236,7 @@ const DocAndProcControl = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Does rage procedure include a method for handling revision changes
               & obsolete documents?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -244,6 +253,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.includeMethod === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -262,6 +272,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.includeMethod === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -279,7 +290,7 @@ const DocAndProcControl = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Are quality capabilities of suppliers evaluated prior to
               procurement?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -296,6 +307,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.qualityCapabilities === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -314,6 +326,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.qualityCapabilities === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -333,7 +346,7 @@ const DocAndProcControl = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Do you have an approved supplier list?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -349,6 +362,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.approvedSupplierList === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -367,6 +381,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.approvedSupplierList === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -386,7 +401,7 @@ const DocAndProcControl = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Is the supplier competent with respect to market price ?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -402,6 +417,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.marketPrice === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label className="form-check-label pt-1" htmlFor="marketPrice1">
                   Yes
@@ -417,6 +433,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.marketPrice === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label className="form-check-label pt-1" htmlFor="marketPrice2">
                   No
@@ -433,7 +450,7 @@ const DocAndProcControl = ({
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Are certified test reports & certifications of conformance
               obtained on purchased material ?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
@@ -450,6 +467,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.certifiedTestReports === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -468,6 +486,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.certifiedTestReports === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -487,7 +506,7 @@ const DocAndProcControl = ({
 
         <div className="row">
           <div className="col-md-12 d-flex">
-            <label className="col-form-label col-md-6 px-2 py-1">
+            <label className="col-form-label col-md-8 px-2 py-1">
               Is the supplier capable of on-time delivery ?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
@@ -503,6 +522,7 @@ const DocAndProcControl = ({
                   value="Yes"
                   checked={dataMap.supplierOnTimeDelivery === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -521,6 +541,7 @@ const DocAndProcControl = ({
                   value="No"
                   checked={dataMap.supplierOnTimeDelivery === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
