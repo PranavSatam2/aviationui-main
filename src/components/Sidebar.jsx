@@ -1,14 +1,10 @@
 import React, { useState } from "react";
-import styles from "./sidebar.module.css"; // Importing CSS modules
+import styles from "./sidebar.module.css";
 import AviationLogo from "../static/img/AviationLogo.png";
+import { Users, Package, Warehouse, FileText } from "lucide-react";
 
 const Sidebar = () => {
-  const [collapseState, setCollapseState] = useState({
-    supplierReg: false,
-    purchaseOrder: false,
-    materialManagement: false,
-    MaterialNote: false,
-  });
+  const [collapseState, setCollapseState] = useState({});
 
   const toggleCollapse = (section) => {
     setCollapseState((prevState) => ({
@@ -17,178 +13,142 @@ const Sidebar = () => {
     }));
   };
 
+  const handleMouseEnter = (section) => {
+    setCollapseState((prevState) => ({
+      ...prevState,
+      [section]: true,
+    }));
+  };
+
+  const handleMouseLeave = (section) => {
+    setCollapseState((prevState) => ({
+      ...prevState,
+      [section]: false,
+    }));
+  };
+
   return (
     <div className={styles.sidebar}>
       <div className={styles.sidebarHeader}>
         <img
-          style={{ height: "30px", width: "30px" }}
           src={AviationLogo}
           alt="Logo"
-        ></img>
+          style={{ height: "30px", width: "30px" }}
+        />
         <h3 className={styles.companyName}>Aviation</h3>
       </div>
 
       <div className={styles.sidebarMenu}>
         <ul className={styles.menuList}>
-          {/* Supplier Registration */}
-          <li className={styles.menuItem}>
-            <a
-              className={styles.menuToggle}
-              onClick={() => toggleCollapse("supplierReg")}
-              aria-expanded={collapseState.supplierReg ? "true" : "false"}
+          {[
+            {
+              key: "supplierReg",
+              icon: Users,
+              label: "Supplier Registration",
+              links: [
+                { href: "/SupplierRegistration", label: "Registration" },
+                { href: "/ViewSupplierRegistration", label: "View Supplier" },
+                { href: "/approvesupplier ", label: "Approve Supplier " },
+                { href: "/approvesupplier ", label: "Edit Supplier " },
+              ],
+            },
+            {
+              key: "purchaseOrder",
+              icon: Package,
+              label: "Product Order",
+              links: [
+                { href: "/AddProduct", label: "Add Product" },
+                { href: "/ProductList", label: "View Product" },
+              ],
+            },
+            {
+              key: "materialManagement",
+              icon: Warehouse,
+              label: "Store Acceptance",
+              links: [
+                { href: "/storeAcceptance", label: "Registration" },
+                { href: "/viewstoreAcceptance", label: "View Store" },
+              ],
+            },
+            {
+              key: "MaterialNote",
+              icon: FileText,
+              label: "Material Note",
+              links: [
+                { href: "/materialPage", label: "Add MaterialNote" },
+                { href: "/viewmaterialPage", label: "View MaterialNote" },
+              ],
+            },
+            {
+              key: "MaterialRequisition",
+              icon: FileText,
+              label: "Material Requisition",
+              links: [
+                {
+                  href: "/addmaterialrequisition",
+                  label: "Add Material Requisition",
+                },
+                { href: "/Viewmaterialrequisition", label: "View Requisition" },
+              ],
+            },
+            {
+              key: "PurchaseRequisition",
+              icon: FileText,
+              label: "Purchase Requisition",
+              links: [
+                {
+                  href: "/addPurchaseRequisition",
+                  label: "Add Purchase Requisition",
+                },
+                {
+                  href: "/ViewPurchaseRequisition ",
+                  label: "View Purchase Requisition",
+                },
+              ],
+            },
+            // { key: "Checker", icon: FileText, label: "Checker", links: [
+            //   // { href: "/addPurchaseRequisition", label: "Add Purchase Requisition" },
+            //   { href: "/checker ", label: "Checker" }
+            // ] },
+          ].map(({ key, icon: Icon, label, links }) => (
+            <li
+              key={key}
+              className={styles.menuItem}
+              onMouseEnter={() => handleMouseEnter(key)}
+              onMouseLeave={() => handleMouseLeave(key)}
             >
-              Supplier Registration
-              <span
-                className={`${styles.toggleIcon} ${
-                  collapseState.supplierReg ? styles.open : ""
+              <a
+                className={styles.menuToggle}
+                onClick={() => toggleCollapse(key)}
+                aria-expanded={collapseState[key] ? "true" : "false"}
+              >
+                <Icon className={styles.icon} size={20} />
+                {label}
+                <span
+                  className={`${styles.toggleIcon} ${
+                    collapseState[key] ? styles.open : ""
+                  }`}
+                >
+                  ▶
+                </span>
+              </a>
+              <div
+                className={`${styles.submenu} ${
+                  collapseState[key] ? styles.show : ""
                 }`}
               >
-                ▶
-              </span>
-            </a>
-
-            <div
-              className={`${styles.submenu} ${
-                collapseState.supplierReg ? styles.show : ""
-              }`}
-              id="supplierReg-collapse"
-            >
-              <ul className={styles.submenuList}>
-                <li className={styles.submenuItem}>
-                  <a
-                    href="/SupplierRegistration"
-                    className={styles.submenuLink}
-                  >
-                    Registration
-                  </a>
-                </li>
-                <li className={styles.submenuItem}>
-                  <a
-                    href="/ViewSupplierRegistration"
-                    className={styles.submenuLink}
-                  >
-                    View Supplier
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          {/* Product Order */}
-          <li className={styles.menuItem}>
-            <a
-              className={styles.menuToggle}
-              onClick={() => toggleCollapse("purchaseOrder")}
-              aria-expanded={collapseState.purchaseOrder ? "true" : "false"}
-            >
-              Product Order
-              <span
-                className={`${styles.toggleIcon} ${
-                  collapseState.purchaseOrder ? styles.open : ""
-                }`}
-              >
-                ▶
-              </span>
-            </a>
-
-            <div
-              className={`${styles.submenu} ${
-                collapseState.purchaseOrder ? styles.show : ""
-              }`}
-              id="purchaseOrder-collapse"
-            >
-              <ul className={styles.submenuList}>
-                <li className={styles.submenuItem}>
-                  <a href="/AddProduct" className={styles.submenuLink}>
-                    Add Product
-                  </a>
-                </li>
-                <li className={styles.submenuItem}>
-                  <a href="/ProductList" className={styles.submenuLink}>
-                    View Product
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          {/* Store Acceptance */}
-          <li className={styles.menuItem}>
-            <a
-              className={styles.menuToggle}
-              onClick={() => toggleCollapse("materialManagement")}
-              aria-expanded={
-                collapseState.materialManagement ? "true" : "false"
-              }
-            >
-              Store Acceptance
-              <span
-                className={`${styles.toggleIcon} ${
-                  collapseState.materialManagement ? styles.open : ""
-                }`}
-              >
-                ▶
-              </span>
-            </a>
-
-            <div
-              className={`${styles.submenu} ${
-                collapseState.materialManagement ? styles.show : ""
-              }`}
-              id="materialManagement-collapse"
-            >
-              <ul className={styles.submenuList}>
-                <li className={styles.submenuItem}>
-                  <a href="/storeAcceptance" className={styles.submenuLink}>
-                    Registration
-                  </a>
-                </li>
-                <li className={styles.submenuItem}>
-                  <a href="/viewstoreAcceptance" className={styles.submenuLink}>
-                    View Store
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          {/* Material Note */}
-          <li className={styles.menuItem}>
-            <a
-              className={styles.menuToggle}
-              onClick={() => toggleCollapse("MaterialNote")}
-              aria-expanded={collapseState.MaterialNote ? "true" : "false"}
-            >
-              Material Note
-              <span
-                className={`${styles.toggleIcon} ${
-                  collapseState.MaterialNote ? styles.open : ""
-                }`}
-              >
-                ▶
-              </span>
-            </a>
-
-            <div
-              className={`${styles.submenu} ${
-                collapseState.MaterialNote ? styles.show : ""
-              }`}
-              id="MaterialNote-collapse"
-            >
-              <ul className={styles.submenuList}>
-                <li className={styles.submenuItem}>
-                  <a href="/materialPage" className={styles.submenuLink}>
-                    Add MaterialNote
-                  </a>
-                </li>
-                <li className={styles.submenuItem}>
-                  <a href="/viewmaterialPage" className={styles.submenuLink}>
-                    View MaterialNote
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </li>
+                <ul className={styles.submenuList}>
+                  {links.map((link) => (
+                    <li key={link.href} className={styles.submenuItem}>
+                      <a href={link.href} className={styles.submenuLink}>
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
         </ul>
       </div>
 

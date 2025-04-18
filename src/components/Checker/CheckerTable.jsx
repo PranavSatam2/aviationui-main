@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
-import Footer from "./Footer";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
+import Footer from "../Footer";
+import Header from "../Header";
+import Sidebar from "../Sidebar";
 import {
   deleteSupplier,
   getSupplierDetail,
   listAllSupplier,
-} from "../services/db_manager";
+  getpendingAllSupplier,
+  ApproveSupplier,
+} from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-
-const ViewSupplierRegis = () => {
+import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
+import { Modal, Button, Form } from "react-bootstrap";
+import { PrintableGeneralTab } from "./CheckerSupplierRegistration/PrintSupplierReg";
+import styles from "./Checker.module.css";
+const Checker = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +24,16 @@ const ViewSupplierRegis = () => {
   const [sortField, setSortField] = useState("formId");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
+  // Modified: Changed selectedItems from array to single string ID
+  const [selectedItem, setSelectedItem] = useState("");
+  const [selecteSupplierData, setSelecteSupplierData] = useState("");
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [actionType, setActionType] = useState(""); // "accept" or "reject"
+  const [remark, setRemark] = useState("");
+  const [supplierData, setSupplierData] = useState();
 
   const navigate = useNavigate();
 
@@ -28,7 +42,7 @@ const ViewSupplierRegis = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await listAllSupplier();
+        const response = await getpendingAllSupplier();
         if (response) {
           setTableData(response);
         }
@@ -41,6 +55,41 @@ const ViewSupplierRegis = () => {
     };
     fetchData();
   }, []);
+
+  // Modified: Handle checkbox selection for single selection only
+  const handleCheckboxChange = (supplier) => {
+    // If the same checkbox is clicked again, deselect it
+    if (selectedItem === supplier.supplierId) {
+      setSelectedItem("");
+      console.log("Selected ID: none");
+    } else {
+      setSelectedItem(supplier.supplierId);
+      setSelecteSupplierData(supplier);
+      console.log("Selected ID:", supplier.supplierId);
+    }
+  };
+
+  // Modified: Handle select all - now it just clears selection
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedItem("");
+      console.log("Selected ID: none");
+    } else {
+      // Select the first item when clicking "select all"
+      if (currentItems.length > 0) {
+        const firstItemId = currentItems[0].formId;
+        setSelectedItem(firstItemId);
+        console.log("Selected ID:", firstItemId);
+      }
+    }
+    setSelectAll(!selectAll);
+  };
+
+  // Reset selection when page changes
+  useEffect(() => {
+    setSelectedItem("");
+    setSelectAll(false);
+  }, [currentPage, itemsPerPage]);
 
   const deleteSelectedElement = async (elementId) => {
     if (window.confirm("Are you sure you want to delete this supplier?")) {
@@ -66,7 +115,7 @@ const ViewSupplierRegis = () => {
         let supplierData = await getSupplierDetail(elementId);
         supplierData = supplierData.data;
         if (supplierId !== null) {
-          navigate("/SupplierRegistration", {
+          navigate("/ViewSupplier", {
             state: { supplierId, supplierData },
           });
         }
@@ -75,6 +124,52 @@ const ViewSupplierRegis = () => {
         toast.error("Failed to fetch supplier details");
       }
     }
+  };
+
+  // Modal handlers
+  const handleOpenModal = (type) => {
+    if (!selectedItem) {
+      toast.warning("Please select a supplier");
+      return;
+    }
+    setActionType(type);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setRemark("");
+  };
+
+  const handleSubmitAction = async () => {
+    // Here you would implement the actual accept/reject logic
+    const action = actionType === "accept" ? "accepted" : "rejected";
+    let payload = {
+      action: actionType,
+      supplierId: selectedItem,
+      remark: remark,
+      data: selecteSupplierData,
+    };
+    try {
+      let response = await ApproveSupplier(payload);
+      // Example implementation - replace with actual API calls
+      toast.success(`Supplier ${action} successfully,${response}`);
+      console.log({
+        action: actionType,
+        supplierId: selectedItem,
+        remark: remark,
+        data: selecteSupplierData,
+      });
+    } catch (error) {
+      console.error("Error fetching supplier details: ", error);
+      toast.error("Failed to fetch supplier details");
+    }
+
+    // Reset states
+    setSelectedItem("");
+    setSelectAll(false);
+    setRemark("");
+    handleCloseModal();
   };
 
   // Search functionality
@@ -140,6 +235,29 @@ const ViewSupplierRegis = () => {
     return pageNumbers;
   };
 
+  const handlePrintClick = (supplier) => {
+    // Store the supplier data
+    setSupplierData(supplier);
+
+    // Short delay to ensure React has updated the state and rendered the component
+    setTimeout(() => {
+      // Cache original body styles
+      const originalBodyStyle = document.body.style.cssText;
+
+      // Apply print-friendly styles to the body
+      document.body.style.margin = "0";
+      document.body.style.padding = "0";
+
+      // Print the document
+      window.print();
+
+      // Restore original body styles after printing dialog is closed
+      setTimeout(() => {
+        document.body.style.cssText = originalBodyStyle;
+      }, 100);
+    }, 500);
+  };
+
   // Column definitions for the table
   const columns = [
     { field: "supplierId", label: "ID", width: "50px" },
@@ -167,9 +285,18 @@ const ViewSupplierRegis = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Supplier Registration" />
+          <CustomBreadcrumb breadcrumbsLabel="Supplier Checker" />
+          <div className="printView">
+            <PrintableGeneralTab dataMap={supplierData} />
+          </div>
 
-          <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
+          <div
+            className={[
+              "normalView",
+              "card border-0 shadow-lg mx-4 my-4 rounded-3",
+              styles.normalViewStyle,
+            ].join(" ")}
+          >
             <div className="card-body">
               <div className="row align-items-center">
                 <div className="col-md-6">
@@ -227,6 +354,20 @@ const ViewSupplierRegis = () => {
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-blue">
+                        <th
+                          className="position-sticky top-0 bg-light py-3 text-center"
+                          style={{ width: "40px" }}
+                        >
+                          <div className="form-check d-flex justify-content-center">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="selectAll"
+                              checked={selectAll}
+                              onChange={handleSelectAll}
+                            />
+                          </div>
+                        </th>
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -283,6 +424,19 @@ const ViewSupplierRegis = () => {
                                 : "bg-light bg-opacity-50"
                             }
                           >
+                            <td className="text-center">
+                              <div className="form-check d-flex justify-content-center">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id={`check-${supplier.supplierId}`}
+                                  checked={selectedItem === supplier.supplierId}
+                                  onChange={() =>
+                                    handleCheckboxChange(supplier)
+                                  }
+                                />
+                              </div>
+                            </td>
                             {columns.map((column) => (
                               <td
                                 key={`${supplier.formId}-${column.field}`}
@@ -305,18 +459,16 @@ const ViewSupplierRegis = () => {
                                   onClick={() =>
                                     editSelectedElement(supplier.supplierId)
                                   }
-                                  title="Edit"
+                                  title="View Doc"
                                 >
-                                  <i className="fa-solid fa-pen-to-square"></i>
+                                  <i className="fa-solid fa-eye"></i>
                                 </button>
                                 <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() =>
-                                    deleteSelectedElement(supplier.supplierId)
-                                  }
-                                  title="Delete"
+                                  className="btn btn-sm btn-outline-secondary"
+                                  onClick={() => handlePrintClick(supplier)}
+                                  title="Print Doc"
                                 >
-                                  <i className="fa-solid fa-trash"></i>
+                                  <i className="fa-solid fa-print"></i>
                                 </button>
                               </div>
                             </td>
@@ -325,7 +477,7 @@ const ViewSupplierRegis = () => {
                       ) : (
                         <tr>
                           <td
-                            colSpan={columns.length + 1}
+                            colSpan={columns.length + 2}
                             className="text-center py-5"
                           >
                             {searchTerm ? (
@@ -431,13 +583,85 @@ const ViewSupplierRegis = () => {
                   </nav>
                 </div>
               </div>
+
+              {/* Accept/Reject Buttons */}
+              <div className="d-flex justify-content-end mt-3 gap-3">
+                <button
+                  className="btn btn-outline-success"
+                  onClick={() => handleOpenModal("accept")}
+                  disabled={!selectedItem}
+                >
+                  <i className="fa-solid fa-check me-2"></i>
+                  Approved
+                </button>
+                <button
+                  className="btn btn-outline-info"
+                  onClick={() => handleOpenModal("Send To Edit")}
+                  disabled={!selectedItem}
+                >
+                  <i className="fa-solid fa-paper-plane me-2"></i>
+                  Send To Edit
+                </button>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => handleOpenModal("reject")}
+                  disabled={!selectedItem}
+                >
+                  <i className="fa-solid fa-xmark me-2"></i>
+                  Reject
+                </button>
+              </div>
             </div>
           </div>
         </div>
         <Footer />
       </div>
+
+      {/* Accept/Reject Modal */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {actionType === "accept"
+              ? "Accept Supplier"
+              : actionType === "Send To Edit"
+              ? "Send To Edit"
+              : "Reject Supplier"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to {actionType} the selected supplier?</p>
+          <Form.Group className="mb-3">
+            <Form.Label>Remark</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={4}
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
+              placeholder="Enter your remarks here..."
+              required
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+          <Button
+            variant={actionType === "accept" ? "success" : "danger"}
+            onClick={handleSubmitAction}
+            disabled={!remark.trim()}
+          >
+            Confirm{" "}
+            {actionType === "accept"
+              ? "Accept"
+              : actionType === "Send To Edit"
+              ? "Send"
+              : "Reject"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-export default ViewSupplierRegis;
+export default Checker;

@@ -6,8 +6,10 @@ import { Eye, EyeOff, User, Lock, AlertCircle } from "lucide-react";
 import Header from "./Header";
 import Footer from "./Footer";
 import AviationLogo from "../static/img/AviationLogo.png";
+import { Toast } from "react-bootstrap";
 // Import CSS module
 import styles from "./Login.module.css";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -63,7 +65,7 @@ const LoginPage = () => {
       }
 
       // Make the API call to your backend
-      const response = await axios.post("http://localhost:8082/auth/login", {
+      const response = await axios.post("http://localhost:8081/auth/login", {
         username,
         password,
       });
@@ -79,6 +81,7 @@ const LoginPage = () => {
         setTimeout(() => {
           navigate("/homePage");
         }, 500);
+        toast.success("Login Successful");
       }
     } catch (error) {
       // Handle error response

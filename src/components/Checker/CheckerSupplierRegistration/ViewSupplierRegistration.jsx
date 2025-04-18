@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
-import Sidebar from "./Sidebar";
-import { useNavigate } from "react-router-dom";
-import GeneralTab from "./tabs/supplier_registration/GeneralTab";
-import SupplierAnalysisTab from "./tabs/supplier_registration/SupplierAnalysisTab";
-import QualityProcessTab from "./tabs/supplier_registration/QualityProcessTab";
-import IncomingInspectionTab from "./tabs/supplier_registration/IncomingInspectionTab";
-import DocAndProcControl from "./tabs/supplier_registration/DocAndProcControl";
-import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
-import { createSupplier, updateSupplier } from "../services/db_manager";
-import { data, useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-const SupplierRegistration = () => {
+import Header from "../../Header";
+import Footer from "../../Footer";
+import Sidebar from "../../Sidebar";
+import { useLocation } from "react-router-dom";
+import GeneralTab from "../../tabs/supplier_registration/GeneralTab";
+import SupplierAnalysisTab from "../../tabs/supplier_registration/SupplierAnalysisTab";
+import QualityProcessTab from "../../tabs/supplier_registration/QualityProcessTab";
+import IncomingInspectionTab from "../../tabs/supplier_registration/IncomingInspectionTab";
+import DocAndProcControl from "../../tabs/supplier_registration/DocAndProcControl";
+import MaterialAndOther from "../../tabs/supplier_registration/MaterialAndOther";
+import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
+import { Modal, Button, Form } from "react-bootstrap";
+
+const ViewSupplierRegistration = () => {
   // Variables
-  const navigate = useNavigate();
-  const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-  let formVariavles = {
+  let formVariables = {
     supplierName: "",
-    // formId               : '',
     phoneNumber: "",
     faxNum: "",
     email: "",
@@ -34,11 +30,9 @@ const SupplierRegistration = () => {
     workYear: "",
     areYouIsoRegistered: "",
     isoRegistered: "",
-    //ontKnow              : '',
     isoStandard: "",
     carDgcaApproval: "",
     isoRegistrationPlans: "",
-    //registerCar           : '',
     numEmp: "",
     numOpeShift: "",
     quaManual: "",
@@ -49,17 +43,13 @@ const SupplierRegistration = () => {
     productShipment: "",
     processDocumented: "",
     samplingIncomingInsp: "",
-    receivingInspectionResultsOnFile: "", //ObjectiveEvidence     : '',
-    //arApproval           : '',
+    receivingInspectionResultsOnFile: "",
     identificationMaintained: "",
     sepInsMaterial: "",
     nonConMaterial: "",
     affectCusReq: "",
     writtenWorkInstructionsAvaibleInStation: "",
-    //nstructionStation    : '',
     finalInspectionEvidence: "",
-    //documentedOperative   : '',
-    //inalInsAcc           : '',
     statisMethod: "",
     suppliedDocument: "",
     includeMethod: "",
@@ -67,31 +57,27 @@ const SupplierRegistration = () => {
     approvedSupplierList: "",
     marketPrice: "",
     certifiedTestReports: "",
-    //  certifiedReport       : '',
     supplierOnTimeDelivery: "",
-    // supplierCapable       : '',
     equipCalibrated: "",
     recalibration: "",
     scopeOfWork: "",
     safetyProgram: "",
     houseKeeping: "",
-    userName: "Hrishikesh",
-    userId: "10",
-    userAction: "1",
-    userRole: "M",
   };
 
-  // ######################################### HOOK #######################################
+  // ######################################### HOOKS #######################################
 
-  const [dataMap, setDataMap] = useState(formVariavles);
-  const [isDisabled, setIsDisabled] = useState(true);
-  const [errors, setErrors] = useState({});
+  const [dataMap, setDataMap] = useState(formVariables);
+  const [isActiveTab, setIsActiveTab] = useState(false);
+  const [disabledField, setDisabledField] = useState(false);
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [actionType, setActionType] = useState("");
+  const [remark, setRemark] = useState("");
+  const [selectedItems, setSelectedItems] = useState([]);
 
   const location = useLocation();
   const { supplierId, supplierData } = location.state || {};
-  const [invalidFeedback, setInvalidFeedback] = useState("d-none text-danger ");
-  const [invalidFeedbackMsg, setInvalidFeedbackMsg] = useState("");
-  const [isActiveTab, setIsActiveTab] = useState(false);
 
   useEffect(() => {
     const checkActiveTab = () => {
@@ -107,10 +93,14 @@ const SupplierRegistration = () => {
 
     return () => clearInterval(interval);
   }, []);
-  let msg = {
-    invalidFld: "*Please enter all mandatory fields",
-    dataSaved: "Data saved successfully",
-  };
+
+  // Set selectedItems when supplierId is available
+  useEffect(() => {
+    if (supplierId) {
+      setSelectedItems([supplierId]);
+    }
+  }, [supplierId]);
+
   function handleNextTab() {
     const activeTab = document.querySelector(".nav-link.active");
     const nextTab =
@@ -120,6 +110,7 @@ const SupplierRegistration = () => {
       nextTab.click();
     }
   }
+
   function handlePrevTab() {
     const activeTab = document.querySelector(".nav-link.active");
     const prevTab =
@@ -129,69 +120,45 @@ const SupplierRegistration = () => {
       prevTab.click();
     }
   }
-  // ################################## HOOK-FUNCTION ###########################
 
-  // This function is used to save Form data
-  async function actionPerformed(action) {
-    if (action === "clear") {
-      let keys = Object.keys(formVariavles);
-      keys.forEach((key) => {
-        formVariavles[key] = "";
-      });
-      setDataMap(formVariavles);
-      setErrors({});
-      return;
-    }
+  // Modal handlers
+  const handleShowModal = (action) => {
+    setActionType(action);
+    setRemark("");
+    setShowModal(true);
+  };
 
-    const missingFields = getMissingFields();
-    if (Object.keys(missingFields).length > 0) {
-      setErrors(missingFields);
-      // return; // Stop further execution if errors are present
-    }
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setActionType("");
+    setRemark("");
+  };
 
-    setErrors({});
+  const handleSubmitAction = () => {
+    // Add your action logic here based on actionType
+    console.log(
+      `Action: ${actionType}, Remark: ${remark}, Supplier ID: ${supplierId}`
+    );
 
-    if (supplierId === "" || supplierId === undefined) {
-      setDataMap(formVariavles);
-      let response = await createSupplier(dataMap);
+    // Here you would implement the actual functionality
+    // For example:
+    // if (actionType === "accept") {
+    //   acceptSupplier(supplierId, remark);
+    // } else if (actionType === "reject") {
+    //   rejectSupplier(supplierId, remark);
+    // } else if (actionType === "Send To Edit") {
+    //   sendToEdit(supplierId, remark);
+    // }
 
-      if (response) {
-        setDataMap(formVariavles);
-        window.location.reload();
-      }
-    } else {
-      let response = await updateSupplier(supplierId, dataMap);
-      if (response) {
-        setDataMap(response.data);
-        setInvalidFeedbackMsg(msg.dataSaved);
-        setInvalidFeedback("text-success col-md-4");
-        navigate("/ViewSupplierRegistration");
-        toast.success("Supplier updated successfully");
-      }
-    }
-  }
-
-  function getMissingFields() {
-    let errorMessages = {};
-    let keys = Object.keys(dataMap);
-
-    for (let key of keys) {
-      if (
-        !dataMap[key] &&
-        !["faxNum", "workYear", "numEmp", "numOpeShift"].includes(key)
-      ) {
-        errorMessages[key] = "This field is required.";
-      }
-    }
-
-    return errorMessages;
-  }
+    handleCloseModal();
+  };
 
   // ################################### FUNCTIONS ###############################
 
   useEffect(() => {
     // Check if supplierData and supplierId are available
     if (supplierData && supplierId) {
+      setDisabledField(true);
       setDataMap((prevData) => ({
         ...prevData,
         ...supplierData, // Merge supplierData into dataMap
@@ -199,127 +166,26 @@ const SupplierRegistration = () => {
     }
   }, [supplierData, supplierId]);
 
-  // This functiom handle all change event's
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setDataMap((dataMap) => ({
-      ...dataMap,
-      [name]: value,
-    }));
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]:
-        value.trim() === "" &&
-        !["faxNum", "workYear", "numEmp", "numOpeShift"].includes(name)
-          ? "This field is required."
-          : "",
-    }));
-  };
+  // These are empty function implementations to pass to child components
+  // They won't do anything since we're in view-only mode
+  const handleChange = () => {};
+  const validateDataType = () => {};
+  const validateLen = () => {};
+  const errors = {};
 
-  // This function validate all mandatory fld are entered
-  function isAllFldValidated() {
-    let flds = "";
-    let keys = Object.keys(dataMap);
-    let isAllFldMandatory = true;
-
-    for (let index = 0; index < keys.length; index++) {
-      let key = keys[index];
-      let value = dataMap[key];
-
-      if (value === "") {
-        if (
-          key == "faxNum" ||
-          key == "workYear" ||
-          key == "dontKnow" ||
-          key == "registerCar" ||
-          key == "numEmp" ||
-          key == "numOpeShift"
-        ) {
-          continue;
-        } else {
-          flds += `${key},`;
-          isAllFldMandatory = false;
-        }
-      }
-    }
-
-    let textFlds = document.querySelectorAll(".is-invalid");
-
-    if (textFlds.length >= 1) {
-      isAllFldMandatory = false;
-    }
-
-    if (!isAllFldMandatory) {
-      setInvalidFeedback("text-danger col-md-4");
-      setInvalidFeedbackMsg(msg.invalidFld);
-    } else {
-      setInvalidFeedback("d-none text-danger col-md-4");
-    }
-
-    return isAllFldMandatory;
-  }
-
-  // ########################### VALIDATION ################################
-
-  // This function validate the dataType
-  const validateDataType = (event, dataType) => {
-    let value = event.target.value;
-    if (dataType === "A") {
-      value = value.replace(/[^a-zA-Z0-9 ]/g, "");
-      event.target.classList.add("is-valid");
-    } else if (dataType === "N") {
-      value = value.replace(/[^0-9]/g, "");
-      event.target.classList.add("is-valid");
-    } else if (dataType === "ANS") {
-      value = value.replace(/[^a-zA-Z0-9,. ]/g, "");
-      event.target.classList.add("is-valid");
-    }
-
-    event.target.value = value;
-  };
-
-  // This function validate the length of field
-  function validateLen(event, minLen, maxLen) {
-    let value = event.target.value.substring(0, maxLen);
-    event.target.value = value;
-    let elementLen = value.length;
-    if (elementLen > maxLen) {
-      event.target.classList.remove("is-valid");
-      event.target.classList.add("is-invalid");
-    } else if (elementLen < minLen) {
-      event.target.classList.remove("is-valid");
-      event.target.classList.add("is-invalid");
-    } else {
-      event.target.classList.add("is-valid");
-      event.target.classList.remove("is-invalid");
-    }
-  }
-  useEffect(() => {
-    const allEmpty = Object.values(dataMap).every((value) => value === "");
-    setIsDisabled(allEmpty);
-  }, [dataMap]);
   // ############################### RETURN-COMPONENT #############################
   return (
-    <div className="wrapper ">
+    <div className="wrapper">
       <Sidebar />
 
       <div className="content">
         <Header />
-        {/* conetnt Begin*/}
+        {/* content Begin*/}
         <div style={{ marginTop: "10px", marginBottom: "4rem" }}>
           <CustomBreadcrumb
-            breadcrumbsLabel="Supplier Registration"
+            breadcrumbsLabel="View Supplier Registration"
             isBack={true}
           />
-
-          {/* Content heading */}
-          {/* <div className="col-md-6">
-          <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-2">
-            <h5 className="h5 mx-3 mb-0 text-gray-800">
-              Supplier Registration
-            </h5>
-          </div>
-        </div> */}
 
           {/* Content Body */}
           <div
@@ -425,6 +291,8 @@ const SupplierRegistration = () => {
                     validateDataType={validateDataType}
                     validateLen={validateLen}
                     errors={errors}
+                    isViewOnly={true}
+                    disabledField={disabledField}
                   />
                 </div>
                 <div
@@ -440,6 +308,8 @@ const SupplierRegistration = () => {
                     validateDataType={validateDataType}
                     validateLen={validateLen}
                     errors={errors}
+                    isViewOnly={true}
+                    disabledField={disabledField}
                   />
                 </div>
                 <div
@@ -455,6 +325,8 @@ const SupplierRegistration = () => {
                     validateDataType={validateDataType}
                     validateLen={validateLen}
                     errors={errors}
+                    isViewOnly={true}
+                    disabledField={disabledField}
                   />
                 </div>
                 <div
@@ -470,6 +342,8 @@ const SupplierRegistration = () => {
                     validateDataType={validateDataType}
                     validateLen={validateLen}
                     errors={errors}
+                    isViewOnly={true}
+                    disabledField={disabledField}
                   />
                 </div>
                 <div
@@ -485,6 +359,8 @@ const SupplierRegistration = () => {
                     validateDataType={validateDataType}
                     validateLen={validateLen}
                     errors={errors}
+                    isViewOnly={true}
+                    disabledField={disabledField}
                   />
                 </div>
                 <div
@@ -499,46 +375,54 @@ const SupplierRegistration = () => {
                     handleChange={handleChange}
                     validateDataType={validateDataType}
                     validateLen={validateLen}
-                    actionPerformed={actionPerformed}
                     errors={errors}
+                    isViewOnly={true}
+                    disabledField={disabledField}
                   />
                 </div>
               </div>
-              <div className="mt-3 col-md-12 d-flex justify-content-end">
-                <p className={invalidFeedback}>{invalidFeedbackMsg}</p>
+              <div className="mt-3 col-md-12 d-flex justify-content-between">
+                <div>
+                  <button
+                    className="btn btn-outline-success mx-2"
+                    onClick={() => handleShowModal("accept")}
+                  >
+                    <i className="fa-solid fa-check me-2"></i>
+                    Approved
+                  </button>
+                  <button
+                    className="btn btn-outline-info mx-2"
+                    onClick={() => handleShowModal("Send To Edit")}
+                  >
+                    <i className="fa-solid fa-paper-plane me-2"></i>
+                    Send To Edit
+                  </button>
+                  <button
+                    className="btn btn-outline-danger mx-2"
+                    onClick={() => handleShowModal("reject")}
+                  >
+                    <i className="fa-solid fa-xmark me-2"></i>
+                    Reject
+                  </button>
+                </div>
 
-                {/* <div className="col-md-8 text-right align-items-end"> */}
-                <button
-                  type="button"
-                  className="btn btn-warning mx-2"
-                  onClick={() => actionPerformed("clear")}
-                >
-                  Clear
-                </button>
-                {isActiveTab && (
+                {/* Navigation Buttons */}
+                <div>
                   <button
                     type="button"
-                    className="btn btn-success mx-2"
-                    onClick={() => actionPerformed("submit")}
+                    className="btn btn-secondary mx-2"
+                    onClick={handlePrevTab}
                   >
-                    Submit
+                    Previous
                   </button>
-                )}
-                {/* </div> */}
-                <button
-                  type="button"
-                  className="btn btn-secondary mx-2"
-                  onClick={handlePrevTab}
-                >
-                  Previous
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleNextTab}
-                >
-                  Next
-                </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleNextTab}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -546,8 +430,55 @@ const SupplierRegistration = () => {
         {/* Content End */}
         <Footer />
       </div>
+
+      {/* Accept/Reject Modal */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {actionType === "accept"
+              ? "Accept Suppliers"
+              : actionType === "Send To Edit"
+              ? "Send To Edit"
+              : "Reject Suppliers"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to {actionType} {selectedItems.length}{" "}
+            selected supplier{selectedItems.length !== 1 ? "s" : ""}?
+          </p>
+          <Form.Group className="mb-3">
+            <Form.Label>Remark</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={4}
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
+              placeholder="Enter your remarks here..."
+              required
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+          <Button
+            variant={actionType === "accept" ? "success" : "danger"}
+            onClick={handleSubmitAction}
+            disabled={!remark.trim()}
+          >
+            Confirm{" "}
+            {actionType === "accept"
+              ? "Accept"
+              : actionType === "Send To Edit"
+              ? "Send"
+              : "Reject"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-export default SupplierRegistration;
+export default ViewSupplierRegistration;
