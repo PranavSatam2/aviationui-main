@@ -49,7 +49,7 @@ const Sidebar = () => {
                 { href: "/SupplierRegistration", label: "Registration" },
                 { href: "/ViewSupplierRegistration", label: "View Supplier" },
                 { href: "/approvesupplier ", label: "Approve Supplier " },
-                { href: "/approvesupplier ", label: "Edit Supplier " },
+                { href: "/editsupplier ", label: "Edit Supplier " },
               ],
             },
             {

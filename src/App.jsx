@@ -24,6 +24,8 @@ import ViewPurchaseRequisitionPage from "./components/PurchaseRequisition/ViewPu
 import AddPurchaseRequisition from "./components/PurchaseRequisition/AddpurchaseRequisition/Addpurchase";
 import Checker from "./components/Checker/CheckerTable";
 import ViewSupplierRegistration from "./components/Checker/CheckerSupplierRegistration/ViewSupplierRegistration";
+import EditSupplierTable from "./components/Checker/EditSupplier/EditSupplierTable";
+import EditSupplierfrom from "./components/Checker/EditSupplier/Editsupplierform";
 const App = () => {
   return (
     <>
@@ -73,6 +75,10 @@ const App = () => {
             element={<AddPurchaseRequisition />}
           />
           <Route path="/approvesupplier" element={<Checker />} />
+          <Route path="/editsupplier" element={<EditSupplierTable />} />
+          <Route path="/editsupplierform" element={<EditSupplierfrom />} />
+
+
           <Route path="/ViewSupplier" element={<ViewSupplierRegistration />} />
         </Routes>
       </Router>
