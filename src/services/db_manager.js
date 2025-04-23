@@ -98,11 +98,23 @@ export const listAllSupplier = () => {
       throw error;
     });
 };
-//checker
 
+//checker
 export const getpendingAllSupplier = () => {
   return axios
-    .get(`${SUPPLIER_URL}/getPendingSupplierList`)
+    .get(`${SUPPLIER_URL}/getPendingSupplierList?userRole=M&userAction=1`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching suppliers:", error);
+      throw error;
+    });
+};
+//editapproveSupplier
+export const getEditingSupplierList = () => {
+  return axios
+    .get(`${SUPPLIER_URL}/getEditingSupplierList?userRole=M&userAction=3`)
     .then((response) => {
       return response.data;
     })

@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import Footer from "../Footer";
-import Header from "../Header";
-import Sidebar from "../Sidebar";
+import Footer from "../../Footer";
+import Header from "../../Header";
+import Sidebar from "../../Sidebar";
 import {
   deleteSupplier,
   getSupplierDetail,
   listAllSupplier,
   getpendingAllSupplier,
   ApproveSupplier,
-} from "../../services/db_manager";
+  getEditingSupplierList
+} from "../../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
+import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import { Modal, Button, Form } from "react-bootstrap";
-import { PrintableGeneralTab } from "./CheckerSupplierRegistration/PrintSupplierReg";
-import styles from "./Checker.module.css";
-const Checker = () => {
+import { PrintableGeneralTab } from "../CheckerSupplierRegistration/PrintSupplierReg";
+import styles from "./EditSupplierTable.module.css";
+const EditSupplierTable = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,7 +40,7 @@ const Checker = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await getpendingAllSupplier();
+      const response = await getEditingSupplierList();
       if (response) {
         setTableData(response);
       }
@@ -114,7 +115,7 @@ const Checker = () => {
         let supplierData = await getSupplierDetail(elementId);
         supplierData = supplierData.data;
         if (supplierId !== null) {
-          navigate("/ViewSupplier", {
+          navigate("/editsupplierform", {
             state: { supplierId, supplierData },
           });
         }
@@ -148,7 +149,7 @@ const Checker = () => {
       remark: remark,
       // supplierId: selectedItem,
       userRole:'QM',
-      userAction: action === "rejected" ? "3" : "2", // 👈 conditional value
+      userAction:'2'
     };
     try {
       const response = await ApproveSupplier(updatedSupplierData);
@@ -280,7 +281,7 @@ const Checker = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Supplier Checker" />
+          <CustomBreadcrumb breadcrumbsLabel="Edit Supplier" />
           <div className="printView">
             <PrintableGeneralTab dataMap={supplierData} />
           </div>
@@ -449,7 +450,16 @@ const Checker = () => {
                             ))}
                             <td>
                               <div className="d-flex justify-content-center gap-2">
-                                <button
+                              <button
+                                  className="btn btn-sm btn-outline-primary"
+                                  onClick={() =>
+                                    editSelectedElement(supplier.supplierId)
+                                  }
+                                  title="Edit"
+                                >
+                                  <i className="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                {/* <button
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() =>
                                     editSelectedElement(supplier.supplierId)
@@ -457,14 +467,14 @@ const Checker = () => {
                                   title="View Doc"
                                 >
                                   <i className="fa-solid fa-eye"></i>
-                                </button>
-                                <button
+                                </button> */}
+                                {/* <button
                                   className="btn btn-sm btn-outline-secondary"
                                   onClick={() => handlePrintClick(supplier)}
                                   title="Print Doc"
                                 >
                                   <i className="fa-solid fa-print"></i>
-                                </button>
+                                </button> */}
                               </div>
                             </td>
                           </tr>
@@ -580,7 +590,7 @@ const Checker = () => {
               </div>
 
               {/* Accept/Reject Buttons */}
-              <div className="d-flex justify-content-end mt-3 gap-3">
+              {/* <div className="d-flex justify-content-end mt-3 gap-3">
                 <button
                   className="btn btn-outline-success"
                   onClick={() => handleOpenModal("accept")}
@@ -605,7 +615,7 @@ const Checker = () => {
                   <i className="fa-solid fa-xmark me-2"></i>
                   Reject
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -659,4 +669,4 @@ const Checker = () => {
   );
 };
 
-export default Checker;
+export default EditSupplierTable;
