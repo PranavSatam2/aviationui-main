@@ -15,7 +15,7 @@ const HomePage = () => {
     useEffect(() => {
     
       if (!roleId) return;
-      fetch(`http://localhost:8082/api/roles/roleMenus/${roleId}`, {
+      fetch(`http://43.204.71.108:8082/aero-maint-core-0.0.1-SNAPSHOT/api/roles/roleMenus/${roleId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then(res => res.json())

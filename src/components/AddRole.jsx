@@ -35,7 +35,7 @@ const AddRole= () => {
 
     try {
       // Send the new role data to the backend
-      const response = await axios.post('http://localhost:8082/api/roles/addRole', {
+      const response = await axios.post('http://43.204.71.108:8082/aero-maint-core-0.0.1-SNAPSHOT/api/roles/addRole', {
         roleName,
         roleCode,
         roleDescription,

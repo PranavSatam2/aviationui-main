@@ -20,8 +20,9 @@ const LoginPage = () => {
   const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
   //const history = useHistory();
-
+  //const api_url = http://43.204.71.108:8082/aero-maint-core-0.0.1-SNAPSHOT
   useEffect(() => {
+    console.log(" login start..............");
     // Trigger animation after component mounts
     setFadeIn(true);
 
@@ -65,7 +66,7 @@ const LoginPage = () => {
       }
 
       // Make the API call to your backend
-      const response = await axios.post("http://localhost:8082/auth/login", {
+      const response = await axios.post("http://43.204.71.108:8082/aero-maint-core-0.0.1-SNAPSHOT/auth/login", {
         username,
         password,
       });
@@ -92,7 +93,7 @@ console.log("menuItems after remove:", localStorage.getItem("menuItems"));
         
       } else {
  
-  const roleResponse = await axios.get(`http://localhost:8082/api/roles/byname/${role}`, {
+  const roleResponse = await axios.get(`http://43.204.71.108:8082/aero-maint-core-0.0.1-SNAPSHOT/api/roles/byname/${role}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (roleResponse?.data?.id) {

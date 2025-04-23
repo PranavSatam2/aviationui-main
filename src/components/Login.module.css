@@ -1,6 +1,4 @@
-/* LoginPage.module.css */
 
-/* Main layout */
 .loginPage {
   background: linear-gradient(to right, #727376, #0c1f48);
   min-height: 100vh;
@@ -18,7 +16,6 @@
   opacity: 1;
 }
 
-/* Card styling */
 .loginCard {
   background-color: white;
   border-radius: 8px;
@@ -48,7 +45,7 @@
   padding: 1.5rem;
 }
 
-/* Form elements */
+
 .formGroup {
   margin-bottom: 1.5rem;
 }
@@ -139,7 +136,7 @@
   text-decoration: underline;
 }
 
-/* Button styles */
+
 .loginButton {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -186,7 +183,7 @@
   }
 }
 
-/* Error message */
+
 .errorMessage {
   display: flex;
   align-items: center;
@@ -203,7 +200,6 @@
   width: 1.25rem;
 }
 
-/* Sign up option */
 .signupOption {
   margin-top: 1.5rem;
   text-align: center;
@@ -214,7 +210,6 @@
   color: #4b5563;
 }
 
-/* Social login */
 .socialLogin {
   margin-top: 1.5rem;
 }

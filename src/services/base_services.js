@@ -1,5 +1,5 @@
 // BASE URL of server
-export const REST_API_BASE_URL = "http://localhost:8082";
+export const REST_API_BASE_URL = "http://43.204.71.108:8082/aero-maint-core-0.0.1-SNAPSHOT";
 
 // ############################## URL_SAMPLE ##########################
 // export const listEmployee = () =>  axios.get(REST_API_BASE_URL);
