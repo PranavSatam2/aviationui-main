@@ -50,10 +50,10 @@ const Sidebar = () => {  //() => {
     <div className={styles.sidebar}>
       <div className={styles.sidebarHeader}>
         <img
-          style={{ height: "30px", width: "30px" }}
           src={AviationLogo}
           alt="Logo"
-        ></img>
+          style={{ height: "30px", width: "30px" }}
+        />
         <h3 className={styles.companyName}>Aviation</h3>
       </div>
 

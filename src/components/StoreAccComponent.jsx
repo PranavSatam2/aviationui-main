@@ -55,6 +55,7 @@ const StoreAccComponent = () => {
 
   // This function is used to send save request
   async function sendSaveRequest() {
+    console.log("print")
     if (listData.includes(partNum)) {
       let updateRes = await updateStore(partNum, form);
     } else {

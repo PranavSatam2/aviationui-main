@@ -4,6 +4,7 @@ const GeneralTab = ({
   validateDataType,
   validateLen,
   errors,
+  disabledField
 }) => {
   function validateMailId(event) {
     const email = event.target.value;
@@ -22,9 +23,9 @@ const GeneralTab = ({
     <div className="m-2 p-2 mt-2">
       {/* Supplier/Sub-Contractor Details */}
       <div className="col-md-12 mb-1 d-flex">
-        <div className="col-md-6">
+        <div className="col-md-5">
           <div className="row">
-            <label className="col-md-4 pt-2" htmlFor="supplierName">
+            <label className="col-md-6 pt-2" htmlFor="supplierName">
               Supplier/Sub-Contractor Name
               <span className="text-danger mx-1 " style={{ fontSize: "17px" }}>
                 *
@@ -42,6 +43,7 @@ const GeneralTab = ({
                 validateDataType(event, "A");
                 validateLen(event, 0, 50);
               }}
+              disabled={disabledField}
             />
           </div>
           {errors.supplierName && (
@@ -76,8 +78,8 @@ const GeneralTab = ({
       <hr className="mx-0 my-2 p-0 border" />
 
       {/* Contact Details */}
-      <div className="col-md-12 d-flex mb-1">
-        <div className="col-md-6">
+      <div className="col-md-12 d-flex mb-1" style={{justifyContent:'space-between'}}>
+        <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="phoneNumber">
               Phone Number
@@ -97,6 +99,7 @@ const GeneralTab = ({
                 validateDataType(event, "N");
                 validateLen(event, 10, 10);
               }}
+              disabled={disabledField}
             />
           </div>
           {errors.phoneNumber && (
@@ -105,7 +108,7 @@ const GeneralTab = ({
             </div>
           )}
         </div>
-        <div className="col-md-6">
+        <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="faxNum">
               Fax Number
@@ -118,14 +121,15 @@ const GeneralTab = ({
               placeholder="Fax Number"
               value={dataMap.faxNum}
               onChange={handleChange}
+              disabled={disabledField}
             />
           </div>
         </div>
       </div>
 
       {/* Email & Address */}
-      <div className="col-md-12 d-flex mb-3">
-        <div className="col-md-6">
+      <div className="col-md-12 d-flex mb-3" style={{justifyContent:'space-between'}}>
+        <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="email">
               Email ID
@@ -145,6 +149,7 @@ const GeneralTab = ({
                 validateMailId(event);
               }}
               required
+              disabled={disabledField}
             />
           </div>
           {errors.email && (
@@ -153,7 +158,7 @@ const GeneralTab = ({
             </div>
           )}
         </div>
-        <div className="col-md-6">
+        <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="address">
               Address
@@ -172,6 +177,7 @@ const GeneralTab = ({
               onInput={(event) => {
                 validateLen(event, 1, 150);
               }}
+              disabled={disabledField}
             />
           </div>
           {errors.address && (
@@ -185,9 +191,9 @@ const GeneralTab = ({
       <hr className="mx-0 my-2 p-0 border " />
 
       {/* Quality Manager Details */}
-      <h5 className="mb-3 fw-bold text-dark">Quality Manager Details</h5>
-      <div className="col-md-12 d-flex">
-        <div className="col-md-6">
+      <h5 className="mb-3 fw-bold text-dark" >Quality Manager Details</h5>
+      <div className="col-md-12 d-flex"  style={{justifyContent:'space-between'}}>
+        <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="qualityManagerName">
               Name
@@ -207,6 +213,7 @@ const GeneralTab = ({
                 validateDataType(event, "A");
                 validateLen(event, 0, 30);
               }}
+              disabled={disabledField}
             />
           </div>
           {errors.qualityManagerName && (
@@ -215,7 +222,7 @@ const GeneralTab = ({
             </div>
           )}
         </div>
-        <div className="col-md-6">
+        <div className="col-md-5">
           <div className="row">
             <label
               className="col-md-4 pt-2"
@@ -238,6 +245,7 @@ const GeneralTab = ({
                 validateDataType(event, "N");
                 validateLen(event, 0, 10);
               }}
+              disabled={disabledField}
             />
           </div>
           {errors.qualityManagerPhoneNumber && (
@@ -248,7 +256,7 @@ const GeneralTab = ({
         </div>
       </div>
       <div className="col-md-12">
-        <div className="col-md-6">
+        <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="qualityManagerEmailId">
               Email ID
@@ -267,6 +275,7 @@ const GeneralTab = ({
               onInput={(event) => {
                 validateMailId(event);
               }}
+              disabled={disabledField}
             />
           </div>
           {errors.qualityManagerEmailId && (
@@ -281,8 +290,8 @@ const GeneralTab = ({
 
       {/* Sales Representative Details */}
       <h5 className="mb-3 fw-bold text-dark">Sales Representative Details</h5>
-      <div className="col-md-12 d-flex">
-        <div className="col-md-6">
+      <div className="col-md-12 d-flex"  style={{justifyContent:'space-between'}}>
+        <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="saleRepresentativeName">
               Name
@@ -302,6 +311,7 @@ const GeneralTab = ({
                 validateDataType(event, "A");
                 validateLen(event, 0, 100);
               }}
+              disabled={disabledField}
             />
           </div>
           {errors.saleRepresentativeName && (
@@ -310,7 +320,7 @@ const GeneralTab = ({
             </div>
           )}
         </div>
-        <div className="col-md-6">
+        <div className="col-md-5">
           <div className="row">
             <label
               className="col-md-4 pt-2"
@@ -332,6 +342,7 @@ const GeneralTab = ({
               onInput={(event) => {
                 validateMailId(event);
               }}
+              disabled={disabledField}
               required
             />
           </div>
@@ -343,7 +354,7 @@ const GeneralTab = ({
         </div>
       </div>
       <div className="col-md-12 mb-2">
-        <div className="col-md-6">
+        <div className="col-md-5">
           <div className="row">
             <label
               className="col-md-4 pt-2"
@@ -366,6 +377,7 @@ const GeneralTab = ({
                 validateDataType(event, "N");
                 validateLen(event, 10, 10);
               }}
+              disabled={disabledField}
             />
           </div>
           {errors.saleRepresentativePhoneNumber && (

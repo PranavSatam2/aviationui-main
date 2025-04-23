@@ -1,91 +1,92 @@
 import { useEffect, useState } from "react";
-import Footer from "./Footer";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
+import Footer from "../Footer";
+import Header from "../Header";
+import Sidebar from "../Sidebar";
 import {
-  deleteSupplier,
-  getSupplierDetail,
-  listAllSupplier,
-} from "../services/db_manager";
+  listAllMaterialRequisition,
+  deleteMaterialRequisition,
+  getMaterialRequisitionDetail,
+} from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
+import MaterialRequisitionForm from "./MaterialRequisitionReport";
+import styles from "./Viewrequisition.module.css";
 
-const ViewSupplierRegis = () => {
+const ViewMaterialRequisitionPage = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("formId");
+  const [sortField, setSortField] = useState("materialRequisitionNo");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [requisitionData, setRequisitionData] = useState();
   const navigate = useNavigate();
 
+  const fetchData = async () => {
+    // setIsLoading(true);
+    try {
+      const response = await listAllMaterialRequisition();
+      setTableData(response || []);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching material requisitions", error);
+      toast.error("Failed to load material requisitions");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // Fetching data when the component is mounted
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await listAllSupplier();
-        if (response) {
-          setTableData(response);
-        }
-      } catch (error) {
-        console.error("Error fetching data", error);
-        toast.error("Failed to load suppliers");
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
-  const deleteSelectedElement = async (elementId) => {
-    if (window.confirm("Are you sure you want to delete this supplier?")) {
+  // Delete the selected material requisition
+  const deleteSelectedElement = async (materialRequisitionID) => {
+    if (window.confirm("Are you sure you want to delete this item?")) {
       try {
-        const response = await deleteSupplier(elementId);
-        if (response) {
-          setTableData((prevData) =>
-            prevData.filter((supplier) => supplier.formId !== elementId)
-          );
-          toast.success("Supplier deleted successfully");
-        }
+        await deleteMaterialRequisition(materialRequisitionID);
+        setTableData((prevData) =>
+          prevData.filter(
+            (requisition) =>
+              requisition.materialRequisitionID !== materialRequisitionID
+          )
+        );
+        toast.success("Material requisition deleted successfully!");
+        fetchData();
       } catch (error) {
-        console.error("Failed to delete supplier", error);
-        toast.error("Failed to delete supplier. Please try again.");
+        console.error("Failed to delete material requisition", error);
+        toast.error("Failed to delete material requisition. Please try again.");
       }
     }
   };
 
-  const editSelectedElement = async (elementId) => {
-    if (elementId !== "") {
-      try {
-        let supplierId = elementId;
-        let supplierData = await getSupplierDetail(elementId);
-        supplierData = supplierData.data;
-        if (supplierId !== null) {
-          navigate("/SupplierRegistration", {
-            state: { supplierId, supplierData },
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching supplier details: ", error);
-        toast.error("Failed to fetch supplier details");
+  // Edit the selected material requisition
+  const editSelectedElement = async (RequisitionID) => {
+    try {
+      const response = await getMaterialRequisitionDetail(RequisitionID);
+      const requisitionData = response?.data;
+      if (requisitionData) {
+        navigate("/editmaterialrequisition", {
+          state: { RequisitionID },
+        });
       }
+    } catch (error) {
+      console.error("Error fetching material requisition details: ", error);
+      toast.error("Failed to fetch material requisition details");
     }
   };
 
   // Search functionality
-  const filteredData = tableData.filter((supplier) => {
-    return Object.values(supplier).some(
+  const filteredData = tableData.filter((requisition) => {
+    return Object.values(requisition).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
-
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
@@ -142,34 +143,45 @@ const ViewSupplierRegis = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "supplierId", label: "ID", width: "50px" },
-    { field: "supplierName", label: "Supplier Name", width: "100px" },
-    { field: "address", label: "Address", width: "100px" },
-    { field: "phoneNumber", label: "Phone Number", width: "100px" },
-    { field: "faxNum", label: "Fax Number", width: "100px" },
-    { field: "email", label: "Email", width: "100px" },
-    { field: "qualityManagerName", label: "Quality Manager", width: "100px" },
-    { field: "qualityManagerPhoneNumber", label: "QM Phone", width: "100px" },
-    { field: "qualityManagerEmailId", label: "QM Email", width: "100px" },
-    { field: "saleRepresentativeName", label: "Sales Rep", width: "100px" },
-    {
-      field: "saleRepresentativePhoneNumber",
-      label: "SR Phone",
-      width: "100px",
-    },
-    { field: "saleRepresentativeEmailId", label: "SR Email", width: "150px" },
-    { field: "coreProcess", label: "Core Product", width: "100px" },
+    { field: "materialRequisitionNo", label: "Requisition No", width: "140px" },
+    { field: "workOrderNo", label: "Workorder No", width: "130px" },
+    { field: "date", label: "Date", width: "120px" },
+    { field: "partNo", label: "Part No", width: "120px" },
+    { field: "description", label: "Description", width: "200px" },
+    { field: "requestedQty", label: "Requested Qty", width: "130px" },
+    { field: "issueQty", label: "Issue Qty", width: "120px" },
+    { field: "issuedQty", label: "Issued Qty", width: "120px" },
+    { field: "batchLotNo", label: "Batch/Lot", width: "120px" },
   ];
 
+  const handlePrintClick = (requisition) => {
+    // console.log(requisition, "requisition");
+    setRequisitionData(requisition);
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+  // useEffect(() => {
+  //   console.log(requisitionData?.batchLotNo, "requisitionDatsdsdsdsdsdsdsda");
+  // }, [requisitionData]);
   return (
     <div className="wrapper">
       <Sidebar />
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Supplier Registration" />
-
-          <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
+          <CustomBreadcrumb breadcrumbsLabel="View Material Requisitions" />
+          <div className="printView">
+            <MaterialRequisitionForm tableData={requisitionData} />
+          </div>
+          <div
+            className={[
+              "normalView",
+              "card border-0 shadow-lg mx-4 my-4 rounded-3",
+              styles.normalViewStyle,
+            ].join(" ")}
+          >
+            {/* <div > */}
             <div className="card-body">
               <div className="row align-items-center">
                 <div className="col-md-6">
@@ -180,7 +192,7 @@ const ViewSupplierRegis = () => {
                     <input
                       type="text"
                       className="form-control border-start-0 ps-0"
-                      placeholder="Search suppliers..."
+                      placeholder="Search requisitions..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -206,6 +218,13 @@ const ViewSupplierRegis = () => {
                     <label className="ms-2 text-muted fw-light">entries</label>
                   </div>
                 </div>
+                {/* <button
+                  className={styles.printBtn}
+                  onClick={() => handlePrintClick()}
+                >
+                  {" "}
+                  Print
+                </button> */}
               </div>
 
               {isLoading ? (
@@ -226,7 +245,7 @@ const ViewSupplierRegis = () => {
                 >
                   <table className="table table-hover table-striped align-middle">
                     <thead>
-                      <tr className="bg-blue">
+                      <tr className="bg-light">
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -274,9 +293,9 @@ const ViewSupplierRegis = () => {
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((supplier, index) => (
+                        currentItems.map((requisition, index) => (
                           <tr
-                            key={supplier.formId}
+                            key={requisition.materialRequisitionNo}
                             className={
                               index % 2 === 0
                                 ? "bg-white"
@@ -285,7 +304,7 @@ const ViewSupplierRegis = () => {
                           >
                             {columns.map((column) => (
                               <td
-                                key={`${supplier.formId}-${column.field}`}
+                                key={`${requisition.materialRequisitionNo}-${column.field}`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -293,9 +312,9 @@ const ViewSupplierRegis = () => {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
-                                title={supplier[column.field]}
+                                title={requisition[column.field]}
                               >
-                                {supplier[column.field]}
+                                {requisition[column.field]}
                               </td>
                             ))}
                             <td>
@@ -303,7 +322,7 @@ const ViewSupplierRegis = () => {
                                 <button
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() =>
-                                    editSelectedElement(supplier.supplierId)
+                                    editSelectedElement(requisition.id)
                                   }
                                   title="Edit"
                                 >
@@ -312,11 +331,18 @@ const ViewSupplierRegis = () => {
                                 <button
                                   className="btn btn-sm btn-outline-danger"
                                   onClick={() =>
-                                    deleteSelectedElement(supplier.supplierId)
+                                    deleteSelectedElement(requisition.id)
                                   }
                                   title="Delete"
                                 >
                                   <i className="fa-solid fa-trash"></i>
+                                </button>
+                                <button
+                                  // className={styles.printBtn}
+                                  // style={{ background: "#adc2ff" }}
+                                  onClick={() => handlePrintClick(requisition)}
+                                >
+                                  <i className="fa-solid fa-print"></i>
                                 </button>
                               </div>
                             </td>
@@ -432,6 +458,7 @@ const ViewSupplierRegis = () => {
                 </div>
               </div>
             </div>
+            {/* </div> */}
           </div>
         </div>
         <Footer />
@@ -440,4 +467,4 @@ const ViewSupplierRegis = () => {
   );
 };
 
-export default ViewSupplierRegis;
+export default ViewMaterialRequisitionPage;
