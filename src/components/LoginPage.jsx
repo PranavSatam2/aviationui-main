@@ -9,7 +9,7 @@ import AviationLogo from "../static/img/AviationLogo.png";
 import { Toast } from "react-bootstrap";
 // Import CSS module
 import styles from "./Login.module.css";
-import { toast } from "react-toastify";
+//import { useHistory } from 'react-router-dom';
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -20,6 +20,7 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
+  //const history = useHistory();
 
   useEffect(() => {
     // Trigger animation after component mounts
@@ -39,9 +40,9 @@ const LoginPage = () => {
     setErrorMessage("");
 
     // Input validation
-    const usernameRegex = /^[a-zA-Z]+$/;
+    const usernameRegex = /^[a-zA-Z0-9\s]+$/;
     const passwordRegex =
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/
 
     if (!usernameRegex.test(username)) {
       setErrorMessage("Username must contain only alphabets.");
@@ -69,28 +70,57 @@ const LoginPage = () => {
         username,
         password,
       });
-
-      // Handle successful response
+  
+      console.log('API response:', response);  // Log the response to check if it's returned properly
       if (response.status === 200) {
-        console.log("Login Successful:", response.data);
+        // If login is successful and no password change is needed
+      // Check if the token is present in response.data.token
+      if (response && response.data && response.data.token) {
+        console.log("Removing menuItems...",localStorage.getItem("menuItems"));
+localStorage.removeItem("menuItems");
+console.log("menuItems after remove:", localStorage.getItem("menuItems"));
+        localStorage.removeItem("menuItems");
+        // Save JWT token if login is successful
+        const { token, passwordExpired, username, role} = response.data;
 
-        // Store token in localStorage or sessionStorage
-        localStorage.setItem("authToken", response.data.token);
+        // Save the token and username to localStorage
+        localStorage.setItem('username', username); 
+        localStorage.setItem("jwt_token", token); // Store JWT token
 
-        // Redirect to the home page after a short delay for better UX
-        setTimeout(() => {
-          navigate("/homePage");
-        }, 500);
-        toast.success("Login Successful");
+        if (passwordExpired) {
+          alert('Please change your password!');
+          navigate('/passwordChange');
+        
+      } else {
+ 
+  const roleResponse = await axios.get(`http://localhost:8082/api/roles/byname/${role}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (roleResponse?.data?.id) {
+    console.log(roleResponse.data);
+    localStorage.setItem("roleId", roleResponse.data.id);
+  } else {
+    console.error("Role not found or invalid response");
+  }
+  setTimeout(() => {
+    console.log("Navigating to /homePage now...");
+    navigate("/homePage");
+  }, 2000);
       }
+    }
+  }
     } catch (error) {
-      // Handle error response
-      if (error.response && error.response.status === 401) {
+      console.error("Login Error:", error); // Log the error to see more details
+      if (error.response && error.response.status === 403) {
+        // If password change is required
+        alert('Please change your password!');
+        navigate('/passwordChange');
+      }
+      else if (error.response && error.response.status === 401) {
         setErrorMessage("Invalid username or password.");
       } else {
         setErrorMessage("An error occurred. Please try again later.");
       }
-      console.error("Login Error:", error);
     } finally {
       setIsLoading(false);
     }
