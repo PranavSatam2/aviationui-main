@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import { createPurchaseRequisition } from "../../../services/db_manager";
-// Uncomment and update the import for your database service
-// import { createPurchaseRequisition } from "../../../services/db_manager";
+// Import functions to fetch data from your API
+// Assuming you have these functions in your services
+import { fetchPartNumbersAndDescriptions } from "../../../services/db_manager";
 
 const AddPurchaseRequisition = () => {
+  // State for the current form being filled
   const [form, setForm] = useState({
     purchaseRequisitionNo: "",
     partNumber: "",
@@ -17,6 +19,93 @@ const AddPurchaseRequisition = () => {
     requiredDate: "",
     remark: "",
   });
+
+  // State to store all the purchase requisitions added
+  const [purchaseRequisitions, setPurchaseRequisitions] = useState([]);
+  
+  // State to store dropdown options from API
+  const [descriptions, setDescriptions] = useState([]);
+  const [partNumbers, setPartNumbers] = useState([]);
+  
+  // State to track loading status
+  const [descLoading, setDescLoading] = useState(false);
+  const [partLoading, setPartLoading] = useState(false);
+  
+  // State to track any error in API calls
+  const [descError, setDescError] = useState(null);
+  const [partError, setPartError] = useState(null);
+
+  // Fetch descriptions from API when component mounts
+  useEffect(() => {
+    const getDescriptions = async () => {
+      setDescLoading(true);
+      try {
+        // Replace this with your actual API call
+        const data = await fetchPartNumbersAndDescriptions();
+        console.log(data,"dataaaa")
+        setDescriptions(data);
+        setDescError(null);
+      } catch (err) {
+        console.error("Error fetching descriptions:", err);
+        setDescError("Failed to load descriptions. Please try again later.");
+        // Fallback data in case the API fails
+        setDescriptions([
+          { id: 1, description: "Raw Material" },
+          { id: 2, description: "Finished Goods" },
+          { id: 3, description: "Spare Parts" },
+          { id: 4, description: "Consumables" },
+          { id: 5, description: "Office Supplies" }
+        ]);
+      } finally {
+        setDescLoading(false);
+      }
+    };
+    
+    getDescriptions();
+  }, []);
+
+  // Fetch part numbers from API when component mounts
+  useEffect(() => {
+    const getPartNumbers = async () => {
+      setPartLoading(true);
+      try {
+        // Replace this with your actual API call
+        const data = await fetchPartNumbers();
+        setPartNumbers(data);
+        setPartError(null);
+      } catch (err) {
+        console.error("Error fetching part numbers:", err);
+        setPartError("Failed to load part numbers. Please try again later.");
+        // Fallback data in case the API fails
+        setPartNumbers([
+          { id: 1, partNo: "PT001", description: "Engine Part" },
+          { id: 2, partNo: "PT002", description: "Transmission Part" },
+          { id: 3, partNo: "PT003", description: "Brake System Part" },
+          { id: 4, partNo: "PT004", description: "Electrical Component" },
+          { id: 5, partNo: "PT005", description: "Body Component" }
+        ]);
+      } finally {
+        setPartLoading(false);
+      }
+    };
+    
+    getPartNumbers();
+  }, []);
+
+  // Update current stock when part number changes
+  useEffect(() => {
+    if (form.partNumber) {
+      // Find the selected part number in the list
+      const selectedPart = partNumbers.find(part => part.partNo === form.partNumber);
+      if (selectedPart && selectedPart.currentStock) {
+        // If the part has a current stock value, update the form
+        setForm(prevForm => ({
+          ...prevForm,
+          currentStock: selectedPart.currentStock.toString()
+        }));
+      }
+    }
+  }, [form.partNumber, partNumbers]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,7 +138,6 @@ const AddPurchaseRequisition = () => {
       length: 12,
     },
     partNumber: {
-      type: "number",
       length: 12,
     },
     description: {
@@ -102,7 +190,8 @@ const AddPurchaseRequisition = () => {
     }
   }
 
-  const handleSubmit = async (e) => {
+  // Add a new purchase requisition to the list
+  const handleAddRequisition = (e) => {
     e.preventDefault();
 
     // Iterate through each field and validate
@@ -114,27 +203,56 @@ const AddPurchaseRequisition = () => {
       }
     }
 
-    // If all validation passes, proceed with submitting
-    try {
-      // Uncomment this when you have the database service function
-      const response = await createPurchaseRequisition(form);
-      console.log("Purchase Requisition added successfully:", response.data);
-      alert("Purchase Requisition Added Successfully!");
-      // location.reload();
+    // Add the current form to the purchaseRequisitions array with a unique ID
+    const newRequisition = {
+      ...form,
+      id: Date.now() // Using timestamp as a simple unique ID
+    };
+    
+    setPurchaseRequisitions([...purchaseRequisitions, newRequisition]);
+    
+    // Reset the form after adding to the list
+    setForm({
+      purchaseRequisitionNo: "",
+      partNumber: "",
+      description: "",
+      currentStock: "",
+      requiredQty: "",
+      requiredDate: "",
+      remark: "",
+    });
+    
+    alert("Purchase Requisition added to the list!");
+  };
 
-      // Reset the form after successful submission
-      setForm({
-        purchaseRequisitionNo: "",
-        partNumber: "",
-        description: "",
-        currentStock: "",
-        requiredQty: "",
-        requiredDate: "",
-        remark: "",
-      });
+  // Remove a purchase requisition from the list
+  const handleRemoveRequisition = (id) => {
+    setPurchaseRequisitions(purchaseRequisitions.filter(req => req.id !== id));
+  };
+
+  // Submit all purchase requisitions
+  const handleSubmitAll = async () => {
+    if (purchaseRequisitions.length === 0) {
+      alert("No purchase requisitions to submit!");
+      return;
+    }
+
+    try {
+      // You can modify this to submit all requisitions at once if your API supports it
+      // For now, we'll just show a success message
+      alert(`${purchaseRequisitions.length} Purchase Requisitions ready to be submitted!`);
+      
+      // Uncomment below to actually submit each requisition to the API
+      /*
+      for (const requisition of purchaseRequisitions) {
+        await createPurchaseRequisition(requisition);
+      }
+      setPurchaseRequisitions([]);
+      alert("All Purchase Requisitions submitted successfully!");
+      */
     } catch (error) {
-      console.error("Error adding purchase requisition:", error);
-      alert("Failed to add purchase requisition.");
+      console.error("Error submitting purchase requisitions:", error);
+      alert("Failed to submit purchase requisitions.");
     }
   };
 
@@ -153,10 +271,10 @@ const AddPurchaseRequisition = () => {
             <div className="container-fluid">
               <div
                 className="row mx-1 card border border-dark shadow-lg py-2"
-                style={{ height: "397px" }}
+                style={{ minHeight: "397px" }}
               >
                 <div className="col-md-12">
-                  <form onSubmit={handleSubmit} style={{ height: "100%" }}>
+                  <form onSubmit={handleAddRequisition} style={{ height: "100%" }}>
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-1">
@@ -176,17 +294,33 @@ const AddPurchaseRequisition = () => {
                       </div>
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">Part Number</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="partNumber"
-                          onInput={(event) => {
-                            validateDataType(event, "N");
-                          }}
-                          value={form.partNumber}
-                          onChange={handleChange}
-                          required
-                        />
+                        {partLoading ? (
+                          <div className="d-flex align-items-center">
+                            <div className="spinner-border text-primary me-2" role="status">
+                              <span className="visually-hidden">Loading...</span>
+                            </div>
+                            <span>Loading part numbers...</span>
+                          </div>
+                        ) : partError ? (
+                          <div className="alert alert-danger w-100">
+                            {partError}
+                          </div>
+                        ) : (
+                          <select
+                            className="form-select w-100"
+                            name="partNumber"
+                            value={form.partNumber}
+                            onChange={handleChange}
+                            required
+                          >
+                            <option value="">Select a part number</option>
+                            {partNumbers.map((part) => (
+                              <option key={part.id} value={part.partNo}>
+                                {part.partNo} - {part.description}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                       </div>
                     </div>
 
@@ -194,17 +328,33 @@ const AddPurchaseRequisition = () => {
 
                     <div className="col-md-12 p-3 d-flex">
                       <label className="col-md-2 mt-2">Description</label>
-                      <textarea
-                        className="form-control w-100"
-                        name="description"
-                        value={form.description}
-                        onInput={(event) => {
-                          validateDataType(event, "A");
-                        }}
-                        onChange={handleChange}
-                        style={{ height: "70px" }}
-                        required
-                      ></textarea>
+                      {descLoading ? (
+                        <div className="d-flex align-items-center">
+                          <div className="spinner-border text-primary me-2" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                          <span>Loading descriptions...</span>
+                        </div>
+                      ) : descError ? (
+                        <div className="alert alert-danger w-100">
+                          {descError}
+                        </div>
+                      ) : (
+                        <select
+                          className="form-select w-100"
+                          name="description"
+                          value={form.description}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select a description</option>
+                          {descriptions.map((desc) => (
+                            <option key={desc.id} value={desc.description}>
+                              {desc.description}
+                            </option>
+                          ))}
+                        </select>
+                      )}
                     </div>
 
                     <div className="col-md-12 d-flex">
@@ -268,12 +418,66 @@ const AddPurchaseRequisition = () => {
 
                     <div className="col-md-12 text-end m-1 p-4 text-right">
                       <button type="submit" className="btn btn-primary">
-                        Add Purchase Requisition
+                        Add to List
                       </button>
                     </div>
                   </form>
                 </div>
               </div>
+              
+              {/* Display the list of purchase requisitions */}
+              {purchaseRequisitions.length > 0 && (
+                <div className="row mx-1 card border border-dark shadow-lg py-2 mt-4">
+                  <div className="col-md-12">
+                    <h4 className="mt-3 mb-3">Purchase Requisitions List</h4>
+                    <div className="table-responsive">
+                      <table className="table table-striped table-bordered">
+                        <thead>
+                          <tr>
+                            <th>PR No</th>
+                            <th>Part Number</th>
+                            <th>Description</th>
+                            <th>Current Stock</th>
+                            <th>Required Qty</th>
+                            <th>Required Date</th>
+                            <th>Remark</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {purchaseRequisitions.map((req) => (
+                            <tr key={req.id}>
+                              <td>{req.purchaseRequisitionNo}</td>
+                              <td>{req.partNumber}</td>
+                              <td>{req.description}</td>
+                              <td>{req.currentStock}</td>
+                              <td>{req.requiredQty}</td>
+                              <td>{req.requiredDate}</td>
+                              <td>{req.remark}</td>
+                              <td>
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => handleRemoveRequisition(req.id)}
+                                >
+                                  Remove
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="text-end mb-3">
+                      <button 
+                        className="btn btn-success"
+                        onClick={handleSubmitAll}
+                      >
+                        Submit All Requisitions
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

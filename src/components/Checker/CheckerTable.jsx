@@ -60,11 +60,9 @@ const Checker = () => {
     // If the same checkbox is clicked again, deselect it
     if (selectedItem === supplier.supplierId) {
       setSelectedItem("");
-      console.log("Selected ID: none");
     } else {
       setSelectedItem(supplier.supplierId);
       setSelecteSupplierData(supplier);
-      console.log("Selected ID:", supplier.supplierId);
     }
   };
 
@@ -72,13 +70,11 @@ const Checker = () => {
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedItem("");
-      console.log("Selected ID: none");
     } else {
       // Select the first item when clicking "select all"
       if (currentItems.length > 0) {
         const firstItemId = currentItems[0].formId;
         setSelectedItem(firstItemId);
-        console.log("Selected ID:", firstItemId);
       }
     }
     setSelectAll(!selectAll);
