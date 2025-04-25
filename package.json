@@ -3,14 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
+  "homepage": "/aviationui/",
+   "scripts": {
     "generate-map": "node scripts/generateComponentMap.js",
     "dev": "npm run generate-map && vite",
     "build": "npm run generate-map && vite build",
     "preview": "vite preview",
     "lint": "eslint ."
   },
-  
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -38,6 +38,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vite-plugin-inspect": "^11.0.1"
   }
 }

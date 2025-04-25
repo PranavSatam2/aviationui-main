@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import axios from "axios"; // Import axios if you are using axios
+import axiosInstance from "../axiosConfig";
 import { createProduct } from "../services/db_manager";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 

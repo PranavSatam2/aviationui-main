@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from 'axios';
+import axiosInstance from "../axiosConfig";
 import Footer from "./Footer";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import Header from "./Header";
@@ -44,13 +44,9 @@ const handleSubmit = async (e) => {
   }
   try {
     // Assuming you have an API endpoint to update the password
-    const response = await axios.post('http://localhost:8082/auth/passwordChange', {
+    const response = await axiosInstance.post('/auth/passwordChange', {
       currentPassword,
       newPassword,
-    }, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
     });
 
     if (response.data.success) {

@@ -3,6 +3,11 @@ import AddMaterialNote from './AddMaterialNote.jsx';
 import AddProduct from './AddProduct.jsx';
 import AddRole from './AddRole.jsx';
 import AddUser from './AddUser.jsx';
+import CustomBreadcrumb from './Breadcrumb/CustomBreadcrumb.jsx';
+import ViewSupplierRegistration from './Checker/CheckerSupplierRegistration/ViewSupplierRegistration.jsx';
+import CheckerTable from './Checker/CheckerTable.jsx';
+import Editsupplierform from './Checker/EditSupplier/Editsupplierform.jsx';
+import EditSupplierTable from './Checker/EditSupplier/EditSupplierTable.jsx';
 import EditMaterialNote from './EditMaterialNote.jsx';
 import EditProduct from './EditProduct.jsx';
 import EditStoreAcceptance from './EditStoreAcceptance.jsx';
@@ -12,13 +17,26 @@ import HomePage from './HomePage.jsx';
 import ListProducts from './ListProducts.jsx';
 import LoginPage from './LoginPage.jsx';
 import MaterialRecipt from './MaterialRecipt.jsx';
+import AddMaterialRequisition from './MaterialRequisition/AddMaterialRequisition/AddMaterialRequisition.jsx';
+import EditMaterialRequisition from './MaterialRequisition/EditMaterialRequisition/EditMaterialRequisition.jsx';
+import index from './MaterialRequisition/MaterialRequisitionReport/index.jsx';
+import ViewMaterialRequisition from './MaterialRequisition/ViewMaterialRequisition.jsx';
+import MyModalComponent from './partials/MyModalComponent.jsx';
 import PasswordChange from './PasswordChange.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 import ProductList from './ProductList.jsx';
+import Addpurchase from './PurchaseRequisition/AddpurchaseRequisition/Addpurchase.jsx';
+import ViewPurchaseRequisition from './PurchaseRequisition/ViewPurchaseRequisition.jsx';
 import RoleMenuMapping from './RoleMenuMapping.jsx';
 import Sidebar from './Sidebar.jsx';
 import StoreAccComponent from './StoreAccComponent.jsx';
 import SupplierRegistration from './SupplierRegistration.jsx';
+import DocAndProcControl from './tabs/supplier_registration/DocAndProcControl.jsx';
+import GeneralTab from './tabs/supplier_registration/GeneralTab.jsx';
+import IncomingInspectionTab from './tabs/supplier_registration/IncomingInspectionTab.jsx';
+import MaterialAndOther from './tabs/supplier_registration/MaterialAndOther.jsx';
+import QualityProcessTab from './tabs/supplier_registration/QualityProcessTab.jsx';
+import SupplierAnalysisTab from './tabs/supplier_registration/SupplierAnalysisTab.jsx';
 import ViewMaterialNotePage from './ViewMaterialNotePage.jsx';
 import ViewProduct from './ViewProduct.jsx';
 import ViewStoreAcc from './ViewStoreAcc.jsx';
@@ -30,6 +48,11 @@ const componentsMap = {
   "AddProduct": AddProduct,
   "AddRole": AddRole,
   "AddUser": AddUser,
+  "CustomBreadcrumb": CustomBreadcrumb,
+  "ViewSupplierRegistration": ViewSupplierRegistration,
+  "CheckerTable": CheckerTable,
+  "Editsupplierform": Editsupplierform,
+  "EditSupplierTable": EditSupplierTable,
   "EditMaterialNote": EditMaterialNote,
   "EditProduct": EditProduct,
   "EditStoreAcceptance": EditStoreAcceptance,
@@ -39,13 +62,26 @@ const componentsMap = {
   "ListProducts": ListProducts,
   "LoginPage": LoginPage,
   "MaterialRecipt": MaterialRecipt,
+  "AddMaterialRequisition": AddMaterialRequisition,
+  "EditMaterialRequisition": EditMaterialRequisition,
+  "index": index,
+  "ViewMaterialRequisition": ViewMaterialRequisition,
+  "MyModalComponent": MyModalComponent,
   "PasswordChange": PasswordChange,
   "PrivateRoute": PrivateRoute,
   "ProductList": ProductList,
+  "Addpurchase": Addpurchase,
+  "ViewPurchaseRequisition": ViewPurchaseRequisition,
   "RoleMenuMapping": RoleMenuMapping,
   "Sidebar": Sidebar,
   "StoreAccComponent": StoreAccComponent,
   "SupplierRegistration": SupplierRegistration,
+  "DocAndProcControl": DocAndProcControl,
+  "GeneralTab": GeneralTab,
+  "IncomingInspectionTab": IncomingInspectionTab,
+  "MaterialAndOther": MaterialAndOther,
+  "QualityProcessTab": QualityProcessTab,
+  "SupplierAnalysisTab": SupplierAnalysisTab,
   "ViewMaterialNotePage": ViewMaterialNotePage,
   "ViewProduct": ViewProduct,
   "ViewStoreAcc": ViewStoreAcc,

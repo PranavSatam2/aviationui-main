@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from "../axiosConfig";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -22,9 +22,7 @@ const RoleMenuMapping = () => {
 
     const fetchRoles = async () => {
       try {
-        const res = await axios.get('http://localhost:8082/api/roles/role', {
-          headers: { "Authorization": `Bearer ${token}` },
-        });
+        const res = await axiosInstance.get('/api/roles/role');
         console.log("Role data:", res.data);
         setRoles(res.data);
       } catch (err) {
@@ -34,9 +32,7 @@ const RoleMenuMapping = () => {
 
     const fetchMenus = async () => {
       try {
-        const res = await axios.get('http://localhost:8082/api/roles/menus', {
-          headers: { "Authorization": `Bearer ${token}` },
-        });
+        const res = await axiosInstance.get('/api/roles/menus');
         console.log("Menu data:", res.data);
         setMenus(res.data);
       } catch (err) {
@@ -49,10 +45,7 @@ const RoleMenuMapping = () => {
   }, [token]);
   const fetchRoleMenuMapping = async (roleId) => {
     try {
-      const res = await axios.get(`http://localhost:8082/api/roles/roleMenus/${roleId}`, {
-        headers: { "Authorization": `Bearer ${token}` },
-      });
-  
+      const res = await axiosInstance.get(`/api/roles/roleMenus/${roleId}`);
       const mapping = {};
       res.data.forEach(({ menuId, accessible }) => {
         mapping[menuId] = accessible;
@@ -124,16 +117,7 @@ const RoleMenuMapping = () => {
     }));
 
     try {
-      await axios.post(
-        'http://localhost:8082/api/roles/saveMapping',
-        mappings,
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await axiosInstance.post('/api/roles/saveMapping', mappings);
       alert("Role-Menu mapping saved successfully!");
     } catch (error) {
       console.error("Error saving mappings:", error);

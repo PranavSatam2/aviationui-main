@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../axiosConfig";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -23,7 +23,7 @@ const ViewProduct = () => {
     setError("");
 
     try {
-      const response = await axios.get("https://api.example.com/products");
+      const response = await axiosInstance.get("/api.example.com/products");
       setProducts(response.data); // Assuming API returns an array of products
       setFilteredProducts(response.data); // Initialize filtered products with all products
     } catch (err) {

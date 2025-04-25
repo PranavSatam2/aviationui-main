@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from "../axiosConfig";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -35,15 +35,11 @@ const AddRole= () => {
 
     try {
       // Send the new role data to the backend
-      const response = await axios.post('http://localhost:8082/api/roles/addRole', {
+      const response = await axiosInstance.post('/api/roles/addRole', {
         roleName,
         roleCode,
         roleDescription,
-       }, {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-            },
-      });
+       });
 
       // On successful role creation, show success message and clear form
       setSuccess('Role created successfully!');

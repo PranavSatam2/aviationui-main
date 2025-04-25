@@ -21,6 +21,9 @@ const Header = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
   const handlelogout = () => {
+    localStorage.removeItem("menuItems");
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("roleId");
     navigate("/");
     toast.success("Log out Successful");
   };

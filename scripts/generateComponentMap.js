@@ -8,16 +8,32 @@ const __dirname = path.dirname(__filename);
 const COMPONENTS_DIR = path.join(__dirname, '../src/components');
 const OUTPUT_FILE = path.join(COMPONENTS_DIR, 'componentsMap.jsx');
 
-const files = fs
-  .readdirSync(COMPONENTS_DIR)
-  .filter((file) => file.endsWith('.jsx') && file !== 'componentsMap.jsx');
+function walkDir(dir, fileList = []) {
+  const files = fs.readdirSync(dir);
+  files.forEach((file) => {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
+    if (stat.isDirectory()) {
+      walkDir(fullPath, fileList);
+    } else if (file.endsWith('.jsx') && file !== 'componentsMap.jsx') {
+      fileList.push(fullPath);
+    }
+  });
+  return fileList;
+}
+
+const files = walkDir(COMPONENTS_DIR);
 
 const imports = [];
 const mappings = [];
 
-files.forEach((file) => {
-  const componentName = path.basename(file, '.jsx');
-  imports.push(`import ${componentName} from './${file}';`);
+files.forEach((filePath) => {
+  const content = fs.readFileSync(filePath, 'utf-8');
+  if (!content.includes('export default')) return;
+
+  const relativePath = path.relative(COMPONENTS_DIR, filePath).replace(/\\/g, '/');
+  const componentName = path.basename(filePath, '.jsx');
+  imports.push(`import ${componentName} from './${relativePath}';`);
   mappings.push(`  "${componentName}": ${componentName},`);
 });
 
@@ -32,4 +48,4 @@ export default componentsMap;
 `;
 
 fs.writeFileSync(OUTPUT_FILE, content);
-console.log('✅ componentsMap.jsx generated!');
+console.log('✅ componentsMap.jsx generated with nested support!');
