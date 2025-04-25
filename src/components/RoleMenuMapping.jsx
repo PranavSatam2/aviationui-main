@@ -47,9 +47,19 @@ const RoleMenuMapping = () => {
     try {
       const res = await axiosInstance.get(`/api/roles/roleMenus/${roleId}`);
       const mapping = {};
-      res.data.forEach(({ menuId, accessible }) => {
-        mapping[menuId] = accessible;
-      });
+      const extractMenuIds = (menus) => {
+        menus.forEach(menu => {
+          if (menu.id !== undefined) {
+            mapping[menu.id] = true;
+          }
+          if (menu.subMenus && menu.subMenus.length > 0) {
+            extractMenuIds(menu.subMenus);
+          }
+        });
+      };
+  
+      extractMenuIds(res.data);
+      
   
       setRoleMenuMapping((prev) => ({
         ...prev,

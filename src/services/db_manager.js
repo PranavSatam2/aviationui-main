@@ -56,14 +56,14 @@ export const listAllMaterialRequisition = () => {
 
 //Purchase Requistion
 export const createPurchaseRequisition = (Purchase) =>
-  axios.post(`${PURCHASE_REQUISITION}/batch`, Purchase);
+  axiosInstance.post(`${PURCHASE_REQUISITION}/batch`, Purchase);
 // export const listAllSupplier = () => axios.get(`${SUPPLIER_URL}/`);
 export const deletePurchaseRequisition = (PurchaseId) =>
-  axios.delete(`${PURCHASE_REQUISITION}/${PurchaseId}`);
+  axiosInstance.delete(`${PURCHASE_REQUISITION}/${PurchaseId}`);
 export const updatePurchaseRequisition = (PurchaseId, Purchase) =>
-  axios.put(`${PURCHASE_REQUISITION}/${PurchaseId}`, Purchase);
+  axiosInstance.put(`${PURCHASE_REQUISITION}/${PurchaseId}`, Purchase);
 export const getPurchaseRequisitionDetail = (PurchaseId) =>
-  axios.get(`${PURCHASE_REQUISITION}/${PurchaseId}`);
+  axiosInstance.get(`${PURCHASE_REQUISITION}/${PurchaseId}`);
 
 export const listAllPurchaseRequisition = () => {
   return axiosInstance
@@ -78,7 +78,7 @@ export const listAllPurchaseRequisition = () => {
 };
 
 export const fetchPartNumbersAndDescriptions=()=>{
-  return axios
+  return axiosInstance
   .get(`${PARTANDDESCRIPTION}`)
   .then((response) => {
     return response.data;
