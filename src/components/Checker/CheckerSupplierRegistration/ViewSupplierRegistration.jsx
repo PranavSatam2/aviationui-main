@@ -11,6 +11,8 @@ import DocAndProcControl from "../../tabs/supplier_registration/DocAndProcContro
 import MaterialAndOther from "../../tabs/supplier_registration/MaterialAndOther";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import { Modal, Button, Form } from "react-bootstrap";
+import { ApproveSupplier } from "../../../services/db_manager";
+import { toast } from "react-toastify";
 
 const ViewSupplierRegistration = () => {
   // Variables
@@ -134,25 +136,30 @@ const ViewSupplierRegistration = () => {
     setRemark("");
   };
 
-  const handleSubmitAction = () => {
-    // Add your action logic here based on actionType
-    console.log(
-      `Action: ${actionType}, Remark: ${remark}, Supplier ID: ${supplierId}`
-    );
-
-    // Here you would implement the actual functionality
-    // For example:
-    // if (actionType === "accept") {
-    //   acceptSupplier(supplierId, remark);
-    // } else if (actionType === "reject") {
-    //   rejectSupplier(supplierId, remark);
-    // } else if (actionType === "Send To Edit") {
-    //   sendToEdit(supplierId, remark);
-    // }
-
+ const handleSubmitAction = async () => {
+    const action = actionType === "accept" ? "accepted" : "rejected";
+    // Add 'remark' to each object in selecteSupplierData
+    const updatedSupplierData = {
+      ...supplierData,
+      remark: remark,
+      // supplierId: selectedItem,
+      userRole:'QM',
+      userAction: action === "rejected" ? "3" : "2", 
+    };
+    try {
+      const response = await ApproveSupplier(updatedSupplierData);
+      toast.success(`Supplier ${action} successfully, ${response}`);
+      // fetchData();
+    } catch (error) {
+      console.error("Error fetching supplier details: ", error);
+      toast.error("Failed to fetch supplier details");
+    }
+  
+    // Reset states
+    setRemark("");
     handleCloseModal();
   };
-
+  
   // ################################### FUNCTIONS ###############################
 
   useEffect(() => {

@@ -8,6 +8,7 @@ let PRODUCT_URL = REST_API_BASE_URL + "/api/product";
 let MATERIAL_URL = REST_API_BASE_URL + "/api/mrn";
 let MATERIAL_REQUISITION = REST_API_BASE_URL + "/api/material-requisitions";
 let PURCHASE_REQUISITION = REST_API_BASE_URL + "/api/purchase-requisitions";
+let PARTANDDESCRIPTION =REST_API_BASE_URL + "/api/parts"
 // ######################### DB_MANAGER #########################
 
 // Store Acceptance
@@ -55,14 +56,14 @@ export const listAllMaterialRequisition = () => {
 
 //Purchase Requistion
 export const createPurchaseRequisition = (Purchase) =>
-  axiosInstance.post(MATERIAL_REQUISITION, Purchase);
+  axios.post(`${PURCHASE_REQUISITION}/batch`, Purchase);
 // export const listAllSupplier = () => axios.get(`${SUPPLIER_URL}/`);
 export const deletePurchaseRequisition = (PurchaseId) =>
-  axiosInstance.delete(`${MATERIAL_REQUISITION}/${PurchaseId}`);
+  axios.delete(`${PURCHASE_REQUISITION}/${PurchaseId}`);
 export const updatePurchaseRequisition = (PurchaseId, Purchase) =>
-  axiosInstance.put(`${MATERIAL_REQUISITION}/${PurchaseId}`, Purchase);
+  axios.put(`${PURCHASE_REQUISITION}/${PurchaseId}`, Purchase);
 export const getPurchaseRequisitionDetail = (PurchaseId) =>
-  axiosInstance.get(`${MATERIAL_REQUISITION}/${PurchaseId}`);
+  axios.get(`${PURCHASE_REQUISITION}/${PurchaseId}`);
 
 export const listAllPurchaseRequisition = () => {
   return axiosInstance
@@ -76,6 +77,17 @@ export const listAllPurchaseRequisition = () => {
     });
 };
 
+export const fetchPartNumbersAndDescriptions=()=>{
+  return axios
+  .get(`${PARTANDDESCRIPTION}`)
+  .then((response) => {
+    return response.data;
+  })
+  .catch((error) => {
+    console.error("Error fetching PARTS AND DESCRIPTIONS:", error);
+    throw error;
+  });
+}
 // Supplier Registration
 export const createSupplier = (Supplier) =>
   axiosInstance.post(`${SUPPLIER_URL}/supplierReg`, Supplier);
