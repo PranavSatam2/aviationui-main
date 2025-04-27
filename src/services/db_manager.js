@@ -56,6 +56,7 @@ export const listAllMaterialRequisition = () => {
 
 //Purchase Requistion
 export const createPurchaseRequisition = (Purchase) =>
+  // console.log(Purchase,"Purchase")
   axiosInstance.post(`${PURCHASE_REQUISITION}/batch`, Purchase);
 // export const listAllSupplier = () => axios.get(`${SUPPLIER_URL}/`);
 export const deletePurchaseRequisition = (PurchaseId) =>
