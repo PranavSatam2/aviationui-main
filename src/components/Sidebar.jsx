@@ -14,7 +14,7 @@ const iconMap = {
 const storedMenuItems = sessionStorage.getItem("menuItems");
   const menuItems = storedMenuItems ? JSON.parse(storedMenuItems) : [];
 const Sidebar = () => {  //() => {
-  //console.log("Menu Items being passed:", menuItems);
+  console.log("Menu Items being passed:", menuItems);
   const [collapseState, setCollapseState] = useState({
   });
 

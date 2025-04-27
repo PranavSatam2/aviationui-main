@@ -23,7 +23,7 @@ function useRoleMenus(roleId) {
 }
 
 const HomePage = () => {
-  const roleId = localStorage.getItem('roleId') || '';
+  const roleId = sessionStorage.getItem('roleId') || '';
   const menuItems = useRoleMenus(roleId); // ✅ Use the hook properly
 
   return (
