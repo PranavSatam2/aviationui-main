@@ -14,7 +14,7 @@ function useRoleMenus(roleId) {
     axiosInstance.get(`/api/roles/roleMenus/${roleId}`)
       .then(res => {
         setMenuItems(res.data);
-        localStorage.setItem("menuItems", JSON.stringify(res.data)); // ✅ set localStorage once
+        sessionStorage.setItem("menuItems", JSON.stringify(res.data)); // ✅ set localStorage once
       })
       .catch(console.error);
   }, [roleId]);

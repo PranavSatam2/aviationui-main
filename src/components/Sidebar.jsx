@@ -11,7 +11,7 @@ const iconMap = {
   filetext: <FileText size={18} />,
 };
 
-const storedMenuItems = localStorage.getItem("menuItems");
+const storedMenuItems = sessionStorage.getItem("menuItems");
   const menuItems = storedMenuItems ? JSON.parse(storedMenuItems) : [];
 const Sidebar = () => {  //() => {
   //console.log("Menu Items being passed:", menuItems);
@@ -22,7 +22,7 @@ const Sidebar = () => {  //() => {
     const [roles, setRoles] = useState([]);
   
     useEffect(() => {
-      const token = localStorage.getItem("jwt_token");
+      const token = sessionStorage.getItem("jwt_token");
       if (token) {
         const decodedToken = jwt_decode(token);
         setRoles(decodedToken.roles || []);

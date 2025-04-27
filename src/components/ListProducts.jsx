@@ -16,7 +16,7 @@ const ListProducts = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token-based auth
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`, // Assuming token-based auth
           },
         });
 

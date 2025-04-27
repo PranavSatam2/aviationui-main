@@ -6,12 +6,16 @@ const axiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json", // Default header
   },
+  withCredentials: true,
 });
 
-// Add token from localStorage to headers automatically
+
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("jwt_token");
+    if (config.url && config.url.includes("/auth/login")) {
+      return config;
+    }
+    const token = sessionStorage.getItem("jwt_token");
     if (token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;

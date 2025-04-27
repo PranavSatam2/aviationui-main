@@ -67,7 +67,7 @@ const LoginPage = () => {
       }
 
       // Make the API call to your backend
-      const response = await axios.post("http://localhost:8082/auth/login", {
+      const response = await axiosInstance.post("/auth/login", {
         username,
         password,
       });
@@ -77,14 +77,12 @@ const LoginPage = () => {
         // If login is successful and no password change is needed
       // Check if the token is present in response.data.token
       if (response && response.data && response.data.token) {
-        localStorage.removeItem("menuItems");
-        console.log("menuItems after remove:", localStorage.getItem("menuItems"));
-        // Save JWT token if login is successful
+
         const { token, passwordExpired, username, role} = response.data;
 
         // Save the token and username to localStorage
-        localStorage.setItem('username', username); 
-        localStorage.setItem("jwt_token", token); // Store JWT token
+        sessionStorage.setItem('username', username); 
+        sessionStorage.setItem("jwt_token", token); // Store JWT token
         if (passwordExpired) {
           alert('Please change your password!');
           navigate('/passwordChange');
@@ -94,7 +92,7 @@ const LoginPage = () => {
         const roleResponse = await axiosInstance.get(`/api/roles/byname/${role}`);
         if (roleResponse?.data?.id) {
     console.log(roleResponse.data);
-    localStorage.setItem("roleId", roleResponse.data.id);
+    sessionStorage.setItem("roleId", roleResponse.data.id);
   } else {
     console.error("Role not found or invalid response");
   }

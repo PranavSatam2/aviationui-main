@@ -27,7 +27,7 @@ const AddRole= () => {
       setError('Please provide role name, role code, and role description.');
       return;
     }
-    const token = localStorage.getItem("jwt_token");
+    const token = sessionStorage.getItem("jwt_token");
   if (!token) {
     setError('You need to be logged in to change your password');
     return;

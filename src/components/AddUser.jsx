@@ -24,7 +24,7 @@ const AddUser = () => {
   const [roles, setRoles] = useState([]); // NEW STATE
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt_token");
+    const token = sessionStorage.getItem("jwt_token");
     axiosInstance.get("/api/roles/role")
       .then((response) => {
         console.log("Fetched roles:", response.data);

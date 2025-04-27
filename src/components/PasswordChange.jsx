@@ -37,7 +37,7 @@ const handleSubmit = async (e) => {
     setErrorMessage('New password and confirm password do not match');
     return;
   }
-  const token = localStorage.getItem("jwt_token");
+  const token = sessionStorage.getItem("jwt_token");
   if (!token) {
     setErrorMessage('You need to be logged in to change your password');
     return;

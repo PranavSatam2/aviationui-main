@@ -12,7 +12,7 @@ const RoleMenuMapping = () => {
   const [roleMenuMapping, setRoleMenuMapping] = useState({});
   const [error, setError] = useState('');
 
-  const token = localStorage.getItem("jwt_token");
+  const token = sessionStorage.getItem("jwt_token");
 
   useEffect(() => {
     if (!token) {
