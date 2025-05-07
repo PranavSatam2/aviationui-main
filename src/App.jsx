@@ -13,6 +13,9 @@ import EditMaterialRequisition from "./components/MaterialRequisition/EditMateri
 import EditSupplierTable from "./components/Checker/EditSupplier/EditSupplierTable";
 import EditSupplierfrom from "./components/Checker/EditSupplier/Editsupplierform";
 import EditStoreAcceptance from "./components/EditStoreAcceptance";
+import ViewSupplierRegistration from "./components/Checker/CheckerSupplierRegistration/ViewSupplierRegistration";
+import EditInspectionReportForm from "./components/EditInspectionReportForm";
+import EditInspectionReportTable from "./components/EditInspectionReportTable.jsx";
 
 
 
@@ -64,6 +67,9 @@ const App = () => {
         <Route path="/editsupplier" element={<EditSupplierTable />} />
         <Route path="/editsupplierform" element={<EditSupplierfrom />} />
         <Route path="/editmaterialrequisition" element={<EditMaterialRequisition />}/>
+        <Route path="/ViewSupplier" element={<ViewSupplierRegistration />} />
+        <Route path="/editInspectionReportForm" element={<EditInspectionReportForm />} />
+        <Route path="/editReport" element={<EditInspectionReportTable/>} />
 
   
   {menuItems.flatMap((menu) =>

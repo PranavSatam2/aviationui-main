@@ -186,49 +186,7 @@ console.log("Mapped Value:", roleMenuMapping[selectedRole]?.[menu.id]);
         </div>
       );
     });
-  
-  
-  // const renderMenus = (menuList) =>
-  //   menuList.map((menu) => {
-  //     const subMenus = menu.subMenus || menu.submenus || [];
-  
-  //     const isMenuChecked = roleMenuMapping[selectedRole]?.[menu.id] || false;
-  
-  //     return (
-  //       <div key={menu.id} style={{ margin: '10px 0' }}>
-  //         <label>
-  //           <input
-  //             type="checkbox"
-  //             checked={isMenuChecked}
-  //             onChange={(e) =>
-  //               handleCheckboxChange(menu.id, e.target.checked, subMenus)
-  //             }
-  //           />
-  //           <strong style={{ marginLeft: '8px' }}>{menu.name}</strong>
-  //         </label>
-  
-  //         {/* Only render submenus if the parent menu is checked */}
-  //         {isMenuChecked && subMenus.length > 0 && (
-  //           <div style={{ marginLeft: '25px', marginTop: '5px' }}>
-  //             {subMenus.map((sub) => (
-  //               <div key={sub.id}>
-  //                 <label>
-  //                   <input
-  //                     type="checkbox"
-  //                     checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
-  //                     onChange={(e) =>
-  //                       handleCheckboxChange(sub.id, e.target.checked)
-  //                     }
-  //                   />
-  //                   <span style={{ marginLeft: '8px' }}>{sub.name}</span>
-  //                 </label>
-  //               </div>
-  //             ))}
-  //           </div>
-  //         )}
-  //       </div>
-  //     );
-  //   });
+
 
   console.log("Menus to render:", menus);
 

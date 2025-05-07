@@ -174,9 +174,30 @@ let ROLE_API = REST_API_BASE_URL + "/api/roles"
 export const login = (loginData) => axiosInstance.post(login_API, loginData);
 export const  createUser = (Login) => axiosInstance.post(USER_API, Login);
 export const listAllUser = () =>  axiosInstance.get(`${VIEW_USER_API}`);
-export const addRole = () =>  axiosInstance.get(`${ROLE_API}/addRole`,Role);
+export const addRole = () =>  axiosInstance.post(`${ROLE_API}/addRole`,Role);
 
-
+// ##################### Inspection Report #########################
+let PARTNumber = REST_API_BASE_URL + "/api/inspectionReport/partNo"  
+let getDetailsByPartNo = REST_API_BASE_URL + "/api/inspectionReport/getDetilsByPartNo" 
+let SaveInspectionReport = REST_API_BASE_URL + "/api/inspectionReport/saveInspectionReport"
+let GetInpectionReportPendingList = REST_API_BASE_URL + "/api/inspectionReport/getpendingInpectionReportList"
+let deleteInspectorReport = REST_API_BASE_URL + "/api/inspectionReport/deleteReport"
+let GetReportDetailsById = REST_API_BASE_URL + "/api/inspectionReport/getReportDetailById"
+let approveReport = REST_API_BASE_URL + "/api/inspectionReport/approveReport"
+let GetEditReportList =REST_API_BASE_URL + "/api/inspectionReport/getEditReportList"
+let UpdateReportNew = REST_API_BASE_URL + "/api/inspectionReport/updateReport"
+let ViewReportList = REST_API_BASE_URL + "/api/inspectionReport/viewReport"
+ 
+export const fetchPartNumbers = () => axiosInstance.get(`${PARTNumber}`);
+export const fetchPartDetails = (PartNo) => axiosInstance.get(`${getDetailsByPartNo}/${PartNo}`);
+export const submitInspectionReport =(payload) => axiosInstance.post(SaveInspectionReport,payload);
+export const getpendingInpectionReportList = () => axiosInstance.get(`${GetInpectionReportPendingList}`);
+export const deleteReport = (reportId) => axiosInstance.delete(`${deleteInspectorReport}/${reportId}`);
+export const getReportDetails = (reportId) => axiosInstance.get(`${GetReportDetailsById}/${reportId}`);
+export const ApproveReport = (report) => axiosInstance.post(approveReport,report);
+export const getEditReportList = () => axiosInstance.get(`${GetEditReportList}`);
+export const updateReport = (InpectionReportId, ReportData) => axiosInstance.put(`${UpdateReportNew}/${InpectionReportId}`, ReportData);
+export const getViewReportList = () => axiosInstance.get(`${ViewReportList}`);
 
 
 
