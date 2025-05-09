@@ -35,7 +35,7 @@ body {
   }
 
   .printView {
-    display: block;
+    display: block !important;
   }
   .normalViewDetails {
     display: none !important;
