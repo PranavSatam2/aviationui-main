@@ -354,6 +354,7 @@ const AddReceivingInspectionReport = () => {
                           name="dateOfManufacturingObservation"
                           value={form.dateOfManufacturingObservation}
                           onChange={handleChange}
+                          placeholder="Enter Date in 'YYYY-mm-DD' format"
                           required
                         /></td>
                             </tr>

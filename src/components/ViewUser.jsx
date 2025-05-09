@@ -133,16 +133,16 @@ const ViewUser = () => {
   const columns = [
     { field: "id", label: "ID", width: "60px" },
     { field: "firstName", label: "FirstName", width: "150px" },
-    { field: "middleName", label: "MiddleName", width: "180px" },
-    { field: "lastName", label: "LastName", width: "200px" },
-    { field: "userName", label: "UserName", width: "80px" },
+    { field: "middleName", label: "MiddleName", width: "150px" },
+    { field: "lastName", label: "LastName", width: "150px" },
+    { field: "username", label: "UserName", width: "150px" },
     { field: "dob", label: "DateOfBirth", width: "100px" },
     { field: "mobileNumber", label: "MobileNumber", width: "100px" },
     { field: "email", label: "Email", width: "180px" },
-    { field: "address", label: "Address", width: "120px" },
+    { field: "address", label: "Address", width: "150px" },
     { field: "city", label: "City", width: "150px" },
     { field: "state", label: "State", width: "150px" },
-    { field: "country", label: "Country", width: "150px" }
+    { field: "country", label: "Country", width: "100px" }
   ];
 
   return (

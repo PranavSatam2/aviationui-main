@@ -28,9 +28,12 @@ const ApproveReceivingInspectionReport = () => {
   const [selectedItem, setSelectedItem] = useState("");
   const [selecteReportData, setSelecteReportData] = useState();
   const [selectAll, setSelectAll] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
+  const [showModal1, setShowModal1] = useState(false);
   const [actionType, setActionType] = useState(""); // "accept" or "reject"
   const [remark, setRemark] = useState("");
   const [reportData, setReportData] = useState();
@@ -63,6 +66,11 @@ const ApproveReceivingInspectionReport = () => {
   useEffect(() => {
     fetchData();
   }, []);
+  useEffect(() => {
+    if (selectedRow) {
+      setShowModal1(true);
+    }
+  }, [selectedRow]);
 
   // Modified: Handle checkbox selection for single selection only
   const handleCheckboxChange = (report) => {
@@ -118,6 +126,12 @@ const ApproveReceivingInspectionReport = () => {
         let reportId = elementId;
         let reportData = await getReportDetails(elementId);
         reportData = reportData.data;
+        console.log("Fetched report data:", reportData);  // Log the fetched data
+
+        setSelectedRow(reportData);
+        console.log("Selected Row Data: ", reportData);  // Log to verify data
+
+        //setShowModal1(true);
         // if (reportId !== null) {
         //   navigate("/ViewSupplier", {
         //     state: { reportId, reportData },
@@ -298,11 +312,11 @@ const ApproveReceivingInspectionReport = () => {
     { field: "documentObservation", label: "Documents Observation", width: "100px" },
     { field: "lotAccepted", label: "Lot Accepted", width: "100px" },
     { field: "remark", label: "Remark", width: "100px" },
-    { field: "Maker", label: "makerUserName", width: "100px" },
-    { field: "Maker Date", label: "makerDate", width: "100px" },
+    { field: "makerUserName", label: "Maker Name", width: "100px" },
+    { field: "makerDate", label: "Maker Date", width: "100px" },
 
   ];
-
+  console.log("showModal1:", showModal1, "selectedRow:", selectedRow);
   return (
     <div className="wrapper">
       <Sidebar />
@@ -640,7 +654,44 @@ const ApproveReceivingInspectionReport = () => {
         </div>
         <Footer />
       </div>
+      
+      {showModal1 && selectedRow && (
+  <div className="modalBackdrop1">
+    <Modal show={showModal1} onHide={() => setShowModal1(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Inspection Report</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+  <p><strong>Inspection Report Id:</strong> {selectedRow.inspectionReportId}</p>
+  <p><strong>Part Description:</strong> {selectedRow.partDesc}</p>
+  <p><strong>Purchase Order No.:</strong> {selectedRow.purchaseOrderNo}</p>
+  <p><strong>Supplier Name:</strong> {selectedRow.supplierName}</p>
+  <p><strong>Report No:</strong> {selectedRow.reportNo}</p>
+  <p><strong>Quantity:</strong> {selectedRow.qty}</p>
+  <p><strong>Date:</strong> {selectedRow.date}</p>
+  <p><strong>Invoice  Observation:</strong> {selectedRow.invoiceObservation}</p>
+  <p><strong>Manufacturer Cert Observation:</strong> {selectedRow.manufacturerCertObservation}</p>
+  <p><strong>Supplier Cert. Observation:</strong> {selectedRow.supplierCertObservation}</p>
+  <p><strong>Cert. Full Traceability Observation:</strong> {selectedRow.fullTraceabilityObservation}</p>
+  <p><strong>Batch Number Observation:</strong> {selectedRow.batchNumberObservation}</p>
+  <p><strong>Date of Manufacturing & Date of Expiry Observation:</strong> {selectedRow.dateOfManufacturingObservation}</p>
+  <p><strong>Self Life Observation:</strong> {selectedRow.selfLifeObservation}</p>
+  <p><strong>Technical Data Sheet(TDS) & MSDS Observation:</strong> {selectedRow.tdsObservation}</p>
+  <p><strong>Material Condition Observation:</strong> {selectedRow.materialConditionObservation}</p>
+  <p><strong>Specification Observation:</strong> {selectedRow.specificationObservation}</p>
+  <p><strong>Documents Observation:</strong> {selectedRow.documentObservation}</p>
+  <p><strong>Lot Accepted:</strong> {selectedRow.lotAccepted}</p>
+  <p><strong>Remark:</strong> {selectedRow.remark}</p>
+  <p><strong>Maker Name</strong> {selectedRow.makerUserName}</p>
+  <p><strong>Maker Date:</strong> {selectedRow.makerDate}</p>
 
+  </Modal.Body>
+  <Modal.Footer>
+    <Button onClick={() => setShowModal1(false)}>Close</Button>
+  </Modal.Footer>
+</Modal>
+  </div>
+    )}
       {/* Accept/Reject Modal */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
@@ -684,6 +735,8 @@ const ApproveReceivingInspectionReport = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      
     </div>
   );
 };

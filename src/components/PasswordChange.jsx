@@ -12,7 +12,7 @@ const PasswordChange = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   // State for error messages
-  const [error, setError] = useState('');
+ // const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const validatePassword = (password) => {
@@ -48,17 +48,23 @@ const handleSubmit = async (e) => {
       currentPassword,
       newPassword,
     });
-
-    if (response.data.success) {
+    console.log("Status",response.status);
+    if (response.status === 200) {
       //setSuccess('Password changed successfully!');
-      alert("Password changed user.");
+      alert("Password changed successfully!");
       navigate('/');
     } else {
-      setErrorMessage('Failed to change password');
+      alert('Failed to change password');
     }
   } catch (error) {
-    setErrorMessage('An error occurred while changing the password');
-  }
+      if (error.response) {
+        if (error.response.status === 403) {
+          alert(error.response.data || "Old password is incorrect");
+        } else {
+          alert("An error occurred: " + error.response.data);
+        }
+      } 
+    }  
 };
 
 
