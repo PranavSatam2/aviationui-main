@@ -13,6 +13,11 @@ import EditMaterialRequisition from "./components/MaterialRequisition/EditMateri
 import EditSupplierTable from "./components/Checker/EditSupplier/EditSupplierTable";
 import EditSupplierfrom from "./components/Checker/EditSupplier/Editsupplierform";
 import EditStoreAcceptance from "./components/EditStoreAcceptance";
+import EditPurchaseRequisition from "./components/PurchaseRequisition/EditPurchaseRequisition/EditPurchase.jsx";
+import PurchaseOrderForm from "./components/PurchaseOrder/PurchaseOrder.jsx";
+import AddPurchaseRequisition from "./components/PurchaseRequisition/AddpurchaseRequisition/Addpurchase.jsx";
+import ViewPurchaseOrderPage from "./components/PurchaseOrder/ViewPurchaseOrder/ViewPurchaseOrder.jsx";
+import EditPurchaseOrder from "./components/PurchaseOrder/EditPurchaseOrder/EditPurchaseOrder.jsx";
 
 
 
@@ -64,6 +69,12 @@ const App = () => {
         <Route path="/editsupplier" element={<EditSupplierTable />} />
         <Route path="/editsupplierform" element={<EditSupplierfrom />} />
         <Route path="/editmaterialrequisition" element={<EditMaterialRequisition />}/>
+        <Route path="/editpurchaserequisition" element={<EditPurchaseRequisition />}/>
+        <Route path="/purchaseOrder" element={<PurchaseOrderForm />}/>
+        <Route path="/purchaserequistion" element={<AddPurchaseRequisition />}/>
+        <Route path="/viewpurchaseOrder" element={<ViewPurchaseOrderPage />}/>
+        <Route path="/editpurchaseorder" element={<EditPurchaseOrder />}/>
+
 
   
   {menuItems.flatMap((menu) =>
