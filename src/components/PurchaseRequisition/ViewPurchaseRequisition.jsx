@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Footer from "../Footer";
 import Header from "../Header";
 import Sidebar from "../Sidebar";
-import { deletePurchaseRequisition, getPurchaseRequisitionDetail, listAllPurchaseRequisition } from "../../services/db_manager";
+import { deletePurchaseRequisition, DownloadCSV, DownloadPDF, getPurchaseRequisitionDetail, listAllPurchaseRequisition } from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
@@ -61,21 +61,10 @@ const ViewPurchaseRequisitionPage = () => {
 
   // Edit the selected purchase requisition
   const editSelectedElement = async (RequisitionID) => {
+    console.log(RequisitionID,"id paraent")
     navigate("/editpurchaserequisition", {
       state: { RequisitionID },
     });
-    // try {
-    //   const response = await getPurchaseRequisitionDetail(RequisitionID);
-    //   const requisitionData = response?.data;
-    //   if (requisitionData) {
-    //     navigate("/editpurchaserequisition", {
-    //       state: { RequisitionID },
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Error fetching purchase requisition details: ", error);
-    //   toast.error("Failed to fetch purchase requisition details");
-    // }
   };
 
   // Search functionality
@@ -152,10 +141,53 @@ const ViewPurchaseRequisitionPage = () => {
     { field: "remark", label: "Remark", width: "100px" },
   ];
 
-  const handlePrintClick = () => {
-    setTimeout(() => {
-      window.print();
-    }, 500);
+  // const handlePrintClick = () => {
+  //   setTimeout(() => {
+  //     window.print();
+  //   }, 500);
+  // };
+  const handleDownloadCSV = async () => {
+    try {
+      const response = await DownloadCSV()
+      if(!response.error){
+        toast.success("CSV file download successfully.!")
+      }
+      // Create a URL from the file
+      // const url = window.URL.createObjectURL(response.data);
+      console.log(response,"urllll")
+
+      // const link = document.createElement('a');
+      // link.href = url;
+      // link.setAttribute('download', 'data.csv');
+      // document.body.appendChild(link);
+      // link.click();
+
+      // // Clean up
+      // link.parentNode.removeChild(link);
+      // window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error('Error downloading the CSV file');
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      const response = await DownloadPDF()
+      if(!response.error){
+        toast.success("PDF file download successfully .!")
+      }
+      // const url = window.URL.createObjectURL(new Blob([response.data]));
+      // console.log(url,"urllll")
+      // const link = document.createElement('a');
+      // link.href = url;
+      // link.setAttribute('download', 'data.pdf'); // File name
+      // document.body.appendChild(link);
+      // link.click();
+      // link.parentNode.removeChild(link);
+      // window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error('Error downloading PDF');
+    }
   };
 
   return (
@@ -177,7 +209,7 @@ const ViewPurchaseRequisitionPage = () => {
           >
             <div className="card-body">
               <div className="row align-items-center">
-                <div className="col-md-6">
+                <div className="col-md-4">
                   <div className="input-group">
                     <span className="input-group-text bg-primary text-white border-0">
                       <i className="fa fa-search"></i>
@@ -191,6 +223,39 @@ const ViewPurchaseRequisitionPage = () => {
                     />
                   </div>
                 </div>
+                <div className="col-md-3" style={{ display: 'flex', justifyContent: 'space-around' }}>
+                  <button
+                    onClick={handleDownloadCSV}
+                    style={{
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      padding: '8px 16px',
+                      border: 'none',
+                      borderRadius: '4px',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                  >
+                    Download CSV
+                  </button>
+                  <button
+                    onClick={handleDownloadPDF}
+                    style={{
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      padding: '8px 16px',
+                      border: 'none',
+                      borderRadius: '4px',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                  >
+                    Download PDF
+                  </button>
+                </div>
+
                 <div className="col-md-3 ms-auto">
                   <div className="d-flex align-items-center justify-content-end">
                     <label className="me-2 text-muted fw-light">Show</label>

@@ -25,7 +25,12 @@ import MyModalComponent from './partials/MyModalComponent.jsx';
 import PasswordChange from './PasswordChange.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 import ProductList from './ProductList.jsx';
+import EditPurchaseOrder from './PurchaseOrder/EditPurchaseOrder/EditPurchaseOrder.jsx';
+import PurchaseOrder from './PurchaseOrder/PurchaseOrder.jsx';
+import PurchaseOrderReport from './PurchaseOrder/PurchaseOrderReport/PurchaseOrderReport.jsx';
+import ViewPurchaseOrder from './PurchaseOrder/ViewPurchaseOrder/ViewPurchaseOrder.jsx';
 import Addpurchase from './PurchaseRequisition/AddpurchaseRequisition/Addpurchase.jsx';
+import EditPurchase from './PurchaseRequisition/EditPurchaseRequisition/EditPurchase.jsx';
 import ViewPurchaseRequisition from './PurchaseRequisition/ViewPurchaseRequisition.jsx';
 import RoleMenuMapping from './RoleMenuMapping.jsx';
 import Sidebar from './Sidebar.jsx';
@@ -70,7 +75,12 @@ const componentsMap = {
   "PasswordChange": PasswordChange,
   "PrivateRoute": PrivateRoute,
   "ProductList": ProductList,
+  "EditPurchaseOrder": EditPurchaseOrder,
+  "PurchaseOrder": PurchaseOrder,
+  "PurchaseOrderReport": PurchaseOrderReport,
+  "ViewPurchaseOrder": ViewPurchaseOrder,
   "Addpurchase": Addpurchase,
+  "EditPurchase": EditPurchase,
   "ViewPurchaseRequisition": ViewPurchaseRequisition,
   "RoleMenuMapping": RoleMenuMapping,
   "Sidebar": Sidebar,

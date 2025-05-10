@@ -8,7 +8,9 @@ let PRODUCT_URL = REST_API_BASE_URL + "/api/product";
 let MATERIAL_URL = REST_API_BASE_URL + "/api/mrn";
 let MATERIAL_REQUISITION = REST_API_BASE_URL + "/api/material-requisitions";
 let PURCHASE_REQUISITION = REST_API_BASE_URL + "/api/purchase-requisitions";
-let PARTANDDESCRIPTION =REST_API_BASE_URL + "/api/parts"
+let PARTANDDESCRIPTION =REST_API_BASE_URL + "/api/parts";
+// let PURCHASE_ORDERBYBATCH = REST_API_BASE_URL + "/api/purchase-orders/requisitions-by-batch";
+let PURCHASE_ORDER =REST_API_BASE_URL +"/api/purchase-orders"
 // ######################### DB_MANAGER #########################
 
 // Store Acceptance
@@ -77,6 +79,13 @@ export const listAllPurchaseRequisition = () => {
       throw error;
     });
 };
+export const DownloadCSV = () =>
+  axiosInstance.get(`${PURCHASE_REQUISITION}/csv`, {
+    responseType: 'blob', // important!
+  });
+
+export const DownloadPDF = () =>
+  axiosInstance.get(`${PURCHASE_REQUISITION}/pdf`);
 
 export const fetchPartNumbersAndDescriptions=()=>{
   return axiosInstance
@@ -157,7 +166,6 @@ export const addMaterialNote = (Material) =>
   axiosInstance.post(`${MATERIAL_URL}`, Material);
 export const listAllMaterials = () => axiosInstance.get(`${MATERIAL_URL}`);
 export const deleteMaterial = (materialId) => {
-  console.log(`Deleting material with ID: ${materialId}`); // Log for debugging
   return axiosInstance.delete(`${MATERIAL_URL}/${materialId}`);
 };
 export const updateMaterial = (MaterialId, Material) =>
@@ -199,5 +207,40 @@ export const getEditReportList = () => axiosInstance.get(`${GetEditReportList}`)
 export const updateReport = (InpectionReportId, ReportData) => axiosInstance.put(`${UpdateReportNew}/${InpectionReportId}`, ReportData);
 export const getViewReportList = () => axiosInstance.get(`${ViewReportList}`);
 
+//Purchase order 
 
+// export const GetAllDataUsingBatchNo = (batchNo) =>{ 
+//   axiosInstance.get(`${PURCHASE_ORDER}/${batchNo}`)};
+  export const GetAllDataUsingBatchNo = (batchNo) => {
+    return axiosInstance
+      .get(`${PURCHASE_ORDER}/requisitions-by-batch/${batchNo}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Error fetching list:", error);
+        throw error;
+      });
+  };
 
+export const createPurchaseOrder = (Purchaseorder) =>{
+    console.log(Purchaseorder,"ppppp")
+    axiosInstance.post(`${PURCHASE_ORDER}/create`, Purchaseorder)};
+export const listAllPurchaseOrder = () =>
+      axiosInstance.get(`${PURCHASE_ORDER}`);
+export const updatePurchaseOrder = (ID,order) =>
+  axiosInstance.put(`${PURCHASE_ORDER}/${ID}`,order);
+  export const getPurchaseOrder = (ID) => {
+    return axiosInstance
+      .get(`${PURCHASE_ORDER}/${ID}`)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Error fetching list:", error);
+        throw error;
+      });
+  };
+  export const deletePurchaseOrder = (ID) => {
+    return axiosInstance.delete(`${PURCHASE_ORDER}/${ID}`);
+  };

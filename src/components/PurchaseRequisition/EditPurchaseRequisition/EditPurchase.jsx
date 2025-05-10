@@ -4,12 +4,14 @@ import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import { updatePurchaseRequisition, getPurchaseRequisitionDetail, fetchPartNumbersAndDescriptions } from "../../../services/db_manager";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const EditPurchaseRequisition = () => {
-  const { id } = useParams(); 
   const navigate = useNavigate();
-  const RequisitionID= location.state ||"";
+  const location = useLocation();
+
+  const { RequisitionID } = location.state || "";
   // State for the current form being filled
   const [form, setForm] = useState({
     srNo: "",
@@ -44,29 +46,31 @@ const EditPurchaseRequisition = () => {
       fetchRequisitionData();
     }
   }, [RequisitionID]);
-  
+
   const fetchRequisitionData = async () => {
     setIsLoading(true);
     try {
+
       const requisitionData = await getPurchaseRequisitionDetail(RequisitionID);
-      console.log(requisitionData,"reqqqqqqqqqqqqqq")
       // Format the date from the database (if needed)
-      if (requisitionData.requiredDate) {
-        const date = new Date(requisitionData.requiredDate);
-        const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-        requisitionData.requiredDate = formattedDate;
-      }
+    //   if (requisitionData.requiredDate) {
+    //     const date = new Date(requisitionData.requiredDate);
+    //     const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    //     requisitionData.requiredDate = formattedDate;
+    //   }
       
-      setForm(requisitionData);
-      setOriginalData(requisitionData);
+      setForm(requisitionData.data);
+    //   setOriginalData(requisitionData);
       setError(null);
-    } catch (err) {
-      console.error("Error fetching requisition data:", err);
-      setError("Failed to load requisition data. Please try again.");
-    } finally {
       setIsLoading(false);
-    }
+    } catch (err) {
+      console.error("Error fetching Purchase requisition data:", err);
+      setError("Failed to load Purchase requisition data. Please try again.");
+    } 
   };
+  useEffect(()=>{
+    console.log(form,"form")
+  },[form])
   // Fetch descriptions from API when component mounts
   useEffect(() => {
     const getDescriptions = async () => {
@@ -122,17 +126,17 @@ const EditPurchaseRequisition = () => {
   }, []);
 
   // Update current stock when part number changes
-  useEffect(() => {
-    if (form.partNumber && !originalData) { // Only auto-update if not editing an existing record
-      const selectedPart = partNumbers.find(part => part.partNo === form.partNumber);
-      if (selectedPart && selectedPart.currentStock) {
-        setForm(prevForm => ({
-          ...prevForm,
-          currentStock: selectedPart.currentStock.toString()
-        }));
-      }
-    }
-  }, [form.partNumber, partNumbers, originalData]);
+//   useEffect(() => {
+//     if (form.partNumber && !originalData) { // Only auto-update if not editing an existing record
+//       const selectedPart = partNumbers.find(part => part.partNo === form.partNumber);
+//       if (selectedPart && selectedPart.currentStock) {
+//         setForm(prevForm => ({
+//           ...prevForm,
+//           currentStock: selectedPart.currentStock.toString()
+//         }));
+//       }
+//     }
+//   }, [form.partNumber, partNumbers, originalData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -231,19 +235,19 @@ const EditPurchaseRequisition = () => {
     }
 
     try {
-      await updatePurchaseRequisition(id, form);
-      alert("Purchase Requisition updated successfully!");
+      await updatePurchaseRequisition(RequisitionID, form);
+      toast.success("Purchase Requisition updated successfully!");
       // Navigate back to the list view after successful update
-      navigate('/purchase-requisitions');
+      navigate(-1);
     } catch (error) {
       console.error("Error updating purchase requisition:", error);
-      alert("Failed to update purchase requisition. Please try again.");
+      toast.error("Failed to update purchase requisition. Please try again.");
     }
   };
 
   // Cancel editing and navigate back
   const handleCancel = () => {
-    navigate('/purchase-requisitions');
+    navigate(-1);
   };
 
   if (isLoading) {
@@ -300,8 +304,6 @@ const EditPurchaseRequisition = () => {
                 style={{ minHeight: "397px" }}
               >
                 <div className="col-md-12">
-                  <h4 className="mt-3 mb-3">Edit Purchase Requisition #{id}</h4>
-                  
                   <form onSubmit={handleSubmit} style={{ height: "100%" }}>
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
