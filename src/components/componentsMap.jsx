@@ -11,6 +11,7 @@ import EditSupplierTable from './Checker/EditSupplier/EditSupplierTable.jsx';
 import EditMaterialNote from './EditMaterialNote.jsx';
 import EditProduct from './EditProduct.jsx';
 import EditStoreAcceptance from './EditStoreAcceptance.jsx';
+import EditUser from './EditUser.jsx';
 import Footer from './Footer.jsx';
 import Header from './Header.jsx';
 import HomePage from './HomePage.jsx';
@@ -61,6 +62,7 @@ const componentsMap = {
   "EditMaterialNote": EditMaterialNote,
   "EditProduct": EditProduct,
   "EditStoreAcceptance": EditStoreAcceptance,
+  "EditUser": EditUser,
   "Footer": Footer,
   "Header": Header,
   "HomePage": HomePage,

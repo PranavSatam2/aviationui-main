@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { deleteProduct, getProductDetail, listAllUser } from "../services/db_manager";
+import { deleteUser, userById, listAllUser } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { toast } from "react-toastify";
@@ -54,16 +54,27 @@ const ViewUser = () => {
 
   // Edit the selected product
   async function handleEdit(id) {
-    try {
-      const response = await getUserDetail(id);
-      const userData = response?.data;
-      if (userData) {
-        navigate(`/editUser/${id}`);
-      }
-    } catch (error) {
-      console.error("Error fetching User details: ", error);
-      toast.error("Failed to fetch User details");
-    }
+    console.log("Editing user with ID:", id);
+    navigate("/editUser", {
+          state: {
+             id
+          },
+        });
+    // try {
+    //   console.log("Editing user with ID:", id);
+    //   const response = await userById(id);
+    //   const userData = response?.data;
+    //   if (userData) {
+    //     navigate("/editUser", {
+    //       state: {
+    //          id
+    //       },
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.error("Error fetching User details: ", error);
+    //   toast.error("Failed to fetch User details");
+    // }
   }
 
   // Search functionality
@@ -133,9 +144,9 @@ const ViewUser = () => {
   const columns = [
     { field: "id", label: "ID", width: "60px" },
     { field: "firstName", label: "FirstName", width: "150px" },
-    { field: "middleName", label: "MiddleName", width: "150px" },
-    { field: "lastName", label: "LastName", width: "150px" },
-    { field: "username", label: "UserName", width: "150px" },
+    { field: "middleName", label: "MiddleName", width: "180px" },
+    { field: "lastName", label: "LastName", width: "200px" },
+    { field: "username", label: "userName", width: "80px" },
     { field: "dob", label: "DateOfBirth", width: "100px" },
     { field: "mobileNumber", label: "MobileNumber", width: "100px" },
     { field: "email", label: "Email", width: "180px" },

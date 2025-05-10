@@ -23,7 +23,7 @@ export const getStoreDetail = (StoreId) => axiosInstance.get(`${STORE_URL}/${Sto
 
 export const listAllStore = () => {
   return axiosInstance
-    .get(`${STORE_URL}/`)
+    .get(`${STORE_URL}`)
     .then((response) => {
       return response.data;
     })
@@ -178,11 +178,27 @@ let login_API = REST_API_BASE_URL + "/login"
 let USER_API = REST_API_BASE_URL + "/api/roles/addUser"
 let VIEW_USER_API = REST_API_BASE_URL + "/api/roles/viewUser"
 let ROLE_API = REST_API_BASE_URL + "/api/roles"
+let DELETE_USER_API = REST_API_BASE_URL + "/api/roles/userDelete"
+let USER_BY_ID_API = REST_API_BASE_URL + "/api/roles/userById"
+let USER_UPDATE_API = REST_API_BASE_URL + "/api/roles/userUpdate"
 
 export const login = (loginData) => axiosInstance.post(login_API, loginData);
 export const  createUser = (Login) => axiosInstance.post(USER_API, Login);
 export const listAllUser = () =>  axiosInstance.get(`${VIEW_USER_API}`);
-export const addRole = () =>  axiosInstance.post(`${ROLE_API}/addRole`,Role);
+export const addRole = () =>  axiosInstance.get(`${ROLE_API}/addRole`,Role);
+export const deleteUser = (userId) => {
+  console.log(`Deleting user with ID: ${userId}`); // Log for debugging
+  return axiosInstance.delete(`${DELETE_USER_API}/${userId}`);
+};
+export const userById = (userId) => {
+  console.log(`Getting user with ID: ${userId}`); // Log for debugging
+  return axiosInstance.get(`${USER_BY_ID_API}/${userId}`);
+}
+export const updateUser = (userId, userData) => {
+  console.log(`Updating user with ID: ${userId}`); // Log for debugging
+  return axiosInstance.put(`${USER_UPDATE_API}/${userId}`, userData);
+};
+
 
 // ##################### Inspection Report #########################
 let PARTNumber = REST_API_BASE_URL + "/api/inspectionReport/partNo"  

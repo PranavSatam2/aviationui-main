@@ -69,6 +69,8 @@ const App = () => {
         <Route path="/passwordChange" element={<PasswordChange />} />
         <Route path="/homePage" element={<HomePage />} />
         <Route path="/editProduct/:productId" element={<EditProduct />} />
+        <Route path='/editUser' element={<componentsMap.EditUser />} />
+        <Route path="/editRole/:roleId" element={<componentsMap.EditRole />} />
         <Route path="/editstoreAcceptance" element={<EditStoreAcceptance />} />
         <Route path="/editmaterial" element={<EditMaterialNote />} />
         <Route path="/editsupplier" element={<EditSupplierTable />} />
