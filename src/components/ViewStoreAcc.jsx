@@ -32,6 +32,7 @@ const ViewSupplierRegis = () => {
       setIsLoading(true);
       try {
         const response = await listAllStore();
+        console.log("Store Response:- ",response)
         if (response) {
           setTableData(response); // Update state with response data
         }
