@@ -60,7 +60,7 @@ const AddRole= () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-        <CustomBreadcrumb breadcrumbsLabel="Add user"  isBack={true}/>
+        <CustomBreadcrumb breadcrumbsLabel="Add Role"  isBack={true}/>
 
         {/* content Begin */}
         {/* <div className="col-md-6">
@@ -119,7 +119,7 @@ const AddRole= () => {
 
         <div className="col-md-12 text-right mt-1">
                       <div className="text-end m-0">
-                    <button type="submit" className="btn btn-primary">Add User</button>
+                    <button type="submit" className="btn btn-primary">Add Role</button>
                     </div>
                   </div>
                 </form>

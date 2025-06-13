@@ -138,7 +138,7 @@ const EditMaterialRequisition = () => {
       const response = await updateMaterialRequisition(RequisitionID, form);
       if (response.status === 200) {
         toast.success("Material Requisition Updated Successfully!");
-        navigate("/Viewmaterialrequisition");
+        navigate("/MaterialRequisition/ViewMaterialRequisition");
       }
     } catch (error) {
       console.error("Error updating material requisition:", error);

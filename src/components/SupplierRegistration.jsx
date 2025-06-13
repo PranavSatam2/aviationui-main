@@ -165,7 +165,7 @@ const SupplierRegistration = () => {
         setDataMap(response.data);
         setInvalidFeedbackMsg(msg.dataSaved);
         setInvalidFeedback("text-success col-md-4");
-        navigate("/ViewSupplierRegistration");
+        navigate("/ViewSupplierRegis");
         toast.success("Supplier updated successfully");
       }
     }
