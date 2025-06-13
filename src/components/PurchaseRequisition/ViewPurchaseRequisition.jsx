@@ -132,13 +132,14 @@ const ViewPurchaseRequisitionPage = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "srNo", label: "Sr No", width: "150px" },
+    { field: "srNo", label: "Sr No", width: "50px" },
     { field: "partNumber", label: "Part Number", width: "130px" },
     { field: "description", label: "Description", width: "130px" },
     { field: "currentStock", label: "Current Stock", width: "150px" },
     { field: "requiredQty", label: "Required Qty", width: "130px" },
     { field: "requiredDate", label: "Required Date", width: "150px" },
     { field: "remark", label: "Remark", width: "100px" },
+    { field: "batchnumber", label: "Batch Number", width: "150px"}
   ];
 
   // const handlePrintClick = () => {

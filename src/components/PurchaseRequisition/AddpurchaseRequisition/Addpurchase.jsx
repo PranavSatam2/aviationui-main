@@ -324,7 +324,7 @@ const AddPurchaseRequisition = () => {
                             <option value="">Select a part number</option>
                             {partNumbers.map((part) => (
                               <option key={part.id} value={part.partNo}>
-                                {part.partNumber}
+                                {part.productName}
                               </option>
                             ))}
                           </select>
@@ -358,7 +358,7 @@ const AddPurchaseRequisition = () => {
                           <option value="">Select a description</option>
                           {descriptions.map((desc) => (
                             <option key={desc.id} value={desc.description}>
-                              {desc.description}
+                              {desc.productDescription}
                             </option>
                           ))}
                         </select>

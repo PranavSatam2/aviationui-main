@@ -8,7 +8,7 @@ let PRODUCT_URL = REST_API_BASE_URL + "/api/product";
 let MATERIAL_URL = REST_API_BASE_URL + "/api/mrn";
 let MATERIAL_REQUISITION = REST_API_BASE_URL + "/api/material-requisitions";
 let PURCHASE_REQUISITION = REST_API_BASE_URL + "/api/purchase-requisitions";
-let PARTANDDESCRIPTION =REST_API_BASE_URL + "/api/parts";
+let PARTANDDESCRIPTION =REST_API_BASE_URL + "/api/purchase-requisitions/prodNameDesc";
 // let PURCHASE_ORDERBYBATCH = REST_API_BASE_URL + "/api/purchase-orders/requisitions-by-batch";
 let PURCHASE_ORDER =REST_API_BASE_URL +"/api/purchase-orders"
 // ######################### DB_MANAGER #########################
@@ -151,10 +151,10 @@ export const ApproveSupplier = (Supplier) =>
 // ######################### PRODUCT #########################
 export const createProduct = (Product) =>
   axiosInstance.post(`${PRODUCT_URL}/create`, Product);
-export const listAllProduct = () => axiosInstance.get(`${PRODUCT_URL}`);
+export const listAllProduct = () => axiosInstance.get(`${PRODUCT_URL}/active`);
 export const deleteProduct = (productId) => {
   console.log(`Deleting product with ID: ${productId}`); // Log for debugging
-  return axiosInstance.delete(`${PRODUCT_URL}/${productId}`);
+  return axiosInstance.delete(`${PRODUCT_URL}/${productId}/soft-delete`);
 };
 export const updateProduct = (ProductId, Product) =>
   axiosInstance.put(`${PRODUCT_URL}/${ProductId}`, Product);
