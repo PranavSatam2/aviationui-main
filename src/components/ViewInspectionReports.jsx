@@ -127,6 +127,52 @@ const ViewInspectionReports = () => {
 
     return pageNumbers;
   };
+const handleCheckboxChange = (report) => {
+    // If the same checkbox is clicked again, deselect it
+    if (selectedItem === report.inspectionReportId) {
+      setSelectedItem("");
+    } else {
+      setSelectedItem(report.inspectionReportId);
+      setSelecteReportData(report);
+    }
+  };
+
+  // Modified: Handle select all - now it just clears selection
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedItem("");
+    } else {
+      // Select the first item when clicking "select all"
+      if (currentItems.length > 0) {
+        const firstItemId = currentItems[0].formId;
+        setSelectedItem(firstItemId);
+      }
+    }
+    setSelectAll(!selectAll);
+  };
+  const handlePrintClick = (report) => {
+    // Store the report data
+    console.log("Report",report)
+    setReportData(report);
+
+    // Short delay to ensure React has updated the state and rendered the component
+    setTimeout(() => {
+      // Cache original body styles
+      const originalBodyStyle = document.body.style.cssText;
+
+      // Apply print-friendly styles to the body
+      document.body.style.margin = "0";
+      document.body.style.padding = "0";
+
+      // Print the document
+      window.print();
+
+      // Restore original body styles after printing dialog is closed
+      setTimeout(() => {
+        document.body.style.cssText = originalBodyStyle;
+      }, 100);
+    }, 500);
+  };
 
 
   // Column definitions for the table
@@ -237,6 +283,20 @@ const ViewInspectionReports = () => {
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-blue">
+                        <th
+                          className="position-sticky top-0 bg-light py-3 text-center"
+                          style={{ width: "40px" }}
+                        >
+                          <div className="form-check d-flex justify-content-center">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="selectAll"
+                              checked={selectAll}
+                              onChange={handleSelectAll}
+                            />
+                          </div>
+                        </th>
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -268,7 +328,18 @@ const ViewInspectionReports = () => {
                             </div>
                           </th>
                         ))}
-                        
+                        <th
+                          className="position-sticky top-0 bg-light py-3 text-center"
+                          style={{
+                            width: "100px",
+                            fontSize: "0.9rem",
+                            fontWeight: "600",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                          }}
+                        >
+                          ACTIONS
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -282,7 +353,19 @@ const ViewInspectionReports = () => {
                                 : "bg-light bg-opacity-50"
                             }
                           >
-                            
+                            <td className="text-center">
+                              <div className="form-check d-flex justify-content-center">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id={`check-${report.inspectionReportId}`}
+                                  checked={selectedItem === report.inspectionReportId}
+                                  onChange={() =>
+                                    handleCheckboxChange(report)
+                                  }
+                                />
+                              </div>
+                            </td>
                             {columns.map((column) => (
                               <td
                                 key={`${report.formId}-${column.field}`}
@@ -298,6 +381,17 @@ const ViewInspectionReports = () => {
                                 {report[column.field]}
                               </td>
                             ))}
+                             <td>
+                              <div className="d-flex justify-content-center gap-2">
+                                <button
+                                  className="btn btn-sm btn-outline-secondary"
+                                  onClick={() => handlePrintClick(report)}
+                                  title="Print Doc"
+                                >
+                                  <i className="fa-solid fa-print"></i>
+                                </button>
+                              </div>
+                            </td>
                           </tr>
                         ))
                       ) : (

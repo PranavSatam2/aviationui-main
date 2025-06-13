@@ -501,13 +501,13 @@ const ApproveReceivingInspectionReport = () => {
                                 >
                                   <i className="fa-solid fa-eye"></i>
                                 </button>
-                                <button
+                                {/* <button
                                   className="btn btn-sm btn-outline-secondary"
                                   onClick={() => handlePrintClick(report)}
                                   title="Print Doc"
                                 >
                                   <i className="fa-solid fa-print"></i>
-                                </button>
+                                </button> */}
                               </div>
                             </td>
                           </tr>
