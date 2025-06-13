@@ -31,18 +31,19 @@ const ViewSupplierRegis = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await listAllStore();
-        console.log("Store Response:- ",response)
-        if (response) {
-          setTableData(response); // Update state with response data
-        }
-        setIsLoading(false)
-      } catch (error) {
-        console.error("Error fetching data", error);
-        toast.error("Failed to load store data");
-      } finally {
-        setIsLoading(false);
+      const response = await listAllStore();
+      if (response && !response.every(item => item === null)) {
+        setTableData(response);
+      } else {
+        setTableData([]);
       }
+      } catch (error) {
+        toast.error("Failed to load store data");
+        // Set empty array in case of error too
+        setTableData([]);
+      } finally {
+      setIsLoading(false);
+    }
     };
     fetchData();
   }, []);
