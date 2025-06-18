@@ -55,6 +55,7 @@ const StoreAccComponent = () => {
 
   // This function is used to send save request
   async function sendSaveRequest() {
+    console.log("print")
     if (listData.includes(partNum)) {
       let updateRes = await updateStore(partNum, form);
     } else {
@@ -272,7 +273,7 @@ const StoreAccComponent = () => {
               </div>
 
               <div className="col-md-12 d-flex mt-3">
-                <div className="col-md-6 p-2 d-flex">
+                {/* <div className="col-md-6 p-2 d-flex">
                   <label htmlFor="desc" className="col-md-4 mt-2">
                     Inspection Report
                   </label>
@@ -284,7 +285,7 @@ const StoreAccComponent = () => {
                     value={form.document}
                     onChange={handleChange}
                   />
-                </div>
+                </div> */}
 
                 <div className="col-md-6 p-2 d-flex">
                   <label htmlFor="batch" className="col-md-4 mt-2">

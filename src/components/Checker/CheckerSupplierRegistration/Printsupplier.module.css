@@ -1,0 +1,132 @@
+/* MaterialRequisitionForm.module.css */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .printContainer {
+    width: 100%;
+  }
+  
+  .buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+  }
+  
+  .printButton {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .printButton:hover {
+    background-color: #2563eb;
+  }
+  
+  .formTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .tableCell {
+    border: 1px solid #1f2937;
+    padding: 0.5rem;
+  }
+  
+  .formTitle {
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .downloadCell, .printCell {
+    text-align: center;
+  }
+  
+  .headerYellow {
+    background-color: #fde047;
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+  }
+  
+  .labelCell {
+    font-weight: bold;
+  }
+  
+  .columnHeader {
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .inputField {
+    width: 100%;
+    padding: 0.25rem;
+    border: 1px solid #d1d5db;
+  }
+  
+  .centerText {
+    text-align: center;
+  }
+  
+  .addButtonLabel {
+    text-align: center;
+  }
+  
+  .signatureRow {
+    display: flex;
+    align-items: center;
+  }
+  
+  .signatureLabel {
+    font-weight: bold;
+  }
+  
+  .signatureInput {
+    margin-left: 1rem;
+    padding: 0.25rem;
+    width: 8rem;
+    border: 1px solid #d1d5db;
+  }
+  
+  .addRowButton {
+    background-color: #10b981;
+    color: white;
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  
+  .addRowButton:hover {
+    background-color: #059669;
+  }
+  
+  /* Print styles */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    
+    .printContainer, .printContainer * {
+      visibility: visible;
+    }
+    
+    .printContainer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    
+    .printButton, .addRowButton {
+      display: none;
+    }
+  }

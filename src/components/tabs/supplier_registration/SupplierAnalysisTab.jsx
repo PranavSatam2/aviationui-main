@@ -4,18 +4,19 @@ const SupplierAnalysisTab = ({
   validateDataType,
   validateLen,
   errors,
+  disabledField
 }) => {
   return (
     <div className="row m-2 p-2">
-      <div className="col-md-12 d-flex align-items-center mb-3">
-        <label className="col-md-3 col-form-label" htmlFor="coreProcess">
+      <div className="col-md-10 d-flex align-items-center mb-3">
+        <label className="col-md-4 col-form-label" htmlFor="coreProcess">
           What are your core product/process
           <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
             *
           </span>
         </label>
         <input
-          className="form-control col-md-9"
+          className="form-control "
           type="text"
           id="coreProcess"
           name="coreProcess"
@@ -25,6 +26,7 @@ const SupplierAnalysisTab = ({
             validateDataType(event, "ANS");
             validateLen(event, 0, 500);
           }}
+          disabled={disabledField}
         />
       </div>
       {errors.coreProcess && (
@@ -32,12 +34,12 @@ const SupplierAnalysisTab = ({
           {errors.coreProcess}
         </div>
       )}
-      <div className="col-md-12 d-flex align-items-center mb-3">
-        <label className="col-md-3 col-form-label" htmlFor="workYear">
+      <div className="col-md-10 d-flex align-items-center mb-3">
+        <label className="col-md-4 col-form-label" htmlFor="workYear">
           How long have you been in this business doing this type of work
         </label>
         <input
-          className="form-control col-md-9"
+          className="form-control "
           type="text"
           id="workYear"
           name="workYear"
@@ -47,6 +49,7 @@ const SupplierAnalysisTab = ({
             validateDataType(event, "ANS");
             validateLen(event, 0, 500);
           }}
+          disabled={disabledField}
         />
       </div>
 
@@ -68,6 +71,7 @@ const SupplierAnalysisTab = ({
                   name="areYouIsoRegistered"
                   value="Yes"
                   checked={dataMap.areYouIsoRegistered === "Yes"}
+                  disabled={disabledField}
                   onChange={handleChange}
                 />
                 <label
@@ -87,6 +91,7 @@ const SupplierAnalysisTab = ({
                   value="No"
                   checked={dataMap.areYouIsoRegistered === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -124,6 +129,7 @@ const SupplierAnalysisTab = ({
                   value="Yes"
                   checked={dataMap.isoRegistered === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -142,6 +148,7 @@ const SupplierAnalysisTab = ({
                   value="No"
                   checked={dataMap.isoRegistered === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -175,6 +182,7 @@ const SupplierAnalysisTab = ({
                   name="isoStandard"
                   value="Yes"
                   checked={dataMap.isoStandard === "Yes"}
+                  disabled={disabledField}
                   onChange={handleChange}
                 />
                 <label className="form-check-label pt-1" htmlFor="isoStandard1">
@@ -190,6 +198,7 @@ const SupplierAnalysisTab = ({
                   name="isoStandard"
                   value="No"
                   checked={dataMap.isoStandard === "No"}
+                  disabled={disabledField}
                   onChange={handleChange}
                 />
                 <label className="form-check-label pt-1" htmlFor="isoStandard2">
@@ -226,6 +235,7 @@ const SupplierAnalysisTab = ({
                   value="Yes"
                   checked={dataMap.carDgcaApproval === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -244,6 +254,7 @@ const SupplierAnalysisTab = ({
                   value="No"
                   checked={dataMap.carDgcaApproval === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label
                   className="form-check-label pt-1"
@@ -259,39 +270,38 @@ const SupplierAnalysisTab = ({
               </div>
             )}
           </div>
-
-          {/* Registration Plans Section */}
-          <div className="col-md-6 d-flex">
-            <label
-              className="col-md-7 col-form-label"
-              htmlFor="isoRegistrationPlans"
-            >
-              If not registered, do you have plans to do so and when?
-            </label>
-            <input
-              className="form-control col-md-5"
-              type="text"
-              id="isoRegistrationPlans"
-              name="isoRegistrationPlans"
-              value={dataMap.isoRegistrationPlans}
-              onChange={handleChange}
-              onInput={(event) => {
-                validateDataType(event, "ANS");
-                validateLen(event, 1, 50);
-              }}
-            />
-          </div>
         </div>
       </div>
-
-      <div className="col-md-12 mb-1">
+      {/* Registration Plans Section */}
+      <div className="col-md-10 d-flex mb-3">
+        <label
+          className="col-md-6 col-form-label"
+          htmlFor="isoRegistrationPlans"
+        >
+          If not registered, do you have plans to do so and when?
+        </label>
+        <input
+          className="form-control "
+          type="text"
+          id="isoRegistrationPlans"
+          name="isoRegistrationPlans"
+          value={dataMap.isoRegistrationPlans}
+          onChange={handleChange}
+          onInput={(event) => {
+            validateDataType(event, "ANS");
+            validateLen(event, 1, 50);
+          }}
+          disabled={disabledField}
+        />
+      </div>
+      <div className="col-md-10 mb-1">
         <div className="row">
           <div className="col-md-6 d-flex">
             <label className="col-md-6 col-form-label" htmlFor="numEmp">
               Total number of employee's{" "}
             </label>
             <input
-              className="form-control col-md-6"
+              className="form-control"
               type="number"
               id="numEmp"
               name="numEmp"
@@ -301,6 +311,7 @@ const SupplierAnalysisTab = ({
                 validateDataType(event, "N");
                 validateLen(event, 0, 4);
               }}
+              disabled={disabledField}
             />
           </div>
 
@@ -309,7 +320,7 @@ const SupplierAnalysisTab = ({
               Number of operating shift's{" "}
             </label>
             <input
-              className="form-control col-md-6"
+              className="form-control "
               type="number"
               id="numOpeShift"
               name="numOpeShift"
@@ -319,6 +330,7 @@ const SupplierAnalysisTab = ({
                 validateDataType(event, "N");
                 validateLen(event, 0, 3);
               }}
+              disabled={disabledField}
             />
           </div>
         </div>
@@ -343,6 +355,7 @@ const SupplierAnalysisTab = ({
                   value="Yes"
                   checked={dataMap.quaManual === "Yes"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label className="form-check-label pt-1" htmlFor="quaManualYes">
                   Yes
@@ -358,6 +371,7 @@ const SupplierAnalysisTab = ({
                   value="No"
                   checked={dataMap.quaManual === "No"}
                   onChange={handleChange}
+                  disabled={disabledField}
                 />
                 <label className="form-check-label pt-1" htmlFor="quaManualNo">
                   No
@@ -395,6 +409,7 @@ const SupplierAnalysisTab = ({
                   validateDataType(event, "N");
                   validateLen(event, 0, 10);
                 }}
+                disabled={disabledField}
               />
             </div>
             {errors.turnOver && (

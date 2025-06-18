@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from "../axiosConfig";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -27,7 +27,7 @@ const AddRole= () => {
       setError('Please provide role name, role code, and role description.');
       return;
     }
-    const token = localStorage.getItem("jwt_token");
+    const token = sessionStorage.getItem("jwt_token");
   if (!token) {
     setError('You need to be logged in to change your password');
     return;
@@ -35,15 +35,11 @@ const AddRole= () => {
 
     try {
       // Send the new role data to the backend
-      const response = await axios.post('http://localhost:8082/api/roles/addRole', {
+      const response = await axiosInstance.post('/api/roles/addRole', {
         roleName,
         roleCode,
         roleDescription,
-       }, {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-            },
-      });
+       });
 
       // On successful role creation, show success message and clear form
       setSuccess('Role created successfully!');
@@ -64,7 +60,7 @@ const AddRole= () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-        <CustomBreadcrumb breadcrumbsLabel="Add user"  isBack={true}/>
+        <CustomBreadcrumb breadcrumbsLabel="Add Role"  isBack={true}/>
 
         {/* content Begin */}
         {/* <div className="col-md-6">
@@ -123,7 +119,7 @@ const AddRole= () => {
 
         <div className="col-md-12 text-right mt-1">
                       <div className="text-end m-0">
-                    <button type="submit" className="btn btn-primary">Add User</button>
+                    <button type="submit" className="btn btn-primary">Add Role</button>
                     </div>
                   </div>
                 </form>

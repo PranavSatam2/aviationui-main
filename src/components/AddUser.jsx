@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import axios from "axios"; // Import axios if you are using axios
+import axiosInstance from "../axiosConfig";
 import { createUser } from "../services/db_manager";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
@@ -24,10 +24,8 @@ const AddUser = () => {
   const [roles, setRoles] = useState([]); // NEW STATE
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt_token");
-    axios.get("http://localhost:8082/api/roles/role",{
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const token = sessionStorage.getItem("jwt_token");
+    axiosInstance.get("/api/roles/role")
       .then((response) => {
         console.log("Fetched roles:", response.data);
         setRoles(response.data);
@@ -99,6 +97,10 @@ const validationRules = {
     length: 50,
     regex: /^[a-zA-Z\s]*$/,
   },
+  email: {
+    length: 255,
+    regex: /^\S+@\S+\.\S+$/,
+  },
 };
   const validateDataType = (event, dataType) => 
     {
@@ -149,11 +151,11 @@ const validationRules = {
 
     // Iterate through each field and validate
     for (const [field, rules] of Object.entries(validationRules)) {
-      const error = validateField(field, form[field], rules);
-      if (error) {
-        alert(error);
-        return;
-      }
+       const error = validateField(field, form[field], rules);
+       if (error) {
+         alert(error);
+         return;
+       }
     }
 
     // If all validation passes, proceed with submitting
@@ -161,7 +163,6 @@ const validationRules = {
       const response = await createUser(form);
       console.log("User added successfully:", response.data);
       alert("User Added Successfully!");
-      location.reload();
 
       // Reset the form after successful submission
       setForm({
