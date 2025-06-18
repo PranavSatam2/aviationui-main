@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import axios from "axios"; // Import axios if you are using axios
+import axiosInstance from "../axiosConfig";
 import { createProduct } from "../services/db_manager";
+import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const AddProduct = () => {
   const [form, setForm] = useState({
@@ -14,7 +15,7 @@ const AddProduct = () => {
     oem: "",
     nha: "",
     cmmReferenceNumber: "",
-    date: "",
+    registrationDate: "",
     registeredBy: "",
   });
 
@@ -41,6 +42,7 @@ const AddProduct = () => {
 
     return null; // No error
   };
+
 
   // New validation rules object
   const validationRules = {
@@ -77,6 +79,49 @@ const AddProduct = () => {
       regex: /^[a-zA-Z\s]*$/,
     },
   };
+  const validateDataType = (event, dataType) => 
+    {
+        document.getElementById('')
+        let value = event.target.value
+        if (dataType === 'A') 
+        {
+            value = value.replace(/[^a-zA-Z0-9 ]/g, '');
+            event.target.classList.add('is-valid')
+        } 
+        else if (dataType === 'N') 
+        {
+            value = value.replace(/[^0-9]/g, '');
+            event.target.classList.add('is-valid')
+        } 
+        else if (dataType === 'ANS') 
+        {
+            value = value.replace(/[^a-zA-Z0-9@.]/g, '');
+            event.target.classList.add('is-valid')
+        }
+    
+        event.target.value = value
+    };
+  function validateLen(event, minLen, maxLen) 
+    {
+        let value = event.target.value.substring(0,maxLen)
+        event.target.value = value
+        let elementLen = value.length
+        if (elementLen > maxLen) 
+        {
+            event.target.classList.remove('is-valid')
+            event.target.classList.add('is-invalid')
+        } 
+        else if (elementLen < minLen) 
+        {
+            event.target.classList.remove('is-valid')
+            event.target.classList.add('is-invalid')
+        } 
+        else 
+        {
+            event.target.classList.add('is-valid')
+            event.target.classList.remove('is-invalid')
+        }
+    }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -95,6 +140,7 @@ const AddProduct = () => {
       const response = await createProduct(form);
       console.log("Product added successfully:", response.data);
       alert("Product Added Successfully!");
+      location.reload();
 
       // Reset the form after successful submission
       setForm({
@@ -105,7 +151,7 @@ const AddProduct = () => {
         oem: "",
         nha: "",
         cmmReferenceNumber: "",
-        date: "",
+        registrationDate: "",
         registeredBy: "",
       });
     } catch (error) {
@@ -119,15 +165,18 @@ const AddProduct = () => {
       <Sidebar />
       <div className="content">
         <Header />
+        <div style={{ marginTop: "10px" }}>
+        <CustomBreadcrumb breadcrumbsLabel="Add Products"  isBack={true}/>
+
         {/* content Begin */}
-        <div className="col-md-6">
+        {/* <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
             <h5 className="h5 mx-4 mb-0 text-gray-800">Add Products</h5>
           </div>
-        </div>
+        </div> */}
         <div className="my-2 p-2">
           <div className="container-fluid">
-            <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '540px'}}>
+            <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '397px'}}>
               <div className="col-md-12">
                 <form onSubmit={handleSubmit} style={{height : '100%'}}>
                   <div className="col-md-12 p-2 d-flex">
@@ -137,6 +186,7 @@ const AddProduct = () => {
                         className="form-control w-100"
                         type="text"
                         name="productName"
+                        onInput={(event) => {validateDataType(event,'A')}}
                         value={form.productName}
                         onChange={handleChange}
                         required
@@ -175,6 +225,7 @@ const AddProduct = () => {
                       className="form-control w-100"
                       name="productDescription"
                       value={form.productDescription}
+                      onInput={(event) => {validateDataType(event,'A')}}
                       onChange={handleChange}
                       style={{height : '70px'}}
                       required
@@ -206,10 +257,11 @@ const AddProduct = () => {
 
                     <div className="col-md-6 d-flex">
                     <label className="col-md-4 mt-2">OEM</label>
-                    <textarea
+                    <input
                       className="form-control w-100"
                       type="text"
                       name="oem"
+                      onInput={(event) => {validateDataType(event,'A')}}
                       value={form.oem}
                       onChange={handleChange}
                       required
@@ -220,11 +272,12 @@ const AddProduct = () => {
                   <div className="col-md-12 d-flex">
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">NHA</label>
-                      <textarea
+                      <input
                         className="form-control w-100"
                         type="text"
                         name="nha"
                         value={form.nha}
+                        onInput={(event) => {validateDataType(event,'A')}}
                         onChange={handleChange}
                         required
                       />
@@ -236,6 +289,7 @@ const AddProduct = () => {
                         className="form-control w-100"
                         type="Number"
                         name="cmmReferenceNumber"
+                        onInput={(event) => {validateLen(event,1,12)}}
                         value={form.cmmReferenceNumber}
                         onChange={handleChange}
                         required
@@ -249,8 +303,8 @@ const AddProduct = () => {
                       <input
                         className="form-control w-100"
                         type="date"
-                        name="date"
-                        value={form.date}
+                        name="registrationDate"
+                        value={form.registrationDate}
                         onChange={handleChange}
                         required
                       />
@@ -263,6 +317,7 @@ const AddProduct = () => {
                         type="text"
                         name="registeredBy"
                         value={form.registeredBy}
+                        onInput={(event) => {validateDataType(event,'A')}}
                         onChange={handleChange}
                         required
                       />
@@ -278,6 +333,7 @@ const AddProduct = () => {
           </div>
         </div>
       </div >
+      </div>
       <Footer />
     </div >
   );

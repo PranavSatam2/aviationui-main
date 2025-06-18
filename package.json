@@ -3,11 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+  "homepage": "/aviationui/",
+   "scripts": {
+    "generate-map": "node scripts/generateComponentMap.js",
+    "dev": "npm run generate-map && vite",
+    "build": "npm run generate-map && vite build",
+    "preview": "vite preview",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -17,10 +19,14 @@
     "datatables.net": "^2.2.2",
     "datatables.net-dt": "^2.2.2",
     "jquery": "^3.7.1",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.483.0",
     "react": "^18.3.1",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0",
-    "react-router-dom": "^7.1.3"
+    "react-router-dom": "^7.1.3",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -32,6 +38,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
-    "vite": "^6.1.0"
+    "vite": "^6.2.0",
+    "vite-plugin-inspect": "^11.0.1"
   }
 }

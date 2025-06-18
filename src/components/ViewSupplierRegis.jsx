@@ -1,133 +1,443 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { deleteSupplier, getSupplierDetail, listAllSupplier } from "../services/db_manager";
-import MyModalComponent from "./partials/MyModalComponent";
+import {
+  deleteSupplier,
+  getSupplierDetail,
+  listAllSupplier,
+} from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
+import { toast } from "react-toastify";
+import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const ViewSupplierRegis = () => {
-    // State
-    const [tableData, setTableData] = useState([]);  // Store data
-    const navigate = useNavigate();
-    const modalRef = useRef();                      // Modal reference
+  // State
+  const [tableData, setTableData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [sortField, setSortField] = useState("formId");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [isLoading, setIsLoading] = useState(true);
 
-    // Fetching data when the component is mounted
-    useEffect(() => {
-        listAllSupplier().then(response => { 
-            if (response) {
-                setTableData(response); // Update state with response data
-            }
-        }).catch(error => {
-            console.log("Error fetching data", error);
-        });
-    }, []);
+  const navigate = useNavigate();
 
-    // Apply dataTable utility after data is loaded from backend
-    useEffect(() => {
-        if (tableData.length > 0) {
-            $('#dataTable').DataTable(); 
+  // Fetching data when the component is mounted
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await listAllSupplier();
+        if (response) {
+          setTableData(response);
         }
-    }, [tableData]);
+      } catch (error) {
+        console.error("Error fetching data", error);
+        toast.error("Failed to load suppliers");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-    // Delete the selected supplier
-    async function deleteSelectedElement(elementId) {
-        if (elementId !== '') {
-            let response = await deleteSupplier(elementId);
-            if (response) {
-                window.location.reload();
-            }
+  const deleteSelectedElement = async (elementId) => {
+    if (window.confirm("Are you sure you want to delete this supplier?")) {
+      try {
+        const response = await deleteSupplier(elementId);
+        if (response) {
+          setTableData((prevData) =>
+            prevData.filter((supplier) => supplier.formId !== elementId)
+          );
+          toast.success("Supplier deleted successfully");
         }
+      } catch (error) {
+        console.error("Failed to delete supplier", error);
+        toast.error("Failed to delete supplier. Please try again.");
+      }
     }
+  };
 
-    // Edit the selected supplier
-    async function editSelectedElement(elementId) {
-        if (elementId !== '') {
-            try {
-                let supplierId = elementId;
-                let supplierData = await getSupplierDetail(elementId);
-                supplierData = supplierData.data;
-                if (supplierId !== null) {
-                    navigate('/SupplierRegistration', { state: { supplierId, supplierData } });
-                }
-            } catch (error) {
-                console.error("Error fetching supplier details: ", error);
-            }
+  const editSelectedElement = async (elementId) => {
+    if (elementId !== "") {
+      try {
+        let supplierId = elementId;
+        let supplierData = await getSupplierDetail(elementId);
+        supplierData = supplierData.data;
+        if (supplierId !== null) {
+          navigate("/SupplierRegistration", {
+            state: { supplierId, supplierData },
+          });
         }
+      } catch (error) {
+        console.error("Error fetching supplier details: ", error);
+        toast.error("Failed to fetch supplier details");
+      }
     }
+  };
 
-    return (
-        <div className="wrapper">
-            <Sidebar />
-            <div className="content">
-                <Header />
-                {/* Content heading */}
-                <div className="col-md-6">
-                    <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-4">
-                        <h5 className="h5 mx-3 mb-0 text-gray-800">View Supplier Registration</h5>
-                    </div>
-                </div>
-
-                {/* Content Body */}
-                <div className="card border border-dark shadow mx-4 my-4 p-2" style={{ height: '500px' }}>
-                    <div className="col-md-12">
-                        <div className="table-responsive overflow-auto px-0 mt-4" style={{width : '100%'}}>
-                            <table id="dataTable" className="table border" style={{ width: "100%", cellspacing: "0", tableLayout: "fixed" }}>
-                                <thead className="position-sticky sticky-top bg-light">
-                                    <tr>
-                                      <th style={{ width: "35px" }}>Form ID</th>
-                                    <th style={{ width: "200px" }}>Supplier Name</th>
-                                    <th>Address</th>
-                                    <th>Number</th>
-                                    <th>Fax</th>
-                                    <th>Email Id</th>
-                                    <th>Quality Manager</th>
-                                    <th>QM Number</th>
-                                    <th>QM Email</th>
-                                    <th>Sale Rep</th>
-                                    <th>S Number</th>
-                                    <th>S Email</th>
-                                    <th>Core Product</th>
-                                    <th>Action</th>
-                                 </tr>
-                                </thead>
-                                <tbody className="overflow-auto w-100">
-                                    {tableData && tableData.length > 0 ? tableData.map((supplier) => (
-                                        <tr key={supplier.formId}>
-                                            <td>{supplier.formId}</td>
-                                            <td>{supplier.supplierName}</td>
-                                            <td>{supplier.address}</td>
-                                            <td>{supplier.phoneNumber}</td>
-                                            <td>{supplier.fax}</td>
-                                            <td>{supplier.emailId}</td>
-                                            <td>{supplier.qualityManagerName}</td>
-                                            <td>{supplier.qualityManagerPhoneNumber}</td>
-                                            <td>{supplier.qualityManagerEmailId}</td>
-                                            <td>{supplier.salesRepresentativeName}</td>
-                                            <td>{supplier.salePhoneNumber}</td>
-                                            <td>{supplier.saleEmailId}</td>
-                                            <td>{supplier.coreProducts}</td>
-                                            <td>
-                                                <span className="ms-1 text-danger" onClick={() => deleteSelectedElement(`${supplier.formId}`)}><i className="fa-solid fa-trash"></i></span>
-                                                <span className="mx-1 text-primary" onClick={() => editSelectedElement(`${supplier.formId}`)}><i className="fa-solid fa-pen-to-square"></i></span>
-                                            </td>
-                                        </tr>
-                                    )) : (
-                                        <tr>
-                                            <td colSpan="14" className="text-center">No data available</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <MyModalComponent ref={modalRef} modalTitle="My Custom Modal Title" modalBodyContent="This is a custom body for the modal." buttonLabel="Open Modal" />
-                <Footer />
-            </div>
-        </div>
+  // Search functionality
+  const filteredData = tableData.filter((supplier) => {
+    return Object.values(supplier).some(
+      (value) =>
+        value &&
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
+  });
+
+  // Sorting functionality
+  const sortedData = [...filteredData].sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+
+    if (sortDirection === "asc") {
+      return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+    } else {
+      return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+    }
+  });
+
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPageButtons = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+    if (endPage - startPage + 1 < maxPageButtons) {
+      startPage = Math.max(1, endPage - maxPageButtons + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <li
+          key={i}
+          className={`page-item ${currentPage === i ? "active" : ""}`}
+        >
+          <button className="page-link" onClick={() => setCurrentPage(i)}>
+            {i}
+          </button>
+        </li>
+      );
+    }
+
+    return pageNumbers;
+  };
+
+  // Column definitions for the table
+  const columns = [
+    { field: "supplierId", label: "ID", width: "50px" },
+    { field: "supplierName", label: "Supplier Name", width: "100px" },
+    { field: "address", label: "Address", width: "100px" },
+    { field: "phoneNumber", label: "Phone Number", width: "100px" },
+    { field: "faxNum", label: "Fax Number", width: "100px" },
+    { field: "email", label: "Email", width: "100px" },
+    { field: "qualityManagerName", label: "Quality Manager", width: "100px" },
+    { field: "qualityManagerPhoneNumber", label: "QM Phone", width: "100px" },
+    { field: "qualityManagerEmailId", label: "QM Email", width: "100px" },
+    { field: "saleRepresentativeName", label: "Sales Rep", width: "100px" },
+    {
+      field: "saleRepresentativePhoneNumber",
+      label: "SR Phone",
+      width: "100px",
+    },
+    { field: "saleRepresentativeEmailId", label: "SR Email", width: "150px" },
+    { field: "coreProcess", label: "Core Product", width: "100px" },
+  ];
+
+  return (
+    <div className="wrapper">
+      <Sidebar />
+      <div className="content">
+        <Header />
+        <div style={{ marginTop: "10px" }}>
+          <CustomBreadcrumb breadcrumbsLabel="Supplier Registration" />
+
+          <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
+            <div className="card-body">
+              <div className="row align-items-center">
+                <div className="col-md-6">
+                  <div className="input-group">
+                    <span className="input-group-text bg-primary text-white border-0">
+                      <i className="fa fa-search"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control border-start-0 ps-0"
+                      placeholder="Search suppliers..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-3 ms-auto">
+                  <div className="d-flex align-items-center justify-content-end">
+                    <label className="me-2 text-muted fw-light">Show</label>
+                    <select
+                      className="form-select form-select-sm w-auto"
+                      value={itemsPerPage}
+                      onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                    <label className="ms-2 text-muted fw-light">entries</label>
+                  </div>
+                </div>
+              </div>
+
+              {isLoading ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border text-primary" role="status">
+                    {/* <span className="visually-hidden"></span> */}
+                  </div>
+                  <p className="mt-2 text-muted">Loading data...</p>
+                </div>
+              ) : (
+                <div
+                  className="table-responsive"
+                  style={{
+                    overflowY: "auto",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#ccc transparent",
+                  }}
+                >
+                  <table className="table table-hover table-striped align-middle">
+                    <thead>
+                      <tr className="bg-blue">
+                        {columns.map((column) => (
+                          <th
+                            key={column.field}
+                            className="position-sticky top-0 bg-light py-3"
+                            onClick={() => handleSort(column.field)}
+                            style={{
+                              cursor: "pointer",
+                              width: column.width || "auto",
+                              fontSize: "0.9rem",
+                              fontWeight: "600",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
+                            }}
+                          >
+                            <div className="d-flex align-items-center">
+                              <span>{column.label}</span>
+                              {sortField === column.field ? (
+                                <i
+                                  className={`ms-1 fa fa-sort-${
+                                    sortDirection === "asc" ? "up" : "down"
+                                  } text-primary`}
+                                ></i>
+                              ) : (
+                                <i
+                                  className="ms-1 fa fa-sort text-muted opacity-50"
+                                  style={{ fontSize: "0.8rem" }}
+                                ></i>
+                              )}
+                            </div>
+                          </th>
+                        ))}
+                        <th
+                          className="position-sticky top-0 bg-light py-3 text-center"
+                          style={{
+                            width: "100px",
+                            fontSize: "0.9rem",
+                            fontWeight: "600",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                          }}
+                        >
+                          ACTIONS
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentItems.length > 0 ? (
+                        currentItems.map((supplier, index) => (
+                          <tr
+                            key={supplier.formId}
+                            className={
+                              index % 2 === 0
+                                ? "bg-white"
+                                : "bg-light bg-opacity-50"
+                            }
+                          >
+                            {columns.map((column) => (
+                              <td
+                                key={`${supplier.formId}-${column.field}`}
+                                className="text-nowrap py-3"
+                                style={{
+                                  maxWidth: "150px",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                }}
+                                title={supplier[column.field]}
+                              >
+                                {supplier[column.field]}
+                              </td>
+                            ))}
+                            <td>
+                              <div className="d-flex justify-content-center gap-2">
+                                <button
+                                  className="btn btn-sm btn-outline-primary"
+                                  onClick={() =>
+                                    editSelectedElement(supplier.supplierId)
+                                  }
+                                  title="Edit"
+                                >
+                                  <i className="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() =>
+                                    deleteSelectedElement(supplier.supplierId)
+                                  }
+                                  title="Delete"
+                                >
+                                  <i className="fa-solid fa-trash"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={columns.length + 1}
+                            className="text-center py-5"
+                          >
+                            {searchTerm ? (
+                              <div>
+                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
+                                <p className="mb-0">
+                                  No matching records found
+                                </p>
+                              </div>
+                            ) : (
+                              <div>
+                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
+                                <p className="mb-0">No data available</p>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              <div className="row mt-4 align-items-center">
+                <div className="col-md-6">
+                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
+                    Showing{" "}
+                    <span className="fw-bold text-dark">
+                      {indexOfFirstItem + 1}
+                    </span>{" "}
+                    to{" "}
+                    <span className="fw-bold text-dark">
+                      {Math.min(indexOfLastItem, sortedData.length)}
+                    </span>{" "}
+                    of{" "}
+                    <span className="fw-bold text-dark">
+                      {sortedData.length}
+                    </span>{" "}
+                    entries
+                    {searchTerm &&
+                      ` (filtered from ${tableData.length} total entries)`}
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <nav aria-label="Page navigation">
+                    <ul className="pagination justify-content-end mb-0">
+                      <li
+                        className={`page-item ${
+                          currentPage === 1 ? "disabled" : ""
+                        }`}
+                      >
+                        <button
+                          className="page-link border-0"
+                          onClick={() => setCurrentPage(1)}
+                          aria-label="First page"
+                        >
+                          <i className="fa-solid fa-angles-left"></i>
+                        </button>
+                      </li>
+                      <li
+                        className={`page-item ${
+                          currentPage === 1 ? "disabled" : ""
+                        }`}
+                      >
+                        <button
+                          className="page-link border-0"
+                          onClick={() => setCurrentPage(currentPage - 1)}
+                          aria-label="Previous page"
+                        >
+                          <i className="fa-solid fa-angle-left"></i>
+                        </button>
+                      </li>
+
+                      {renderPageNumbers()}
+
+                      <li
+                        className={`page-item ${
+                          currentPage === totalPages ? "disabled" : ""
+                        }`}
+                      >
+                        <button
+                          className="page-link border-0"
+                          onClick={() => setCurrentPage(currentPage + 1)}
+                          aria-label="Next page"
+                        >
+                          <i className="fa-solid fa-angle-right"></i>
+                        </button>
+                      </li>
+                      <li
+                        className={`page-item ${
+                          currentPage === totalPages ? "disabled" : ""
+                        }`}
+                      >
+                        <button
+                          className="page-link border-0"
+                          onClick={() => setCurrentPage(totalPages)}
+                          aria-label="Last page"
+                        >
+                          <i className="fa-solid fa-angles-right"></i>
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    </div>
+  );
 };
 
 export default ViewSupplierRegis;

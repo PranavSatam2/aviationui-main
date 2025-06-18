@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProductDetail, updateProduct } from "../services/db_manager"; // Assuming these API functions are defined
+import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const EditProduct = () => {
   const { productId } = useParams(); // Get the productId from URL
@@ -17,7 +18,7 @@ const EditProduct = () => {
     oem: "",
     nha: "",
     cmmReferenceNumber: "",
-    date: "",
+    registrationDate: "",
     registeredBy: "",
   });
 
@@ -46,7 +47,7 @@ const EditProduct = () => {
   const validateField = (fieldName, value, rules) => {
     if (!value) return `${fieldName} is required.`;
 
-    if (rules.type === 'number' && isNaN(value)) {
+    if (rules.type === "number" && isNaN(value)) {
       return `${fieldName} should be a number.`;
     }
 
@@ -88,7 +89,7 @@ const EditProduct = () => {
       regex: /^[a-zA-Z0-9\s]*$/,
     },
     cmmReferenceNumber: {
-      type: 'number',
+      type: "number",
       length: 12,
     },
     registeredBy: {
@@ -127,157 +128,196 @@ const EditProduct = () => {
       <Sidebar />
       <div className="content">
         <Header />
-        {/* content Begin */}
-        <div className="col-md-6">
+        <div style={{ marginTop: "10px" }}>
+          <CustomBreadcrumb breadcrumbsLabel="Edit Products" isBack={true} />
+          {/* content Begin */}
+          {/* <div className="col-md-6">
           <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
-            <h5 className="h5 mx-4 mb-0 text-gray-800">Edit Product</h5>
+            <CustomBreadcrumb breadcrumbsLabel="Edit Products" isBack={true} />{" "}
           </div>
-        </div>
-        <div className="my-2 p-2">
-          <div className="container-fluid">
-            <div className="row mx-1 card border border-dark shadow-lg py-2">
-              <div className="col-md-12">
-                <form onSubmit={handleSubmit}>
-                  <div className="col-md-12 p-2 d-flex">
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-5 mt-1">Product Name</label>
-                      <input
-                        className="form-control w-100"
-                        type="text"
-                        name="productName"
-                        value={form.productName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-5 mt-2">Material Classification</label>
-                      <select
-                        className="form-control w-100"
-                        name="materialClassification"
-                        value={form.materialClassification}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Select Material Classification</option>
-                        <option value="Consumable">Consumable</option>
-                        <option value="Spare part">Spare part</option>
-                        <option value="Hardware">Hardware</option>
-                        <option value="Chemical">Chemical</option>
-                        <option value="Tape">Tape</option>
-                        <option value="Adhesive">Adhesive</option>
-                        <option value="Sealant">Sealant</option>
-                        <option value="Fiber Cloths">Fiber Cloths</option>
-                        <option value="General">General</option>
-                        <option value="Miscellaneous">Miscellaneous</option>
-                        <option value="Finish Product">Finish Product</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="col-md-12 p-3 d-flex">
-                    <label className="col-md-2 mt-2">Product Description</label>
-                    <textarea
-                      className="form-control w-100"
-                      name="productDescription"
-                      value={form.productDescription}
-                      onChange={handleChange}
-                      required
-                    ></textarea>
-                  </div>
-
-                  <div className="col-md-12 d-flex">
-                    <div className="col-md-6 p-1 d-flex">
-                      <label className="col-md-6 mt-2">Unit of Measurement</label>
-                      <select
-                        className="form-control w-100"
-                        name="unitOfMeasurement"
-                        value={form.unitOfMeasurement}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Select Unit</option>
-                        <option value="EA">EA</option>
-                        <option value="RL">RL</option>
-                        <option value="QT">QT</option>
-                        <option value="GAL">GAL</option>
-                        <option value="KIT">KIT</option>
-                        <option value="LTR">LTR</option>
-                        <option value="SHT">SHT</option>
-                        <option value="Sq. ft">Sq. ft</option>
-                        <option value="Sq.mtr">Sq.mtr</option>
-                      </select>
+        </div> */}
+          <div className="my-2 p-2">
+            <div className="container-fluid">
+              <div
+                className="row mx-1 card border border-dark shadow-lg py-2"
+                style={{ height: "397px" }}
+              >
+                <div className="col-md-12">
+                  <form onSubmit={handleSubmit} style={{ height: "100%" }}>
+                    <div className="col-md-12 p-2 d-flex">
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-1">Product Name</label>
+                        <input
+                          className="form-control w-100"
+                          type="text"
+                          name="productName"
+                          onInput={(event) => {
+                            validateDataType(event, "A");
+                          }}
+                          value={form.productName}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">
+                          Material Classification
+                        </label>
+                        <select
+                          className="form-control w-100"
+                          name="materialClassification"
+                          value={form.materialClassification}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">
+                            Select Material Classification
+                          </option>
+                          <option value="Consumable">Consumable</option>
+                          <option value="Spare part">Spare part</option>
+                          <option value="Hardware">Hardware</option>
+                          <option value="Chemical">Chemical</option>
+                          <option value="Tape">Tape</option>
+                          <option value="Adhesive">Adhesive</option>
+                          <option value="Sealant">Sealant</option>
+                          <option value="Fiber Cloths">Fiber Cloths</option>
+                          <option value="General">General</option>
+                          <option value="Miscellaneous">Miscellaneous</option>
+                          <option value="Finish Product">Finish Product</option>
+                        </select>
+                      </div>
                     </div>
 
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-3 mt-2">OEM</label>
+                    <hr className="mx-0 my-2 p-0 border" />
+
+                    <div className="col-md-12 p-3 d-flex">
+                      <label className="col-md-2 mt-2">
+                        Product Description
+                      </label>
                       <textarea
                         className="form-control w-100"
-                        type="text"
-                        name="oem"
-                        value={form.oem}
+                        name="productDescription"
+                        value={form.productDescription}
+                        onInput={(event) => {
+                          validateDataType(event, "A");
+                        }}
                         onChange={handleChange}
+                        style={{ height: "70px" }}
                         required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-12 d-flex">
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-4 mt-2">NHA</label>
-                      <textarea
-                        className="form-control w-100"
-                        type="text"
-                        name="nha"
-                        value={form.nha}
-                        onChange={handleChange}
-                        required
-                      />
+                      ></textarea>
                     </div>
 
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-4 mt-2">CMM Reference Number</label>
-                      <input
-                        className="form-control w-100"
-                        type="Number"
-                        name="cmmReferenceNumber"
-                        value={form.cmmReferenceNumber}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
+                    <div className="col-md-12 d-flex">
+                      <div className="col-md-6 p-1 d-flex">
+                        <label className="col-md-4 mt-2">
+                          Unit of Measurement
+                        </label>
+                        <select
+                          className="form-control w-100"
+                          name="unitOfMeasurement"
+                          value={form.unitOfMeasurement}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select Unit</option>
+                          <option value="EA">EA</option>
+                          <option value="RL">RL</option>
+                          <option value="QT">QT</option>
+                          <option value="GAL">GAL</option>
+                          <option value="KIT">KIT</option>
+                          <option value="LTR">LTR</option>
+                          <option value="SHT">SHT</option>
+                          <option value="Sq.ft">Sq.ft</option>
+                          <option value="Sq.mtr">Sq.mtr</option>
+                        </select>
+                      </div>
 
-                  <div className="col-md-12 d-flex">
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-4 mt-2">Date</label>
-                      <input
-                        className="form-control w-100"
-                        type="date"
-                        name="date"
-                        value={form.registration_date}
-                        onChange={handleChange}
-                        required
-                      />
+                      <div className="col-md-6 d-flex">
+                        <label className="col-md-4 mt-2">OEM</label>
+                        <input
+                          className="form-control w-100"
+                          type="text"
+                          name="oem"
+                          onInput={(event) => {
+                            validateDataType(event, "A");
+                          }}
+                          value={form.oem}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
                     </div>
 
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-4 mt-2">Registered By</label>
-                      <input
-                        className="form-control w-100"
-                        type="text"
-                        name="registeredBy"
-                        value={form.registeredBy}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
+                    <div className="col-md-12 d-flex">
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">NHA</label>
+                        <input
+                          className="form-control w-100"
+                          type="text"
+                          name="nha"
+                          value={form.nha}
+                          onInput={(event) => {
+                            validateDataType(event, "A");
+                          }}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
 
-                  <div className="col-md-12 text-end m-1 p-4">
-                    <button type="submit" className="btn btn-primary">Save Changes</button>
-                  </div>
-                </form>
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">
+                          CMM Reference Number
+                        </label>
+                        <input
+                          className="form-control w-100"
+                          type="Number"
+                          name="cmmReferenceNumber"
+                          onInput={(event) => {
+                            validateLen(event, 1, 12);
+                          }}
+                          value={form.cmmReferenceNumber}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-md-12 d-flex">
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">Date</label>
+                        <input
+                          className="form-control w-100"
+                          type="date"
+                          name="registrationDate"
+                          value={form.registrationDate}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">Registered By</label>
+                        <input
+                          className="form-control w-100"
+                          type="text"
+                          name="registeredBy"
+                          value={form.registeredBy}
+                          onInput={(event) => {
+                            validateDataType(event, "A");
+                          }}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-md-12 text-end m-1 p-4 text-right">
+                      <button type="submit" className="btn btn-primary">
+                        Edit Product
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>

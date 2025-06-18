@@ -1,16 +1,93 @@
-import React from "react";
+// Header.jsx
+import React, { useState } from "react";
+import {
+  Bell,
+  MessageSquare,
+  Settings,
+  HelpCircle,
+  User,
+  ChevronDown,
+  LogOut,
+} from "lucide-react";
+import styles from "./Header.module.css";
+import ProfileLogo from "../static/img/prfileLogo.png";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const handlelogout = () => {
+    
+    navigate("/");
+    toast.success("Log out Successful");
+  };
   return (
-      
-    <div className="col-md-12" style={{height : '65px'}}> 
-      <div className="row">
-        <header className="col-md-12 headertext-center card d-flex align-items-end" style={{height : '45px'}}>
-          <div className="col-md-12 right-content d-flex align-items-center justify-content-end  ">
-            <span className="username mx-2">Pranav Satam</span>
-            <img  src="src\static\img\prfileLogo.png" alt="Profile" className="rounded-circle m-1" style={{height : '30px', width : '30px'}} />
+    <div className={styles.headerContainer}>
+      <div className={styles.headerContent}>
+        {/* Logo & App Name */}
+
+        {/* Right Side Actions */}
+        <div className={styles.rightSection}>
+          {/* Notification Icon */}
+          <button className={styles.iconButton}>
+            <Bell size={20} />
+            <span className={styles.badge}>4</span>
+          </button>
+
+          {/* Messages Icon */}
+          <button className={styles.iconButton}>
+            <MessageSquare size={20} />
+            <span className={styles.badge}>2</span>
+          </button>
+
+          {/* Help Icon */}
+          <button className={styles.iconButton}>
+            <HelpCircle size={20} />
+          </button>
+
+          {/* Divider */}
+          <div className={styles.divider}></div>
+
+          {/* User Profile */}
+          <div className={styles.profileContainer}>
+            <button className={styles.profileButton} onClick={toggleDropdown}>
+              <div className={styles.avatarContainer}>
+                <img src={ProfileLogo} alt="" className={styles.avatar} />
+              </div>
+              <div className={styles.userInfo}>
+                <div className={styles.userName}>Hrishikesh chavan</div>
+                <div className={styles.userRole}>Administrator</div>
+              </div>
+              <ChevronDown size={16} className={styles.dropdownIcon} />
+            </button>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div className={styles.dropdownMenu}>
+                <div className={styles.dropdownHeader}>
+                  <p className={styles.dropdownName}>Hrishikesh chavan</p>
+                  <p className={styles.dropdownEmail}>Admin@example.com</p>
+                </div>
+                <a href="#" className={styles.dropdownItem}>
+                  <User size={16} className={styles.dropdownItemIcon} />
+                  Your Profile
+                </a>
+                <div className={styles.dropdownDivider}></div>
+                <a
+                  // href="/"
+                  className={styles.dropdownItemDanger}
+                  onClick={handlelogout}
+                >
+                  Log out
+                </a>
+              </div>
+            )}
           </div>
-        </header>
+        </div>
       </div>
     </div>
   );
