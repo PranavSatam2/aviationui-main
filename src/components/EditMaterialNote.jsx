@@ -20,6 +20,7 @@ const EditMaterialNote = () => {
     partNumber: "",
     partDescription: "",
     quantity: "",
+    unitOfMeasurement: "",
     storeInchargeSign: "",
     qualityAcceptance: "",
   });
@@ -239,6 +240,31 @@ const EditMaterialNote = () => {
                       value={form.quantity}
                       onChange={handleChange}
                     />
+                  </div>
+
+                  <div className="col-md-6 p-2">
+                    <label>
+                      Unit of Measurement{" "}
+                      <span className="text-danger mx-1" style={{ fontSize: "17px" }}>*</span>
+                    </label>
+                    <select
+                      required
+                      className="form-control"
+                      name="unitOfMeasurement"
+                      value={form.unitOfMeasurement}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Unit</option>
+                        <option value="EA">EA</option>
+                        <option value="RL">RL</option>
+                        <option value="QT">QT</option>
+                        <option value="GAL">GAL</option>
+                        <option value="KIT">KIT</option>
+                        <option value="LTR">LTR</option>
+                        <option value="SHT">SHT</option>
+                        <option value="Sq.ft">Sq.ft</option>
+                        <option value="Sq.mtr">Sq.mtr</option>
+                    </select>
                   </div>
 
                   <div className="col-md-6 p-2">

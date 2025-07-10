@@ -17,6 +17,7 @@ const MaterialReceiptNoteForm = () => {
     partDescription: "",
     quantity: "",
     storeInchargeSign: "",
+    unitOfMeasurement: "",
     qualityAcceptance: "",
   });
 
@@ -88,6 +89,7 @@ const MaterialReceiptNoteForm = () => {
       quantity: "",
       storeInchargeSign: "",
       qualityAcceptance: "",
+      unitOfMeasurement: "",
     });
     setErrors({});
   };
@@ -116,67 +118,60 @@ const MaterialReceiptNoteForm = () => {
                 <div className="row">
                   {[
                     { label: "MRN No", name: "mrnNo", type: "text" },
-                    {
-                      label: "Supplier Name",
-                      name: "supplierName",
-                      type: "text",
-                    },
-                    {
-                      label: "Order Number",
-                      name: "orderNumber",
-                      type: "number",
-                    },
+                    { label: "Supplier Name", name: "supplierName", type: "text" },
+                    { label: "Order Number", name: "orderNumber", type: "number" },
                     { label: "Challan No", name: "challanNo", type: "text" },
-                    {
-                      label: "Receipt Date",
-                      name: "receiptDate",
-                      type: "date",
-                    },
-                    {
-                      label: "Part Number",
-                      name: "partNumber",
-                      type: "number",
-                    },
-                    {
-                      label: "Part Description",
-                      name: "partDescription",
-                      type: "text",
-                    },
+                    { label: "Receipt Date", name: "receiptDate", type: "date" },
+                    { label: "Part Number", name: "partNumber", type: "number" },
+                    { label: "Part Description", name: "partDescription", type: "text" },
                     { label: "Quantity", name: "quantity", type: "number" },
                     {
-                      label: "Store Incharge Sign",
-                      name: "storeInchargeSign",
-                      type: "text",
+                      label: "Unit of Measurement",
+                      name: "unitOfMeasurement",
+                      type: "Option",
+                      options: ["EA", "RL", "QT", "GAL", "KIT", "LTR", "SHT", "Sq.ft", "Sq.mtr"]
                     },
-                    {
-                      label: "Quality Acceptance",
-                      name: "qualityAcceptance",
-                      type: "text",
-                    },
-                  ].map(({ label, name, type }) => (
+                    { label: "Store Incharge Sign", name: "storeInchargeSign", type: "text" },
+                    { label: "Quality Acceptance", name: "qualityAcceptance", type: "text" },
+                  ].map(({ label, name, type, options }) => (
                     <div className="col-md-6 p-2" key={name}>
                       <label>
-                        {label}{" "}
-                        <span
-                          className="text-danger mx-1"
-                          style={{ fontSize: "17px" }}
-                        >
-                          *
-                        </span>
+                        {label}
+                        <span className="text-danger mx-1" style={{ fontSize: "17px" }}>*</span>
                       </label>
-                      <input
-                        type={type}
-                        className="form-control"
-                        name={name}
-                        value={form[name]}
-                        onChange={handleChange}
-                        required
-                      />
+
+                      {type === "Option" ? (
+                        <select
+                          className="form-control"
+                          name={name}
+                          value={form[name]}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">-- Select Unit --</option>
+                          {options.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type={type}
+                          className="form-control"
+                          name={name}
+                          value={form[name]}
+                          onChange={handleChange}
+                          required
+                        />
+                      )}
+
                       {errors[name] && (
                         <span className="text-danger">{errors[name]}</span>
                       )}
                     </div>
                   ))}
+
                 </div>
               </div>
 
