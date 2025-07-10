@@ -18,6 +18,7 @@ const AddPurchaseRequisition = () => {
     requiredQty: "",
     requiredDate: "",
     remark: "",
+    unitOfMeasurement: "",
   });
 
   // State to store all the purchase requisitions added
@@ -156,6 +157,10 @@ const AddPurchaseRequisition = () => {
       length: 255,
       regex: /^[a-zA-Z0-9\s]*$/,
     },
+    unitOfMeasurement: {
+    length: 20,
+    regex: /^[a-zA-Z0-9\s]*$/,
+  },
   };
 
   const validateDataType = (event, dataType) => {
@@ -220,6 +225,7 @@ const AddPurchaseRequisition = () => {
       requiredQty: "",
       requiredDate: "",
       remark: "",
+      unitOfMeasurement: "",
     });
     
     alert("Purchase Requisition added to the list!");
@@ -249,7 +255,8 @@ const AddPurchaseRequisition = () => {
         currentStock: req.currentStock,
         requiredQty: req.requiredQty,
         requiredDate: req.requiredDate,
-        remark: req.remark
+        remark: req.remark,
+        unitOfMeasurement: req.unitOfMeasurement
       }));
       // Uncomment below to actually submit each requisition to the API
       // for (const requisition of purchaseRequisitions) {
@@ -424,6 +431,29 @@ const AddPurchaseRequisition = () => {
                       </div>
                     </div>
 
+                    <div className="col-md-6 p-2 d-flex">
+  <label className="col-md-4 mt-2">Unit of Measurement</label>
+  <select
+    className="form-select w-100"
+    name="unitOfMeasurement"
+    value={form.unitOfMeasurement}
+    onChange={handleChange}
+    required
+  >
+    <option value="">Select Unit</option>
+    <option value="EA">EA</option>
+    <option value="RL">RL</option>
+    <option value="QT">QT</option>
+    <option value="GAL">GAL</option>
+    <option value="KIT">KIT</option>
+    <option value="LTR">LTR</option>
+    <option value="SHT">SHT</option>
+    <option value="Sq.ft">Sq.ft</option>
+    <option value="Sq.mtr">Sq.mtr</option>
+  </select>
+</div>
+
+
                     <div className="col-md-12 text-end m-1 p-4 text-right">
                       <button type="submit" className="btn btn-primary">
                         Add to List
@@ -448,6 +478,7 @@ const AddPurchaseRequisition = () => {
                             <th>Current Stock</th>
                             <th>Required Qty</th>
                             <th>Required Date</th>
+                            <th>Unit of Measurement</th>
                             <th>Remark</th>
                             <th>Action</th>
                           </tr>
@@ -461,6 +492,7 @@ const AddPurchaseRequisition = () => {
                               <td>{req.currentStock}</td>
                               <td>{req.requiredQty}</td>
                               <td>{req.requiredDate}</td>
+                              <td>{req.unitOfMeasurement}</td>
                               <td>{req.remark}</td>
                               <td>
                                 <button
