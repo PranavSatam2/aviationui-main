@@ -7,10 +7,8 @@ import { Eye, EyeOff, User, Lock, AlertCircle } from "lucide-react";
 import Header from "./Header";
 import Footer from "./Footer";
 import AviationLogo from "../static/img/AviationLogo.png";
-import { Toast } from "react-bootstrap";
-// Import CSS module
 import styles from "./Login.module.css";
-//import { useHistory } from 'react-router-dom';
+import { useRoleMenus } from "../context/RoleMenuContext"; 
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -21,7 +19,9 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
-  //const history = useHistory();
+  const [redirectToHome, setRedirectToHome] = useState(false); // Add this state
+  const { refreshMenus } = useRoleMenus();
+
 
   useEffect(() => {
     // Trigger animation after component mounts
@@ -72,10 +72,10 @@ const LoginPage = () => {
         password,
       });
   
-      console.log('API response:', response);  // Log the response to check if it's returned properly
+      console.log('API response:', response); 
+
       if (response.status === 200) {
-        // If login is successful and no password change is needed
-      // Check if the token is present in response.data.token
+      
       if (response && response.data && response.data.token) {
 
         const { token, passwordExpired, username, role} = response.data;
@@ -83,27 +83,37 @@ const LoginPage = () => {
         // Save the token and username to localStorage
         sessionStorage.setItem('username', username); 
         sessionStorage.setItem("jwt_token", token); // Store JWT token
+         sessionStorage.setItem("role", role); 
+         console.log("Role : ",role);
         if (passwordExpired) {
           alert('Please change your password!');
           navigate('/passwordChange');
         
       } else {
- console.log("inside else");
-        const roleResponse = await axiosInstance.get(`/api/roles/byname/${role}`);
-        if (roleResponse?.data?.id) {
-    console.log(roleResponse.data);
-    sessionStorage.setItem("roleId", roleResponse.data.id);
+  try {
+  const roleResponse = await axiosInstance.get(`/api/roles/byname/${role}`);
+  if (roleResponse?.data?.id) {
+    const roleId = roleResponse.data.id;
+    sessionStorage.setItem("roleId", roleId); // ✅ REQUIRED
+    console.log("Role ID:", roleId);
+
+   await refreshMenus(); // make sure menus are loaded
+    navigate("/homePage");
+  } else {
+    console.error("Role not found in response.");
+    setErrorMessage("User role is not configured correctly. Please contact support.");
+  }
+} catch (roleError) {
+  console.error("Error fetching roleId:", roleError);
+  setErrorMessage("Error fetching role information.");
+}
+    }
   } else {
     console.error("Role not found or invalid response");
   }
-  setTimeout(() => {
-    console.log("Navigating to /homePage now...");
-    navigate("/homePage");
-  }, 2000);
       }
     }
-  }
-    } catch (error) {
+    catch (error) {
       console.error("Login Error:", error); // Log the error to see more details
       if (error.response && error.response.status === 403) {
         // If password change is required

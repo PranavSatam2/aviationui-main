@@ -214,7 +214,7 @@ const handleCheckboxChange = (report) => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Edit Inspection Report" />
+          <CustomBreadcrumb breadcrumbsLabel="View Inspection Report" />
           <div className="printView">
             <PrintInspectionReport dataMap={reportData} />
           </div>
