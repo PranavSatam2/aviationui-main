@@ -1,6 +1,7 @@
 import axios from "axios";
 import { REST_API_BASE_URL } from "./base_services";
 import axiosInstance from "../axiosConfig";
+import ViewCustomerOrder from "../components/ViewCustomerOrder";
 // ######################### ROUTE #########################
 let STORE_URL = REST_API_BASE_URL + "/storeAcceptance";
 let SUPPLIER_URL = REST_API_BASE_URL + "/api/supplier";
@@ -260,3 +261,19 @@ export const updatePurchaseOrder = (ID,order) =>
   export const deletePurchaseOrder = (ID) => {
     return axiosInstance.delete(`${PURCHASE_ORDER}/${ID}`);
   };
+
+
+  //Customer Order
+  let AddCustOrder = REST_API_BASE_URL + "/api/customerOrder/addCustomerOrder"
+  let GetpendingCustomerOrder = REST_API_BASE_URL + "/api/customerOrder/getpendingCustomerOrderList" 
+  let ApproveCustomerOrder = REST_API_BASE_URL + "/api/customerOrder/approveCustomerOrder"
+  let GetOrdertDetailsById = REST_API_BASE_URL + "/api/customerOrder/getCustomerOrderById"
+  let DeleteCustomerOrder = REST_API_BASE_URL + "/api/customerOrder/deleteCustomerOrder"
+  let ViewCustomerOrderList = REST_API_BASE_URL + "/api/customerOrder/viewCustomerOrder"
+
+  export const addCustomerOrder = (Order) => axiosInstance.post(AddCustOrder, Order);
+  export const getpendingCustomerOrderList = () => axiosInstance.get(GetpendingCustomerOrder);
+  export const ApproveCustOrders = (Order) => axiosInstance.post(ApproveCustomerOrder,Order);
+  export const getCustomerOrder = (orderId) => axiosInstance.get(`${GetOrdertDetailsById}/${orderId}`);
+  export const deleteCustomerOrder = (orderId) => axiosInstance.delete(`${DeleteCustomerOrder}/${orderId}`);
+ export const  getViewCustomerOrderList = () => axiosInstance.get(`${ViewCustomerOrderList}`);
