@@ -3,7 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getMaterialDetail, updateMaterial } from "../services/db_manager";
+import { getMaterialDetail, updateMaterial, fetchPartNumbersAndDescriptions } from "../services/db_manager";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
@@ -39,6 +39,40 @@ const EditMaterialNote = () => {
     };
     fetchMaterialDetail();
   }, [materialId]);
+
+  const [partData, setPartData] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState("");
+    const [selectedDescription, setSelectedDescription] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await fetchPartNumbersAndDescriptions();
+        setPartData(result);
+      } catch (err) {
+        console.error("Failed to fetch part list", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+  const handleProductChange = (e) => {
+    const selected = e.target.value;
+    setSelectedProduct(selected);
+
+    const match = data.find((item) => item.productName === selected);
+    const description = match ? match.productDescription : "";
+
+    setSelectedDescription(description);
+
+    setForm((prevForm) => ({
+      ...prevForm,
+      partNumber: selected,
+      description: description,
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -192,14 +226,21 @@ const EditMaterialNote = () => {
                         *
                       </span>
                     </label>
-                    <input
+                    <select
                       required
-                      type="number"
                       className="form-control"
                       name="partNumber"
-                      value={form.partNumber}
-                      onChange={handleChange}
-                    />
+                      value={selectedProduct}
+                      onChange={handleProductChange}
+                    >
+                      <option value="">-- Select Part --</option>
+                      {partData.map((item) => (
+                        <option key={item.productName} value={item.productName}>
+                          {item.productName}
+                        </option>
+                      ))}
+                    </select>
+
                   </div>
 
                   <div className="col-md-6 p-2">
@@ -255,15 +296,15 @@ const EditMaterialNote = () => {
                       onChange={handleChange}
                     >
                       <option value="">Select Unit</option>
-                        <option value="EA">EA</option>
-                        <option value="RL">RL</option>
-                        <option value="QT">QT</option>
-                        <option value="GAL">GAL</option>
-                        <option value="KIT">KIT</option>
-                        <option value="LTR">LTR</option>
-                        <option value="SHT">SHT</option>
-                        <option value="Sq.ft">Sq.ft</option>
-                        <option value="Sq.mtr">Sq.mtr</option>
+                      <option value="EA">EA</option>
+                      <option value="RL">RL</option>
+                      <option value="QT">QT</option>
+                      <option value="GAL">GAL</option>
+                      <option value="KIT">KIT</option>
+                      <option value="LTR">LTR</option>
+                      <option value="SHT">SHT</option>
+                      <option value="Sq.ft">Sq.ft</option>
+                      <option value="Sq.mtr">Sq.mtr</option>
                     </select>
                   </div>
 

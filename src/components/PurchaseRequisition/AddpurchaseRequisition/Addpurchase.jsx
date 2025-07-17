@@ -57,7 +57,7 @@ const AddPurchaseRequisition = () => {
   const handleProductChange = (e) => {
     const selected = e.target.value;
     const match = data.find((item) => item.productName === selected);
-    
+
     // Update form state with both partNumber and description
     setForm(prevForm => ({
       ...prevForm,
@@ -372,26 +372,26 @@ const AddPurchaseRequisition = () => {
                     </div>
 
                     <div className="col-md-6 p-1 d-flex">
-  <label className="col-md-4 mt-2">Unit of Measurement</label>
-  <select
-    className="form-control w-100"
-    name="unitOfMeasurement"
-    value={form.unitOfMeasurement}
-    onChange={handleChange}
-    required
-  >
-    <option value="">Select Unit</option>
-    <option value="EA">EA</option>
-    <option value="RL">RL</option>
-    <option value="QT">QT</option>
-    <option value="GAL">GAL</option>
-    <option value="KIT">KIT</option>
-    <option value="LTR">LTR</option>
-    <option value="SHT">SHT</option>
-    <option value="Sq.ft">Sq.ft</option>
-    <option value="Sq.mtr">Sq.mtr</option>
-  </select>
-</div>
+                      <label className="col-md-4 mt-2">Unit of Measurement</label>
+                      <select
+                        className="form-control w-100"
+                        name="unitOfMeasurement"
+                        value={form.unitOfMeasurement}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select Unit</option>
+                        <option value="EA">EA</option>
+                        <option value="RL">RL</option>
+                        <option value="QT">QT</option>
+                        <option value="GAL">GAL</option>
+                        <option value="KIT">KIT</option>
+                        <option value="LTR">LTR</option>
+                        <option value="SHT">SHT</option>
+                        <option value="Sq.ft">Sq.ft</option>
+                        <option value="Sq.mtr">Sq.mtr</option>
+                      </select>
+                    </div>
 
 
                     <div className="col-md-12 d-flex">

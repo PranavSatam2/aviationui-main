@@ -21,7 +21,7 @@ const EditPurchaseRequisition = () => {
     requiredQty: "",
     requiredDate: "",
     remark: "",
-    unitOfMeasurement: "", 
+    unitOfMeasurement: "",
   });
 
   // State to track original data for comparison
@@ -53,21 +53,21 @@ const EditPurchaseRequisition = () => {
   }, [RequisitionID]);
 
   const fetchRequisitionData = async () => {
-  setIsLoading(true);
-  try {
-    const requisitionData = await getPurchaseRequisitionDetail(RequisitionID);
+    setIsLoading(true);
+    try {
+      const requisitionData = await getPurchaseRequisitionDetail(RequisitionID);
 
-    setForm(requisitionData.data);
-    setSelectedProduct(requisitionData.data.partNumber || ""); // Set part number for dropdown
-    setSelectedDescription(requisitionData.data.description || ""); // Set description dropdown
+      setForm(requisitionData.data);
+      setSelectedProduct(requisitionData.data.partNumber || ""); // Set part number for dropdown
+      setSelectedDescription(requisitionData.data.description || ""); // Set description dropdown
 
-    setError(null);
-    setIsLoading(false);
-  } catch (err) {
-    console.error("Error fetching Purchase requisition data:", err);
-    setError("Failed to load Purchase requisition data. Please try again.");
-  }
-};
+      setError(null);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching Purchase requisition data:", err);
+      setError("Failed to load Purchase requisition data. Please try again.");
+    }
+  };
 
 
   useEffect(() => {
@@ -103,33 +103,33 @@ const EditPurchaseRequisition = () => {
   // Fetch part numbers from API when component mounts
   useEffect(() => {
     const getPartNumbers = async () => {
-  setPartLoading(true);
-  try {
-    const data = await fetchPartNumbersAndDescriptions();
-    setData(data); // This is used in dropdown
-    setPartNumbers(data); // Optional if used elsewhere
-    setPartError(null);
-  } catch (err) {
-    console.error("Error fetching part numbers:", err);
-    setPartError("Failed to load part numbers. Please try again later.");
-  } finally {
-    setPartLoading(false);
-  }
-};
+      setPartLoading(true);
+      try {
+        const data = await fetchPartNumbersAndDescriptions();
+        setData(data); // This is used in dropdown
+        setPartNumbers(data); // Optional if used elsewhere
+        setPartError(null);
+      } catch (err) {
+        console.error("Error fetching part numbers:", err);
+        setPartError("Failed to load part numbers. Please try again later.");
+      } finally {
+        setPartLoading(false);
+      }
+    };
 
 
     getPartNumbers();
   }, []);
 
   useEffect(() => {
-  if (form.partNumber && data.length > 0) {
-    setSelectedProduct(form.partNumber);
+    if (form.partNumber && data.length > 0) {
+      setSelectedProduct(form.partNumber);
 
-    const match = data.find((item) => item.productName === form.partNumber);
-    const description = match ? match.productDescription : "";
-    setSelectedDescription(description);
-  }
-}, [form, data]);
+      const match = data.find((item) => item.productName === form.partNumber);
+      const description = match ? match.productDescription : "";
+      setSelectedDescription(description);
+    }
+  }, [form, data]);
 
   // Update current stock when part number changes
   //   useEffect(() => {
@@ -146,20 +146,20 @@ const EditPurchaseRequisition = () => {
 
   // Handle part number (productName) change
   const handleProductChange = (e) => {
-  const selected = e.target.value;
-  setSelectedProduct(selected);
+    const selected = e.target.value;
+    setSelectedProduct(selected);
 
-  const match = data.find((item) => item.productName === selected);
-  const description = match ? match.productDescription : "";
+    const match = data.find((item) => item.productName === selected);
+    const description = match ? match.productDescription : "";
 
-  setSelectedDescription(description);
+    setSelectedDescription(description);
 
-  setForm((prevForm) => ({
-    ...prevForm,
-    partNumber: selected,
-    description: description,
-  }));
-};
+    setForm((prevForm) => ({
+      ...prevForm,
+      partNumber: selected,
+      description: description,
+    }));
+  };
 
 
   const handleChange = (e) => {
@@ -438,26 +438,26 @@ const EditPurchaseRequisition = () => {
                     </div>
 
                     <div className="col-md-6 p-1 d-flex">
-  <label className="col-md-4 mt-2">Unit of Measurement</label>
-  <select
-    className="form-control w-100"
-    name="unitOfMeasurement"
-    value={form.unitOfMeasurement}
-    onChange={handleChange}
-    required
-  >
-    <option value="">Select Unit</option>
-    <option value="EA">EA</option>
-    <option value="RL">RL</option>
-    <option value="QT">QT</option>
-    <option value="GAL">GAL</option>
-    <option value="KIT">KIT</option>
-    <option value="LTR">LTR</option>
-    <option value="SHT">SHT</option>
-    <option value="Sq.ft">Sq.ft</option>
-    <option value="Sq.mtr">Sq.mtr</option>
-  </select>
-</div>
+                      <label className="col-md-4 mt-2">Unit of Measurement</label>
+                      <select
+                        className="form-control w-100"
+                        name="unitOfMeasurement"
+                        value={form.unitOfMeasurement}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select Unit</option>
+                        <option value="EA">EA</option>
+                        <option value="RL">RL</option>
+                        <option value="QT">QT</option>
+                        <option value="GAL">GAL</option>
+                        <option value="KIT">KIT</option>
+                        <option value="LTR">LTR</option>
+                        <option value="SHT">SHT</option>
+                        <option value="Sq.ft">Sq.ft</option>
+                        <option value="Sq.mtr">Sq.mtr</option>
+                      </select>
+                    </div>
 
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">

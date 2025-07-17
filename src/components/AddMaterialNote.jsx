@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Footer from "./Footer";
-import { addMaterialNote } from "../services/db_manager";
+import { addMaterialNote, fetchPartNumbersAndDescriptions } from "../services/db_manager";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
@@ -22,6 +22,25 @@ const MaterialReceiptNoteForm = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [data, setData] = useState([]); // To hold part numbers and descriptions
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await fetchPartNumbersAndDescriptions();
+        console.log("Fetched part list:", result);
+        setData(result);
+      } catch (err) {
+        console.error("Failed to fetch product list", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const validateForm = () => {
     let newErrors = {};
@@ -31,8 +50,8 @@ const MaterialReceiptNoteForm = () => {
       newErrors.mrnNo = "MRN No must be a number (max 15 digits)";
     if (!/^\d{1,20}$/.test(form.orderNumber))
       newErrors.orderNumber = "Order Number must be a number (max 20 digits)";
-    if (!/^\d{1,20}$/.test(form.partNumber))
-      newErrors.partNumber = "Part Number must be a number (max 20 digits)";
+    // if (!/^\d{1,20}$/.test(form.partNumber))
+    //   newErrors.partNumber = "Part Number must be a number (max 20 digits)";
     if (!/^\d{1,10}$/.test(form.quantity))
       newErrors.quantity = "Quantity must be a number (max 10 digits)";
 
@@ -54,13 +73,28 @@ const MaterialReceiptNoteForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleProductChange = (e) => {
+    const selected = e.target.value;
+
+    // Find the corresponding part description
+    const selectedItem = data.find((item) => item.productName === selected);
+    const description = selectedItem ? selectedItem.productDescription : "";
+
     setForm((prevForm) => ({
       ...prevForm,
-      [name]: value,
+      partNumber: selected,
+      partDescription: description,
     }));
   };
+
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+  setForm((prevForm) => ({
+    ...prevForm,
+    [name]: value,
+  }));
+};
+
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -122,8 +156,8 @@ const MaterialReceiptNoteForm = () => {
                     { label: "Order Number", name: "orderNumber", type: "number" },
                     { label: "Challan No", name: "challanNo", type: "text" },
                     { label: "Receipt Date", name: "receiptDate", type: "date" },
-                    { label: "Part Number", name: "partNumber", type: "number" },
-                    { label: "Part Description", name: "partDescription", type: "text" },
+                    { label: "Part Number", name: "partNumber", type: "select" },
+                    { label: "Part Description", name: "partDescription", type: "autofill" },
                     { label: "Quantity", name: "quantity", type: "number" },
                     {
                       label: "Unit of Measurement",
@@ -141,6 +175,7 @@ const MaterialReceiptNoteForm = () => {
                       </label>
 
                       {type === "Option" ? (
+                        // Existing unitOfMeasurement dropdown
                         <select
                           className="form-control"
                           name={name}
@@ -155,7 +190,43 @@ const MaterialReceiptNoteForm = () => {
                             </option>
                           ))}
                         </select>
+                      ) : type === "select" ? (
+                        // NEW: Part Number dropdown
+                        <select
+                          className="form-control"
+                          name={name}
+                          value={form[name]}
+                          onChange={(e) => {
+                            const selected = e.target.value;
+                            const selectedItem = data.find((item) => item.productName === selected);
+                            const description = selectedItem?.productDescription || "";
+
+                            setForm((prevForm) => ({
+                              ...prevForm,
+                              partNumber: selected,
+                              partDescription: description, // Auto-fill here
+                            }));
+                          }}
+                          required
+                        >
+                          <option value="">-- Select Part --</option>
+                          {data.map((item, i) => (
+                            <option key={i} value={item.productName}>
+                              {item.productName}
+                            </option>
+                          ))}
+                        </select>
+                      ) : type === "autofill" ? (
+                        // NEW: Auto-filled, disabled input
+                        <input
+                          type="text"
+                          className="form-control"
+                          name={name}
+                          value={form[name]}
+                          disabled
+                        />
                       ) : (
+                        // Fallback: all other inputs
                         <input
                           type={type}
                           className="form-control"
@@ -165,6 +236,7 @@ const MaterialReceiptNoteForm = () => {
                           required
                         />
                       )}
+
 
                       {errors[name] && (
                         <span className="text-danger">{errors[name]}</span>
