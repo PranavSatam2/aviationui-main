@@ -645,10 +645,10 @@ const EditInspectionReportTable = () => {
         <Modal.Header closeButton>
           <Modal.Title>
             {actionType === "accept"
-              ? "Accept Supplier"
+              ? "Accept"
               : actionType === "Edit"
               ? "Send To Edit"
-              : "Reject Supplier"}
+              : "Reject"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

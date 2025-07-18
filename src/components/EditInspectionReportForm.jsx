@@ -19,6 +19,7 @@ const EditInspectionReportform = () => {
     reportNo: "",
     date: "",
     qty: "",
+    qtyReceive: "",
     invoiceObservation: "",
     manufacturerCertObservation: "",
     supplierCertObservation: "",
@@ -203,6 +204,17 @@ const EditInspectionReportform = () => {
                               disabled
                             />
                           </div>
+                          <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">Receive Qty</label>
+                        <input
+                          className="form-control w-100"
+                          type="text"
+                          name="qtyReceive"
+                          value={form.qtyReceive}
+                          onChange={handleChange}
+                          disabled
+                        />
+                      </div>
                           </div>
     
                           <div className="row mx-1 card border border-dark shadow-lg py-2 mt-4">
