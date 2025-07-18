@@ -3,19 +3,14 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import {
-    getEditReportList,
-    deleteReport,
-    getReportDetails,
-    ApproveReport,
+    getViewCustomerOrderList,
 } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import { Modal, Button, Form } from "react-bootstrap";
 import {PrintInspectionReport} from "./PrintInspectionReport";
 import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
-//import { ApproveReport, deleteReport } from "../services/db_manager";
-const EditInspectionReportTable = () => {
+const ViewCustomerOrder = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,7 +19,6 @@ const EditInspectionReportTable = () => {
   const [sortField, setSortField] = useState("formId");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-  // Modified: Changed selectedItems from array to single string ID
   const [selectedItem, setSelectedItem] = useState("");
   const [selectAll, setSelectAll] = useState(false);
   const [selecteReportData, setSelecteReportData] = useState();
@@ -39,7 +33,7 @@ const EditInspectionReportTable = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await getEditReportList();
+      const response = await getViewCustomerOrderList();
       if (response) {
         console.log(response);
         if (response?.data) {
@@ -53,7 +47,7 @@ const EditInspectionReportTable = () => {
       }
     } catch (error) {
       console.error("Error fetching data", error);
-      toast.error("Failed to load reports");
+      toast.error("Failed to load orders");
     } finally {
       setIsLoading(false);
     }
@@ -63,116 +57,11 @@ const EditInspectionReportTable = () => {
     fetchData();
   }, []);
 
-  // Modified: Handle checkbox selection for single selection only
-  const handleCheckboxChange = (report) => {
-    // If the same checkbox is clicked again, deselect it
-    if (selectedItem === report.inspectionReportId) {
-      setSelectedItem("");
-      console.log("Selected ID: none");
-    } else {
-      setSelectedItem(report.inspectionReportId);
-      setSelecteReportData(report);
-      console.log("Selected ID:", report.inspectionReportId);
-    }
-  };
-
-  // Modified: Handle select all - now it just clears selection
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setSelectedItem("");
-      console.log("Selected ID: none");
-    } else {
-      // Select the first item when clicking "select all"
-      if (currentItems.length > 0) {
-        const firstItemId = currentItems[0].formId;
-        setSelectedItem(firstItemId);
-        console.log("Selected ID:", firstItemId);
-      }
-    }
-    setSelectAll(!selectAll);
-  };
-
   // Reset selection when page changes
   useEffect(() => {
     setSelectedItem("");
     setSelectAll(false);
   }, [currentPage, itemsPerPage]);
-
-  const deleteSelectedElement = async (elementId) => {
-    if (window.confirm("Are you sure you want to delete this report?")) {
-      try {
-        const response = await deleteReport(elementId);
-        if (response) {
-          setTableData((prevData) =>
-            prevData.filter((report) => report.formId !== elementId)
-          );
-          toast.success("Report deleted successfully");
-        }
-      } catch (error) {
-        console.error("Failed to delete report", error);
-        toast.error("Failed to delete report Please try again.");
-      }
-    }
-  };
-
-  const editSelectedElement = async (elementId) => {
-    if (elementId !== "") {
-      try {
-        let reportId = elementId;
-        let reportData = await getReportDetails(elementId);
-        reportData = reportData.data;
-        if (reportId !== null) {
-          navigate("/editInspectionReportform", {
-            state: { reportId, reportData },
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching report details: ", error);
-        toast.error("Failed to fetch report details");
-      }
-    }
-  };
-
-  // Modal handlers
-  const handleOpenModal = (type) => {
-    if (!selectedItem) {
-      toast.warning("Please select a report");
-      return;
-    }
-    setActionType(type);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setRemark("");
-  };
-
-  const handleSubmitAction = async () => {
-    const action = actionType === "accept" ? "accepted" : "rejected";
-    // Add 'remark' to each object in selecteReportData
-    const updatedReportData = {
-      ...selecteReportData,
-      remark: remark,
-      userRole:sessionStorage.getItem('roleId'),
-      userAction: action === "rejected" ? "3" : "2",
-    };
-    try {
-      const response = await ApproveReport(updatedReportData);
-      toast.success(`Report ${action} successfully, ${response}`);
-      fetchData();
-    } catch (error) {
-      console.error("Error fetching report details: ", error);
-      toast.error("Failed to fetch report details");
-    }
-  
-    // Reset states
-    setSelectedItem("");
-    setSelectAll(false);
-    setRemark("");
-    handleCloseModal();
-  };
-  
 
   // Search functionality
   const filteredData = Array.isArray(tableData)
@@ -238,59 +127,70 @@ const EditInspectionReportTable = () => {
 
     return pageNumbers;
   };
+// const handleCheckboxChange = (report) => {
+//     // If the same checkbox is clicked again, deselect it
+//     if (selectedItem === report.inspectionReportId) {
+//       setSelectedItem("");
+//     } else {
+//       setSelectedItem(report.inspectionReportId);
+//       setSelecteReportData(report);
+//     }
+//   };
 
-  const handlePrintClick = (report) => {
-    // Store the supplier data
-    setReportData(report);
+  // Modified: Handle select all - now it just clears selection
+//   const handleSelectAll = () => {
+//     if (selectAll) {
+//       setSelectedItem("");
+//     } else {
+//       // Select the first item when clicking "select all"
+//       if (currentItems.length > 0) {
+//         const firstItemId = currentItems[0].formId;
+//         setSelectedItem(firstItemId);
+//       }
+//     }
+//     setSelectAll(!selectAll);
+//   };
+//   const handlePrintClick = (report) => {
+//     // Store the report data
+//     console.log("Report",report)
+//     setReportData(report);
 
-    // Short delay to ensure React has updated the state and rendered the component
-    setTimeout(() => {
-      // Cache original body styles
-      const originalBodyStyle = document.body.style.cssText;
+//     // Short delay to ensure React has updated the state and rendered the component
+//     setTimeout(() => {
+//       // Cache original body styles
+//       const originalBodyStyle = document.body.style.cssText;
 
-      // Apply print-friendly styles to the body
-      document.body.style.margin = "0";
-      document.body.style.padding = "0";
+//       // Apply print-friendly styles to the body
+//       document.body.style.margin = "0";
+//       document.body.style.padding = "0";
 
-      // Print the document
-      window.print();
+//       // Print the document
+//       window.print();
 
-      // Restore original body styles after printing dialog is closed
-      setTimeout(() => {
-        document.body.style.cssText = originalBodyStyle;
-      }, 100);
-    }, 500);
-  };
+//       // Restore original body styles after printing dialog is closed
+//       setTimeout(() => {
+//         document.body.style.cssText = originalBodyStyle;
+//       }, 100);
+//     }, 500);
+//   };
+
 
   // Column definitions for the table
   const columns = [
-    { field: "inspectionReportId", label: "Inspection Report Id", width: "100px" },
-    { field: "partNumber", label: "Part Number", width: "100px" },
-    { field: "partDesc", label: "Part Description", width: "100px" },
-    { field: "purchaseOrderNo", label: "Purchase Order No.", width: "100px" },
-    { field: "supplierName", label: "Supplier Name", width: "100px" },
-    { field: "reportNo", label: "Report No.", width: "100px" },
-    { field: "date", label: "Date", width: "100px" },
-    { field: "qty", label: "Quantity", width: "100px" },
-    { field: "invoiceObservation", label: "Invoice  Observation", width: "100px" },
-    { field: "manufacturerCertObservation", label: "Manufacturer Cert Observation", width: "100px" },
-    { field: "supplierCertObservation", label: "Supplier Cert. Observation", width: "100px" },
-    { field: "fullTraceabilityObservation", label: " cert. Full Traceability Observation", width: "100px" },
-    { field: "batchNumberObservation", label: "Batch Number Observation", width: "100px" },
-    {
-      field: "dateOfManufacturingObservation",
-      label: "Date of Manufacturing & Date of Expiry Observation",
-      width: "100px",
-    },
-    { field: "selfLifeObservation", label: "Self Life Observation", width: "100px" },
-    { field: "tdsObservation", label: "Technical Data Sheet(TDS) & MSDS Observation", width: "100px" },
-    { field: "materialConditionObservation", label: "Material Condition Observation", width: "100px" },
-    { field: "specificationObservation", label: "Specification Observation", width: "100px" },
-    { field: "documentObservation", label: "Documents Observation", width: "100px" },
-    { field: "lotAccepted", label: "Lot Accepted", width: "100px" },
-    { field: "remark", label: "Remark", width: "100px" },
-    { field: "Maker", label: "makerUserName", width: "100px" },
-    { field: "Maker Date", label: "makerDate", width: "100px" },
+    { field: "orderNo", label: "Order No", width: "100px" },
+    { field: "roNo", label: "RO No.", width: "100px" },
+    { field: "roReceiveDate", label: "RO Received Date", width: "100px" },
+    { field: "customerName", label: "Customer Name", width: "100px" },
+    { field: "partNo", label: "Part No.", width: "100px" },
+    { field: "partDescription", label: "Part Desc", width: "100px" },
+    { field: "quantity", label: "Quantity", width: "100px" },
+    { field: "batchNo", label: "Batch No.", width: "100px" },
+    { field: "srNo", label: "Sr. No.", width: "100px" },
+    { field: "status", label: "Status", width: "100px" },
+    { field: "makerUserName", label: "Maker UserName", width: "100px" },
+    { field: "makerDate", label: "Maker Date", width: "100px" },
+    { field: "userRole", label: "Maker Role", width: "100px" },
+
 ];
 
   return (
@@ -299,7 +199,7 @@ const EditInspectionReportTable = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Edit Inspection Report" />
+          <CustomBreadcrumb breadcrumbsLabel="View Customer Order" />
           <div className="printView">
             <PrintInspectionReport dataMap={reportData} />
           </div>
@@ -368,20 +268,6 @@ const EditInspectionReportTable = () => {
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-blue">
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{ width: "40px" }}
-                        >
-                          <div className="form-check d-flex justify-content-center">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="selectAll"
-                              checked={selectAll}
-                              onChange={handleSelectAll}
-                            />
-                          </div>
-                        </th>
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -413,18 +299,7 @@ const EditInspectionReportTable = () => {
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
-                        </th>
+                        
                       </tr>
                     </thead>
                     <tbody>
@@ -438,19 +313,6 @@ const EditInspectionReportTable = () => {
                                 : "bg-light bg-opacity-50"
                             }
                           >
-                            <td className="text-center">
-                              <div className="form-check d-flex justify-content-center">
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`check-${report.inspectionReportId}`}
-                                  checked={selectedItem === report.inspectionReportId}
-                                  onChange={() =>
-                                    handleCheckboxChange(report)
-                                  }
-                                />
-                              </div>
-                            </td>
                             {columns.map((column) => (
                               <td
                                 key={`${report.formId}-${column.field}`}
@@ -466,35 +328,7 @@ const EditInspectionReportTable = () => {
                                 {report[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
-                              <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() =>
-                                    editSelectedElement(report.inspectionReportId)
-                                  }
-                                  title="Edit"
-                                >
-                                  <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                {/* <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() =>
-                                    editSelectedElement(supplier.supplierId)
-                                  }
-                                  title="View Doc"
-                                >
-                                  <i className="fa-solid fa-eye"></i>
-                                </button> */}
-                                {/* <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handlePrintClick(supplier)}
-                                  title="Print Doc"
-                                >
-                                  <i className="fa-solid fa-print"></i>
-                                </button> */}
-                              </div>
-                            </td>
+                            
                           </tr>
                         ))
                       ) : (
@@ -606,85 +440,14 @@ const EditInspectionReportTable = () => {
                   </nav>
                 </div>
               </div>
-
-              {/* Accept/Reject Buttons */}
-              {/* <div className="d-flex justify-content-end mt-3 gap-3">
-                <button
-                  className="btn btn-outline-success"
-                  onClick={() => handleOpenModal("accept")}
-                  disabled={!selectedItem}
-                >
-                  <i className="fa-solid fa-check me-2"></i>
-                  Approved
-                </button>
-                <button
-                  className="btn btn-outline-info"
-                  onClick={() => handleOpenModal("Send To Edit")}
-                  disabled={!selectedItem}
-                >
-                  <i className="fa-solid fa-paper-plane me-2"></i>
-                  Send To Edit
-                </button>
-                <button
-                  className="btn btn-outline-danger"
-                  onClick={() => handleOpenModal("reject")}
-                  disabled={!selectedItem}
-                >
-                  <i className="fa-solid fa-xmark me-2"></i>
-                  Reject
-                </button>
-              </div> */}
             </div>
           </div>
         </div>
         <Footer />
       </div>
-
-      {/* Accept/Reject Modal */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {actionType === "accept"
-              ? "Accept"
-              : actionType === "Edit"
-              ? "Send To Edit"
-              : "Reject"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Are you sure you want to {actionType} the selected report?</p>
-          <Form.Group className="mb-3">
-            <Form.Label>Remark</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={4}
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-              placeholder="Enter your remarks here..."
-              required
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancel
-          </Button>
-          <Button
-            variant={actionType === "accept" ? "success" : "danger"}
-            onClick={handleSubmitAction}
-            disabled={!remark.trim()}
-          >
-            Confirm{" "}
-            {actionType === "accept"
-              ? "Accept"
-              : actionType === "Edit"
-              ? "Send"
-              : "Reject"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+     
     </div>
   );
 };
 
-export default EditInspectionReportTable;
+export default ViewCustomerOrder;

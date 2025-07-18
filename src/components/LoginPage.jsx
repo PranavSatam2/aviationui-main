@@ -13,6 +13,7 @@ import { useRoleMenus } from "../context/RoleMenuContext";
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [location, setLocation] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -70,7 +71,13 @@ const LoginPage = () => {
       const response = await axiosInstance.post("/auth/login", {
         username,
         password,
-      });
+      },
+    {
+        headers: {
+          "X-User-Location": location, 
+        },
+      }
+    );
   
       console.log('API response:', response); 
 
@@ -84,6 +91,7 @@ const LoginPage = () => {
         sessionStorage.setItem('username', username); 
         sessionStorage.setItem("jwt_token", token); // Store JWT token
          sessionStorage.setItem("role", role); 
+         sessionStorage.setItem("location", location);
          console.log("Role : ",role);
         if (passwordExpired) {
           alert('Please change your password!');
@@ -150,6 +158,21 @@ const LoginPage = () => {
 
           <div className={styles.body}>
             <form onSubmit={handleLogin}>
+            <div className={styles.formGroup}>
+            <label htmlFor="location" className={styles.label}>Location</label>
+            <select
+              id="location"
+              className={styles.formInput}
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              required
+            >
+            <option value="">-- Select Location --</option>
+            <option value="mumbai">Mumbai</option>
+            <option value="delhi">Delhi</option>
+            </select>
+            </div>
+            
               <div className={styles.formGroup}>
                 <label htmlFor="username" className={styles.label}>
                   Username

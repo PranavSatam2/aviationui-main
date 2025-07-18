@@ -3,10 +3,10 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import {
-  deleteReport,
-  getReportDetails,
-  ApproveReport,
-  getpendingInpectionReportList,
+  deleteCustomerOrder,
+  getCustomerOrder,
+  ApproveCustOrders,
+  getpendingCustomerOrderList,
 } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,7 +15,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import {PrintInspectionReport} from "./PrintInspectionReport";
 import styles from "./Checker/Checker.module.css";
 
-const ApproveReceivingInspectionReport = () => {
+const ApproveCustomerOrder = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,7 +42,7 @@ const ApproveReceivingInspectionReport = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await getpendingInpectionReportList();
+      const response = await getpendingCustomerOrderList();
       if (response) {
         console.log(response);
         if (response?.data) {
@@ -72,13 +72,14 @@ const ApproveReceivingInspectionReport = () => {
     }
   }, [selectedRow]);
 
+
   // Modified: Handle checkbox selection for single selection only
   const handleCheckboxChange = (report) => {
     // If the same checkbox is clicked again, deselect it
-    if (selectedItem === report.inspectionReportId) {
+    if (selectedItem === report.srNo) {
       setSelectedItem("");
     } else {
-      setSelectedItem(report.inspectionReportId);
+      setSelectedItem(report.srNo);
       setSelecteReportData(report);
     }
   };
@@ -106,7 +107,7 @@ const ApproveReceivingInspectionReport = () => {
   const deleteSelectedElement = async (elementId) => {
     if (window.confirm("Are you sure you want to delete this Report?")) {
       try {
-        const response = await deleteReport(elementId);
+        const response = await deleteCustomerOrder(elementId);
         if (response) {
           setTableData((prevData) =>
             prevData.filter((report) => report.formId !== elementId)
@@ -123,23 +124,16 @@ const ApproveReceivingInspectionReport = () => {
   const editSelectedElement = async (elementId) => {
     if (elementId !== "") {
       try {
-        let reportId = elementId;
-        let reportData = await getReportDetails(elementId);
+        //let reportId = elementId;
+        let reportData = await getCustomerOrder(elementId);
         reportData = reportData.data;
-        console.log("Fetched report data:", reportData);  // Log the fetched data
+        console.log("Fetched Order data:", reportData);  // Log the fetched data
 
         setSelectedRow(reportData);
         console.log("Selected Row Data: ", reportData);  // Log to verify data
-
-        //setShowModal1(true);
-        // if (reportId !== null) {
-        //   navigate("/ViewSupplier", {
-        //     state: { reportId, reportData },
-        //   });
-        // }
       } catch (error) {
-        console.error("Error fetching report details: ", error);
-        toast.error("Failed to fetch report details");
+        console.error("Error fetching Order details: ", error);
+        toast.error("Failed to fetch Order details");
       }
     }
   };
@@ -147,7 +141,7 @@ const ApproveReceivingInspectionReport = () => {
   // Modal handlers
   const handleOpenModal = (type) => {
     if (!selectedItem) {
-      toast.warning("Please select a report");
+      toast.warning("Please select a Order");
       return;
     }
     setActionType(type);
@@ -173,12 +167,12 @@ const ApproveReceivingInspectionReport = () => {
       userAction: action === "rejected" ? "3" : action === "edited" ? "4" : "2", // 👈 conditional value
     };
     try {
-      const response = await ApproveReport(updatedReportData);
-      toast.success(`Report ${action} successfully, ${response}`);
+      const response = await ApproveCustOrders(updatedReportData);
+      toast.success(`Order ${action} successfully, ${response}`);
       fetchData();
     } catch (error) {
-      console.error("Error fetching report details: ", error);
-      toast.error("Failed to fetch report details");
+      console.error("Error fetching Order details: ", error);
+      toast.error("Failed to fetch Order details");
     }
   
     // Reset states
@@ -199,13 +193,6 @@ const ApproveReceivingInspectionReport = () => {
       )
     )
   : [];
-  // tableData.filter((report) => {
-  //   return Object.values(report).some(
-  //     (value) =>
-  //       value &&
-  //       value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-  //   );
-  // });
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -263,7 +250,7 @@ const ApproveReceivingInspectionReport = () => {
 
   const handlePrintClick = (report) => {
     // Store the report data
-    console.log("Report",report)
+    console.log("Order",report)
     setReportData(report);
 
     // Short delay to ensure React has updated the state and rendered the component
@@ -287,34 +274,19 @@ const ApproveReceivingInspectionReport = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "inspectionReportId", label: "Inspection Report Id", width: "100px" },
-    { field: "partNumber", label: "Part Number", width: "100px" },
-    { field: "partDesc", label: "Part Description", width: "100px" },
-    { field: "purchaseOrderNo", label: "Purchase Order No.", width: "100px" },
-    { field: "supplierName", label: "Supplier Name", width: "100px" },
-    { field: "reportNo", label: "Report No.", width: "100px" },
-    { field: "date", label: "Date", width: "100px" },
-    { field: "qty", label: "Quantity", width: "100px" },
-    { field: "qtyReceive", label: "Receive Quantity", width: "100px" },
-    { field: "invoiceObservation", label: "Invoice  Observation", width: "100px" },
-    { field: "manufacturerCertObservation", label: "Manufacturer Cert Observation", width: "100px" },
-    { field: "supplierCertObservation", label: "Supplier Cert. Observation", width: "100px" },
-    { field: "fullTraceabilityObservation", label: " cert. Full Traceability Observation", width: "100px" },
-    { field: "batchNumberObservation", label: "Batch Number Observation", width: "100px" },
-    {
-      field: "dateOfManufacturingObservation",
-      label: "Date of Manufacturing & Date of Expiry Observation",
-      width: "100px",
-    },
-    { field: "selfLifeObservation", label: "Self Life Observation", width: "100px" },
-    { field: "tdsObservation", label: "Technical Data Sheet(TDS) & MSDS Observation", width: "100px" },
-    { field: "materialConditionObservation", label: "Material Condition Observation", width: "100px" },
-    { field: "specificationObservation", label: "Specification Observation", width: "100px" },
-    { field: "documentObservation", label: "Documents Observation", width: "100px" },
-    { field: "lotAccepted", label: "Lot Accepted", width: "100px" },
-    { field: "remark", label: "Remark", width: "100px" },
-    { field: "makerUserName", label: "Maker Name", width: "100px" },
+    { field: "orderNo", label: "Order No", width: "100px" },
+    { field: "roNo", label: "RO No.", width: "100px" },
+    { field: "roReceiveDate", label: "RO Received Date", width: "100px" },
+    { field: "customerName", label: "Customer Name", width: "100px" },
+    { field: "partNo", label: "Part No.", width: "100px" },
+    { field: "partDescription", label: "Part Desc", width: "100px" },
+    { field: "quantity", label: "Quantity", width: "100px" },
+    { field: "batchNo", label: "Batch No.", width: "100px" },
+    { field: "srNo", label: "Sr. No.", width: "100px" },
+    { field: "status", label: "Status", width: "100px" },
+    { field: "makerUserName", label: "Maker UserName", width: "100px" },
     { field: "makerDate", label: "Maker Date", width: "100px" },
+    { field: "userRole", label: "Maker Role", width: "100px" },
 
   ];
   console.log("showModal1:", showModal1, "selectedRow:", selectedRow);
@@ -324,7 +296,7 @@ const ApproveReceivingInspectionReport = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Approve Inspection Report" />
+          <CustomBreadcrumb breadcrumbsLabel="Approve Customer Order" />
           <div className="printView">
             <PrintInspectionReport dataMap={reportData} />
           </div>
@@ -468,8 +440,8 @@ const ApproveReceivingInspectionReport = () => {
                                 <input
                                   className="form-check-input"
                                   type="checkbox"
-                                  id={`check-${report.inspectionReportId}`}
-                                  checked={selectedItem === report.inspectionReportId}
+                                  id={`check-${report.srNo}`}
+                                  checked={selectedItem === report.srNo}
                                   onChange={() =>
                                     handleCheckboxChange(report)
                                   }
@@ -496,7 +468,7 @@ const ApproveReceivingInspectionReport = () => {
                                 <button
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() =>
-                                    editSelectedElement(report.inspectionReportId)
+                                    editSelectedElement(report.srNo)
                                   }
                                   title="View Doc"
                                 >
@@ -660,33 +632,22 @@ const ApproveReceivingInspectionReport = () => {
   <div className="modalBackdrop1">
     <Modal show={showModal1} onHide={() => setShowModal1(false)}>
   <Modal.Header closeButton>
-    <Modal.Title>Inspection Report</Modal.Title>
+    <Modal.Title>Customer Order</Modal.Title>
   </Modal.Header>
   <Modal.Body>
-  <p><strong>Inspection Report Id:</strong> {selectedRow.inspectionReportId}</p>
-  <p><strong>Part Description:</strong> {selectedRow.partDesc}</p>
-  <p><strong>Purchase Order No.:</strong> {selectedRow.purchaseOrderNo}</p>
-  <p><strong>Supplier Name:</strong> {selectedRow.supplierName}</p>
-  <p><strong>Report No:</strong> {selectedRow.reportNo}</p>
-  <p><strong>Quantity:</strong> {selectedRow.qty}</p>
-  <p><strong>Receive Quantity:</strong> {selectedRow.qtyReceive}</p>
-  <p><strong>Date:</strong> {selectedRow.date}</p>
-  <p><strong>Invoice  Observation:</strong> {selectedRow.invoiceObservation}</p>
-  <p><strong>Manufacturer Cert Observation:</strong> {selectedRow.manufacturerCertObservation}</p>
-  <p><strong>Supplier Cert. Observation:</strong> {selectedRow.supplierCertObservation}</p>
-  <p><strong>Cert. Full Traceability Observation:</strong> {selectedRow.fullTraceabilityObservation}</p>
-  <p><strong>Batch Number Observation:</strong> {selectedRow.batchNumberObservation}</p>
-  <p><strong>Date of Manufacturing & Date of Expiry Observation:</strong> {selectedRow.dateOfManufacturingObservation}</p>
-  <p><strong>Self Life Observation:</strong> {selectedRow.selfLifeObservation}</p>
-  <p><strong>Technical Data Sheet(TDS) & MSDS Observation:</strong> {selectedRow.tdsObservation}</p>
-  <p><strong>Material Condition Observation:</strong> {selectedRow.materialConditionObservation}</p>
-  <p><strong>Specification Observation:</strong> {selectedRow.specificationObservation}</p>
-  <p><strong>Documents Observation:</strong> {selectedRow.documentObservation}</p>
-  <p><strong>Lot Accepted:</strong> {selectedRow.lotAccepted}</p>
-  <p><strong>Remark:</strong> {selectedRow.remark}</p>
-  <p><strong>Maker Name</strong> {selectedRow.makerUserName}</p>
-  <p><strong>Maker Date:</strong> {selectedRow.makerDate}</p>
-
+  <p><strong>Order No.:</strong> {selectedRow.orderNo}</p>
+  <p><strong>RO No.:</strong> {selectedRow.roNo}</p>
+  <p><strong>RO Recevied Date:</strong> {selectedRow.roReceiveDate}</p>
+  <p><strong>Part No.:</strong> {selectedRow.partNo}</p>
+  <p><strong>Part Description:</strong> {selectedRow.partDescription}</p>
+  <p><strong>Quantity:</strong> {selectedRow.quantity}</p>
+  <p><strong>Sr. No.:</strong> {selectedRow.srNo}</p>
+  <p><strong>Batch No.:</strong> {selectedRow.batchNo}</p>
+  <p><strong>Status:</strong> {selectedRow.status}</p>
+  <p><strong>Maker UserName:</strong> {selectedRow.makerUserName}</p>
+  <p><strong>Maker Date :</strong> {selectedRow.makerDate}</p>
+  <p><strong>Maker Role:</strong> {selectedRow.userRole}</p>
+  
   </Modal.Body>
   <Modal.Footer>
     <Button onClick={() => setShowModal1(false)}>Close</Button>
@@ -706,7 +667,7 @@ const ApproveReceivingInspectionReport = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to {actionType} the selected Report?</p>
+          <p>Are you sure you want to {actionType} the selected Order?</p>
           <Form.Group className="mb-3">
             <Form.Label>Remark</Form.Label>
             <Form.Control
@@ -743,4 +704,4 @@ const ApproveReceivingInspectionReport = () => {
   );
 };
 
-export default ApproveReceivingInspectionReport;
+export default ApproveCustomerOrder;

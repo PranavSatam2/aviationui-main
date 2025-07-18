@@ -22,6 +22,8 @@ import EditInspectionReportForm from "./components/EditInspectionReportForm";
 import EditInspectionReportTable from "./components/EditInspectionReportTable.jsx";
 import ViewSupplierRegistration from "./components/Checker/CheckerSupplierRegistration/ViewSupplierRegistration";
 import EditUser from "./components/EditUser";
+import EditCustomerOrderForm from "./components/EditCustomerOrderForm";
+import EditCustomerOrderTable from "./components/EditCustomerOrderTable.jsx";
 import { useRoleMenus } from "./context/RoleMenuContext"; 
 
 
@@ -43,7 +45,7 @@ const App = () => {
             <Route path="/" element={<LoginPage />} />
           ) : (
             <>
-              <Route path="/" element={<Navigate to="/homePage" replace />} />
+              <Route path="/" element={<LoginPage />} />
               <Route path="/homePage" element={<HomePage />} />
         <Route path="/passwordChange" element={<PasswordChange />} />
         <Route path="/editProduct/:productId" element={<EditProduct />} />
@@ -62,6 +64,8 @@ const App = () => {
         <Route path="/purchaserequistion" element={<AddPurchaseRequisition />}/>
         <Route path="/viewpurchaseOrder" element={<ViewPurchaseOrderPage />}/>
         <Route path="/editpurchaseorder" element={<EditPurchaseOrder />}/>
+        <Route path="/editCustomerOrderForm" element={<EditCustomerOrderForm />} />
+        <Route path="/editCustomerOrder" element={<EditCustomerOrderTable/>} />
         {/* <Route path="/ViewStoreAcc" element={<ViewSupplierRegis />} /> */}
 
     {menuItems.flatMap((menu) =>

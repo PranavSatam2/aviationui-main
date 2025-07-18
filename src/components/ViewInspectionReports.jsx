@@ -185,6 +185,7 @@ const handleCheckboxChange = (report) => {
     { field: "reportNo", label: "Report No.", width: "100px" },
     { field: "date", label: "Date", width: "100px" },
     { field: "qty", label: "Quantity", width: "100px" },
+    { field: "qtyReceive", label: "Receive Quantity", width: "100px" },
     { field: "invoiceObservation", label: "Invoice  Observation", width: "100px" },
     { field: "manufacturerCertObservation", label: "Manufacturer Cert Observation", width: "100px" },
     { field: "supplierCertObservation", label: "Supplier Cert. Observation", width: "100px" },
