@@ -146,6 +146,7 @@ const ViewMaterialPage = () => {
     { field: "challanNo", label: "Challan No", width: "140px" },
     { field: "receiptDate", label: "Receipt Date", width: "140px" },
     { field: "quantity", label: "Quantity", width: "140px" },
+    { field: "unitOfMeasurement", label: "Unit", width: "120px" },
     { field: "storeInchargeSign", label: "Store Incharge", width: "140px" },
     { field: "qualityAcceptance", label: "Quality Acceptance", width: "140px" },
   ];
