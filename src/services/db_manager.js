@@ -293,3 +293,20 @@ let DispatchReport = REST_API_BASE_URL + "/api/dispatch/save";
 export const saveDispatchReport = (dispatchData) => {
   return axiosInstance.post(DispatchReport, dispatchData);
 };
+export const getAllDispatchReports = () => {
+  return axiosInstance
+    .get(`${DispatchReport}/all`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching dispatch reports:", error);
+      throw error;
+    });
+};
+export const deleteDispatchReport = (reportId) => {
+  return axiosInstance.delete(`${DispatchReport}/${reportId}`);
+};
+export const updateDispatchReport = (reportId, reportData) => {
+  return axiosInstance.put(`${DispatchReport}/${reportId}`, reportData);
+};

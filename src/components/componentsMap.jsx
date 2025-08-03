@@ -15,6 +15,7 @@ import EditSupplierTable from './Checker/EditSupplier/EditSupplierTable.jsx';
 import CustomerOrder from './CustomerOrder.jsx';
 import EditCustomerOrderForm from './EditCustomerOrderForm.jsx';
 import EditCustomerOrderTable from './EditCustomerOrderTable.jsx';
+import EditDispatchReport from './EditDispatchReport.jsx';
 import EditInspectionReportForm from './EditInspectionReportForm.jsx';
 import EditInspectionReportTable from './EditInspectionReportTable.jsx';
 import EditMaterialNote from './EditMaterialNote.jsx';
@@ -53,6 +54,7 @@ import MaterialAndOther from './tabs/supplier_registration/MaterialAndOther.jsx'
 import QualityProcessTab from './tabs/supplier_registration/QualityProcessTab.jsx';
 import SupplierAnalysisTab from './tabs/supplier_registration/SupplierAnalysisTab.jsx';
 import ViewCustomerOrder from './ViewCustomerOrder.jsx';
+import ViewDispatchReport from './ViewDispatchReport.jsx';
 import ViewInspectionReports from './ViewInspectionReports.jsx';
 import ViewMaterialNotePage from './ViewMaterialNotePage.jsx';
 import ViewProduct from './ViewProduct.jsx';
@@ -77,6 +79,7 @@ const componentsMap = {
   "CustomerOrder": CustomerOrder,
   "EditCustomerOrderForm": EditCustomerOrderForm,
   "EditCustomerOrderTable": EditCustomerOrderTable,
+  "EditDispatchReport": EditDispatchReport,
   "EditInspectionReportForm": EditInspectionReportForm,
   "EditInspectionReportTable": EditInspectionReportTable,
   "EditMaterialNote": EditMaterialNote,
@@ -115,6 +118,7 @@ const componentsMap = {
   "QualityProcessTab": QualityProcessTab,
   "SupplierAnalysisTab": SupplierAnalysisTab,
   "ViewCustomerOrder": ViewCustomerOrder,
+  "ViewDispatchReport": ViewDispatchReport,
   "ViewInspectionReports": ViewInspectionReports,
   "ViewMaterialNotePage": ViewMaterialNotePage,
   "ViewProduct": ViewProduct,
