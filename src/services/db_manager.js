@@ -287,4 +287,9 @@ export const updatePurchaseOrder = (ID,order) =>
   export const getEditOrderList = () => axiosInstance.get(`${GetEditOrderList}`);
   export const updateOrder = (orderId, ReportData) => axiosInstance.put(`${UpdateOrderNew}/${orderId}`, ReportData);
 
+// Dispatch Report
+let DispatchReport = REST_API_BASE_URL + "/api/dispatch/save";
 
+export const saveDispatchReport = (dispatchData) => {
+  return axiosInstance.post(DispatchReport, dispatchData);
+};

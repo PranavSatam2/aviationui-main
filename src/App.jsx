@@ -27,8 +27,6 @@ import EditCustomerOrderTable from "./components/EditCustomerOrderTable.jsx";
 import { useRoleMenus } from "./context/RoleMenuContext"; 
 
 
-
-
 const App = () => {
   const token = sessionStorage.getItem('jwt_token') || '';
    const { menuItems = [], loading } = useRoleMenus();
