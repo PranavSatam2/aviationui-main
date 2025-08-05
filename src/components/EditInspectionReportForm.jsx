@@ -53,20 +53,6 @@ const EditInspectionReportform = () => {
       }
     }, [reportData, reportId]);
 
-//   useEffect(() => {
-//     const fetchMaterialDetail = async () => {
-//       try {
-//         const response = await getMaterialDetail(materialId);
-//         if (response.data) {
-//           setForm(response.data);
-//         }
-//       } catch (error) {
-//         console.error("Error fetching material details:", error);
-//         alert("Error fetching material details.");
-//       }
-//     };
-//     fetchMaterialDetail();
-//   }, [materialId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
