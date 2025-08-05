@@ -120,6 +120,10 @@ const LoginPage = () => {
     console.error("Role not found or invalid response");
   }
       }
+      else if(response.status === 401){
+                setErrorMessage("Invalid username or password.");
+
+      }
     }
     catch (error) {
       console.error("Login Error:", error); // Log the error to see more details

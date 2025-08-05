@@ -287,6 +287,7 @@ export const updatePurchaseOrder = (ID,order) =>
   export const getEditOrderList = () => axiosInstance.get(`${GetEditOrderList}`);
   export const updateOrder = (orderId, ReportData) => axiosInstance.put(`${UpdateOrderNew}/${orderId}`, ReportData);
 
+
 // Dispatch Report
 let DispatchReport = REST_API_BASE_URL + "/api/dispatch/save";
 
@@ -310,3 +311,20 @@ export const deleteDispatchReport = (reportId) => {
 export const updateDispatchReport = (reportId, reportData) => {
   return axiosInstance.put(`${DispatchReport}/${reportId}`, reportData);
 };
+
+//CAForm
+let WORKORDER = REST_API_BASE_URL + "/api/caForm/workOrderList"  
+let WORKoRDERdETAILS = REST_API_BASE_URL + "/api/caForm/getDetilsByWorkOrderNo" 
+let SaveCAForm = REST_API_BASE_URL + "/api/caForm/saveCAForm"
+let GETALLCAFormLIST = REST_API_BASE_URL + "/api/caForm/viewCAForm"
+let GETCAFormById = REST_API_BASE_URL + "/api/caForm/getCAFormByID"
+let DeleteCAForm = REST_API_BASE_URL + "/api/caForm/deleteCAFormByID"
+let UPDATECAFORM = REST_API_BASE_URL + "/api/caForm/updateCAForm"
+
+export const fetchWorkOrder = () => axiosInstance.get(`${WORKORDER}`);
+export const fetchWorkOrderDetails = (workOrder) => axiosInstance.get(`${WORKoRDERdETAILS}/${workOrder}`);
+export const submitCAForm = (data) => axiosInstance.post(SaveCAForm, data);
+export const getCAFormList = () => axiosInstance.get(`${GETALLCAFormLIST}`);
+export const getCAForm = (id) => axiosInstance.get(`${GETCAFormById}/${id}`);
+export const deleteCAForm = (id) => axiosInstance.delete(`${DeleteCAForm}/${id}`);
+export const updateCAForm  = (formId,formData) =>axiosInstance.put(`${UPDATECAFORM}/${formId}`, formData);
