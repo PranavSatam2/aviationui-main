@@ -177,8 +177,12 @@ const ApproveReceivingInspectionReport = () => {
       toast.success(`Report ${action} successfully, ${response}`);
       fetchData();
     } catch (error) {
+      if(error.response && error.response.status === 409) {
+        toast.error("Report data already exists in the database");
+      }else{
       console.error("Error fetching report details: ", error);
       toast.error("Failed to fetch report details");
+    }
     }
   
     // Reset states

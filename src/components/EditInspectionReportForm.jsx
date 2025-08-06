@@ -26,6 +26,7 @@ const EditInspectionReportform = () => {
     fullTraceabilityObservation: "",
     batchNumberObservation: "",
     dateOfManufacturingObservation: "",
+    dateOfExpiryObservation: "",
     selfLifeObservation: "",
     tdsObservation: "",
     materialConditionObservation: "",
@@ -283,13 +284,27 @@ const EditInspectionReportform = () => {
                                 </tr>
                                 <tr>
                                   <td>6</td>
-                                  <td>Date of Manufacturing & Date of Expiry(If Applicable)</td>
+                                  <td>Date of Manufacturing(If Applicable)</td>
                                   <td>Must match(Physical Unit lable & all COC)</td>
                                   <td><input
                               className="form-control w-100"
                               type="text"
                               name="dateOfManufacturingObservation"
                               value={form.dateOfManufacturingObservation}
+                              onChange={handleChange}
+                              required
+                            /></td>
+                                </tr>
+
+                                <tr>
+                                  <td>6</td>
+                                  <td>Date of Expiry(If Applicable)</td>
+                                  <td>Must match(Physical Unit lable & all COC)</td>
+                                  <td><input
+                              className="form-control w-100"
+                              type="text"
+                              name="dateOfExpiryObservation"
+                              value={form.dateOfExpiryObservation}
                               onChange={handleChange}
                               required
                             /></td>

@@ -279,7 +279,12 @@ const EditInspectionReportTable = () => {
     { field: "batchNumberObservation", label: "Batch Number Observation", width: "100px" },
     {
       field: "dateOfManufacturingObservation",
-      label: "Date of Manufacturing & Date of Expiry Observation",
+      label: "Date of Manufacturing Observation",
+      width: "100px",
+    },
+    {
+      field: "dateOfExpiryObservation",
+      label: "Date of Expiry Observation",
       width: "100px",
     },
     { field: "selfLifeObservation", label: "Self Life Observation", width: "100px" },

@@ -11,6 +11,7 @@ import Header from "./Header";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import Footer from "./Footer";
 import { toast } from "react-toastify";
+import logo from "../static/img/logo.png";
 
 const CAForm = () => {
  const [workOrderNumber, setWorkOrderNumber] = useState([]);
@@ -135,11 +136,9 @@ const handlePartNumberSelect = async (workOrder) => {
 
       // Call the API to save the data
       const responce= await submitCAForm(payload);
-      if(!responce.success){
-        toast.error("Issue while save data")
-      }
+     
       toast.success("CA Form saved successfully!")
-      // alert("Purchase Order saved successfully!");
+      
     } catch (error) {
       toast.error(" Error for saving CA Form.")
 
@@ -187,14 +186,14 @@ return (
               4. Approved Organization Name and Address:
             <div className={styles.companyLogo}>
                           <img
-                            src="/api/placeholder/100/50"
+                            src={logo}
                             alt="AMC Technology Logo"
                             className={styles.logoImage}
                           />
             </div>
             </div>
             <div className={styles.companyInfo} style={{ borderRight: "1px solid black",}}>
-              AMC TECHNOLOGY<br />
+              <br />AMC TECHNOLOGY<br />
               105, HRIDAY INDUSTRIAL ESTATE,<br />
               HIRA INDUSTRIAL PARK, VASAI PHATA,<br />
               VASAI EAST, PALGHAR 401 203,<br />

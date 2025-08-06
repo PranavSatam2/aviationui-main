@@ -1,6 +1,8 @@
   // import { useEffect, useState } from "react";
   import styles from "./Checker/CheckerSupplierRegistration/PrintSupplier.module.css";
   import CheckboxWithTick from './CheckboxWithTick';
+  import logo from "../static/img/logo.png";
+
 
 
   export const PrintCAForm = (dataMap) => {
@@ -60,7 +62,7 @@
               <div > 4. Approved Organization Name and Address:</div><br/>
               <div className={styles.companyLogo}>
                                         <img
-                                          src="/api/placeholder/100/50"
+                                          src={logo}
                                           alt="AMC Technology Logo"
                                           className={styles.logoImage}
                                         />
@@ -73,7 +75,7 @@
                 borderRight: "1px solid black",
               }}
             >
-                          <br/><br/>AMC TECHNOLOGY<br />
+                          <br/>AMC TECHNOLOGY<br />
                           105, HRIDAY INDUSTRIAL ESTATE,<br />
                           HIRA INDUSTRIAL PARK, VASAI PHATA,<br />
                           VASAI EAST, PALGHAR 401 203,<br />
