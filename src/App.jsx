@@ -26,6 +26,7 @@ import EditCustomerOrderForm from "./components/EditCustomerOrderForm";
 import EditCustomerOrderTable from "./components/EditCustomerOrderTable.jsx";
 import EditCAForm from "./components/EditCAForm.jsx";
 import { useRoleMenus } from "./context/RoleMenuContext";
+import EditDispatchReport from "./components/EditDispatchReport.jsx";
 
 const App = () => {
   const token = sessionStorage.getItem('jwt_token') || '';
@@ -65,6 +66,7 @@ const App = () => {
         <Route path="/editCustomerOrderForm" element={<EditCustomerOrderForm />} />
         <Route path="/editCustomerOrder" element={<EditCustomerOrderTable/>} />
         <Route path="/editCAForm" element={<EditCAForm/>} />
+        <Route path="/editDispatchReport" element={<EditDispatchReport />} />
         {/* <Route path="/ViewStoreAcc" element={<ViewSupplierRegis />} /> */}
 
     {menuItems.flatMap((menu) =>

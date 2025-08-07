@@ -289,10 +289,10 @@ export const updatePurchaseOrder = (ID,order) =>
 
 
 // Dispatch Report
-let DispatchReport = REST_API_BASE_URL + "/api/dispatch/save";
+let DispatchReport = REST_API_BASE_URL + "/api/dispatch";
 
 export const saveDispatchReport = (dispatchData) => {
-  return axiosInstance.post(DispatchReport, dispatchData);
+  return axiosInstance.post(`${DispatchReport}/save`, dispatchData);
 };
 export const getAllDispatchReports = () => {
   return axiosInstance
@@ -306,11 +306,21 @@ export const getAllDispatchReports = () => {
     });
 };
 export const deleteDispatchReport = (reportId) => {
-  return axiosInstance.delete(`${DispatchReport}/${reportId}`);
+  return axiosInstance.delete(`${DispatchReport}/delete/${reportId}`);
 };
 export const updateDispatchReport = (reportId, reportData) => {
-  return axiosInstance.put(`${DispatchReport}/${reportId}`, reportData);
+  return axiosInstance.put(`${DispatchReport}/update/${reportId}`, reportData);
 };
+export const getDispatchReportById = (reportId) => {
+  return axiosInstance
+    .get(`${DispatchReport}/${reportId}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching dispatch report by ID:", error);  
+    });
+  };
 
 //CAForm
 let WORKORDER = REST_API_BASE_URL + "/api/caForm/workOrderList"  

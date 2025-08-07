@@ -8,11 +8,14 @@ import AddUser from './AddUser.jsx';
 import ApproveCustomerOrder from './ApproveCustomerOrder.jsx';
 import ApproveReceivingInspectionReport from './ApproveReceivingInspectionReport.jsx';
 import CustomBreadcrumb from './Breadcrumb/CustomBreadcrumb.jsx';
+import CAForm from './CAForm.jsx';
+import CheckboxWithTick from './CheckboxWithTick.jsx';
 import ViewSupplierRegistration from './Checker/CheckerSupplierRegistration/ViewSupplierRegistration.jsx';
 import CheckerTable from './Checker/CheckerTable.jsx';
-import Editsupplierform from './Checker/EditSupplier/Editsupplierform.jsx';
 import EditSupplierTable from './Checker/EditSupplier/EditSupplierTable.jsx';
+import Editsupplierform from './Checker/EditSupplier/Editsupplierform.jsx';
 import CustomerOrder from './CustomerOrder.jsx';
+import EditCAForm from './EditCAForm.jsx';
 import EditCustomerOrderForm from './EditCustomerOrderForm.jsx';
 import EditCustomerOrderTable from './EditCustomerOrderTable.jsx';
 import EditDispatchReport from './EditDispatchReport.jsx';
@@ -32,7 +35,6 @@ import AddMaterialRequisition from './MaterialRequisition/AddMaterialRequisition
 import EditMaterialRequisition from './MaterialRequisition/EditMaterialRequisition/EditMaterialRequisition.jsx';
 import index from './MaterialRequisition/MaterialRequisitionReport/index.jsx';
 import ViewMaterialRequisition from './MaterialRequisition/ViewMaterialRequisition.jsx';
-import MyModalComponent from './partials/MyModalComponent.jsx';
 import PasswordChange from './PasswordChange.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 import ProductList from './ProductList.jsx';
@@ -47,12 +49,7 @@ import RoleMenuMapping from './RoleMenuMapping.jsx';
 import Sidebar from './Sidebar.jsx';
 import StoreAccComponent from './StoreAccComponent.jsx';
 import SupplierRegistration from './SupplierRegistration.jsx';
-import DocAndProcControl from './tabs/supplier_registration/DocAndProcControl.jsx';
-import GeneralTab from './tabs/supplier_registration/GeneralTab.jsx';
-import IncomingInspectionTab from './tabs/supplier_registration/IncomingInspectionTab.jsx';
-import MaterialAndOther from './tabs/supplier_registration/MaterialAndOther.jsx';
-import QualityProcessTab from './tabs/supplier_registration/QualityProcessTab.jsx';
-import SupplierAnalysisTab from './tabs/supplier_registration/SupplierAnalysisTab.jsx';
+import ViewCAForm from './ViewCAForm.jsx';
 import ViewCustomerOrder from './ViewCustomerOrder.jsx';
 import ViewDispatchReport from './ViewDispatchReport.jsx';
 import ViewInspectionReports from './ViewInspectionReports.jsx';
@@ -61,6 +58,13 @@ import ViewProduct from './ViewProduct.jsx';
 import ViewStoreAcc from './ViewStoreAcc.jsx';
 import ViewSupplierRegis from './ViewSupplierRegis.jsx';
 import ViewUser from './ViewUser.jsx';
+import MyModalComponent from './partials/MyModalComponent.jsx';
+import DocAndProcControl from './tabs/supplier_registration/DocAndProcControl.jsx';
+import GeneralTab from './tabs/supplier_registration/GeneralTab.jsx';
+import IncomingInspectionTab from './tabs/supplier_registration/IncomingInspectionTab.jsx';
+import MaterialAndOther from './tabs/supplier_registration/MaterialAndOther.jsx';
+import QualityProcessTab from './tabs/supplier_registration/QualityProcessTab.jsx';
+import SupplierAnalysisTab from './tabs/supplier_registration/SupplierAnalysisTab.jsx';
 
 const componentsMap = {
   "AddDispatchReport": AddDispatchReport,
@@ -72,11 +76,14 @@ const componentsMap = {
   "ApproveCustomerOrder": ApproveCustomerOrder,
   "ApproveReceivingInspectionReport": ApproveReceivingInspectionReport,
   "CustomBreadcrumb": CustomBreadcrumb,
+  "CAForm": CAForm,
+  "CheckboxWithTick": CheckboxWithTick,
   "ViewSupplierRegistration": ViewSupplierRegistration,
   "CheckerTable": CheckerTable,
-  "Editsupplierform": Editsupplierform,
   "EditSupplierTable": EditSupplierTable,
+  "Editsupplierform": Editsupplierform,
   "CustomerOrder": CustomerOrder,
+  "EditCAForm": EditCAForm,
   "EditCustomerOrderForm": EditCustomerOrderForm,
   "EditCustomerOrderTable": EditCustomerOrderTable,
   "EditDispatchReport": EditDispatchReport,
@@ -96,7 +103,6 @@ const componentsMap = {
   "EditMaterialRequisition": EditMaterialRequisition,
   "index": index,
   "ViewMaterialRequisition": ViewMaterialRequisition,
-  "MyModalComponent": MyModalComponent,
   "PasswordChange": PasswordChange,
   "PrivateRoute": PrivateRoute,
   "ProductList": ProductList,
@@ -111,12 +117,7 @@ const componentsMap = {
   "Sidebar": Sidebar,
   "StoreAccComponent": StoreAccComponent,
   "SupplierRegistration": SupplierRegistration,
-  "DocAndProcControl": DocAndProcControl,
-  "GeneralTab": GeneralTab,
-  "IncomingInspectionTab": IncomingInspectionTab,
-  "MaterialAndOther": MaterialAndOther,
-  "QualityProcessTab": QualityProcessTab,
-  "SupplierAnalysisTab": SupplierAnalysisTab,
+  "ViewCAForm": ViewCAForm,
   "ViewCustomerOrder": ViewCustomerOrder,
   "ViewDispatchReport": ViewDispatchReport,
   "ViewInspectionReports": ViewInspectionReports,
@@ -125,6 +126,13 @@ const componentsMap = {
   "ViewStoreAcc": ViewStoreAcc,
   "ViewSupplierRegis": ViewSupplierRegis,
   "ViewUser": ViewUser,
+  "MyModalComponent": MyModalComponent,
+  "DocAndProcControl": DocAndProcControl,
+  "GeneralTab": GeneralTab,
+  "IncomingInspectionTab": IncomingInspectionTab,
+  "MaterialAndOther": MaterialAndOther,
+  "QualityProcessTab": QualityProcessTab,
+  "SupplierAnalysisTab": SupplierAnalysisTab,
 };
 
 export default componentsMap;

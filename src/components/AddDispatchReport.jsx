@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Footer from "./Footer";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import axios from "axios";
-import { saveDispatchReport } from "../services/db_manager";
+import { saveDispatchReport, fetchPartNumbersAndDescriptions } from "../services/db_manager";
 
 const AddDispatchReport = () => {
   const [form, setForm] = useState({
@@ -26,9 +26,53 @@ const AddDispatchReport = () => {
     caFormDate: "",
     caFormRemark: "",
     ewayBill: "",
-    storesInchargeName: "",
-    storesInchargeSign: ""
+    ewayBillDate: "",
+    ewayBillRemark: "",
+    storesInChargeName: "",
+    storesInChargeSign: ""
   });
+
+  // State to store dropdown options from API
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch data once on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await fetchPartNumbersAndDescriptions(); // replace with actual API call
+        setData(response);
+        setError(null);
+      } catch (err) {
+        console.error("API Error:", err);
+        setError("Failed to load product data. Please try again.");
+        // fallback data
+        setData([
+          { productName: "Sample A", productDescription: "Desc A" },
+          { productName: "Sample B", productDescription: "Desc B" },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Handle part number (productName) change
+  const handleProductChange = (e) => {
+  const selected = e.target.value;
+  const match = data.find((item) => item.productName === selected);
+
+  setForm((prevForm) => ({
+    ...prevForm,
+    partNo: selected,
+    partDescription: match ? match.productDescription : ""
+  }));
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,39 +83,39 @@ const AddDispatchReport = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await saveDispatchReport(form);
-    alert("Dispatch report saved successfully!");
-    resetForm();
-  } catch (error) {
-    console.error("Error saving dispatch report", error);
-    alert("Failed to save dispatch report.");
-  }
-};
+    e.preventDefault();
+    try {
+      await saveDispatchReport(form);
+      alert("Dispatch report saved successfully!");
+      resetForm();
+    } catch (error) {
+      console.error("Error saving dispatch report", error);
+      alert("Failed to save dispatch report.");
+    }
+  };
 
-const resetForm = () => {
+  const resetForm = () => {
     setForm({
       reportNo: "",
-    reportDate: "",
-    partNo: "",
-    partDescription: "",
-    orderNo: "",
-    customerName: "",
-    quantity: "",
-    batchNo: "",
-    challanNo: "",
-    challanDate: "",
-    challanRemark: "",
-    invoiceNo: "",
-    invoiceDate: "",
-    invoiceRemark: "",
-    caFormNo: "",
-    caFormDate: "",
-    caFormRemark: "",
-    ewayBill: "",
-    storesInchargeName: "",
-    storesInchargeSign: ""
+      reportDate: "",
+      partNo: "",
+      partDescription: "",
+      orderNo: "",
+      customerName: "",
+      quantity: "",
+      batchNo: "",
+      challanNo: "",
+      challanDate: "",
+      challanRemark: "",
+      invoiceNo: "",
+      invoiceDate: "",
+      invoiceRemark: "",
+      caFormNo: "",
+      caFormDate: "",
+      caFormRemark: "",
+      ewayBill: "",
+      storesInchargeName: "",
+      storesInchargeSign: ""
     });
     setErrors({});
   };
@@ -134,26 +178,64 @@ const resetForm = () => {
               </div>
 
               {/* Part Info */}
+              {/* Part No. & Quantity */}
               <div style={sectionStyle}>
                 <div>
                   <label style={labelStyle}>Part No.</label>
-                  <input name="partNo" style={inputStyle} value={form.partNo} onChange={handleChange} />
+                  {loading ? (
+                    <div>Loading part numbers...</div>  
+                  ) : error ? (
+                    <div style={{ color: "red" }}>{error}</div>
+                  ) : (
+                    <select
+                      name="partNo"
+                      style={inputStyle}
+                      value={form.partNo}
+                      onChange={handleProductChange}
+                    >
+                      <option value="">Select a part number</option>
+                      {data.map((part, index) => (
+                        <option key={index} value={part.productName}>
+                          {part.productName}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
+
                 <div>
                   <label style={labelStyle}>Qty.</label>
-                  <input name="quantity" style={inputStyle} value={form.quantity} onChange={handleChange} />
+                  <input
+                    name="quantity"
+                    style={inputStyle}
+                    value={form.quantity}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
+
+              {/* Part Description */}
               <div style={sectionStyle}>
                 <div>
                   <label style={labelStyle}>Part Description</label>
-                  <input name="partDescription" style={inputStyle} value={form.partDescription} onChange={handleChange} />
+                  <input
+                    name="partDescription"
+                    style={inputStyle}
+                    value={form.partDescription}
+                    disabled
+                  />
                 </div>
                 <div>
                   <label style={labelStyle}>Batch No.</label>
-                  <input name="batchNo" style={inputStyle} value={form.batchNo} onChange={handleChange} />
+                  <input
+                    name="batchNo"
+                    style={inputStyle}
+                    value={form.batchNo}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
+
 
               {/* Order & Customer */}
               <div style={sectionStyle}>
@@ -221,20 +303,30 @@ const resetForm = () => {
               </div>
 
               {/* E-WAY Bill */}
-              <div style={{ marginBottom: "20px" }}>
-                <label style={labelStyle}>E-WAY Bill</label>
-                <input name="ewayBill" style={inputStyle} value={form.ewayBill} onChange={handleChange} />
+              <div style={threeColStyle}>
+                <div>
+                  <label style={labelStyle}>E-WAY Bill</label>
+                  <input name="ewayBill" style={inputStyle} value={form.ewayBill} onChange={handleChange} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Date</label>
+                  <input type="date" name="ewayBillDate" style={inputStyle} value={form.ewayBillDate} onChange={handleChange} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Remark</label>
+                  <input name="ewayBillRemark" style={inputStyle} value={form.ewayBillRemark} onChange={handleChange} />
+                </div>
               </div>
 
               {/* Store In-Charge Info */}
               <div style={sectionStyle}>
                 <div>
                   <label style={labelStyle}>Stores In-Charge Name</label>
-                  <input name="storesInchargeName" style={inputStyle} value={form.storesInchargeName} onChange={handleChange} />
+                  <input name="storesInChargeName" style={inputStyle} value={form.storesInChargeName} onChange={handleChange} />
                 </div>
                 <div>
                   <label style={labelStyle}>Stores In-Charge Sign</label>
-                  <input name="storesInchargeSign" style={inputStyle} value={form.storesInchargeSign} onChange={handleChange} />
+                  <input name="storesInChargeSign" style={inputStyle} value={form.storesInChargeSign} onChange={handleChange} />
                 </div>
               </div>
 
