@@ -1,117 +1,84 @@
 import { useEffect, useState } from "react";
-import Footer from "./Footer";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
+import Footer from "../Footer";
+import Header from "../Header";
+import Sidebar from "../Sidebar";
 import {
-    getCAFormList,
-    getCAForm,
-    deleteCAForm,
-} from "../services/db_manager";
+  deletePurchaseOrder,
+  listAllWorkorder,
+} from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import {PrintCAForm} from "./PrintCAForm";
-import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
-const ViewCAForm = () => {
+import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
+// import PurchaseOrderReport from "../PurchaseOrderReport/PurchaseOrderReport";
+// import styles from "../ViewPurchaseOrder/ViewPurchaseOrder.module.css";
+import PurchaseOrderForm from "../PurchaseOrder/PurchaseOrderReport/PurchaseOrderReport";
+
+const ViewWorkOrder = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("formId");
+  const [sortField, setSortField] = useState("orderNo");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedItem, setSelectedItem] = useState("");
-  const [selectAll, setSelectAll] = useState(false);
-  const [selecteReportData, setSelecteReportData] = useState();
-
-  // Modal states
-  const [showModal, setShowModal] = useState(false);
-  const [actionType, setActionType] = useState(""); // "accept" or "reject"
-  const [remark, setRemark] = useState("");
-  const [reportData, setReportData] = useState();
-
+  const [workOrderData, setWorkOrderData] = useState();
   const navigate = useNavigate();
+
   const fetchData = async () => {
-    setIsLoading(true);
     try {
-      const response = await getCAFormList();
-      if (response) {
-        console.log(response);
-        if (response?.data) {
-          setTableData(response.data);
-        } else if (Array.isArray(response)) {
-          setTableData(response);
-        } else {
-          console.error("Unexpected response format:", response);
-          setTableData([]);
-        }
-      }
+      const response = await listAllWorkorder();
+      setTableData(response.data || []);
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching data", error);
-      toast.error("Failed to load reports");
+      console.error("Error fetching work orders", error);
+      toast.error("Failed to load work orders");
     } finally {
       setIsLoading(false);
     }
   };
+
   // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Reset selection when page changes
-  useEffect(() => {
-    setSelectedItem("");
-    setSelectAll(false);
-  }, [currentPage, itemsPerPage]);
+  // Delete the selected work order
+  const deleteSelectedElement = async (orderNo) => {
+    if (window.confirm("Are you sure you want to delete this work order?")) {
+      try {
+        await deletePurchaseOrder(orderNo); // You might need to update this service call
+        setTableData((prevData) =>
+          prevData.filter((workOrder) => workOrder.orderNo !== orderNo)
+        );
+        toast.success("Work order deleted successfully!");
+        fetchData();
+      } catch (error) {
+        console.error("Failed to delete work order", error);
+        toast.error("Failed to delete work order. Please try again.");
+      }
+    }
+  };
+
+  // Edit the selected work order
+  const editSelectedElement = async (srNo) => {
+    navigate("/Addworkorder", {
+      state: { srNo },
+    });
+  };
 
   // Search functionality
-  const filteredData = Array.isArray(tableData)
-  ? tableData.filter((report) =>
-      Object.values(report).some(
-        (value) =>
+  const filteredData = tableData.filter((workOrder) => {
+    return Object.entries(workOrder)
+      .filter(
+        ([key]) => !["documentPath", "makerDate", "checkerDate"].includes(key)
+      ) // Exclude certain fields from search
+      .some(
+        ([_, value]) =>
           value &&
           value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    )
-  : [];
-
-
-  const deleteSelectedElement = async (elementId) => {
-      if (window.confirm("Are you sure you want to delete this CA Form?")) {
-        try {
-          const response = await deleteCAForm(elementId);
-          if (response) {
-            setTableData((prevData) =>
-              prevData.filter((report) => report.formId !== elementId)
-            );
-            toast.success("CA Form deleted successfully");
-          }
-        } catch (error) {
-          console.error("Failed to delete CA Form", error);
-          toast.error("Failed to delete CA Form Please try again.");
-        }
-      }
-    };
-  
-    const editSelectedElement = async (elementId) => {
-      if (elementId !== "") {
-        try {
-          let reportId = elementId;
-          let reportData = await getCAForm(elementId);
-          reportData = reportData.data;
-          if (reportId !== null) {
-            navigate("/editCAForm", {
-              state: { reportId, reportData },
-            });
-          }
-        } catch (error) {
-          console.error("Error fetching CA Form details: ", error);
-          toast.error("Failed to fetch CA Form details");
-        }
-      }
-    };
-
+      );
+  });
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -166,77 +133,51 @@ const ViewCAForm = () => {
 
     return pageNumbers;
   };
-const handleCheckboxChange = (report) => {
-    // If the same checkbox is clicked again, deselect it
-    if (selectedItem === report.id) {
-      setSelectedItem("");
-    } else {
-      setSelectedItem(report.id);
-      setSelecteReportData(report);
-    }
-  };
 
-  // Modified: Handle select all - now it just clears selection
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setSelectedItem("");
-    } else {
-      // Select the first item when clicking "select all"
-      if (currentItems.length > 0) {
-        const firstItemId = currentItems[0].formId;
-        setSelectedItem(firstItemId);
-      }
-    }
-    setSelectAll(!selectAll);
-  };
-  const handlePrintClick = (report) => {
-    // Store the report data
-    console.log("Report",report)
-    setReportData(report);
+  // Column definitions for the table - updated for work order data
+  const columns = [
+    { field: "orderNo", label: "Order No", width: "140px" },
+    { field: "srNo", label: "SR No", width: "100px" },
+    { field: "customerName", label: "Customer Name", width: "150px" },
+    { field: "partDesc", label: "Part Description", width: "150px" },
+    { field: "partNo", label: "Part No", width: "120px" },
+    { field: "qty", label: "Quantity", width: "100px" },
+    { field: "status", label: "Status", width: "100px" },
+    { field: "workOrder", label: "Work Order", width: "120px" },
+    { field: "makerUserName", label: "Maker", width: "120px" },
+    { field: "makerDate", label: "Maker Date", width: "140px" },
+    { field: "checkerUserName", label: "Checker", width: "120px" },
+    { field: "checkerDate", label: "Checker Date", width: "140px" },
+    // { field: "userRole", label: "User Role", width: "100px" },
+    // { field: "userAction", label: "User Action", width: "110px" },
+    { field: "remark", label: "Remark", width: "120px" },
+  ];
 
-    // Short delay to ensure React has updated the state and rendered the component
+  const handlePrintClick = (workOrder) => {
+    setWorkOrderData(workOrder);
     setTimeout(() => {
-      // Cache original body styles
-      const originalBodyStyle = document.body.style.cssText;
-
-      // Apply print-friendly styles to the body
-      document.body.style.margin = "0";
-      document.body.style.padding = "0";
-
-      // Print the document
       window.print();
-
-      // Restore original body styles after printing dialog is closed
-      setTimeout(() => {
-        document.body.style.cssText = originalBodyStyle;
-      }, 100);
     }, 500);
   };
 
+  // Format date values
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+  };
 
-  // Column definitions for the table
-  const columns = [
-    { field: "formTrackingNumber", label: "Form Trackking No.", width: "100px" },
-    { field: "workOrderNo", label: "WorkOrder Number", width: "100px" },
-    { field: "item", label: "Item", width: "100px" },
-    { field: "description", label: "Description", width: "100px" },
-    { field: "partNo", label: "Part No.", width: "100px" },
-    { field: "quantity", label: "Quantity", width: "100px" },
-    { field: "serialNo", label: "Serial No.", width: "100px" },
-    { field: "status", label: "Status", width: "100px" },
-    { field: "remarks", label: "Remarks", width: "100px" },
-    { field: "approveDesign13a", label: "Approved design data", width: "100px" },
-    { field: "nonApproveDesign13a", label: "Non-approved design data", width: "100px" },
-    { field: "otherRegulation14a", label: "Other regulation specified to Service", width: "100px" },
-    { field: "authorisedSign13b", label: " Authorised Signature", width: "100px" },
-    { field: "authorisationNumber13c", label: "Approval / Authorisation Number", width: "100px" },
-    { field: "name13d", label: "Name", width: "100px" },
-    { field: "date13e", label: "Date", width: "100px" },
-    { field: "selfLiauthorisedSign14bfeObservation", label: "Authorised Signature", width: "100px" },
-    { field: "approvalRefNo14c", label: "Certificate / Approval Ref No", width: "100px" },
-    { field: "name14d", label: "Name", width: "100px" },
-    { field: "date14e", label: "Date", width: "100px" },
-];
+  // Format boolean values
+  const formatBoolean = (value) => {
+    return value ? "Yes" : "No";
+  };
+
+  // Format status with badge
+  const formatStatus = (status) => {
+    const statusClass =
+      status === "open" ? "badge bg-success" : "badge bg-secondary";
+    return <span className={statusClass}>{status}</span>;
+  };
 
   return (
     <div className="wrapper">
@@ -244,20 +185,19 @@ const handleCheckboxChange = (report) => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View CA Form" />
+          <CustomBreadcrumb breadcrumbsLabel="View Work Orders" />
           <div className="printView">
-            <PrintCAForm dataMap={reportData} />
+            <PurchaseOrderForm tableData={workOrderData} />
           </div>
-
           <div
             className={[
               "normalView",
               "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              styles.normalViewStyle,
+              //   styles.normalViewStyle,
             ].join(" ")}
           >
             <div className="card-body">
-              <div className="row align-items-center">
+              <div className="row align-items-center mb-4">
                 <div className="col-md-6">
                   <div className="input-group">
                     <span className="input-group-text bg-primary text-white border-0">
@@ -266,7 +206,7 @@ const handleCheckboxChange = (report) => {
                     <input
                       type="text"
                       className="form-control border-start-0 ps-0"
-                      placeholder="Search reports..."
+                      placeholder="Search work orders..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -296,37 +236,26 @@ const handleCheckboxChange = (report) => {
 
               {isLoading ? (
                 <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
+                  <div
+                    className="spinner-border text-primary"
+                    role="status"
+                  ></div>
                   <p className="mt-2 text-muted">Loading data...</p>
                 </div>
               ) : (
                 <div
                   className="table-responsive"
                   style={{
+                    overflowX: "auto",
                     overflowY: "auto",
+                    maxHeight: "65vh",
                     scrollbarWidth: "thin",
                     scrollbarColor: "#ccc transparent",
                   }}
                 >
                   <table className="table table-hover table-striped align-middle">
                     <thead>
-                      <tr className="bg-blue">
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{ width: "40px" }}
-                        >
-                          <div className="form-check d-flex justify-content-center">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="selectAll"
-                              checked={selectAll}
-                              onChange={handleSelectAll}
-                            />
-                          </div>
-                        </th>
+                      <tr className="bg-light">
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -339,6 +268,7 @@ const handleCheckboxChange = (report) => {
                               fontWeight: "600",
                               textTransform: "uppercase",
                               letterSpacing: "0.5px",
+                              whiteSpace: "nowrap",
                             }}
                           >
                             <div className="d-flex align-items-center">
@@ -361,11 +291,12 @@ const handleCheckboxChange = (report) => {
                         <th
                           className="position-sticky top-0 bg-light py-3 text-center"
                           style={{
-                            width: "100px",
+                            width: "150px",
                             fontSize: "0.9rem",
                             fontWeight: "600",
                             textTransform: "uppercase",
                             letterSpacing: "0.5px",
+                            whiteSpace: "nowrap",
                           }}
                         >
                           ACTIONS
@@ -374,31 +305,20 @@ const handleCheckboxChange = (report) => {
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((report, index) => (
+                        currentItems.map((workOrder, index) => (
                           <tr
-                            key={report.formId}
+                            key={workOrder.orderNo || index}
                             className={
                               index % 2 === 0
                                 ? "bg-white"
                                 : "bg-light bg-opacity-50"
                             }
                           >
-                            <td className="text-center">
-                              <div className="form-check d-flex justify-content-center">
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`check-${report.id}`}
-                                  checked={selectedItem === report.id}
-                                  onChange={() =>
-                                    handleCheckboxChange(report)
-                                  }
-                                />
-                              </div>
-                            </td>
                             {columns.map((column) => (
                               <td
-                                key={`${report.formId}-${column.field}`}
+                                key={`${workOrder.orderNo || index}-${
+                                  column.field
+                                }`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -406,33 +326,39 @@ const handleCheckboxChange = (report) => {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
-                                title={report[column.field]}
+                                title={workOrder[column.field]}
                               >
-                                {report[column.field]}
+                                {column.field === "status"
+                                  ? formatStatus(workOrder[column.field])
+                                  : column.field === "workOrder"
+                                  ? formatBoolean(workOrder[column.field])
+                                  : ["makerDate", "checkerDate"].includes(
+                                      column.field
+                                    )
+                                  ? formatDate(workOrder[column.field])
+                                  : column.field === "partDesc"
+                                  ? workOrder[column.field]?.substring(0, 20) +
+                                    (workOrder[column.field]?.length > 20
+                                      ? "..."
+                                      : "")
+                                  : column.field === "remark"
+                                  ? workOrder[column.field]?.substring(0, 15) +
+                                    (workOrder[column.field]?.length > 15
+                                      ? "..."
+                                      : "")
+                                  : workOrder[column.field]}
                               </td>
                             ))}
-                             <td>
+                            <td>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
-                                className="btn btn-sm btn-outline-primary"
-                                onClick={() => editSelectedElement(report.id)}
-                                title="Edit"
-                              >
-                                <i className="fa-solid fa-pen-to-square"></i>
-                              </button>
-                              <button
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={() => deleteSelectedElement(report.id)}
-                                title="Delete"
-                              >
-                                <i className="fa-solid fa-trash"></i>
-                              </button>
-                                <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handlePrintClick(report)}
-                                  title="Print Doc"
+                                  className="btn btn-sm btn-outline-primary"
+                                  onClick={() =>
+                                    editSelectedElement(workOrder.srNo)
+                                  }
+                                  title="Edit"
                                 >
-                                  <i className="fa-solid fa-print"></i>
+                                  <i className="fa-solid fa-pen-to-square"></i>
                                 </button>
                               </div>
                             </td>
@@ -441,7 +367,7 @@ const handleCheckboxChange = (report) => {
                       ) : (
                         <tr>
                           <td
-                            colSpan={columns.length + 2}
+                            colSpan={columns.length + 1}
                             className="text-center py-5"
                           >
                             {searchTerm ? (
@@ -552,9 +478,8 @@ const handleCheckboxChange = (report) => {
         </div>
         <Footer />
       </div>
-     
     </div>
   );
 };
 
-export default ViewCAForm;
+export default ViewWorkOrder;

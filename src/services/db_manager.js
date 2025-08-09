@@ -338,3 +338,38 @@ export const getCAFormList = () => axiosInstance.get(`${GETALLCAFormLIST}`);
 export const getCAForm = (id) => axiosInstance.get(`${GETCAFormById}/${id}`);
 export const deleteCAForm = (id) => axiosInstance.delete(`${DeleteCAForm}/${id}`);
 export const updateCAForm  = (formId,formData) =>axiosInstance.put(`${UPDATECAFORM}/${formId}`, formData);
+
+//workorder
+let WORKORDERFROMCHECKER = REST_API_BASE_URL + "/api/workorders/workordersFromChecker";
+let WORKORDERLIST = REST_API_BASE_URL + "/api/workorders";
+
+
+export const listAllWorkorder = () => axiosInstance.get(`${WORKORDERFROMCHECKER}`);
+export const getWorkOrder = (ID) => {
+  return axiosInstance
+    .get(`${"/api/workorders/workorders-short"}/${ID}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching list:", error);
+      throw error;
+    });
+};
+export const listOfAllWorkorderTable = () => axiosInstance.get(`${WORKORDERLIST}`);
+export const updateWorkOrder = (ID, order) =>
+  axiosInstance.put(`${WORKORDERLIST}/${ID}`, order);
+export const getWorkOrderDetails = (ID) => {
+  return axiosInstance
+    .get(`${WORKORDERLIST}/${ID}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching list:", error);
+      throw error;
+    });
+};
+export const AddWorkOrder = (Workorder) => {
+  axiosInstance.post("/api/workorders", Workorder);
+};
