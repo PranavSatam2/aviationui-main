@@ -1,84 +1,83 @@
 import { useEffect, useState } from "react";
-import Footer from "./Footer";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
+import Footer from "../Footer";
+import Header from "../Header";
+import Sidebar from "../Sidebar";
 import {
-  listAllMaterials,
-  deleteMaterial,
-  getMaterialDetail,
-} from "../services/db_manager";
+  deletePurchaseOrder,
+  listAllWorkorder,
+} from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
+// import PurchaseOrderReport from "../PurchaseOrderReport/PurchaseOrderReport";
+// import styles from "../ViewPurchaseOrder/ViewPurchaseOrder.module.css";
+import PurchaseOrderForm from "../PurchaseOrder/PurchaseOrderReport/PurchaseOrderReport";
 
-const ViewMaterialPage = () => {
+const ViewWorkOrder = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("materialId");
+  const [sortField, setSortField] = useState("orderNo");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [workOrderData, setWorkOrderData] = useState();
   const navigate = useNavigate();
+
+  const fetchData = async () => {
+    try {
+      const response = await listAllWorkorder();
+      setTableData(response.data || []);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching work orders", error);
+      toast.error("Failed to load work orders");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Fetching data when the component is mounted
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await listAllMaterials();
-        setTableData(response.data || []);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching materials", error);
-        toast.error("Failed to load materials");
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
-  // Delete the selected material
-  const deleteSelectedElement = async (materialId) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
+  // Delete the selected work order
+  const deleteSelectedElement = async (orderNo) => {
+    if (window.confirm("Are you sure you want to delete this work order?")) {
       try {
-        await deleteMaterial(materialId);
+        await deletePurchaseOrder(orderNo); // You might need to update this service call
         setTableData((prevData) =>
-          prevData.filter((material) => material.materialId !== materialId)
+          prevData.filter((workOrder) => workOrder.orderNo !== orderNo)
         );
-        toast.success("Item deleted successfully");
+        toast.success("Work order deleted successfully!");
+        fetchData();
       } catch (error) {
-        console.error("Failed to delete material", error);
-        toast.error("Failed to delete material. Please try again.");
+        console.error("Failed to delete work order", error);
+        toast.error("Failed to delete work order. Please try again.");
       }
     }
   };
 
-  // Edit the selected material
-  const editSelectedElement = async (materialId) => {
-    try {
-      const response = await getMaterialDetail(materialId);
-      const materialData = response?.data;
-
-      if (materialData) {
-        navigate("/editmaterial", { state: { materialId, materialData } });
-      }
-    } catch (error) {
-      console.error("Error fetching material details: ", error);
-      toast.error("Failed to fetch material details");
-    }
+  // Edit the selected work order
+  const editSelectedElement = async (srNo) => {
+    navigate("/Addworkorder", {
+      state: { srNo },
+    });
   };
 
   // Search functionality
-  const filteredData = tableData.filter((material) => {
-    return Object.values(material).some(
-      (value) =>
-        value &&
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const filteredData = tableData.filter((workOrder) => {
+    return Object.entries(workOrder)
+      .filter(
+        ([key]) => !["documentPath", "makerDate", "checkerDate"].includes(key)
+      ) // Exclude certain fields from search
+      .some(
+        ([_, value]) =>
+          value &&
+          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      );
   });
 
   // Sorting functionality
@@ -135,21 +134,50 @@ const ViewMaterialPage = () => {
     return pageNumbers;
   };
 
-  // Column definitions for the table
+  // Column definitions for the table - updated for work order data
   const columns = [
-    { field: "materialId", label: "Material ID", width: "100px" },
-    { field: "mrnNo", label: "MRN No", width: "100px" },
-    { field: "partNumber", label: "Part Number", width: "120px" },
-    { field: "partDescription", label: "Description", width: "200px" },
-    { field: "supplierName", label: "Supplier", width: "140px" },
-    { field: "orderNumber", label: "Order Number", width: "140px" },
-    { field: "challanNo", label: "Challan No", width: "140px" },
-    { field: "receiptDate", label: "Receipt Date", width: "140px" },
-    { field: "quantity", label: "Quantity", width: "140px" },
-    { field: "unitOfMeasurement", label: "Unit", width: "120px" },
-    { field: "storeInchargeSign", label: "Store Incharge", width: "140px" },
-    { field: "qualityAcceptance", label: "Quality Acceptance", width: "140px" },
+    { field: "orderNo", label: "Order No", width: "140px" },
+    { field: "srNo", label: "SR No", width: "100px" },
+    { field: "customerName", label: "Customer Name", width: "150px" },
+    { field: "partDesc", label: "Part Description", width: "150px" },
+    { field: "partNo", label: "Part No", width: "120px" },
+    { field: "qty", label: "Quantity", width: "100px" },
+    { field: "status", label: "Status", width: "100px" },
+    { field: "workOrder", label: "Work Order", width: "120px" },
+    { field: "makerUserName", label: "Maker", width: "120px" },
+    { field: "makerDate", label: "Maker Date", width: "140px" },
+    { field: "checkerUserName", label: "Checker", width: "120px" },
+    { field: "checkerDate", label: "Checker Date", width: "140px" },
+    // { field: "userRole", label: "User Role", width: "100px" },
+    // { field: "userAction", label: "User Action", width: "110px" },
+    { field: "remark", label: "Remark", width: "120px" },
   ];
+
+  const handlePrintClick = (workOrder) => {
+    setWorkOrderData(workOrder);
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+
+  // Format date values
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+  };
+
+  // Format boolean values
+  const formatBoolean = (value) => {
+    return value ? "Yes" : "No";
+  };
+
+  // Format status with badge
+  const formatStatus = (status) => {
+    const statusClass =
+      status === "open" ? "badge bg-success" : "badge bg-secondary";
+    return <span className={statusClass}>{status}</span>;
+  };
 
   return (
     <div className="wrapper">
@@ -157,11 +185,19 @@ const ViewMaterialPage = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Material Records" />
-
-          <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
+          <CustomBreadcrumb breadcrumbsLabel="View Work Orders" />
+          <div className="printView">
+            <PurchaseOrderForm tableData={workOrderData} />
+          </div>
+          <div
+            className={[
+              "normalView",
+              "card border-0 shadow-lg mx-4 my-4 rounded-3",
+              //   styles.normalViewStyle,
+            ].join(" ")}
+          >
             <div className="card-body">
-              <div className="row align-items-center">
+              <div className="row align-items-center mb-4">
                 <div className="col-md-6">
                   <div className="input-group">
                     <span className="input-group-text bg-primary text-white border-0">
@@ -170,7 +206,7 @@ const ViewMaterialPage = () => {
                     <input
                       type="text"
                       className="form-control border-start-0 ps-0"
-                      placeholder="Search items..."
+                      placeholder="Search work orders..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -210,7 +246,9 @@ const ViewMaterialPage = () => {
                 <div
                   className="table-responsive"
                   style={{
+                    overflowX: "auto",
                     overflowY: "auto",
+                    maxHeight: "65vh",
                     scrollbarWidth: "thin",
                     scrollbarColor: "#ccc transparent",
                   }}
@@ -230,6 +268,7 @@ const ViewMaterialPage = () => {
                               fontWeight: "600",
                               textTransform: "uppercase",
                               letterSpacing: "0.5px",
+                              whiteSpace: "nowrap",
                             }}
                           >
                             <div className="d-flex align-items-center">
@@ -252,11 +291,12 @@ const ViewMaterialPage = () => {
                         <th
                           className="position-sticky top-0 bg-light py-3 text-center"
                           style={{
-                            width: "100px",
+                            width: "150px",
                             fontSize: "0.9rem",
                             fontWeight: "600",
                             textTransform: "uppercase",
                             letterSpacing: "0.5px",
+                            whiteSpace: "nowrap",
                           }}
                         >
                           ACTIONS
@@ -265,9 +305,9 @@ const ViewMaterialPage = () => {
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((material, index) => (
+                        currentItems.map((workOrder, index) => (
                           <tr
-                            key={material.materialId}
+                            key={workOrder.orderNo || index}
                             className={
                               index % 2 === 0
                                 ? "bg-white"
@@ -276,7 +316,9 @@ const ViewMaterialPage = () => {
                           >
                             {columns.map((column) => (
                               <td
-                                key={`${material.materialId}-${column.field}`}
+                                key={`${workOrder.orderNo || index}-${
+                                  column.field
+                                }`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -284,9 +326,27 @@ const ViewMaterialPage = () => {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
-                                title={material[column.field]}
+                                title={workOrder[column.field]}
                               >
-                                {material[column.field]}
+                                {column.field === "status"
+                                  ? formatStatus(workOrder[column.field])
+                                  : column.field === "workOrder"
+                                  ? formatBoolean(workOrder[column.field])
+                                  : ["makerDate", "checkerDate"].includes(
+                                      column.field
+                                    )
+                                  ? formatDate(workOrder[column.field])
+                                  : column.field === "partDesc"
+                                  ? workOrder[column.field]?.substring(0, 20) +
+                                    (workOrder[column.field]?.length > 20
+                                      ? "..."
+                                      : "")
+                                  : column.field === "remark"
+                                  ? workOrder[column.field]?.substring(0, 15) +
+                                    (workOrder[column.field]?.length > 15
+                                      ? "..."
+                                      : "")
+                                  : workOrder[column.field]}
                               </td>
                             ))}
                             <td>
@@ -294,20 +354,11 @@ const ViewMaterialPage = () => {
                                 <button
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() =>
-                                    editSelectedElement(material.materialId)
+                                    editSelectedElement(workOrder.srNo)
                                   }
                                   title="Edit"
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() =>
-                                    deleteSelectedElement(material.materialId)
-                                  }
-                                  title="Delete"
-                                >
-                                  <i className="fa-solid fa-trash"></i>
                                 </button>
                               </div>
                             </td>
@@ -431,4 +482,4 @@ const ViewMaterialPage = () => {
   );
 };
 
-export default ViewMaterialPage;
+export default ViewWorkOrder;
