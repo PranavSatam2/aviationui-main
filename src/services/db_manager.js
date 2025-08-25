@@ -373,3 +373,11 @@ export const getWorkOrderDetails = (ID) => {
 export const AddWorkOrder = (Workorder) => {
   axiosInstance.post("/api/workorders", Workorder);
 };
+
+//StoreInventory
+let StoreInventory = REST_API_BASE_URL + "/api/inventory/storeInventory" 
+
+export const storeInventoryList = () => axiosInstance.get(`${StoreInventory}`);
+
+
+

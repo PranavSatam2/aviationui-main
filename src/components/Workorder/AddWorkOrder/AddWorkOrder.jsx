@@ -375,7 +375,7 @@ const AddWorkorder = () => {
     // If all validation passes, proceed with submitting
     try {
       const response = await AddWorkOrder(payload);
-      console.log("Work order added successfully:", response.data);
+      console.log("Work order added successfully:", response);
       toast.success("Work Order Added Successfully!");
       // window.location.reload();
 

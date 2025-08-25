@@ -1,5 +1,5 @@
 // BASE URL of server
-//export const REST_API_BASE_URL = "http://43.204.71.108:8082/aero-maint-core-0.0.1-SNAPSHOT";
+//export const REST_API_BASE_URL = "http://13.234.95.189:8082/aero-maint-core-0.0.1-SNAPSHOT";
 export const REST_API_BASE_URL="http://localhost:8082";
 
 // ############################## URL_SAMPLE ##########################
