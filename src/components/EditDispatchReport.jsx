@@ -78,7 +78,7 @@ const EditDispatchReport = () => {
             ← Back
           </button>
           <h4 className="mb-4">Edit Dispatch Report</h4>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="mb-5">
             <div className="row mb-3">
               <div className="col-md-6">
                 <label>Report No.</label>
