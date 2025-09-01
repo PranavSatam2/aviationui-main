@@ -147,8 +147,8 @@ const ViewMaterialPage = () => {
     { field: "receiptDate", label: "Receipt Date", width: "140px" },
     { field: "quantity", label: "Quantity", width: "140px" },
     { field: "unitOfMeasurement", label: "Unit", width: "120px" },
-    { field: "storeInchargeSign", label: "Store Incharge", width: "140px" },
-    { field: "qualityAcceptance", label: "Quality Acceptance", width: "140px" },
+    // { field: "storeInchargeSign", label: "Store Incharge", width: "140px" },
+    // { field: "qualityAcceptance", label: "Quality Acceptance", width: "140px" },
   ];
 
   return (
@@ -157,7 +157,7 @@ const ViewMaterialPage = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Material Records" />
+          <CustomBreadcrumb breadcrumbsLabel="View Material Note" />
 
           <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
             <div className="card-body">

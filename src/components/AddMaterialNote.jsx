@@ -16,9 +16,9 @@ const MaterialReceiptNoteForm = () => {
     partNumber: "",
     partDescription: "",
     quantity: "",
-    storeInchargeSign: "",
+    // storeInchargeSign: "",
     unitOfMeasurement: "",
-    qualityAcceptance: "",
+    // qualityAcceptance: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -121,8 +121,8 @@ const MaterialReceiptNoteForm = () => {
       partNumber: "",
       partDescription: "",
       quantity: "",
-      storeInchargeSign: "",
-      qualityAcceptance: "",
+      // storeInchargeSign: "",
+      // qualityAcceptance: "",
       unitOfMeasurement: "",
     });
     setErrors({});
@@ -165,8 +165,8 @@ const MaterialReceiptNoteForm = () => {
                       type: "Option",
                       options: ["EA", "RL", "QT", "GAL", "KIT", "LTR", "SHT", "Sq.ft", "Sq.mtr"]
                     },
-                    { label: "Store Incharge Sign", name: "storeInchargeSign", type: "text" },
-                    { label: "Quality Acceptance", name: "qualityAcceptance", type: "text" },
+                    // { label: "Store Incharge Sign", name: "storeInchargeSign", type: "text" },
+                    // { label: "Quality Acceptance", name: "qualityAcceptance", type: "text" },
                   ].map(({ label, name, type, options }) => (
                     <div className="col-md-6 p-2" key={name}>
                       <label>
