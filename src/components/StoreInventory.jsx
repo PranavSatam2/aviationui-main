@@ -3,21 +3,19 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import {
-  listAllMaterials,
-  deleteMaterial,
-  getMaterialDetail,
+  storeInventoryList,
 } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import { toast } from "react-toastify";
 
-const ViewMaterialPage = () => {
+const StoreInventory = () => {
   // State
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState([]); // Product data
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("materialId");
+  const [sortField, setSortField] = useState("productId");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,12 +26,13 @@ const ViewMaterialPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await listAllMaterials();
-        setTableData(response.data || []);
-        setIsLoading(false);
+        const response = await storeInventoryList();
+        if (response && response.data) {
+          setTableData(response.data); // Update state with response data
+        }
       } catch (error) {
-        console.error("Error fetching materials", error);
-        toast.error("Failed to load materials");
+        console.error("Error fetching products", error);
+        toast.error("Failed to load product data");
       } finally {
         setIsLoading(false);
       }
@@ -41,40 +40,9 @@ const ViewMaterialPage = () => {
     fetchData();
   }, []);
 
-  // Delete the selected material
-  const deleteSelectedElement = async (materialId) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      try {
-        await deleteMaterial(materialId);
-        setTableData((prevData) =>
-          prevData.filter((material) => material.materialId !== materialId)
-        );
-        toast.success("Item deleted successfully");
-      } catch (error) {
-        console.error("Failed to delete material", error);
-        toast.error("Failed to delete material. Please try again.");
-      }
-    }
-  };
-
-  // Edit the selected material
-  const editSelectedElement = async (materialId) => {
-    try {
-      const response = await getMaterialDetail(materialId);
-      const materialData = response?.data;
-
-      if (materialData) {
-        navigate("/editmaterial", { state: { materialId, materialData } });
-      }
-    } catch (error) {
-      console.error("Error fetching material details: ", error);
-      toast.error("Failed to fetch material details");
-    }
-  };
-
   // Search functionality
-  const filteredData = tableData.filter((material) => {
-    return Object.values(material).some(
+  const filteredData = tableData.filter((product) => {
+    return Object.values(product).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -137,18 +105,26 @@ const ViewMaterialPage = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "materialId", label: "Material ID", width: "100px" },
-    { field: "mrnNo", label: "MRN No", width: "100px" },
-    { field: "partNumber", label: "Part Number", width: "120px" },
-    { field: "partDescription", label: "Description", width: "200px" },
-    { field: "supplierName", label: "Supplier", width: "140px" },
-    { field: "orderNumber", label: "Order Number", width: "140px" },
-    { field: "challanNo", label: "Challan No", width: "140px" },
-    { field: "receiptDate", label: "Receipt Date", width: "140px" },
-    { field: "quantity", label: "Quantity", width: "140px" },
-    { field: "unitOfMeasurement", label: "Unit", width: "120px" },
-    // { field: "storeInchargeSign", label: "Store Incharge", width: "140px" },
-    // { field: "qualityAcceptance", label: "Quality Acceptance", width: "140px" },
+    { field: "productId", label: "ID", width: "60px" },
+    { field: "productName", label: "Name", width: "100px" },
+    {
+      field: "materialClassification",
+      label: "Material Classification",
+      width: "150px",
+    },
+    { field: "productDescription", label: "Description", width: "150px" },
+    { field: "unitOfMeasurement", label: "UOM", width: "80px" },
+    { field: "oem", label: "OEM", width: "100px" },
+    { field: "nha", label: "NHA", width: "100px" },
+    {
+      field: "cmmReferenceNumber",
+      label: "CMM Reference Number",
+      width: "150px",
+    },
+    { field: "registrationDate", label: "Date", width: "100px" },
+    { field: "registeredBy", label: "Registered By", width: "120px" },
+    { field: "location", label: "Location", width: "80px" },
+
   ];
 
   return (
@@ -157,7 +133,7 @@ const ViewMaterialPage = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Material Note" />
+          <CustomBreadcrumb breadcrumbsLabel="View Store Inventory" />
 
           <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
             <div className="card-body">
@@ -170,7 +146,7 @@ const ViewMaterialPage = () => {
                     <input
                       type="text"
                       className="form-control border-start-0 ps-0"
-                      placeholder="Search items..."
+                      placeholder="Search products..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -200,10 +176,9 @@ const ViewMaterialPage = () => {
 
               {isLoading ? (
                 <div className="text-center py-5">
-                  <div
-                    className="spinner-border text-primary"
-                    role="status"
-                  ></div>
+                  <div className="spinner-border text-primary" role="status">
+                    {/* <span className="visually-hidden"></span> */}
+                  </div>
                   <p className="mt-2 text-muted">Loading data...</p>
                 </div>
               ) : (
@@ -249,25 +224,13 @@ const ViewMaterialPage = () => {
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
-                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((material, index) => (
+                        currentItems.map((product, index) => (
                           <tr
-                            key={material.materialId}
+                            key={product.productId}
                             className={
                               index % 2 === 0
                                 ? "bg-white"
@@ -276,7 +239,7 @@ const ViewMaterialPage = () => {
                           >
                             {columns.map((column) => (
                               <td
-                                key={`${material.materialId}-${column.field}`}
+                                key={`${product.productId}-${column.field}`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -284,33 +247,12 @@ const ViewMaterialPage = () => {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
-                                title={material[column.field]}
+                                title={product[column.field]}
                               >
-                                {material[column.field]}
+                                {product[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
-                                <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() =>
-                                    editSelectedElement(material.materialId)
-                                  }
-                                  title="Edit"
-                                >
-                                  <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() =>
-                                    deleteSelectedElement(material.materialId)
-                                  }
-                                  title="Delete"
-                                >
-                                  <i className="fa-solid fa-trash"></i>
-                                </button>
-                              </div>
-                            </td>
+                           
                           </tr>
                         ))
                       ) : (
@@ -431,4 +373,4 @@ const ViewMaterialPage = () => {
   );
 };
 
-export default ViewMaterialPage;
+export default StoreInventory;

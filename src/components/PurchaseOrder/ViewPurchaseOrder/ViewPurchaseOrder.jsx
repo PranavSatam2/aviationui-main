@@ -148,7 +148,7 @@ const ViewPurchaseOrderPage = () => {
   const columns = [
     { field: "poNumber", label: "PO Number", width: "120px" },
     { field: "poDate", label: "PO Date", width: "120px" },
-    { field: "batchNumber", label: "Batch Number", width: "120px" },
+    // { field: "batchNumber", label: "Batch Number", width: "120px" },
     { field: "ourReference", label: "Our Reference", width: "120px" },
     { field: "yourReference", label: "Your Reference", width: "120px" },
     { field: "delivery", label: "Delivery", width: "100px" },

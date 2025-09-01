@@ -68,14 +68,18 @@ const ViewSupplierRegis = () => {
 
   // Edit the selected supplier
   async function editSelectedElement(elementId) {
-    try {
-      const response = await getStoreDetail(elementId);
+    // console.log("123344");
+    // navigate("/editstoreAcceptance", {
+    //       state: { elementId },
+    //     });
+     try {
+       const response = await getStoreDetail(elementId);
       const supplierData = response.data;
-      if (supplierData) {
+      
         navigate("/editstoreAcceptance", {
-          state: { elementId, supplierData },
-        });
-      }
+          state: { elementId },
+        })
+      
     } catch (error) {
       console.error("Error fetching store details: ", error);
       toast.error("Failed to fetch store details");
@@ -250,18 +254,6 @@ const ViewSupplierRegis = () => {
                           </div>
                         </th>
                       ))}
-                      <th 
-                        className="position-sticky top-0 bg-light py-3 text-center" 
-                        style={{ 
-                          width: "100px",
-                          fontSize: "0.9rem",
-                          fontWeight: "600",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.5px"
-                        }}
-                      >
-                        ACTIONS
-                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -286,29 +278,11 @@ const ViewSupplierRegis = () => {
                               {store[column.field]}
                             </td>
                           ))}
-                          <td>
-                            <div className="d-flex justify-content-center gap-2">
-                              <button
-                                className="btn btn-sm btn-outline-primary"
-                                onClick={() => editSelectedElement(store.partNum)}
-                                title="Edit"
-                              >
-                                <i className="fa-solid fa-pen-to-square"></i>
-                              </button>
-                              <button
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={() => deleteSelectedElement(store.partNum)}
-                                title="Delete"
-                              >
-                                <i className="fa-solid fa-trash"></i>
-                              </button>
-                            </div>
-                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={columns.length + 1} className="text-center py-5">
+                        <td colSpan={columns.length} className="text-center py-5">
                           {searchTerm ? (
                             <div>
                               <i className="fa fa-search fa-2x text-muted mb-3"></i>

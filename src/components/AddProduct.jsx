@@ -289,7 +289,7 @@ const AddProduct = () => {
                         className="form-control w-100"
                         type="Number"
                         name="cmmReferenceNumber"
-                        onInput={(event) => {validateLen(event,1,12)}}
+                        // onInput={(event) => {validateLen(event,1,12)}}
                         value={form.cmmReferenceNumber}
                         onChange={handleChange}
                         required
