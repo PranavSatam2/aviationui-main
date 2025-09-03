@@ -83,16 +83,19 @@ const AddDispatchReport = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await saveDispatchReport(form);
-      alert("Dispatch report saved successfully!");
-      resetForm();
-    } catch (error) {
-      console.error("Error saving dispatch report", error);
-      alert("Failed to save dispatch report.");
-    }
-  };
+  e.preventDefault();
+  try {
+    const response = await saveDispatchReport(form);
+    // response could be response.data if you are using axios
+    alert(response?.message || "Dispatch report saved successfully!");
+    resetForm();
+    window.location.reload(); // reload after saving
+  } catch (error) {
+    console.error("Error saving dispatch report", error);
+    alert(error?.response?.data?.message || "Failed to save dispatch report.");
+  }
+};
+
 
   const resetForm = () => {
     setForm({
@@ -115,9 +118,11 @@ const AddDispatchReport = () => {
       caFormRemark: "",
       ewayBill: "",
       storesInchargeName: "",
-      storesInchargeSign: ""
+      storesInchargeSign: "",
+      ewayBillDate: "",
+      ewayBillRemark: ""
     });
-    setErrors({});
+    setError({});
   };
 
 
