@@ -488,8 +488,8 @@ const AddReceivingInspectionReport = () => {
                           required
                         />
                       </div>
-                      <div className="text-end mb-3">
-                      <label >
+                      <div className="col-md-6 p-1 d-flex">
+                      <label className="col-md-4 mt-2">
                     Upload Documents
                     </label>
                       <input

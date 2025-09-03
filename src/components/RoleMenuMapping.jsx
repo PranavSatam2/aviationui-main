@@ -136,48 +136,57 @@ const RoleMenuMapping = () => {
   };
 
   const renderMenus = (menuList) =>
-    menuList.map((menu) => {
-      const subMenus = menu.subMenus || menu.submenus || [];
-      const isParentChecked = roleMenuMapping[selectedRole]?.[menu.id] === true;
-      //const isParentChecked = roleMenuMapping[selectedRole]?.[menu.id] || false;
-      //const isParentChecked = !!roleMenuMapping[selectedRole]?.[String(menu.id)];
-      console.log("Parent",isParentChecked);
-  
-      return (
-        <div key={menu.id} style={{ margin: '10px 0' }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={!!roleMenuMapping[selectedRole]?.[menu.id]}
-             onChange={(e) => handleParentCheck(menu.id, e.target.checked)}
-            />
-            <strong style={{ marginLeft: '8px' }}>{menu.name}</strong>
-          </label>
-  
-         {subMenus.length > 0 && isParentChecked && (
-  <div className="ms-4 mt-2 d-flex flex-column">
-    {subMenus.map((sub) => (
-      <div key={sub.id} className="form-check mb-2">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          id={`sub-${sub.id}`}
-          checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
-          onChange={(e) =>
-            handleCheckboxChange(sub.id, e.target.checked, [], menu.id)
-          }
-        />
-        <label className="form-check-label" htmlFor={`sub-${sub.id}`}>
-          {sub.name}
-        </label>
-      </div>
-    ))}
-  </div>
-)}
+  menuList.map((menu) => {
+    const subMenus = menu.subMenus || menu.submenus || [];
+    const isParentChecked = roleMenuMapping[selectedRole]?.[menu.id] === true;
 
+    return (
+      <div key={menu.id} className="mb-3">
+        {/* Parent Menu */}
+        <div className="form-check">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            id={`menu-${menu.id}`}
+            checked={!!roleMenuMapping[selectedRole]?.[menu.id]}
+            onChange={(e) =>
+              handleParentCheck(menu.id, e.target.checked, subMenus)
+            }
+          />
+          <label
+            className="form-check-label fw-bold"
+            htmlFor={`menu-${menu.id}`}
+          >
+            {menu.name}
+          </label>
         </div>
-      );
-    });
+
+        {/* Sub Menus */}
+        {subMenus.length > 0 && (
+          <div className="ms-4 mt-2">
+            {subMenus.map((sub) => (
+              <div key={sub.id} className="form-check mb-1">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id={`sub-${sub.id}`}
+                  checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
+                  disabled={!isParentChecked} // disable if parent unchecked
+                  onChange={(e) =>
+                    handleCheckboxChange(sub.id, e.target.checked, [], menu.id)
+                  }
+                />
+                <label className="form-check-label" htmlFor={`sub-${sub.id}`}>
+                  {sub.name}
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  });
+
 
 
   console.log("Menus to render:", menus);
@@ -236,8 +245,8 @@ const RoleMenuMapping = () => {
     </button>
   </div>
 </form>
-                </div>
-              </div>
+ </div>
+</div>
             
         
       

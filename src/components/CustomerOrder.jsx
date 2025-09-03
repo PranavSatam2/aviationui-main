@@ -272,7 +272,7 @@ const [document, setDocument] = useState(null);
 
         <div className="col-md-12 p-3 d-flex">
         <div className="col-md-6 p-1 d-flex">
-            <label className="col-md-2 mt-2">Part Description</label>
+            <label className="col-md-4 mt-2">Part Description</label>
                 <textarea
                 className="form-control w-100"
                 id="partDescription"
@@ -383,9 +383,9 @@ const [document, setDocument] = useState(null);
                         </tbody>
                       </table>
                     </div>
-                    <div className="text-end mb-3">
-                      <label >
-                    Upload Documents
+                    <div className="col-md-6 p-1 d-flex">
+                      <label className="col-md-4 mt-2">
+                    Upload Document
                     </label>
                       <input
                     className="form-control w-100 p-0"

@@ -80,7 +80,7 @@ const validationRules = {
   mobileNumber: {
     regex: /^[0-9\s]*$/,
    // type: 'number',
-    length: 12,
+    length: 10,
   },
   address: {
     length: 100,

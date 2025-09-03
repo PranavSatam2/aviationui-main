@@ -67,9 +67,12 @@ const handleCheckboxChangeYN = (field) => {
   }));
 };
   // Handle input changes for each field
-  const handleInputChange = (e, setter) => {
-    setter(e.target.value);
-  };
+ const handleInputChange = (field, value) => {
+  setFormData((prevData) => ({
+    ...prevData,
+    [field]: value,
+  }));
+};
 
 
   // Handle form submission to create a new role
@@ -157,11 +160,11 @@ try {
                       5. Work Order/Contract/Invoice:
                   </label>
                   <input
-                    id="workOrderNumber"
+                    id="workOrderNo"
                     type="text"
                     className={styles.inputField}
-                    value={formData.workOrderNumber}
-                    onChange={(e) => handleInputChange("poNo", e.target.value)}
+                    value={formData.workOrderNo}
+                    onChange={(e) => handleInputChange("workOrderNo", e.target.value)}
                   />
            </div>
           </div>      
