@@ -105,25 +105,14 @@ const StoreInventory = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "productId", label: "ID", width: "60px" },
-    { field: "productName", label: "Name", width: "100px" },
-    {
-      field: "materialClassification",
-      label: "Material Classification",
-      width: "150px",
-    },
-    { field: "productDescription", label: "Description", width: "150px" },
-    { field: "unitOfMeasurement", label: "UOM", width: "80px" },
-    { field: "oem", label: "OEM", width: "100px" },
-    { field: "nha", label: "NHA", width: "100px" },
-    {
-      field: "cmmReferenceNumber",
-      label: "CMM Reference Number",
-      width: "150px",
-    },
-    { field: "registrationDate", label: "Date", width: "100px" },
-    { field: "registeredBy", label: "Registered By", width: "120px" },
+    { field: "id", label: "ID", width: "60px" },
+    { field: "partNum", label: "Name", width: "100px" },
+    { field: "description", label: "Description", width: "150px" },
     { field: "location", label: "Location", width: "80px" },
+    { field: "quantity", label: "Quantity", width: "100px" }, 
+    { field: "dateOfRecipet", label: "Date Of Recipet", width: "100px" },
+    { field: "dom", label: "Manufacturing Date", width: "80px" },
+    { field: "doe", label: "Date Of Expiry", width: "100px" },    
 
   ];
 

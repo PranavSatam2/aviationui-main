@@ -43,6 +43,7 @@ const RoleMenuMapping = () => {
     fetchRoles();
     fetchMenus();
   }, [token]);
+
   const fetchRoleMenuMapping = async (roleId) => {
     try {
       const res = await axiosInstance.get(`/api/roles/roleMenus/${roleId}`);
@@ -57,10 +58,9 @@ const RoleMenuMapping = () => {
           }
         });
       };
-  
+
       extractMenuIds(res.data);
-      
-  
+
       setRoleMenuMapping((prev) => ({
         ...prev,
         [roleId]: mapping,
@@ -70,7 +70,7 @@ const RoleMenuMapping = () => {
       alert("Failed to fetch role-menu mapping.");
     }
   };
-  
+
   const handleRoleChange = async (e) => {
     const roleId = e.target.value;
     console.log("Selected Role ID:", roleId);
@@ -78,13 +78,12 @@ const RoleMenuMapping = () => {
     if (roleId) {
       await fetchRoleMenuMapping(roleId);
     }
-    //setRoleMenuMapping((prev) => ({ ...prev, [roleId]: prev[roleId] || {} }));
   };
 
   const handleParentCheck = (menuId, checked, subMenus = []) => {
     handleCheckboxChange(menuId, checked, subMenus);
   };
-  
+
   const handleCheckboxChange = (menuId, checked, subMenus = [], parentId = null) => {
     setRoleMenuMapping((prev) => {
       const updated = {
@@ -94,7 +93,7 @@ const RoleMenuMapping = () => {
           [menuId]: checked,
         },
       };
-  
+
       // Uncheck all submenus if parent is unchecked
       subMenus.forEach((sub) => {
         if (sub?.id !== undefined) {
@@ -103,17 +102,15 @@ const RoleMenuMapping = () => {
           console.warn("⚠️ Submenu item has no id:", sub);
         }
       });
-  
+
       // If a submenu is checked, ensure parent is checked too
       if (checked && parentId !== null && parentId !== undefined) {
         updated[selectedRole][parentId] = true;
       }
-  
+
       return updated;
     });
   };
-  
-
 
   const handleSaveMappings = async (e) => {
     e.preventDefault();
@@ -136,60 +133,56 @@ const RoleMenuMapping = () => {
   };
 
   const renderMenus = (menuList) =>
-  menuList.map((menu) => {
-    const subMenus = menu.subMenus || menu.submenus || [];
-    const isParentChecked = roleMenuMapping[selectedRole]?.[menu.id] === true;
+    menuList.map((menu) => {
+      const subMenus = menu.subMenus || menu.submenus || [];
+      const isParentChecked = roleMenuMapping[selectedRole]?.[menu.id] === true;
 
-    return (
-      <div key={menu.id} className="mb-3">
-        {/* Parent Menu */}
-        <div className="form-check">
-          <input
-            type="checkbox"
-            className="form-check-input"
-            id={`menu-${menu.id}`}
-            checked={!!roleMenuMapping[selectedRole]?.[menu.id]}
-            onChange={(e) =>
-              handleParentCheck(menu.id, e.target.checked, subMenus)
-            }
-          />
-          <label
-            className="form-check-label fw-bold"
-            htmlFor={`menu-${menu.id}`}
-          >
-            {menu.name}
-          </label>
-        </div>
-
-        {/* Sub Menus */}
-        {subMenus.length > 0 && (
-          <div className="ms-4 mt-2">
-            {subMenus.map((sub) => (
-              <div key={sub.id} className="form-check mb-1">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id={`sub-${sub.id}`}
-                  checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
-                  disabled={!isParentChecked} // disable if parent unchecked
-                  onChange={(e) =>
-                    handleCheckboxChange(sub.id, e.target.checked, [], menu.id)
-                  }
-                />
-                <label className="form-check-label" htmlFor={`sub-${sub.id}`}>
-                  {sub.name}
-                </label>
-              </div>
-            ))}
+      return (
+        <div key={menu.id} className="mb-3">
+          {/* Parent Menu */}
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id={`menu-${menu.id}`}
+              checked={!!roleMenuMapping[selectedRole]?.[menu.id]}
+              onChange={(e) =>
+                handleParentCheck(menu.id, e.target.checked, subMenus)
+              }
+            />
+            <label
+              className="form-check-label fw-bold"
+              htmlFor={`menu-${menu.id}`}
+            >
+              {menu.name}
+            </label>
           </div>
-        )}
-      </div>
-    );
-  });
 
-
-
-  console.log("Menus to render:", menus);
+          {/* Sub Menus */}
+          {subMenus.length > 0 && (
+            <div className="ms-4 mt-2">
+              {subMenus.map((sub) => (
+                <div key={sub.id} className="form-check mb-1">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id={`sub-${sub.id}`}
+                    checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
+                    disabled={!isParentChecked} // disable if parent unchecked
+                    onChange={(e) =>
+                      handleCheckboxChange(sub.id, e.target.checked, [], menu.id)
+                    }
+                  />
+                  <label className="form-check-label" htmlFor={`sub-${sub.id}`}>
+                    {sub.name}
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    });
 
   return (
     <div className="wrapper">
@@ -197,62 +190,59 @@ const RoleMenuMapping = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px", marginBottom: "4rem" }}>
-        <CustomBreadcrumb breadcrumbsLabel="Role Menu Mapping"  isBack={true}/>
-         <div
+          <CustomBreadcrumb breadcrumbsLabel="Role Menu Mapping" isBack={true} />
+          <div
             className="card border border-dark shadow mx-4 my-4 p-2"
-            style={{ height: "70vh" }}
+            style={{
+               overflowY: "auto" }}
           >
-                <form style={{ height: '100%' }}>
-                <div className="row mb-3">
-                <div className="col-md-6">
-                 <label htmlFor="roleDropdown" className="form-label fw-bold">
-                    Select Role:
-                 </label>
-      <select
-        id="roleDropdown"
-        className="form-select"
-        value={selectedRole}
-        onChange={handleRoleChange}
-      >
-        <option value="">-- Choose Role --</option>
-        {roles.map(({ id, roleName }) => (
-          <option key={id} value={id}>{roleName}</option>
-        ))}
-      </select>
-    </div>
-  </div>
+            <form style={{ height: "100%" }}>
+              {/* Role Dropdown */}
+              <div className="col-md-6 p-2 d-flex">
+                <label htmlFor="roleDropdown" className="col-md-4 mt-2">
+                  Select Role
+                </label>
+                <select
+                  id="roleDropdown"
+                  className="form-control w-100"
+                  value={selectedRole}
+                  onChange={handleRoleChange}
+                >
+                  <option value="">-- Choose Role --</option>
+                  {roles.map(({ id, roleName }) => (
+                    <option key={id} value={id}>{roleName}</option>
+                  ))}
+                </select>
+              </div>
 
-    {/* <hr className="my-3" /> */}
-       <div className="row mb-12">
-          {/* <div className="col-md-6"> */}
-             <label className="form-label fw-bold">Menu List</label>
-            <div className="menu-section" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-              {menus.length === 0 ? (
-               <div className="alert alert-info">Loading menu data...</div>
-                ) : (
-                 renderMenus(menus)
-                   )}
-            </div>
-          {/* </div> */}
+              {/* Menu List */}
+              <div className="mb-3">
+                <label className="form-label fw-bold d-block mb-2">Menu List</label>
+                <div>
+                  {menus.length === 0 ? (
+                    <div className="alert alert-info m-0">Loading menu data...</div>
+                  ) : (
+                    renderMenus(menus)
+                  )}
+                </div>
+              </div>
+
+              {/* Save Button (after all menus) */}
+              <div className="mt-3">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleSaveMappings}
+                  disabled={!selectedRole}
+                >
+                  Save Mapping
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-  <div className="mt-4">
-    <button
-      className="btn btn-primary"
-      onClick={handleSaveMappings}
-      disabled={!selectedRole}
-    >
-      Save Mapping
-    </button>
-  </div>
-</form>
- </div>
-</div>
-            
-        
-      
-      
-      <Footer />
-    </div >
+        <Footer />
+      </div>
     </div>
   );
 };
