@@ -140,6 +140,39 @@ const AddReceivingInspectionReport = () => {
       });
     console.log("Report submitted successfully:", response.data);
     alert("Report submitted successfully");
+     setForm({
+    partNumber: "",
+    partDesc: "",
+    purchaseOrderNo: "",
+    supplierName: "",
+    reportNo: "",
+    date: "",
+    qty: "",
+    qtyReceive: "",
+    invoiceObservation: "",
+    manufacturerCertObservation: "",
+    supplierCertObservation: "",
+    fullTraceabilityObservation: "",
+    batchNumberObservation: "",
+    dateOfManufacturingObservation: "",
+    dateOfExpiryObservation: "",
+    selfLifeObservation: "",
+    tdsObservation: "",
+    materialConditionObservation: "",
+    specificationObservation: "",
+    documentObservation: "",
+    lotAccepted: "",
+    remark: "",
+    makerUserName: "",
+    makerUserId: "",
+    makerDate: "",
+    checkerUserName: "",
+    checkerUserId: "",
+    checkerDate: "",
+    userAction: "",
+    userRole: "",
+    });
+
     // reset form if needed
   } catch (err) {
     console.error("Submission failed", err);

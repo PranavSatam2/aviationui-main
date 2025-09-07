@@ -226,6 +226,7 @@ const AddPurchaseRequisition = () => {
         currentStock: req.currentStock,
         requiredQty: req.requiredQty,
         requiredDate: req.requiredDate,
+        unitOfMeasurement: req.unitOfMeasurement,
         remark: req.remark,
       }));
       // Uncomment below to actually submit each requisition to the API
@@ -446,6 +447,7 @@ const AddPurchaseRequisition = () => {
                             <th>Current Stock</th>
                             <th>Required Qty</th>
                             <th>Required Date</th>
+                            <th>Unit Of  Measurment</th>
                             <th>Remark</th>
                             <th>Action</th>
                           </tr>
@@ -459,6 +461,7 @@ const AddPurchaseRequisition = () => {
                               <td>{req.currentStock}</td>
                               <td>{req.requiredQty}</td>
                               <td>{req.requiredDate}</td>
+                              <td>{req.unitOfMeasurement}</td>
                               <td>{req.remark}</td>
                               <td>
                                 <button
