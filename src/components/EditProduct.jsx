@@ -9,6 +9,7 @@ import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 const EditProduct = () => {
   const { productId } = useParams(); // Get the productId from URL
   const navigate = useNavigate();
+  const [showAlternate, setShowAlternate] = useState(false);
 
   const [form, setForm] = useState({
     productName: "",
@@ -20,15 +21,19 @@ const EditProduct = () => {
     cmmReferenceNumber: "",
     registrationDate: "",
     registeredBy: "",
+    alternateProduct: "",  // make sure it’s present
   });
 
   useEffect(() => {
-    // Fetch the product details when the component mounts
     const fetchProductDetail = async () => {
       try {
-        const response = await getProductDetail(productId); // Get product by ID
+        const response = await getProductDetail(productId);
         if (response.data) {
-          setForm(response.data); // Set the fetched product details in state
+          setForm(response.data);
+          // if alternateProduct already has a value, show field
+          if (response.data.alternateProduct) {
+            setShowAlternate(true);
+          }
         }
       } catch (error) {
         console.error("Error fetching product details:", error);
@@ -37,6 +42,7 @@ const EditProduct = () => {
     };
     fetchProductDetail();
   }, [productId]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -140,7 +146,7 @@ const EditProduct = () => {
             <div className="container-fluid">
               <div
                 className="row mx-1 card border border-dark shadow-lg py-2"
-                style={{ height: "397px" }}
+                style={{ height: "auto" }}
               >
                 <div className="col-md-12">
                   <form onSubmit={handleSubmit} style={{ height: "100%" }}>
@@ -187,6 +193,61 @@ const EditProduct = () => {
                         </select>
                       </div>
                     </div>
+
+                    {/* Yes/No radio for Alternate Product */}
+                    <div className="col-md-12 d-flex">
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">Alternate Product?</label>
+                        <div className="d-flex align-items-center">
+                          <div className="form-check me-2">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="alternateProductOption"
+                              id="altYes"
+                              checked={showAlternate === true}
+                              onChange={() => setShowAlternate(true)}
+                            />
+                            <label className="form-check-label" htmlFor="altYes">
+                              Yes
+                            </label>
+                          </div>
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="alternateProductOption"
+                              id="altNo"
+                              checked={showAlternate === false}
+                              onChange={() => {
+                                setShowAlternate(false);
+                                setForm({ ...form, alternateProduct: "" });
+                              }}
+                            />
+                            <label className="form-check-label" htmlFor="altNo">
+                              No
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Only show alternate product field if Yes */}
+                    {showAlternate && (
+                      <div className="col-md-12 d-flex">
+                        <div className="col-md-6 p-2 d-flex">
+                          <label className="col-md-4 mt-2">Alternate Product Name</label>
+                          <input
+                            className="form-control w-100"
+                            type="text"
+                            name="alternateProduct"
+                            value={form.alternateProduct || ""}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </div>
+                    )}
+
 
                     <hr className="mx-0 my-2 p-0 border" />
 

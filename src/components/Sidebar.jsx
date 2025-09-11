@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import styles from "./sidebar.module.css"; // Importing CSS modules
+import { useState } from "react";
+import styles from "./sidebar.module.css";
 import AviationLogo from "../static/img/AviationLogo.png";
 import { Users, Package, Warehouse, FileText } from "lucide-react";
-import { useRoleMenus } from "../context/RoleMenuContext"; 
+import { useRoleMenus } from "../context/RoleMenuContext";
 
 const iconMap = {
   users: <Users size={18} />,
@@ -11,13 +11,14 @@ const iconMap = {
   filetext: <FileText size={18} />,
 };
 
-//const storedMenuItems = sessionStorage.getItem("menuItems");
-  //const menuItems = storedMenuItems ? JSON.parse(storedMenuItems) : [];
 const Sidebar = () => {
-  const { menuItems = [], loading } = useRoleMenus(); // ✅ Fix context destructuring
+  const { menuItems = [], loading } = useRoleMenus();
   const [collapseState, setCollapseState] = useState({});
 
-  const toggleCollapse = (section) => {
+  const toggleCollapse = (section, event) => {
+    event.preventDefault(); // Prevent any default link behavior
+    event.stopPropagation(); // Stop event bubbling
+    
     setCollapseState((prevState) => ({
       ...prevState,
       [section]: !prevState[section],
@@ -25,8 +26,9 @@ const Sidebar = () => {
   };
 
   if (loading) {
-    return <div className={styles.sidebar}>Loading Sidebar...</div>; // Optional loader
+    return <div className={styles.sidebar}>Loading Sidebar...</div>;
   }
+
   return (
     <div className={styles.sidebar}>
       <div className={styles.sidebarHeader}>
@@ -34,7 +36,7 @@ const Sidebar = () => {
           style={{ height: "30px", width: "30px" }}
           src={AviationLogo}
           alt="Logo"
-        ></img>
+        />
         <h3 className={styles.companyName}>Aviation</h3>
       </div>
 
@@ -45,13 +47,23 @@ const Sidebar = () => {
 
             return (
               <li key={menu.id} className={styles.menuItem}>
-                <a
+                {/* Changed from <a> to <div> and added proper event handling */}
+                <div
                   className={styles.menuToggle}
-                  onClick={() => toggleCollapse(menu.id)}
+                  onClick={(event) => toggleCollapse(menu.id, event)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      toggleCollapse(menu.id, event);
+                    }
+                  }}
                   aria-expanded={isOpen ? "true" : "false"}
                 >
-                  {iconMap[menu.icon]}  {/* This renders the dynamic icon */}
-                  {menu.name}
+                  <div className={styles.menuContent}>
+                    {iconMap[menu.icon]}
+                    <span className={styles.menuName}>{menu.name}</span>
+                  </div>
                   <span
                     className={`${styles.toggleIcon} ${
                       isOpen ? styles.open : ""
@@ -59,7 +71,7 @@ const Sidebar = () => {
                   >
                     ▶
                   </span>
-                </a>
+                </div>
 
                 {menu.subMenus && menu.subMenus.length > 0 && (
                   <div
@@ -71,7 +83,10 @@ const Sidebar = () => {
                     <ul className={styles.submenuList}>
                       {menu.subMenus.map((sub) => (
                         <li key={sub.id} className={styles.submenuItem}>
-                          <a href={`/aviationui${sub.path}`} className={styles.submenuLink}>
+                          <a 
+                            href={`/aviationui${sub.path}`} 
+                            className={styles.submenuLink}
+                          >
                             {sub.name}
                           </a>
                         </li>

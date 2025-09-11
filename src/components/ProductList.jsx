@@ -141,6 +141,7 @@ const ProductList = () => {
   const columns = [
     { field: "productId", label: "ID", width: "60px" },
     { field: "productName", label: "Name", width: "100px" },
+    { field: "alternateProduct", label: "Alternate Product Name", width: "150px" },
     {
       field: "materialClassification",
       label: "Material Classification",

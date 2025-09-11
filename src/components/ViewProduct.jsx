@@ -107,6 +107,7 @@ const ViewProduct = () => {
                       <th style={{width: "35px"}}>ID</th>
                       <th style={{width: "200px"}}>Material Classification</th>
                       <th>Product Name</th>
+                      <th>Alternate Product Name</th>
                       <th>Description</th>
                       <th>Unit</th>
                       <th>OEM</th>
@@ -122,6 +123,7 @@ const ViewProduct = () => {
                         <td>{product.id}</td>
                         <td>{product.materialClassification}</td>
                         <td>{product.productName}</td>
+                        <td>{product.alternateProduct}</td>
                         <td>{product.productDescription}</td>
                         <td>{product.unitOfMeasurement}</td>
                         <td>{product.oem}</td>

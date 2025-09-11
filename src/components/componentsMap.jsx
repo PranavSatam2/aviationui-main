@@ -48,6 +48,7 @@ import ViewPurchaseRequisition from './PurchaseRequisition/ViewPurchaseRequisiti
 import RoleMenuMapping from './RoleMenuMapping.jsx';
 import Sidebar from './Sidebar.jsx';
 import StoreAccComponent from './StoreAccComponent.jsx';
+import StoreInventory from './StoreInventory.jsx';
 import SupplierRegistration from './SupplierRegistration.jsx';
 import ViewCAForm from './ViewCAForm.jsx';
 import ViewCustomerOrder from './ViewCustomerOrder.jsx';
@@ -58,6 +59,10 @@ import ViewProduct from './ViewProduct.jsx';
 import ViewStoreAcc from './ViewStoreAcc.jsx';
 import ViewSupplierRegis from './ViewSupplierRegis.jsx';
 import ViewUser from './ViewUser.jsx';
+import AddWorkOrder from './Workorder/AddWorkOrder/AddWorkOrder.jsx';
+import ViewWorkOrder from './Workorder/ViewWorkOrder.jsx';
+import WorkorderTable from './Workorder/WorkorderTable.jsx';
+import editWorkOrder from './Workorder/editWorkOrder.jsx';
 import MyModalComponent from './partials/MyModalComponent.jsx';
 import DocAndProcControl from './tabs/supplier_registration/DocAndProcControl.jsx';
 import GeneralTab from './tabs/supplier_registration/GeneralTab.jsx';
@@ -116,6 +121,7 @@ const componentsMap = {
   "RoleMenuMapping": RoleMenuMapping,
   "Sidebar": Sidebar,
   "StoreAccComponent": StoreAccComponent,
+  "StoreInventory": StoreInventory,
   "SupplierRegistration": SupplierRegistration,
   "ViewCAForm": ViewCAForm,
   "ViewCustomerOrder": ViewCustomerOrder,
@@ -126,6 +132,10 @@ const componentsMap = {
   "ViewStoreAcc": ViewStoreAcc,
   "ViewSupplierRegis": ViewSupplierRegis,
   "ViewUser": ViewUser,
+  "AddWorkOrder": AddWorkOrder,
+  "ViewWorkOrder": ViewWorkOrder,
+  "WorkorderTable": WorkorderTable,
+  "editWorkOrder": editWorkOrder,
   "MyModalComponent": MyModalComponent,
   "DocAndProcControl": DocAndProcControl,
   "GeneralTab": GeneralTab,
