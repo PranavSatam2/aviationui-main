@@ -11,7 +11,6 @@ import { fetchPartNumbersAndDescriptions } from "../../../services/db_manager";
 const AddPurchaseRequisition = () => {
   // State for the current form being filled
   const [form, setForm] = useState({
-    srNo: "",
     partNumber: "",
     description: "",
     currentStock: "",
@@ -92,10 +91,6 @@ const AddPurchaseRequisition = () => {
 
   // Validation rules object
   const validationRules = {
-    srNo: {
-      type: "number",
-      length: 12,
-    },
     partNumber: {
       length: 12,
     },
@@ -155,7 +150,6 @@ const AddPurchaseRequisition = () => {
 
     // Log all form field values to console
     console.log("Form values:", {
-      srNo: form.srNo,
       partNumber: form.partNumber,
       description: form.description,
       currentStock: form.currentStock,
@@ -185,7 +179,6 @@ const AddPurchaseRequisition = () => {
 
     // Reset the form after adding to the list
     setForm({
-      srNo: "",
       partNumber: "",
       description: "",
       currentStock: "",
@@ -220,7 +213,6 @@ const AddPurchaseRequisition = () => {
       );
       // let newData=[...purchaseRequisitions]
       const requisitionsToSubmit = purchaseRequisitions.map((req) => ({
-        srNo: req.srNo,
         partNumber: req.partNumber,
         description: req.description,
         currentStock: req.currentStock,
@@ -264,7 +256,7 @@ const AddPurchaseRequisition = () => {
                     style={{ height: "100%" }}
                   >
                     <div className="col-md-12 p-2 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
+                      {/* <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-1">Sr No</label>
                         <input
                           className="form-control w-100"
@@ -277,7 +269,7 @@ const AddPurchaseRequisition = () => {
                           onChange={handleChange}
                           required
                         />
-                      </div>
+                      </div> */}
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">Part Number</label>
                         {loading ? (
@@ -441,7 +433,6 @@ const AddPurchaseRequisition = () => {
                       <table className="table table-striped table-bordered">
                         <thead>
                           <tr>
-                            <th>SR No</th>
                             <th>Part Number</th>
                             <th>Description</th>
                             <th>Current Stock</th>
@@ -455,7 +446,6 @@ const AddPurchaseRequisition = () => {
                         <tbody>
                           {purchaseRequisitions.map((req) => (
                             <tr key={req.id}>
-                              <td>{req.srNo}</td>
                               <td>{req.partNumber}</td>
                               <td>{req.description}</td>
                               <td>{req.currentStock}</td>

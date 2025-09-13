@@ -14,7 +14,6 @@ const EditPurchaseRequisition = () => {
   const { RequisitionID } = location.state || "";
   // State for the current form being filled
   const [form, setForm] = useState({
-    srNo: "",
     partNumber: "",
     description: "",
     currentStock: "",
@@ -188,10 +187,6 @@ const EditPurchaseRequisition = () => {
 
   // Validation rules object
   const validationRules = {
-    srNo: {
-      type: "number",
-      length: 12,
-    },
     partNumber: {
       length: 12,
     },
@@ -330,7 +325,7 @@ const EditPurchaseRequisition = () => {
                 <div className="col-md-12">
                   <form onSubmit={handleSubmit} style={{ height: "100%" }}>
                     <div className="col-md-12 p-2 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
+                      {/* <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-1">
                           Sr No
                         </label>
@@ -345,7 +340,7 @@ const EditPurchaseRequisition = () => {
                           onChange={handleChange}
                           required
                         />
-                      </div>
+                      </div> */}
                     </div>
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">Part Number</label>
