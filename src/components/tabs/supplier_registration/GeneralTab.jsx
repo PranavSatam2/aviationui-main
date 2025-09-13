@@ -53,6 +53,82 @@ const GeneralTab = ({
           )}
         </div>
 
+        {/* Payment Terms */}
+        <div className="col-md-5 d-flex mb-3">
+          <div className="col-md-9 d-flex pt-2" style={{ alignItems: 'center' }}>
+            <label className="col-md-4 pt-2">Select Payment Terms</label>
+            {/* 30 Days */}
+            <div className="form-check mx-3 p-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="paymentTerms30"
+                name="paymentTerms"
+                value="30"
+                checked={dataMap.paymentTerms === "30"}
+                onChange={handleChange}
+                disabled={disabledField}
+              />
+              <label className="form-check-label pt-1" htmlFor="paymentTerms30">
+                30 Days
+              </label>
+            </div>
+
+            {/* 60 Days */}
+            <div className="form-check mx-3 p-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="paymentTerms60"
+                name="paymentTerms"
+                value="60"
+                checked={dataMap.paymentTerms === "60"}
+                onChange={handleChange}
+                disabled={disabledField}
+              />
+              <label className="form-check-label pt-1" htmlFor="paymentTerms60">
+                60 Days
+              </label>
+            </div>
+
+            {/* 90 Days */}
+            <div className="form-check mx-3 p-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="paymentTerms90"
+                name="paymentTerms"
+                value="90"
+                checked={dataMap.paymentTerms === "90"}
+                onChange={handleChange}
+                disabled={disabledField}
+              />
+              <label className="form-check-label pt-1" htmlFor="paymentTerms90">
+                90 Days
+              </label>
+            </div>
+
+            {/* Advance Pay */}
+            <div className="form-check mx-3 p-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="paymentTermsAdvance"
+                name="paymentTerms"
+                value="Advance Pay"
+                checked={dataMap.paymentTerms === "Advance Pay"}
+                onChange={handleChange}
+                disabled={disabledField}
+              />
+              <label className="form-check-label pt-1" htmlFor="paymentTermsAdvance">
+                Advance Pay
+              </label>
+            </div>
+          </div>
+        </div>
+
+
+
         {/* <div className="col-md-6 ">
                         <div className="row">
                             <label className="col-md-4 pt-2" 
@@ -78,7 +154,7 @@ const GeneralTab = ({
       <hr className="mx-0 my-2 p-0 border" />
 
       {/* Contact Details */}
-      <div className="col-md-12 d-flex mb-1" style={{justifyContent:'space-between'}}>
+      <div className="col-md-12 d-flex mb-1" style={{ justifyContent: 'space-between' }}>
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="phoneNumber">
@@ -128,7 +204,7 @@ const GeneralTab = ({
       </div>
 
       {/* Email & Address */}
-      <div className="col-md-12 d-flex mb-3" style={{justifyContent:'space-between'}}>
+      <div className="col-md-12 d-flex mb-3" style={{ justifyContent: 'space-between' }}>
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="email">
@@ -192,14 +268,11 @@ const GeneralTab = ({
 
       {/* Quality Manager Details */}
       <h5 className="mb-3 fw-bold text-dark" >Quality Manager Details</h5>
-      <div className="col-md-12 d-flex"  style={{justifyContent:'space-between'}}>
+      <div className="col-md-12 d-flex" style={{ justifyContent: 'space-between' }}>
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="qualityManagerName">
               Name
-              <span className="text-danger mx-1 " style={{ fontSize: "17px" }}>
-                *
-              </span>
             </label>
             <input
               className="col-md-8 form-control"
@@ -210,17 +283,21 @@ const GeneralTab = ({
               value={dataMap.qualityManagerName}
               onChange={handleChange}
               onInput={(event) => {
-                validateDataType(event, "A");
-                validateLen(event, 0, 30);
+                if (event.target.value.trim() !== "") {
+                  validateDataType(event, "A");
+                  validateLen(event, 0, 30);
+                }
               }}
+
               disabled={disabledField}
             />
           </div>
-          {errors.qualityManagerName && (
+          {dataMap.qualityManagerName && errors.qualityManagerName && (
             <div className="col-6" style={{ color: "red", textAlign: "end" }}>
               {errors.qualityManagerName}
             </div>
           )}
+
         </div>
         <div className="col-md-5">
           <div className="row">
@@ -229,9 +306,6 @@ const GeneralTab = ({
               htmlFor="qualityManagerPhoneNumber"
             >
               Phone Number
-              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
-                *
-              </span>
             </label>
             <input
               className="col-md-8 form-control"
@@ -242,9 +316,12 @@ const GeneralTab = ({
               value={dataMap.qualityManagerPhoneNumber}
               onChange={handleChange}
               onInput={(event) => {
-                validateDataType(event, "N");
-                validateLen(event, 0, 10);
+                if (event.target.value.trim() !== "") {
+                  validateDataType(event, "N");
+                  validateLen(event, 0, 10);
+                }
               }}
+
               disabled={disabledField}
             />
           </div>
@@ -260,9 +337,6 @@ const GeneralTab = ({
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="qualityManagerEmailId">
               Email ID
-              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
-                *
-              </span>
             </label>
             <input
               className="col-md-8 form-control"
@@ -273,8 +347,11 @@ const GeneralTab = ({
               value={dataMap.qualityManagerEmailId}
               onChange={handleChange}
               onInput={(event) => {
-                validateMailId(event);
+                if (event.target.value.trim() !== "") {
+                  validateMailId(event);
+                }
               }}
+
               disabled={disabledField}
             />
           </div>
@@ -290,7 +367,7 @@ const GeneralTab = ({
 
       {/* Sales Representative Details */}
       <h5 className="mb-3 fw-bold text-dark">Sales Representative Details</h5>
-      <div className="col-md-12 d-flex"  style={{justifyContent:'space-between'}}>
+      <div className="col-md-12 d-flex" style={{ justifyContent: 'space-between' }}>
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="saleRepresentativeName">
