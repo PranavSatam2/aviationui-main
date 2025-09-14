@@ -68,13 +68,19 @@ const ViewPurchaseRequisitionPage = () => {
   };
 
   // Search functionality
-  const filteredData = tableData.filter((requisition) => {
-    return Object.values(requisition).some(
-      (value) =>
+  // Filter out "close" status first, then search
+  // 1️⃣ Hide requisitions where status === 'close'
+  // 2️⃣ Apply search filter
+  const filteredData = tableData
+  .filter(requisition => requisition.status?.toLowerCase() !== 'close')
+  .filter(requisition =>
+    Object.values(requisition).some(
+      value =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+    )
+  );
+
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -139,8 +145,9 @@ const ViewPurchaseRequisitionPage = () => {
     { field: "requiredQty", label: "Required Qty", width: "70px" },
     { field: "requiredDate", label: "Required Date", width: "150px" },
     { field: "remark", label: "Remark", width: "100px" },
-    { field: "batchNumber", label: "Batch Number", width: "200px"},
-    { field: "unitOfMeasurement", label: "Unit of Measurement", width: "150px" }
+    { field: "batchNumber", label: "Batch Number", width: "250px"},
+    { field: "unitOfMeasurement", label: "Unit of Measurement", width: "150px" },
+    { field: "status", label: "Status", width: "100px" },
   ];
 
   // const handlePrintClick = () => {

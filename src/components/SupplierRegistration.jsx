@@ -515,6 +515,23 @@ const SupplierRegistration = () => {
                 >
                   Clear
                 </button>
+                {/* </div> */}
+                <button
+                  type="button"
+                  className="btn btn-secondary mx-2"
+                  onClick={handlePrevTab}
+                >
+                  Previous
+                </button>
+                {!isActiveTab && (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleNextTab}
+                  >
+                    Next
+                  </button>
+                )}
                 {isActiveTab && (
                   <button
                     type="button"
@@ -524,21 +541,6 @@ const SupplierRegistration = () => {
                     Submit
                   </button>
                 )}
-                {/* </div> */}
-                <button
-                  type="button"
-                  className="btn btn-secondary mx-2"
-                  onClick={handlePrevTab}
-                >
-                  Previous
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleNextTab}
-                >
-                  Next
-                </button>
               </div>
             </div>
           </div>
