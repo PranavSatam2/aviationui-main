@@ -1,40 +1,40 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import {
-  deleteProduct,
-  getProductDetail,
-  listAllProduct,
-} from "../services/db_manager";
-import { useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import { toast } from "react-toastify";
+import {
+  deleteCustomer,
+  getAllCustomers,
+  getCustomerById,
+} from "../services/db_manager";
 
-const ProductList = () => {
-  // State
-  const [tableData, setTableData] = useState([]); // Product data
+const CustomerList = () => {
+  // States
+  const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("productId");
+  const [sortField, setSortField] = useState("id");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
-  // Fetching data when the component is mounted
+  // Fetch all customers
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await listAllProduct();
-        if (response && response.data) {
-          setTableData(response.data); // Update state with response data
+        const response = await getAllCustomers();
+        if (response?.data) {
+          setTableData(response.data);
         }
       } catch (error) {
-        console.error("Error fetching products", error);
-        toast.error("Failed to load product data");
+        console.error("Error fetching customers", error);
+        toast.error("Failed to load customer data");
       } finally {
         setIsLoading(false);
       }
@@ -42,52 +42,46 @@ const ProductList = () => {
     fetchData();
   }, []);
 
-  // Delete the selected product
-  async function handleDelete(productId) {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+  // Delete customer
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this customer?")) {
       try {
-        const response = await deleteProduct(productId);
-        if (response) {
-          setTableData((prevData) =>
-            prevData.filter((item) => item.productId !== productId)
-          );
-          toast.success("Product deleted successfully");
-        }
+        await deleteCustomer(id);
+        setTableData((prev) => prev.filter((item) => item.id !== id));
+        toast.success("Customer deleted successfully");
       } catch (error) {
-        console.error("Failed to delete product", error);
-        toast.error("Failed to delete product. Please try again.");
+        console.error("Failed to delete customer", error);
+        toast.error("Failed to delete customer. Please try again.");
       }
     }
-  }
+  };
 
-  // Edit the selected product
-  async function handleEdit(productId) {
+  // Edit customer
+  const handleEdit = async (id) => {
     try {
-      const response = await getProductDetail(productId);
-      const productData = response?.data;
-      if (productData) {
-        navigate(`/editProduct/${productId}`);
+      const response = await getCustomerById(id);
+      if (response?.data) {
+        navigate(`/editCustomer/${id}`);
       }
     } catch (error) {
-      console.error("Error fetching product details: ", error);
-      toast.error("Failed to fetch product details");
+      console.error("Error fetching customer details", error);
+      toast.error("Failed to fetch customer details");
     }
-  }
+  };
 
-  // Search functionality
-  const filteredData = tableData.filter((product) => {
-    return Object.values(product).some(
+  // Filter data by search term
+  const filteredData = tableData.filter((customer) =>
+    Object.values(customer).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+    )
+  );
 
-  // Sorting functionality
+  // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
-
     if (sortDirection === "asc") {
       return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
     } else {
@@ -95,7 +89,7 @@ const ProductList = () => {
     }
   });
 
-  // Pagination
+  // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -113,7 +107,6 @@ const ProductList = () => {
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxPageButtons = 5;
-
     let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
 
@@ -133,31 +126,22 @@ const ProductList = () => {
         </li>
       );
     }
-
     return pageNumbers;
   };
 
-  // Column definitions for the table
+  // Table columns
   const columns = [
-    { field: "productId", label: "ID", width: "60px" },
-    { field: "productName", label: "Name", width: "100px" },
-    { field: "alternateProduct", label: "Alternate Product Name", width: "150px" },
-    {
-      field: "materialClassification",
-      label: "Material Classification",
-      width: "150px",
-    },
-    { field: "productDescription", label: "Description", width: "150px" },
-    { field: "unitOfMeasurement", label: "UOM", width: "80px" },
-    { field: "oem", label: "OEM", width: "100px" },
-    { field: "nha", label: "NHA", width: "100px" },
-    {
-      field: "cmmReferenceNumber",
-      label: "CMM Reference Number",
-      width: "150px",
-    },
-    { field: "registrationDate", label: "Date", width: "100px" },
-    { field: "registeredBy", label: "Registered By", width: "120px" },
+    { field: "id", label: "ID", width: "60px" },
+    { field: "customerName", label: "Customer Name", width: "150px" },
+    { field: "contactPersonName", label: "Contact Person", width: "150px" },
+    { field: "phoneNo", label: "Phone", width: "100px" },
+    { field: "mobileNumber", label: "Mobile", width: "100px" },
+    { field: "emailId", label: "Email", width: "150px" },
+    { field: "shipToAddress1", label: "Ship To Address 1", width: "200px" },
+    { field: "billToAddress", label: "Bill To Address", width: "200px" },
+    { field: "paymentTerms", label: "Payment Terms", width: "100px" },
+    { field: "gstNo", label: "GST No", width: "120px" },
+    { field: "customerType", label: "Customer Type", width: "100px" },
   ];
 
   return (
@@ -166,11 +150,12 @@ const ProductList = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Product" />
+          <CustomBreadcrumb breadcrumbsLabel="View Customers" />
 
           <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
             <div className="card-body">
-              <div className="row align-items-center">
+              {/* Search & Entries */}
+              <div className="row align-items-center mb-3">
                 <div className="col-md-6">
                   <div className="input-group">
                     <span className="input-group-text bg-primary text-white border-0">
@@ -179,7 +164,7 @@ const ProductList = () => {
                     <input
                       type="text"
                       className="form-control border-start-0 ps-0"
-                      placeholder="Search products..."
+                      placeholder="Search customers..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -207,22 +192,14 @@ const ProductList = () => {
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
                 <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
+                  <div className="spinner-border text-primary" role="status"></div>
                   <p className="mt-2 text-muted">Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
+                <div className="table-responsive" style={{ overflowY: "auto" }}>
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-light">
@@ -273,18 +250,16 @@ const ProductList = () => {
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((product, index) => (
+                        currentItems.map((customer, index) => (
                           <tr
-                            key={product.productId}
+                            key={customer.id}
                             className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
+                              index % 2 === 0 ? "bg-white" : "bg-light bg-opacity-50"
                             }
                           >
                             {columns.map((column) => (
                               <td
-                                key={`${product.productId}-${column.field}`}
+                                key={`${customer.id}-${column.field}`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -292,25 +267,23 @@ const ProductList = () => {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
-                                title={product[column.field]}
+                                title={customer[column.field]}
                               >
-                                {product[column.field]}
+                                {customer[column.field]}
                               </td>
                             ))}
                             <td>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
                                   className="btn btn-sm btn-outline-primary"
-                                  onClick={() => handleEdit(product.productId)}
+                                  onClick={() => handleEdit(customer.id)}
                                   title="Edit"
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
                                 </button>
                                 <button
                                   className="btn btn-sm btn-outline-danger"
-                                  onClick={() =>
-                                    handleDelete(product.productId)
-                                  }
+                                  onClick={() => handleDelete(customer.id)}
                                   title="Delete"
                                 >
                                   <i className="fa-solid fa-trash"></i>
@@ -321,16 +294,11 @@ const ProductList = () => {
                         ))
                       ) : (
                         <tr>
-                          <td
-                            colSpan={columns.length + 1}
-                            className="text-center py-5"
-                          >
+                          <td colSpan={columns.length + 1} className="text-center py-5">
                             {searchTerm ? (
                               <div>
                                 <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <p className="mb-0">No matching records found</p>
                               </div>
                             ) : (
                               <div>
@@ -346,21 +314,17 @@ const ProductList = () => {
                 </div>
               )}
 
+              {/* Pagination info & controls */}
               <div className="row mt-4 align-items-center">
                 <div className="col-md-6">
                   <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
                     Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
+                    <span className="fw-bold text-dark">{indexOfFirstItem + 1}</span>{" "}
                     to{" "}
                     <span className="fw-bold text-dark">
                       {Math.min(indexOfLastItem, sortedData.length)}
                     </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
+                    of <span className="fw-bold text-dark">{sortedData.length}</span>{" "}
                     entries
                     {searchTerm &&
                       ` (filtered from ${tableData.length} total entries)`}
@@ -369,11 +333,7 @@ const ProductList = () => {
                 <div className="col-md-6">
                   <nav aria-label="Page navigation">
                     <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
-                      >
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                         <button
                           className="page-link border-0"
                           onClick={() => setCurrentPage(1)}
@@ -382,11 +342,7 @@ const ProductList = () => {
                           <i className="fa-solid fa-angles-left"></i>
                         </button>
                       </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
-                      >
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                         <button
                           className="page-link border-0"
                           onClick={() => setCurrentPage(currentPage - 1)}
@@ -398,11 +354,7 @@ const ProductList = () => {
 
                       {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
-                      >
+                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
                         <button
                           className="page-link border-0"
                           onClick={() => setCurrentPage(currentPage + 1)}
@@ -411,11 +363,7 @@ const ProductList = () => {
                           <i className="fa-solid fa-angle-right"></i>
                         </button>
                       </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
-                      >
+                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
                         <button
                           className="page-link border-0"
                           onClick={() => setCurrentPage(totalPages)}
@@ -426,7 +374,7 @@ const ProductList = () => {
                       </li>
                     </ul>
                   </nav>
-                </div>git
+                </div>
               </div>
             </div>
           </div>
@@ -437,4 +385,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default CustomerList;
