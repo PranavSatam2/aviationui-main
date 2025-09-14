@@ -379,5 +379,20 @@ let StoreInventory = REST_API_BASE_URL + "/api/inventory/storeInventory"
 
 export const storeInventoryList = () => axiosInstance.get(`${StoreInventory}`);
 
+//Cstm_Reg
+let API_URL = REST_API_BASE_URL + "/api/customers";
 
+export const getAllCustomers = () => axiosInstance.get(API_URL);
+export const getCustomerById = (id) => axiosInstance.get(`${API_URL}/${id}`);
+export const addCustomer = (customer) => axiosInstance.post(API_URL, customer);
+export const updateCustomer = (id, customer) => axiosInstance.put(`${API_URL}/${id}`, customer);
+export const deleteCustomer = (id) => axiosInstance.delete(`${API_URL}/${id}`);
 
+//Cstm_repair_product
+let Csmt_API_URL = REST_API_BASE_URL + "/api/repair-products";
+
+export const createRepairProduct = (product) => axiosInstance.post(Csmt_API_URL, product);
+export const getAllProducts = () => axiosInstance.get(Csmt_API_URL);
+export const getProductById = (id) => axiosInstance.get(`${Csmt_API_URL}/${id}`);
+export const updateRepairProduct = (id, product) => axiosInstance.put(`${Csmt_API_URL}/${id}`, product);
+export const deleteReapairProduct = (id) => axiosInstance.delete(`${Csmt_API_URL}/${id}`);

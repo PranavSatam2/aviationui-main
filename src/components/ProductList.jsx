@@ -3,38 +3,36 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import {
-  deleteProduct,
-  getProductDetail,
-  listAllProduct,
-} from "../services/db_manager";
+  deleteRepairProduct,
+  getRepairProductDetail,
+  listAllRepairProducts,
+} from "../services/db_manager"; // your repair product APIs
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { toast } from "react-toastify";
 
-const ProductList = () => {
-  // State
-  const [tableData, setTableData] = useState([]); // Product data
+const CustomerRepairProductList = () => {
+  const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("productId");
+  const [sortField, setSortField] = useState("id");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
-  // Fetching data when the component is mounted
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await listAllProduct();
+        const response = await listAllRepairProducts();
         if (response && response.data) {
-          setTableData(response.data); // Update state with response data
+          setTableData(response.data);
         }
       } catch (error) {
-        console.error("Error fetching products", error);
-        toast.error("Failed to load product data");
+        console.error("Error fetching repair products", error);
+        toast.error("Failed to load repair product data");
       } finally {
         setIsLoading(false);
       }
@@ -42,48 +40,42 @@ const ProductList = () => {
     fetchData();
   }, []);
 
-  // Delete the selected product
-  async function handleDelete(productId) {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        const response = await deleteProduct(productId);
-        if (response) {
-          setTableData((prevData) =>
-            prevData.filter((item) => item.productId !== productId)
-          );
-          toast.success("Product deleted successfully");
-        }
+        await deleteRepairProduct(id);
+        setTableData((prev) => prev.filter((item) => item.id !== id));
+        toast.success("Repair product deleted successfully");
       } catch (error) {
-        console.error("Failed to delete product", error);
-        toast.error("Failed to delete product. Please try again.");
+        console.error("Failed to delete repair product", error);
+        toast.error("Failed to delete repair product. Please try again.");
       }
     }
-  }
+  };
 
-  // Edit the selected product
-  async function handleEdit(productId) {
+  const handleEdit = async (id) => {
     try {
-      const response = await getProductDetail(productId);
-      const productData = response?.data;
-      if (productData) {
-        navigate(`/editProduct/${productId}`);
+      const response = await getRepairProductDetail(id);
+      if (response?.data) {
+        navigate(`/editRepairProduct/${id}`);
       }
     } catch (error) {
-      console.error("Error fetching product details: ", error);
-      toast.error("Failed to fetch product details");
+      console.error("Error fetching repair product details: ", error);
+      toast.error("Failed to fetch repair product details");
     }
-  }
+  };
 
-  // Search functionality
-  const filteredData = tableData.filter((product) => {
-    return Object.values(product).some(
-      (value) =>
-        value &&
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const filteredData = tableData.filter((product) =>
+    Object.values(product).some((value) =>
+      value
+        ? value
+            .toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        : false
+    )
+  );
 
-  // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
@@ -95,7 +87,6 @@ const ProductList = () => {
     }
   });
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -113,10 +104,8 @@ const ProductList = () => {
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxPageButtons = 5;
-
     let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
-
     if (endPage - startPage + 1 < maxPageButtons) {
       startPage = Math.max(1, endPage - maxPageButtons + 1);
     }
@@ -133,31 +122,19 @@ const ProductList = () => {
         </li>
       );
     }
-
     return pageNumbers;
   };
 
-  // Column definitions for the table
   const columns = [
-    { field: "productId", label: "ID", width: "60px" },
-    { field: "productName", label: "Name", width: "100px" },
-    { field: "alternateProduct", label: "Alternate Product Name", width: "150px" },
-    {
-      field: "materialClassification",
-      label: "Material Classification",
-      width: "150px",
-    },
+    { field: "id", label: "ID", width: "60px" },
+    { field: "productName", label: "Name", width: "150px" },
+    { field: "productSerialNumbers", label: "Serial Numbers", width: "200px" },
     { field: "productDescription", label: "Description", width: "150px" },
     { field: "unitOfMeasurement", label: "UOM", width: "80px" },
     { field: "oem", label: "OEM", width: "100px" },
-    { field: "nha", label: "NHA", width: "100px" },
-    {
-      field: "cmmReferenceNumber",
-      label: "CMM Reference Number",
-      width: "150px",
-    },
-    { field: "registrationDate", label: "Date", width: "100px" },
-    { field: "registeredBy", label: "Registered By", width: "120px" },
+    { field: "cmmRefNo", label: "CMM Ref No", width: "150px" },
+    { field: "date", label: "Date", width: "100px" },
+    { field: "registerBy", label: "Registered By", width: "120px" },
   ];
 
   return (
@@ -166,11 +143,10 @@ const ProductList = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Product" />
-
+          <CustomBreadcrumb breadcrumbsLabel="View Customer Repair Products" />
           <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
             <div className="card-body">
-              <div className="row align-items-center">
+              <div className="row align-items-center mb-3">
                 <div className="col-md-6">
                   <div className="input-group">
                     <span className="input-group-text bg-primary text-white border-0">
@@ -185,159 +161,91 @@ const ProductList = () => {
                     />
                   </div>
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+                <div className="col-md-3 ms-auto d-flex align-items-center justify-content-end">
+                  <label className="me-2 text-muted fw-light">Show</label>
+                  <select
+                    className="form-select form-select-sm w-auto"
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className="ms-2 text-muted fw-light">entries</label>
                 </div>
               </div>
 
               {isLoading ? (
                 <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
+                  <div className="spinner-border text-primary" role="status"></div>
                   <p className="mt-2 text-muted">Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
+                <div className="table-responsive" style={{ overflowY: "auto" }}>
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-light">
-                        {columns.map((column) => (
+                        {columns.map((col) => (
                           <th
-                            key={column.field}
+                            key={col.field}
                             className="position-sticky top-0 bg-light py-3"
-                            onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            onClick={() => handleSort(col.field)}
+                            style={{ cursor: "pointer", width: col.width }}
                           >
                             <div className="d-flex align-items-center">
-                              <span>{column.label}</span>
-                              {sortField === column.field ? (
+                              {col.label}
+                              {sortField === col.field && (
                                 <i
                                   className={`ms-1 fa fa-sort-${
                                     sortDirection === "asc" ? "up" : "down"
                                   } text-primary`}
                                 ></i>
-                              ) : (
-                                <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
-                                ></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
+                        <th className="position-sticky top-0 bg-light py-3 text-center">
                           ACTIONS
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((product, index) => (
-                          <tr
-                            key={product.productId}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
-                          >
-                            {columns.map((column) => (
-                              <td
-                                key={`${product.productId}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
-                                title={product[column.field]}
-                              >
-                                {product[column.field]}
+                        currentItems.map((product) => (
+                          <tr key={product.id}>
+                            {columns.map((col) => (
+                              <td key={col.field} title={product[col.field]}>
+                                {col.field === "productSerialNumbers"
+                                  ? product[col.field].join(", ")
+                                  : product[col.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
-                                <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() => handleEdit(product.productId)}
-                                  title="Edit"
-                                >
-                                  <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() =>
-                                    handleDelete(product.productId)
-                                  }
-                                  title="Delete"
-                                >
-                                  <i className="fa-solid fa-trash"></i>
-                                </button>
-                              </div>
+                            <td className="text-center">
+                              <button
+                                className="btn btn-sm btn-outline-primary me-2"
+                                onClick={() => handleEdit(product.id)}
+                              >
+                                <i className="fa-solid fa-pen-to-square"></i>
+                              </button>
+                              <button
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={() => handleDelete(product.id)}
+                              >
+                                <i className="fa-solid fa-trash"></i>
+                              </button>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td
-                            colSpan={columns.length + 1}
-                            className="text-center py-5"
-                          >
-                            {searchTerm ? (
-                              <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
-                              </div>
-                            ) : (
-                              <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
-                              </div>
-                            )}
+                          <td colSpan={columns.length + 1} className="text-center py-5">
+                            {searchTerm ? "No matching records found" : "No data available"}
                           </td>
                         </tr>
                       )}
