@@ -24,7 +24,6 @@ const SupplierAnalysisTab = ({
           onChange={handleChange}
           onInput={(event) => {
             validateDataType(event, "ANS");
-            validateLen(event, 0, 500);
           }}
           disabled={disabledField}
         />
@@ -40,14 +39,14 @@ const SupplierAnalysisTab = ({
         </label>
         <input
           className="form-control "
-          type="text"
+          type="number"
           id="workYear"
           name="workYear"
           value={dataMap.workYear}
           onChange={handleChange}
           onInput={(event) => {
             validateDataType(event, "ANS");
-            validateLen(event, 0, 500);
+            validateLen(event, 0, 4);
           }}
           disabled={disabledField}
         />
@@ -309,7 +308,7 @@ const SupplierAnalysisTab = ({
               onChange={handleChange}
               onInput={(event) => {
                 validateDataType(event, "N");
-                validateLen(event, 0, 4);
+                // validateLen(event, 0, 4);
               }}
               disabled={disabledField}
             />
@@ -328,7 +327,6 @@ const SupplierAnalysisTab = ({
               onChange={handleChange}
               onInput={(event) => {
                 validateDataType(event, "N");
-                validateLen(event, 0, 3);
               }}
               disabled={disabledField}
             />
@@ -407,7 +405,6 @@ const SupplierAnalysisTab = ({
                 onChange={handleChange}
                 onInput={(event) => {
                   validateDataType(event, "N");
-                  validateLen(event, 0, 10);
                 }}
                 disabled={disabledField}
               />

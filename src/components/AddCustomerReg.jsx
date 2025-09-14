@@ -96,7 +96,7 @@ const AddCustomer = () => {
           <CustomBreadcrumb breadcrumbsLabel="Add Customer" isBack={true} />
           <div className="my-2 p-2">
             <div className="container-fluid">
-              <div className="row mx-1 card border border-dark shadow-lg py-2 p-2">
+              <div className="row mx-1 card border border-dark shadow-lg py-2 p-4">
                 <div className="col-md-12">
                   <form onSubmit={handleSubmit}>
                     <div className="row">

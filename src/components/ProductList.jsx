@@ -426,7 +426,7 @@ const ProductList = () => {
                       </li>
                     </ul>
                   </nav>
-                </div>git
+                </div>
               </div>
             </div>
           </div>
