@@ -169,7 +169,8 @@ const AddWorkorder = () => {
           workshopManagerRemarks:
             response.remarks || response.workshopManagerRemarks,
           issuedBy: response.issuedByWorkshopManagerName || response.issuedBy,
-          certifyingStaffhours: response.workshopManager || response.certifyingStaffhours,
+          certifyingStaffhours:
+            response.workshopManager || response.certifyingStaffhours,
         };
 
         setForm(formattedData);
@@ -276,7 +277,7 @@ const AddWorkorder = () => {
       regex: /^[a-zA-Z0-9\s]*$/,
     },
     certifyingStaffhours: {
-      type:"number",
+      type: "number",
       length: 50,
       // regex: /^[a-zA-Z\s]*$/,
     },
@@ -610,6 +611,10 @@ const AddWorkorder = () => {
                           name="totalManHour"
                           value={form.totalManHour}
                           onChange={handleChange}
+                          onInput={(event) => {
+                            validateDataType(event, "A"); // 👈 allow only alphanumeric
+                            validateLen(event, 1, 10); // 👈 optional: set min/max length
+                          }}
                           required
                         />
                       </div>

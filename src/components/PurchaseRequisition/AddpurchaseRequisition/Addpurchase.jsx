@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
@@ -28,6 +28,12 @@ const AddPurchaseRequisition = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // State for searchable dropdown
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [filteredData, setFilteredData] = useState([]);
+  const dropdownRef = useRef(null);
+
   // Fetch data once on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -35,15 +41,41 @@ const AddPurchaseRequisition = () => {
       try {
         const response = await fetchPartNumbersAndDescriptions(); // replace with actual API call
         setData(response);
+        setFilteredData(response);
         setError(null);
       } catch (err) {
         console.error("API Error:", err);
         setError("Failed to load product data. Please try again.");
-        // fallback data
-        setData([
-          { productName: "Sample A", productDescription: "Desc A" },
-          { productName: "Sample B", productDescription: "Desc B" },
-        ]);
+        // fallback data with alternateProduct field
+        const fallbackData = [
+          {
+            productName: "PART001",
+            alternateProduct: "Aircraft Engine Component",
+            unitOfMeasurement: "EA",
+          },
+          {
+            productName: "PART002",
+            alternateProduct: "Hydraulic Pump Assembly",
+            unitOfMeasurement: "KIT",
+          },
+          {
+            productName: "PART003",
+            alternateProduct: "Electrical Wiring Harness",
+            unitOfMeasurement: "RL",
+          },
+          {
+            productName: "PART004",
+            alternateProduct: "Landing Gear Strut",
+            unitOfMeasurement: "EA",
+          },
+          {
+            productName: "PART005",
+            alternateProduct: "Navigation System Module",
+            unitOfMeasurement: "KIT",
+          },
+        ];
+        setData(fallbackData);
+        setFilteredData(fallbackData);
       } finally {
         setLoading(false);
       }
@@ -52,17 +84,64 @@ const AddPurchaseRequisition = () => {
     fetchData();
   }, []);
 
-  // Handle part number (productName) change
-  const handleProductChange = (e) => {
-    const selected = e.target.value;
-    const match = data.find((item) => item.productName === selected);
+  // Filter data based on search term
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = data.filter(
+        (item) =>
+          item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (item.alternateProduct &&
+            item.alternateProduct
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()))
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data);
+    }
+  }, [searchTerm, data]);
 
-    // Update form state with both partNumber and description
-    setForm(prevForm => ({
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Handle part number selection from searchable dropdown
+  const handlePartSelection = (selectedItem) => {
+    setForm((prevForm) => ({
       ...prevForm,
-      partNumber: selected,
-      description: match ? match.productDescription : ""
+      partNumber: selectedItem.productName,
+      description: selectedItem.productDescription,
+      unitOfMeasurement: selectedItem.unitOfMeasurement || "",
     }));
+    setSearchTerm(selectedItem.productName);
+    setIsDropdownOpen(false);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setIsDropdownOpen(true);
+
+    // If user clears the search, clear the form
+    if (!value) {
+      setForm((prevForm) => ({
+        ...prevForm,
+        partNumber: "",
+        description: "",
+        unitOfMeasurement: "",
+      }));
+    }
   };
 
   const handleChange = (e) => {
@@ -114,18 +193,25 @@ const AddPurchaseRequisition = () => {
 
   const validateDataType = (event, dataType) => {
     let value = event.target.value;
+
     if (dataType === "A") {
       value = value.replace(/[^a-zA-Z0-9 ]/g, "");
-      event.target.classList.add("is-valid");
     } else if (dataType === "N") {
       value = value.replace(/[^0-9]/g, "");
-      event.target.classList.add("is-valid");
     } else if (dataType === "ANS") {
       value = value.replace(/[^a-zA-Z0-9@.]/g, "");
-      event.target.classList.add("is-valid");
     }
 
     event.target.value = value;
+
+    // ✅ Only mark as valid if value is not empty
+    if (value.trim().length > 0) {
+      event.target.classList.add("is-valid");
+      event.target.classList.remove("is-invalid");
+    } else {
+      event.target.classList.remove("is-valid");
+      event.target.classList.add("is-invalid");
+    }
   };
 
   function validateLen(event, minLen, maxLen) {
@@ -143,6 +229,15 @@ const AddPurchaseRequisition = () => {
       event.target.classList.remove("is-invalid");
     }
   }
+
+  // Function to clear all validation classes from form inputs
+  const clearValidationClasses = () => {
+    const form = document.querySelector("form");
+    const inputs = form.querySelectorAll(".form-control, .form-select");
+    inputs.forEach((input) => {
+      input.classList.remove("is-valid", "is-invalid");
+    });
+  };
 
   // Add a new purchase requisition to the list
   const handleAddRequisition = (e) => {
@@ -177,6 +272,9 @@ const AddPurchaseRequisition = () => {
 
     setPurchaseRequisitions([...purchaseRequisitions, newRequisition]);
 
+    // Clear validation classes before resetting form
+    clearValidationClasses();
+
     // Reset the form after adding to the list
     setForm({
       partNumber: "",
@@ -187,6 +285,10 @@ const AddPurchaseRequisition = () => {
       remark: "",
       unitOfMeasurement: "",
     });
+
+    // Reset search term and close dropdown
+    setSearchTerm("");
+    setIsDropdownOpen(false);
 
     alert("Purchase Requisition added to the list!");
   };
@@ -278,27 +380,64 @@ const AddPurchaseRequisition = () => {
                               className="spinner-border text-primary me-2"
                               role="status"
                             >
-                              <span className="visually-hidden">Loading...</span>
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
                             </div>
                             <span>Loading part numbers...</span>
                           </div>
                         ) : error ? (
-                          <div className="alert alert-danger w-100">{error}</div>
+                          <div className="alert alert-danger w-100">
+                            {error}
+                          </div>
                         ) : (
-                          <select
-                            className="form-select w-100"
-                            name="partNumber"
-                            value={form.partNumber}
-                            onChange={handleProductChange}
-                            required
+                          <div
+                            className="w-100 position-relative"
+                            ref={dropdownRef}
                           >
-                            <option value="">Select a part number</option>
-                            {data.map((item, index) => (
-                              <option key={index} value={item.productName}>
-                                {item.productName}
-                              </option>
-                            ))}
-                          </select>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Search part number..."
+                              value={searchTerm}
+                              onChange={handleSearchChange}
+                              onFocus={() => setIsDropdownOpen(true)}
+                              required
+                            />
+                            {isDropdownOpen && filteredData.length > 0 && (
+                              <div
+                                className="position-absolute w-100 bg-white border border-top-0 rounded-bottom shadow-lg"
+                                style={{
+                                  zIndex: 1000,
+                                  maxHeight: "200px",
+                                  overflowY: "auto",
+                                }}
+                              >
+                                {filteredData.map((item, index) => (
+                                  <div
+                                    key={index}
+                                    className="p-2 border-bottom cursor-pointer hover-bg-light"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => handlePartSelection(item)}
+                                    onMouseEnter={(e) =>
+                                      (e.target.style.backgroundColor =
+                                        "#f8f9fa")
+                                    }
+                                    onMouseLeave={(e) =>
+                                      (e.target.style.backgroundColor = "white")
+                                    }
+                                  >
+                                    <div className="fw-bold">
+                                      {item.productName}
+                                    </div>
+                                    <div className="text-muted small">
+                                      {item.alternateProduct}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -360,33 +499,54 @@ const AddPurchaseRequisition = () => {
                           value={form.requiredQty}
                           onChange={handleChange}
                           required
+                          placeholder="Enter required quantity"
                         />
                       </div>
                     </div>
-
-                    <div className="col-md-6 p-1 d-flex">
-                      <label className="col-md-4 mt-2">Unit of Measurement</label>
-                      <select
-                        className="form-control w-100"
-                        name="unitOfMeasurement"
-                        value={form.unitOfMeasurement}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Select Unit</option>
-                        <option value="EA">EA</option>
-                        <option value="RL">RL</option>
-                        <option value="QT">QT</option>
-                        <option value="GAL">GAL</option>
-                        <option value="KIT">KIT</option>
-                        <option value="LTR">LTR</option>
-                        <option value="SHT">SHT</option>
-                        <option value="Sq.ft">Sq.ft</option>
-                        <option value="Sq.mtr">Sq.mtr</option>
-                      </select>
+                    <div className="col-md-12 d-flex">
+                      <div className="col-md-6 p-1 d-flex">
+                        <label className="col-md-4 mt-2">
+                          Unit of Measurement
+                        </label>
+                        {loading ? (
+                          <div className="d-flex align-items-center">
+                            <div
+                              className="spinner-border text-primary me-2"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                            <span>Loading descriptions...</span>
+                          </div>
+                        ) : error ? (
+                          <div className="alert alert-danger w-100">
+                            {error}
+                          </div>
+                        ) : (
+                          <select
+                            className="form-select w-100"
+                            name="unitOfMeasurement"
+                            value={form.unitOfMeasurement}
+                            onChange={handleChange}
+                            required
+                            disabled
+                          >
+                            <option value="">Auto-selected from part</option>
+                            <option value="EA">EA</option>
+                            <option value="RL">RL</option>
+                            <option value="QT">QT</option>
+                            <option value="GAL">GAL</option>
+                            <option value="KIT">KIT</option>
+                            <option value="LTR">LTR</option>
+                            <option value="SHT">SHT</option>
+                            <option value="Sq.ft">Sq.ft</option>
+                            <option value="Sq.mtr">Sq.mtr</option>
+                          </select>
+                        )}
+                      </div>
                     </div>
-
-
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">Required Date</label>
@@ -437,8 +597,8 @@ const AddPurchaseRequisition = () => {
                             <th>Description</th>
                             <th>Current Stock</th>
                             <th>Required Qty</th>
+                            <th>Unit of Measurement</th>
                             <th>Required Date</th>
-                            <th>Unit Of  Measurment</th>
                             <th>Remark</th>
                             <th>Action</th>
                           </tr>
@@ -450,8 +610,8 @@ const AddPurchaseRequisition = () => {
                               <td>{req.description}</td>
                               <td>{req.currentStock}</td>
                               <td>{req.requiredQty}</td>
-                              <td>{req.requiredDate}</td>
                               <td>{req.unitOfMeasurement}</td>
+                              <td>{req.requiredDate}</td>
                               <td>{req.remark}</td>
                               <td>
                                 <button

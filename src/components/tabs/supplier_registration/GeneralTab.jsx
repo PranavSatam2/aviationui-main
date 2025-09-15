@@ -41,7 +41,7 @@ const GeneralTab = ({
               onChange={handleChange}
               onInput={(event) => {
                 validateDataType(event, "A");
-                validateLen(event, 0, 50);
+                // validateLen(event, 0, 50);
               }}
               disabled={disabledField}
             />
