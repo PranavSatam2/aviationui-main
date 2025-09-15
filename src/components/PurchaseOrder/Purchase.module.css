@@ -1,8 +1,7 @@
 /* Main container styles */
 .container {
     background-color: white;
-    padding: 1.5rem;
-    max-width: 64rem;
+    max-width: 100%;
     margin: 0 auto;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     border-radius: 0.375rem;

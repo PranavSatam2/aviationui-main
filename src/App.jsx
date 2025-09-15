@@ -29,7 +29,12 @@ import { useRoleMenus } from "./context/RoleMenuContext";
 import EditDispatchReport from "./components/EditDispatchReport.jsx";
 import AddWorkOrder from "./components/Workorder/AddWorkOrder/AddWorkOrder.jsx";
 import EditWorkorder from "./components/Workorder/editWorkOrder.jsx";
-
+import CustomerList from "./components/ViewCustomerRegList.jsx"; // Adjust path if needed
+import AddCustomer  from "./components/AddCustomerReg.jsx";
+import AddCustomerRepairProduct from "./components/AddRepairProduct.jsx";
+import CustomerRepairProductList from "./components/ViewRepairProducts.jsx";
+import EditCustomerRepairProduct from "./components/EditCustomerRepairProduct.jsx";
+import EditCustomer from "./components/EditRepairProduct.jsx";
 const App = () => {
   const token = sessionStorage.getItem('jwt_token') || '';
    const { menuItems = [], loading } = useRoleMenus();
@@ -74,6 +79,12 @@ const App = () => {
                       {/* <Route path="/workOrderTable" element={<WorkOrderTable />} /> */}
                       <Route path="/EditWorkorder" element={<EditWorkorder />} />
         {/* <Route path="/ViewStoreAcc" element={<ViewSupplierRegis />} /> */}
+         <Route path="/viewCustomers" element={<CustomerList />} />
+            <Route path="/addCustomers" element={<AddCustomer />} />
+            <Route path = "/editCustomer/:id" element={<EditCustomer/>}/>
+            <Route path="/addCustomersRepairProduct" element={<AddCustomerRepairProduct />} />
+            <Route path="/viewCustomersRepairProduct" element={<CustomerRepairProductList />} />
+            <Route path = "/editCustomersRepairProduct/:id" element={<EditCustomerRepairProduct/>}/>
 
     {menuItems.flatMap((menu) =>
                 menu.subMenus.map((sub) => {

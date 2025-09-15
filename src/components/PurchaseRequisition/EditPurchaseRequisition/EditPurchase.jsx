@@ -3,7 +3,11 @@ import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
-import { updatePurchaseRequisition, getPurchaseRequisitionDetail, fetchPartNumbersAndDescriptions } from "../../../services/db_manager";
+import {
+  updatePurchaseRequisition,
+  getPurchaseRequisitionDetail,
+  fetchPartNumbersAndDescriptions,
+} from "../../../services/db_manager";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -68,10 +72,9 @@ const EditPurchaseRequisition = () => {
     }
   };
 
-
   useEffect(() => {
-    console.log(form, "form")
-  }, [form])
+    console.log(form, "form");
+  }, [form]);
   // Fetch descriptions from API when component mounts
   useEffect(() => {
     const getDescriptions = async () => {
@@ -116,7 +119,6 @@ const EditPurchaseRequisition = () => {
       }
     };
 
-
     getPartNumbers();
   }, []);
 
@@ -159,7 +161,6 @@ const EditPurchaseRequisition = () => {
       description: description,
     }));
   };
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -208,21 +209,28 @@ const EditPurchaseRequisition = () => {
     },
   };
 
-  const validateDataType = (event, dataType) => {
-    let value = event.target.value;
-    if (dataType === "A") {
-      value = value.replace(/[^a-zA-Z0-9 ]/g, "");
-      event.target.classList.add("is-valid");
-    } else if (dataType === "N") {
-      value = value.replace(/[^0-9]/g, "");
-      event.target.classList.add("is-valid");
-    } else if (dataType === "ANS") {
-      value = value.replace(/[^a-zA-Z0-9@.]/g, "");
-      event.target.classList.add("is-valid");
-    }
+const validateDataType = (event, dataType) => {
+  let value = event.target.value;
 
-    event.target.value = value;
-  };
+  if (dataType === "A") {
+    value = value.replace(/[^a-zA-Z0-9 ]/g, "");
+  } else if (dataType === "N") {
+    value = value.replace(/[^0-9]/g, "");
+  } else if (dataType === "ANS") {
+    value = value.replace(/[^a-zA-Z0-9@.]/g, "");
+  }
+
+  event.target.value = value;
+
+  // ✅ Only mark as valid if value is not empty
+  if (value.trim().length > 0) {
+    event.target.classList.add("is-valid");
+    event.target.classList.remove("is-invalid");
+  } else {
+    event.target.classList.remove("is-valid");
+    event.target.classList.add("is-invalid");
+  }
+};
 
   function validateLen(event, minLen, maxLen) {
     let value = event.target.value.substring(0, maxLen);
@@ -239,7 +247,13 @@ const EditPurchaseRequisition = () => {
       event.target.classList.remove("is-invalid");
     }
   }
-
+ const clearValidationClasses = () => {
+    const form = document.querySelector("form");
+    const inputs = form.querySelectorAll(".form-control, .form-select");
+    inputs.forEach((input) => {
+      input.classList.remove("is-valid", "is-invalid");
+    });
+  };
   // Handle form submission to update the requisition
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -275,7 +289,10 @@ const EditPurchaseRequisition = () => {
         <Sidebar />
         <div className="content">
           <Header />
-          <div className="d-flex justify-content-center align-items-center" style={{ height: "70vh" }}>
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: "70vh" }}
+          >
             <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
@@ -346,13 +363,18 @@ const EditPurchaseRequisition = () => {
                       <label className="col-md-4 mt-2">Part Number</label>
                       {partLoading ? (
                         <div className="d-flex align-items-center">
-                          <div className="spinner-border text-primary me-2" role="status">
+                          <div
+                            className="spinner-border text-primary me-2"
+                            role="status"
+                          >
                             <span className="visually-hidden">Loading...</span>
                           </div>
                           <span>Loading part numbers...</span>
                         </div>
                       ) : partError ? (
-                        <div className="alert alert-danger w-100">{partError}</div>
+                        <div className="alert alert-danger w-100">
+                          {partError}
+                        </div>
                       ) : (
                         <select
                           className="form-select w-100"
@@ -369,7 +391,6 @@ const EditPurchaseRequisition = () => {
                           ))}
                         </select>
                       )}
-
                     </div>
 
                     <hr className="mx-0 my-2 p-0 border" />
@@ -379,13 +400,18 @@ const EditPurchaseRequisition = () => {
                       <label className="col-md-2 mt-2">Description</label>
                       {descLoading ? (
                         <div className="d-flex align-items-center">
-                          <div className="spinner-border text-primary me-2" role="status">
+                          <div
+                            className="spinner-border text-primary me-2"
+                            role="status"
+                          >
                             <span className="visually-hidden">Loading...</span>
                           </div>
                           <span>Loading descriptions...</span>
                         </div>
                       ) : descError ? (
-                        <div className="alert alert-danger w-100">{descError}</div>
+                        <div className="alert alert-danger w-100">
+                          {descError}
+                        </div>
                       ) : (
                         <select
                           className="form-select w-100"
@@ -398,7 +424,6 @@ const EditPurchaseRequisition = () => {
                           </option>
                         </select>
                       )}
-
                     </div>
 
                     <div className="col-md-12 d-flex">
@@ -431,29 +456,31 @@ const EditPurchaseRequisition = () => {
                         />
                       </div>
                     </div>
-
-                    <div className="col-md-6 p-1 d-flex">
-                      <label className="col-md-4 mt-2">Unit of Measurement</label>
-                      <select
-                        className="form-control w-100"
-                        name="unitOfMeasurement"
-                        value={form.unitOfMeasurement}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Select Unit</option>
-                        <option value="EA">EA</option>
-                        <option value="RL">RL</option>
-                        <option value="QT">QT</option>
-                        <option value="GAL">GAL</option>
-                        <option value="KIT">KIT</option>
-                        <option value="LTR">LTR</option>
-                        <option value="SHT">SHT</option>
-                        <option value="Sq.ft">Sq.ft</option>
-                        <option value="Sq.mtr">Sq.mtr</option>
-                      </select>
+                    <div className="col-md-12 d-flex">
+                      <div className="col-md-6 p-1 d-flex">
+                        <label className="col-md-4 mt-2">
+                          Unit of Measurement
+                        </label>
+                        <select
+                          className="form-select w-100"
+                          name="unitOfMeasurement"
+                          value={form.unitOfMeasurement}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select Unit</option>
+                          <option value="EA">EA</option>
+                          <option value="RL">RL</option>
+                          <option value="QT">QT</option>
+                          <option value="GAL">GAL</option>
+                          <option value="KIT">KIT</option>
+                          <option value="LTR">LTR</option>
+                          <option value="SHT">SHT</option>
+                          <option value="Sq.ft">Sq.ft</option>
+                          <option value="Sq.mtr">Sq.mtr</option>
+                        </select>
+                      </div>
                     </div>
-
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">Required Date</label>

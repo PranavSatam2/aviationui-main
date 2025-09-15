@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -10,13 +10,12 @@ import IncomingInspectionTab from "./tabs/supplier_registration/IncomingInspecti
 import DocAndProcControl from "./tabs/supplier_registration/DocAndProcControl";
 import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
 import { createSupplier, updateSupplier } from "../services/db_manager";
-import { data, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 const SupplierRegistration = () => {
   // Variables
   const navigate = useNavigate();
-  const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/;
   let formVariavles = {
     supplierName: "",
     // formId               : '',
@@ -84,7 +83,7 @@ const SupplierRegistration = () => {
   // ######################################### HOOK #######################################
 
   const [dataMap, setDataMap] = useState(formVariavles);
-  const [isDisabled, setIsDisabled] = useState(true);
+  
   const [errors, setErrors] = useState({});
 
   const location = useLocation();
@@ -146,13 +145,17 @@ const SupplierRegistration = () => {
     const missingFields = getMissingFields();
     if (Object.keys(missingFields).length > 0) {
       setErrors(missingFields);
-      // return; // Stop further execution if errors are present
+      // Block submission if any required field is missing
+      setInvalidFeedback("text-danger col-md-4");
+      setInvalidFeedbackMsg(msg.invalidFld);
+      toast.error("Please fill all required fields");
+      return; // Stop further execution if errors are present
     }
 
     setErrors({});
 
     if (supplierId === "" || supplierId === undefined) {
-      setDataMap(formVariavles);
+      // Do NOT clear the form before creating; submit current values
       let response = await createSupplier(dataMap);
 
       if (response) {
@@ -178,7 +181,7 @@ const SupplierRegistration = () => {
     for (let key of keys) {
       if (
         !dataMap[key] &&
-        !["faxNum", "workYear", "numEmp", "numOpeShift"].includes(key)
+        !["faxNum", "workYear", "numEmp", "numOpeShift", "rev", "sysdate", "remark"].includes(key)
       ) {
         errorMessages[key] = "This field is required.";
       }
@@ -210,79 +213,53 @@ const SupplierRegistration = () => {
       ...prevErrors,
       [name]:
         value.trim() === "" &&
-        !["faxNum", "workYear", "numEmp", "numOpeShift"].includes(name)
+        !["faxNum", "workYear", "numEmp", "numOpeShift", "rev", "sysdate", "remark"].includes(name)
           ? "This field is required."
           : "",
     }));
   };
 
-  // This function validate all mandatory fld are entered
-  function isAllFldValidated() {
-    let flds = "";
-    let keys = Object.keys(dataMap);
-    let isAllFldMandatory = true;
-
-    for (let index = 0; index < keys.length; index++) {
-      let key = keys[index];
-      let value = dataMap[key];
-
-      if (value === "") {
-        if (
-          key == "faxNum" ||
-          key == "workYear" ||
-          key == "dontKnow" ||
-          key == "registerCar" ||
-          key == "numEmp" ||
-          key == "numOpeShift"
-        ) {
-          continue;
-        } else {
-          flds += `${key},`;
-          isAllFldMandatory = false;
-        }
-      }
-    }
-
-    let textFlds = document.querySelectorAll(".is-invalid");
-
-    if (textFlds.length >= 1) {
-      isAllFldMandatory = false;
-    }
-
-    if (!isAllFldMandatory) {
-      setInvalidFeedback("text-danger col-md-4");
-      setInvalidFeedbackMsg(msg.invalidFld);
-    } else {
-      setInvalidFeedback("d-none text-danger col-md-4");
-    }
-
-    return isAllFldMandatory;
-  }
+  // Removed unused isAllFldValidated
 
   // ########################### VALIDATION ################################
 
   // This function validate the dataType
   const validateDataType = (event, dataType) => {
     let value = event.target.value;
+
     if (dataType === "A") {
       value = value.replace(/[^a-zA-Z0-9 ]/g, "");
-      event.target.classList.add("is-valid");
     } else if (dataType === "N") {
       value = value.replace(/[^0-9]/g, "");
-      event.target.classList.add("is-valid");
     } else if (dataType === "ANS") {
-      value = value.replace(/[^a-zA-Z0-9,. ]/g, "");
-      event.target.classList.add("is-valid");
+      value = value.replace(/[^a-zA-Z0-9@.]/g, "");
     }
 
     event.target.value = value;
+
+    // ✅ Only mark as valid if value is not empty
+    if (value.trim().length > 0) {
+      event.target.classList.add("is-valid");
+      event.target.classList.remove("is-invalid");
+    } else {
+      event.target.classList.remove("is-valid");
+      event.target.classList.add("is-invalid");
+    }
   };
 
-  // This function validate the length of field
+  // ✅ This function validates the length of field
   function validateLen(event, minLen, maxLen) {
     let value = event.target.value.substring(0, maxLen);
     event.target.value = value;
     let elementLen = value.length;
+
+    // 👇 Extra check: if field is empty, mark invalid
+    if (elementLen === 0) {
+      event.target.classList.remove("is-valid");
+      event.target.classList.add("is-invalid");
+      return;
+    }
+
     if (elementLen > maxLen) {
       event.target.classList.remove("is-valid");
       event.target.classList.add("is-invalid");
@@ -294,10 +271,7 @@ const SupplierRegistration = () => {
       event.target.classList.remove("is-invalid");
     }
   }
-  useEffect(() => {
-    const allEmpty = Object.values(dataMap).every((value) => value === "");
-    setIsDisabled(allEmpty);
-  }, [dataMap]);
+  // Removed unused isDisabled updater
   // ############################### RETURN-COMPONENT #############################
   return (
     <div className="wrapper ">
