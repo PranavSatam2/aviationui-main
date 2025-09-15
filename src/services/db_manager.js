@@ -379,5 +379,17 @@ let StoreInventory = REST_API_BASE_URL + "/api/inventory/storeInventory"
 
 export const storeInventoryList = () => axiosInstance.get(`${StoreInventory}`);
 
+//Supplier name 
+let GetSupplierName = REST_API_BASE_URL + "/api/supplier/suppliernames"
+export const fetchSupplierName = () => axiosInstance.get(`${GetSupplierName}`);
+
+let GetAllPurchaseOrder = REST_API_BASE_URL + "/api/mrn/getAllPurchaseOrder"
+export const fetchAllPurchaseOrder = () => axiosInstance.get(`${GetAllPurchaseOrder}`);
+
+let FetchAllPartNO = REST_API_BASE_URL + "/api/mrn/getAllPartNoByPurchaseOrder"
+export const fetchAllPartNO = (PONumber) => axiosInstance.get(`${FetchAllPartNO}/${PONumber}`); 
+
+let FetchAllPartNODetails = REST_API_BASE_URL + "/api/mrn/getDetailByPartNo"
+export const fetchAllPartNODetails = (PartNo) => axiosInstance.get(`${FetchAllPartNODetails}/${PartNo}`);
 
 
