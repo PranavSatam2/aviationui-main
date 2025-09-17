@@ -26,6 +26,8 @@ const EditMaterialNote = () => {
     partDescription: "",
     quantity: "",
     unitOfMeasurement: "",
+    qualityAcceptance: "",
+    storeInchargeSign: sessionStorage.getItem("username") || "",
   });
 
   const [partData, setPartData] = useState([]);
@@ -46,34 +48,6 @@ const EditMaterialNote = () => {
     fetchMaterialDetailData();
   }, [materialId]);
 
-  // Fetch available parts
-  useEffect(() => {
-    const fetchParts = async () => {
-      try {
-        const result = await fetchPartNumbersAndDescriptions();
-        setPartData(result);
-      } catch (err) {
-        console.error("Failed to fetch part list", err);
-      }
-    };
-    fetchParts();
-  }, []);
-
-  // Handle part number selection
-  const handleProductChange = (e) => {
-    const selected = e.target.value;
-
-    // find matching description
-    const match = partData.find((item) => item.productName === selected);
-    const description = match ? match.productDescription : "";
-
-    // update form with both part number and description
-    setForm((prevForm) => ({
-      ...prevForm,
-      partNumber: selected,
-      partDescription: description,
-    }));
-  };
 
   // Handle generic field change
   const handleChange = (e) => {
@@ -118,21 +92,16 @@ const EditMaterialNote = () => {
                     <label>
                       Part Number <span className="text-danger mx-1">*</span>
                     </label>
-                    <select
+                    <input
                       required
+                      type="text"
                       className="form-control"
                       name="partNumber"
                       value={form.partNumber}
-                      onChange={handleProductChange}
-                    >
-                      <option value="">-- Select Part --</option>
-                      {partData.map((item) => (
-                        <option key={item.productName} value={item.productName}>
-                          {item.productName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      onChange={handleChange}
+                      readOnly
+                    />
+                    </div>
 
                   {/* Part Description */}
                   <div className="col-md-6 p-2">
@@ -162,6 +131,7 @@ const EditMaterialNote = () => {
                       name="mrnNo"
                       value={form.mrnNo}
                       onChange={handleChange}
+                      readOnly
                     />
                   </div>
 
@@ -176,6 +146,7 @@ const EditMaterialNote = () => {
                       name="supplierName"
                       value={form.supplierName}
                       onChange={handleChange}
+                      readOnly
                     />
                   </div>
 
@@ -185,11 +156,12 @@ const EditMaterialNote = () => {
                     </label>
                     <input
                       required
-                      type="number"
+                      type="text"
                       className="form-control"
                       name="orderNumber"
                       value={form.orderNumber}
                       onChange={handleChange}
+                      readOnly
                     />
                   </div>
 
@@ -218,6 +190,7 @@ const EditMaterialNote = () => {
                       name="receiptDate"
                       value={form.receiptDate}
                       onChange={handleChange}
+                      
                     />
                   </div>
 
@@ -232,6 +205,7 @@ const EditMaterialNote = () => {
                       name="quantity"
                       value={form.quantity}
                       onChange={handleChange}
+                      readOnly
                     />
                   </div>
 
@@ -239,26 +213,27 @@ const EditMaterialNote = () => {
                     <label>
                       Unit of Measurement <span className="text-danger mx-1">*</span>
                     </label>
-                    <select
+                    <input
                       required
                       className="form-control"
                       name="unitOfMeasurement"
                       value={form.unitOfMeasurement}
                       onChange={handleChange}
-                    >
-                      <option value="">Select Unit</option>
-                      <option value="EA">EA</option>
-                      <option value="RL">RL</option>
-                      <option value="QT">QT</option>
-                      <option value="GAL">GAL</option>
-                      <option value="KIT">KIT</option>
-                      <option value="LTR">LTR</option>
-                      <option value="SHT">SHT</option>
-                      <option value="Sq.ft">Sq.ft</option>
-                      <option value="Sq.mtr">Sq.mtr</option>
-                    </select>
-                  </div>
-                </div>
+                      readOnly
+                    />
+                    </div>
+                
+                <div className="col-md-6 p-2">
+                <label>Receive Quantity</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="qualityAcceptance"
+                  value={form.qualityAcceptance}
+                  onChange={handleChange}
+                />
+              </div>
+              </div>
 
                 {/* Save Button */}
                 <div className="col-md-12 text-right mt-3">

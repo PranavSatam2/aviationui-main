@@ -2,130 +2,146 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Footer from "./Footer";
-import { addMaterialNote, fetchPartNumbersAndDescriptions } from "../services/db_manager";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import {
+  addMaterialNote,
+  fetchSupplierName,
+  fetchAllPurchaseOrder,
+  fetchAllPartNO,
+  fetchAllPartNODetails,
+} from "../services/db_manager";
 
-const MaterialReceiptNoteForm = () => {
+const AddMaterialNote = () => {
+  const [suppliers, setSuppliers] = useState([]);
+  const [poNumbers, setPoNumbers] = useState([]);
+  const [parts, setParts] = useState([]);
+
   const [form, setForm] = useState({
-    mrnNo: "",
     supplierName: "",
     orderNumber: "",
-    challanNo: "",
-    receiptDate: "",
     partNumber: "",
     partDescription: "",
     quantity: "",
-    // storeInchargeSign: "",
     unitOfMeasurement: "",
-    // qualityAcceptance: "",
+    challanNo: "",
+    receiptDate: "",
+    qualityAcceptance: "",
+    storeInchargeSign: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [data, setData] = useState([]); // To hold part numbers and descriptions
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-
-
+  // ✅ Fetch Suppliers
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await fetchPartNumbersAndDescriptions();
-        console.log("Fetched part list:", result);
-        setData(result);
+        const result = await fetchSupplierName();
+        console.log("Fetched Supplier list:", result.data);
+        setSuppliers(Array.isArray(result.data) ? result.data : []);
       } catch (err) {
-        console.error("Failed to fetch product list", err);
+        console.error("Failed to fetch supplier list", err);
+        setSuppliers([]);
       }
     };
-
     fetchData();
   }, []);
 
-  const validateForm = () => {
-    let newErrors = {};
+  // ✅ Fetch PO Numbers based on Supplier
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const result = await fetchAllPurchaseOrder();
+          console.log("Fetched PO list:", result);
+          setPoNumbers(Array.isArray(result.data) ? result.data : []);
+        } catch (err) {
+          console.error("Failed to fetch PO list", err);
+          setPoNumbers([]);
+        }
+      };
+      fetchData();
+    
+  }, []);
 
-    // Numeric fields validation
-    if (!/^\d{1,15}$/.test(form.mrnNo))
-      newErrors.mrnNo = "MRN No must be a number (max 15 digits)";
-    if (!/^\d{1,20}$/.test(form.orderNumber))
-      newErrors.orderNumber = "Order Number must be a number (max 20 digits)";
-    // if (!/^\d{1,20}$/.test(form.partNumber))
-    //   newErrors.partNumber = "Part Number must be a number (max 20 digits)";
-    if (!/^\d{1,10}$/.test(form.quantity))
-      newErrors.quantity = "Quantity must be a number (max 10 digits)";
+  // ✅ Fetch Parts based on PO Number
+  useEffect(() => {
+    if (form.orderNumber) {
+      console.log(form.orderNumber);
+      const fetchData = async () => {
+        try {
+          const result = await fetchAllPartNO(form.orderNumber);
+          console.log("Fetched PartNo list:", result);
+          setParts(Array.isArray(result.data) ? result.data : []);
+        } catch (err) {
+          console.error("Failed to fetch Parts list", err);
+          setParts([]);
+        }
+      };
+      fetchData();
+    }
+  }, [form.orderNumber]);
 
-    // Alphanumeric fields validation
-    if (!/^[a-zA-Z0-9 ]{1,100}$/.test(form.supplierName))
-      newErrors.supplierName =
-        "Supplier Name must contain only alphabet and number (max 100 characters)";
-    if (!/^[a-zA-Z0-9 ]{1,50}$/.test(form.challanNo))
-      newErrors.challanNo =
-        "Challan No must be alphanumeric (max 50 characters)";
-    if (!/^[a-zA-Z0-9 ]{1,200}$/.test(form.partDescription))
-      newErrors.partDescription =
-        "Part Description must be alphanumeric (max 200 characters)";
+  // ✅ Fetch Part Details when Part Number selected
+  useEffect(() => {
+    if (form.partNumber) {
+      const fetchData = async () => {
+        try {
+          const result = await fetchAllPartNODetails(form.partNumber);
+          console.log("Fetched PartNoDetails:", result);
+          if (result) {
+            const { description, currentStoke, unit } = result.data;
+            setForm((prev) => ({
+              ...prev,
+              partDescription: description || "",
+              quantity: currentStoke || "",
+              unitOfMeasurement: unit || "",
+              storeInchargeSign: sessionStorage.getItem("username") || "",
+            }));
+          }
+        } catch (err) {
+          console.error("Failed to fetch PartDetails", err);
+        }
+      };
+      fetchData();
+    }
+  }, [form.partNumber]);
 
-    // Required field validation
-    if (!form.receiptDate) newErrors.receiptDate = "Receipt Date is required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleProductChange = (e) => {
-    const selected = e.target.value;
-
-    // Find the corresponding part description
-    const selectedItem = data.find((item) => item.productName === selected);
-    const description = selectedItem ? selectedItem.productDescription : "";
-
-    setForm((prevForm) => ({
-      ...prevForm,
-      partNumber: selected,
-      partDescription: description,
-    }));
-  };
-
+  // ✅ Handle Change
   const handleChange = (e) => {
-  const { name, value } = e.target;
-  setForm((prevForm) => ({
-    ...prevForm,
-    [name]: value,
-  }));
-};
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
 
-
-  const handleSave = async (e) => {
+  // ✅ Submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
     try {
       await addMaterialNote(form);
-      // alert('Material Receipt Note saved successfully!');
       toast.success("Material Receipt Note saved successfully!");
       resetForm();
     } catch (error) {
       console.error("Error saving material:", error);
-      toast.error("Failed to save material receipt note.");
-    }
+      const backendMessage =
+      error.response?.data?.message || "Failed to save material receipt note.";
+
+    toast.error(backendMessage);
+  }
+      //toast.error("Failed to save material receipt note.");
+    
   };
 
+  // ✅ Reset Form
   const resetForm = () => {
     setForm({
-      mrnNo: "",
       supplierName: "",
       orderNumber: "",
-      challanNo: "",
-      receiptDate: "",
       partNumber: "",
       partDescription: "",
       quantity: "",
-      // storeInchargeSign: "",
-      // qualityAcceptance: "",
       unitOfMeasurement: "",
+      challanNo: "",
+      receiptDate: "",
+      qualityAcceptance: "",
+      storeInchargeSign: "",
     });
-    setErrors({});
   };
 
   return (
@@ -139,114 +155,147 @@ const MaterialReceiptNoteForm = () => {
             isBack={true}
           />
 
-          {/* <div className="col-md-6">
-          <h5 className="mx-3 mt-4">Material Receipt Note Form</h5>
-        </div> */}
-
           <div
             className="card border border-dark shadow mx-4 my-4 p-2"
             style={{ height: "70vh" }}
           >
-            <form onSubmit={handleSave}>
-              <div className="col-md-12">
-                <div className="row">
-                  {[
-                    { label: "MRN No", name: "mrnNo", type: "text" },
-                    { label: "Supplier Name", name: "supplierName", type: "text" },
-                    { label: "Order Number", name: "orderNumber", type: "number" },
-                    { label: "Challan No", name: "challanNo", type: "text" },
-                    { label: "Receipt Date", name: "receiptDate", type: "date" },
-                    { label: "Part Number", name: "partNumber", type: "select" },
-                    { label: "Part Description", name: "partDescription", type: "autofill" },
-                    { label: "Quantity", name: "quantity", type: "number" },
-                    {
-                      label: "Unit of Measurement",
-                      name: "unitOfMeasurement",
-                      type: "Option",
-                      options: ["EA", "RL", "QT", "GAL", "KIT", "LTR", "SHT", "Sq.ft", "Sq.mtr"]
-                    },
-                    // { label: "Store Incharge Sign", name: "storeInchargeSign", type: "text" },
-                    // { label: "Quality Acceptance", name: "qualityAcceptance", type: "text" },
-                  ].map(({ label, name, type, options }) => (
-                    <div className="col-md-6 p-2" key={name}>
-                      <label>
-                        {label}
-                        <span className="text-danger mx-1" style={{ fontSize: "17px" }}>*</span>
-                      </label>
+            <form onSubmit={handleSubmit}>
+              {/* Supplier + PO */}
+              <div className="col-md-12 p-2 d-flex">
+                <div className="col-md-6 p-2">
+                  <label>Supplier</label>
+                  <select
+                    className="form-control"
+                    name="supplierName"
+                    value={form.supplierName}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">-- Select Supplier --</option>
+                    {suppliers.map((s,i) => (
+                      <option key={i} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                      {type === "Option" ? (
-                        // Existing unitOfMeasurement dropdown
-                        <select
-                          className="form-control"
-                          name={name}
-                          value={form[name]}
-                          onChange={handleChange}
-                          required
-                        >
-                          <option value="">-- Select Unit --</option>
-                          {options.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      ) : type === "select" ? (
-                        // NEW: Part Number dropdown
-                        <select
-                          className="form-control"
-                          name={name}
-                          value={form[name]}
-                          onChange={(e) => {
-                            const selected = e.target.value;
-                            const selectedItem = data.find((item) => item.productName === selected);
-                            const description = selectedItem?.productDescription || "";
-
-                            setForm((prevForm) => ({
-                              ...prevForm,
-                              partNumber: selected,
-                              partDescription: description, // Auto-fill here
-                            }));
-                          }}
-                          required
-                        >
-                          <option value="">-- Select Part --</option>
-                          {data.map((item, i) => (
-                            <option key={i} value={item.productName}>
-                              {item.productName}
-                            </option>
-                          ))}
-                        </select>
-                      ) : type === "autofill" ? (
-                        // NEW: Auto-filled, disabled input
-                        <input
-                          type="text"
-                          className="form-control"
-                          name={name}
-                          value={form[name]}
-                          disabled
-                        />
-                      ) : (
-                        // Fallback: all other inputs
-                        <input
-                          type={type}
-                          className="form-control"
-                          name={name}
-                          value={form[name]}
-                          onChange={handleChange}
-                          required
-                        />
-                      )}
-
-
-                      {errors[name] && (
-                        <span className="text-danger">{errors[name]}</span>
-                      )}
-                    </div>
-                  ))}
-
+                <div className="col-md-6 p-2">
+                  <label>PO Number</label>
+                  <select
+                    className="form-control"
+                    name="orderNumber"
+                    value={form.orderNumber}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">-- Select PO Number --</option>
+                    {poNumbers.map((po, i) => (
+                      <option key={i} value={po.poNumber}>
+                        {po.poNumber}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
+              {/* Challan + Receipt Date */}
+              <div className="col-md-12 p-2 d-flex">
+                <div className="col-md-6 p-2">
+                  <label>Challan No</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="challanNo"
+                    value={form.challanNo}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="col-md-6 p-2">
+                  <label>Receipt Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    name="receiptDate"
+                    value={form.receiptDate}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Part Selection + Description */}
+              <div className="col-md-12 p-2 d-flex">
+                <div className="col-md-6 p-2">
+                  <label>Part Number</label>
+                  <select
+                    className="form-control"
+                    name="partNumber"
+                    value={form.partNumber}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">-- Select Part --</option>
+                    {parts.map((p, i) => (
+                      <option key={i} value={p.partNumber}>
+                        {p.partNumber}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-md-6 p-2">
+                  <label>Description</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="partDescription"
+                    value={form.partDescription}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* Quantity + UOM */}
+              <div className="col-md-12 p-2 d-flex">
+                <div className="col-md-6 p-2">
+                  <label>Quantity</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="quantity"
+                    value={form.quantity}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="col-md-6 p-2">
+                  <label>Unit of Measurement</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="unitOfMeasurement"
+                    value={form.unitOfMeasurement}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* Receive Quantity */}
+              <div className="col-md-12 p-2">
+                <label>Receive Quantity</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="qualityAcceptance"
+                  value={form.qualityAcceptance}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* Save Button */}
               <div className="col-md-12 text-right mt-3">
                 <button type="submit" className="btn btn-primary">
                   Save
@@ -261,4 +310,4 @@ const MaterialReceiptNoteForm = () => {
   );
 };
 
-export default MaterialReceiptNoteForm;
+export default AddMaterialNote;

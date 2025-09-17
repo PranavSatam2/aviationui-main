@@ -182,7 +182,7 @@ const handleCheckboxChange = (report) => {
     { field: "partDesc", label: "Part Description", width: "100px" },
     { field: "purchaseOrderNo", label: "Purchase Order No.", width: "100px" },
     { field: "supplierName", label: "Supplier Name", width: "100px" },
-    { field: "reportNo", label: "Report No.", width: "100px" },
+    { field: "reportNo", label: "MRN No.", width: "100px" },
     { field: "date", label: "Date", width: "100px" },
     { field: "qty", label: "Quantity", width: "100px" },
     { field: "qtyReceive", label: "Receive Quantity", width: "100px" },
@@ -205,8 +205,8 @@ const handleCheckboxChange = (report) => {
     { field: "remark", label: "Remark", width: "100px" },
     { field: "makerUserName", label: "Maker Name", width: "100px" },
     { field: "makerDate", label: "Maker Date", width: "100px" },
-    { field: "checkerUserName", label: "Checker Name", width: "100px" },
-    { field: "checkerDate", label: "Checker  Date", width: "100px" },
+    // { field: "checkerUserName", label: "Checker Name", width: "100px" },
+    // { field: "checkerDate", label: "Checker  Date", width: "100px" },
 ];
 
   return (

@@ -5,23 +5,16 @@ import Sidebar from "./Sidebar";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 //import { fetchPartNumbers } from "../services/db_manager";
-import {fetchPartDetails,submitInspectionReport,fetchPartNumbers} from "../services/db_manager";
+import {fetchPartDetails,submitInspectionReport,fetchPartNumbers, fetchMrnNos} from "../services/db_manager";
 
 const AddReceivingInspectionReport = () => {
-  const [partNumbers, setPartNumbers] = useState([]);
+  const [partNumber, setPartNumber] = useState([]);
+  const [mrnNos, setMrnNos] = useState([]);
   const [partLoading, setPartLoading] = useState(false);
   const [partError, setPartError] = useState(null);
   const [selectedPart, setSelectedPart] = useState("");
   const [document, setDocument] = useState(null);
-  const [partDetails, setPartDetails] = useState({
-  partDesc: "",
-  supplierName: "",
-  purchaseOrderNo: "",
-  reportNo: "",
-  date: "",
-  qty: ""
-});
-  // Variables
+
  const [form, setForm] = useState({
     partNumber: "",
     partDesc: "",
@@ -55,25 +48,45 @@ const AddReceivingInspectionReport = () => {
     userRole: "",
   });
    const [errors, setErrors] = useState({});
+
+   useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const result = await fetchMrnNos();
+
+      const mrnList = Array.isArray(result.data)
+        ? result.data.map(item => item.reportNo) // only reportNo values
+        : [];
+
+      console.log("Fetched MrnNo list:", result.data); // 👈 log only MRN numbers
+      setMrnNos(mrnList);
+    } catch (err) {
+      console.error("Failed to fetch MrnNo list", err);
+      setMrnNos([]);
+    }
+  };
+  fetchData();
+}, []);
+
    // Fetch part numbers from API when component mounts
      useEffect(() => {
+       if (form.reportNo) {
+        console.log(form.reportNo);
+        const mrnNo =form.reportNo;
        const getPartNumbers = async () => {
-         setPartLoading(true);
          try {
-           const res = await fetchPartNumbers();
-           console.log("Role data:", res.data);
+           const res = await fetchPartNumbers(mrnNo);
+           console.log("Role data:", res);
           const actualData = res.data.data || res.data; 
-           setPartNumbers(actualData);
+           setPartNumber(actualData);
          } catch (err) {
            console.error("Error fetching part numbers:", err);
-           setPartError("Failed to load part numbers. Please try again later.");
-         } finally {
-           setPartLoading(false);
-         }
+          setPartNumber([]);         } 
        };
        
        getPartNumbers();
-     }, []);
+      }
+     }, [form.reportNo]);
 
   const handleChange = (e) => {
       const { name, value } = e.target;
@@ -88,9 +101,29 @@ const AddReceivingInspectionReport = () => {
     
       try {
         const res = await fetchPartDetails(partNumber);
-        setPartDetails(res.data);
+        setForm(prev => ({
+  ...prev,
+  partNumber,
+  partDesc: res.data.partDesc || "",
+  purchaseOrderNo: res.data.purchaseOrderNo || "",
+  supplierName: res.data.supplierName || "",
+  reportNo: res.data.reportNo || "",
+  //date: res.data.date || "",
+  qty: res.data.qty || "",
+  qtyReceive: res.data.qtyReceive || ""
+}));
+        //setPartDetails(res.data);
       } catch (err) {
         console.error("Failed to fetch part details:", err);
+        setForm({
+      partDesc: "",
+      purchaseOrderNo: "",
+      supplierName: "",
+      reportNo: "",
+      date: "",
+      qty: "",
+      qtyReceive: ""
+    });
       }
     };
     const handleAddInspectionReport = async (e) => {
@@ -98,13 +131,13 @@ const AddReceivingInspectionReport = () => {
       //if (!validateForm()) return;
  if (!document) return alert("Please upload the document.");
   const payload = {
-    partNumber: selectedPart,
-    partDesc: partDetails.partDesc,
-    purchaseOrderNo: partDetails.purchaseOrderNo,
-    supplierName: partDetails.supplierName,
-    reportNo: partDetails.reportNo,
-    date: partDetails.date,
-    qty: partDetails.qty,
+    partNumber: form.partNumber,
+    partDesc: form.partDesc,
+    purchaseOrderNo: form.purchaseOrderNo,
+    supplierName: form.supplierName,
+    reportNo: form.reportNo,
+    date: form.date,
+    qty: form.qty,
     qtyReceive: form.qtyReceive,
     invoiceObservation: form.invoiceObservation,
     manufacturerCertObservation: form.manufacturerCertObservation,
@@ -203,34 +236,41 @@ const AddReceivingInspectionReport = () => {
                   <form onSubmit={handleAddInspectionReport} style={{ height: "100%" }}>
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Part Number</label>
-                        {partLoading ? (
-                          <div className="d-flex align-items-center">
-                            <div className="spinner-border text-primary me-2" role="status">
-                              <span className="visually-hidden">Loading...</span>
-                            </div>
-                            <span>Loading part numbers...</span>
-                          </div>
-                        ) : partError ? (
-                          <div className="alert alert-danger w-100">
-                            {partError}
-                          </div>
-                        ) : (
-                          <select
-                            className="form-select w-100"
-                            name="partNumber"
-                            onChange={(e) => handlePartNumberSelect(e.target.value)}
-                            value={selectedPart}
-                            required
+                        <label className="col-md-4 mt-2">MRO No.</label>
+                        <select
+                          className="form-control"
+                          name="reportNo"
+                          value={form.reportNo}
+                          onChange={handleChange}
+                          required
                           >
-                            <option value="">Select a part number</option>
-                            {Array.isArray(partNumbers) && partNumbers.map((part) => (
-                            <option key={part.partNumber} value={part.partNumber}>
-                            {part.partNumber}
-                            </option>
-                            ))}
-                          </select>
-                        )}
+                        <option value="">-- Select MRO NO --</option>
+                          {mrnNos.map((s,i) => (
+                          <option key={i} value={s}>
+                            {s}
+                          </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">Part Number</label>
+                        <select
+                          className="form-control"
+                          name="partNumber"
+                          value={form.partNumber}
+                          onChange={(e) => {
+                            handleChange(e);
+                            handlePartNumberSelect(e.target.value);
+                          }}
+                          required
+                       >
+                    <option value="">-- Select Part Number --</option>
+                    {partNumber.map((p, i) => (
+                      <option key={i} value={p.partNumber}>
+                        {p.partNumber}
+                      </option>
+                    ))}
+                  </select>
                       </div>
                     </div>
 
@@ -242,7 +282,7 @@ const AddReceivingInspectionReport = () => {
                           className="form-control w-100"
                           type="text"
                           name="partDesc"
-                          value={partDetails.partDesc}
+                          value={form.partDesc}
                           onChange={handleChange}
                           disabled
                         />
@@ -255,7 +295,7 @@ const AddReceivingInspectionReport = () => {
                           className="form-control w-100"
                           type="text"
                           name="purchaseOrderNo"
-                          value={partDetails.purchaseOrderNo}
+                          value={form.purchaseOrderNo}
                           onChange={handleChange}
                           disabled
                         />
@@ -266,7 +306,7 @@ const AddReceivingInspectionReport = () => {
                           className="form-control w-100"
                           type="text"
                           name="supplierName"
-                          value={partDetails.supplierName}
+                          value={form.supplierName}
                           onChange={handleChange}
                           disabled
                         />
@@ -274,26 +314,16 @@ const AddReceivingInspectionReport = () => {
                     </div>
 
                     <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Report No.</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="reportNo"
-                          value={partDetails.reportNo}
-                          onChange={handleChange}
-                          disabled
-                        />
-                      </div>
+                      
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">Date</label>
                         <input
                           className="form-control w-100"
                           type="date"
                           name="date"
-                          value={partDetails.date}
+                          value={form.date}
                           onChange={handleChange}
-                          disabled
+                          required
                         />
                       </div>
                       </div>
@@ -304,7 +334,7 @@ const AddReceivingInspectionReport = () => {
                           className="form-control w-100"
                           type="text"
                           name="qty"
-                          value={partDetails.qty}
+                          value={form.qty}
                           onChange={handleChange}
                           disabled
                         />
@@ -317,7 +347,7 @@ const AddReceivingInspectionReport = () => {
                           name="qtyReceive"
                           value={form.qtyReceive}
                           onChange={handleChange}
-                          
+                          required
                         />
                       </div>
                       </div>
@@ -501,14 +531,18 @@ const AddReceivingInspectionReport = () => {
                     </div>
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">LOT Accepted(Yes/No/With Deviation)</label>
-                        <input
+                        <select
                           className="form-control w-100"
-                          type="text"
                           name="lotAccepted"
                           value={form.lotAccepted}
                           onChange={handleChange}
                           required
-                        />
+                        >
+                          <option value="">Select</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                          <option value="With Deviation">With Deviation</option>
+                        </select>
                       </div>
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">Remark(If any)</label>
@@ -518,7 +552,7 @@ const AddReceivingInspectionReport = () => {
                           name="remark"
                           value={form.remark}
                           onChange={handleChange}
-                          required
+                          
                         />
                       </div>
                       <div className="col-md-6 p-1 d-flex">

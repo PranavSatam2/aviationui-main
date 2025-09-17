@@ -213,7 +213,7 @@ let GetEditReportList =REST_API_BASE_URL + "/api/inspectionReport/getEditReportL
 let UpdateReportNew = REST_API_BASE_URL + "/api/inspectionReport/updateReport"
 let ViewReportList = REST_API_BASE_URL + "/api/inspectionReport/viewReport"
  
-export const fetchPartNumbers = () => axiosInstance.get(`${PARTNumber}`);
+export const fetchPartNumbers = (mrnNo) => axiosInstance.get(`${PARTNumber}/${mrnNo}`);
 export const fetchPartDetails = (PartNo) => axiosInstance.get(`${getDetailsByPartNo}/${PartNo}`);
 export const submitInspectionReport =(payload) => axiosInstance.post(SaveInspectionReport,payload, {
         headers: {
@@ -383,15 +383,17 @@ export const storeInventoryList = () => axiosInstance.get(`${StoreInventory}`);
 let GetSupplierName = REST_API_BASE_URL + "/api/supplier/suppliernames"
 export const fetchSupplierName = () => axiosInstance.get(`${GetSupplierName}`);
 
-let GetAllPurchaseOrder = REST_API_BASE_URL + "/api/mrn/getAllPurchaseOrder"
+let GetAllPurchaseOrder = REST_API_BASE_URL + "/api/purchase-orders/getAllPurchaseOrder"
 export const fetchAllPurchaseOrder = () => axiosInstance.get(`${GetAllPurchaseOrder}`);
 
-let FetchAllPartNO = REST_API_BASE_URL + "/api/mrn/getAllPartNoByPurchaseOrder"
-export const fetchAllPartNO = (PONumber) => axiosInstance.get(`${FetchAllPartNO}/${PONumber}`); 
+let FetchAllPartNO = REST_API_BASE_URL + "/api/purchase-orders/getAllPartNoByPurchaseOrder"
+export const fetchAllPartNO = (poNumber) => axiosInstance.get(`${FetchAllPartNO}/${poNumber}`); 
 
-let FetchAllPartNODetails = REST_API_BASE_URL + "/api/mrn/getDetailByPartNo"
+let FetchAllPartNODetails = REST_API_BASE_URL + "/api/purchase-orders/getDetailByPartNo"
 export const fetchAllPartNODetails = (PartNo) => axiosInstance.get(`${FetchAllPartNODetails}/${PartNo}`);
 
+let FetchMrnNos = REST_API_BASE_URL + "/api/inspectionReport/mrnNo"
+export const fetchMrnNos = () => axiosInstance.get(`${FetchMrnNos}`);
 
 let API_URL = REST_API_BASE_URL + "/api/customers";
 export const getAllCustomers = () => axiosInstance.get(API_URL);

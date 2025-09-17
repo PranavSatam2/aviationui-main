@@ -269,7 +269,7 @@ const EditInspectionReportTable = () => {
     { field: "partDesc", label: "Part Description", width: "100px" },
     { field: "purchaseOrderNo", label: "Purchase Order No.", width: "100px" },
     { field: "supplierName", label: "Supplier Name", width: "100px" },
-    { field: "reportNo", label: "Report No.", width: "100px" },
+    { field: "reportNo", label: "MRN No.", width: "100px" },
     { field: "date", label: "Date", width: "100px" },
     { field: "qty", label: "Quantity", width: "100px" },
     { field: "invoiceObservation", label: "Invoice  Observation", width: "100px" },
@@ -294,8 +294,8 @@ const EditInspectionReportTable = () => {
     { field: "documentObservation", label: "Documents Observation", width: "100px" },
     { field: "lotAccepted", label: "Lot Accepted", width: "100px" },
     { field: "remark", label: "Remark", width: "100px" },
-    { field: "Maker", label: "makerUserName", width: "100px" },
-    { field: "Maker Date", label: "makerDate", width: "100px" },
+    // { field: "Maker", label: "makerUserName", width: "100px" },
+    // { field: "Maker Date", label: "makerDate", width: "100px" },
 ];
 
   return (

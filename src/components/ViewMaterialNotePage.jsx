@@ -137,8 +137,8 @@ const ViewMaterialPage = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "materialId", label: "Material ID", width: "100px" },
-    { field: "mrnNo", label: "MRN No", width: "100px" },
+    { field: "materialId", label: "Material ID", width: "50px" },
+    { field: "mrnNo", label: "MRN No", width: "200px" },
     { field: "partNumber", label: "Part Number", width: "120px" },
     { field: "partDescription", label: "Description", width: "200px" },
     { field: "supplierName", label: "Supplier", width: "140px" },
@@ -147,6 +147,7 @@ const ViewMaterialPage = () => {
     { field: "receiptDate", label: "Receipt Date", width: "140px" },
     { field: "quantity", label: "Quantity", width: "140px" },
     { field: "unitOfMeasurement", label: "Unit", width: "120px" },
+    { field: "qualityAcceptance", label: "Received Quantity", width: "140px" },
     // { field: "storeInchargeSign", label: "Store Incharge", width: "140px" },
     // { field: "qualityAcceptance", label: "Quality Acceptance", width: "140px" },
   ];

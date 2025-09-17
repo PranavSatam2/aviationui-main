@@ -104,6 +104,17 @@ const EditInspectionReportform = () => {
                       <form onSubmit={handleSubmit} style={{ height: "100%" }}>
                         <div className="col-md-12 p-2 d-flex">
                           <div className="col-md-6 p-2 d-flex">
+                            <label className="col-md-4 mt-2">MRO No.</label>
+                            <input
+                              className="form-control w-100"
+                              type="text"
+                              name="reportNo"
+                              value={form.reportNo}
+                              onChange={handleChange}
+                              disabled
+                            />
+                          </div>
+                          <div className="col-md-6 p-2 d-flex">
                             <label className="col-md-4 mt-2">Part Number</label>
                             <input
                               className="form-control w-100"
@@ -156,17 +167,7 @@ const EditInspectionReportform = () => {
                         </div>
     
                         <div className="col-md-12 d-flex">
-                          <div className="col-md-6 p-2 d-flex">
-                            <label className="col-md-4 mt-2">Report No.</label>
-                            <input
-                              className="form-control w-100"
-                              type="text"
-                              name="reportNo"
-                              value={form.reportNo}
-                              onChange={handleChange}
-                              disabled
-                            />
-                          </div>
+                          
                           <div className="col-md-6 p-2 d-flex">
                             <label className="col-md-4 mt-2">Date</label>
                             <input
@@ -175,7 +176,7 @@ const EditInspectionReportform = () => {
                               name="date"
                               value={form.date}
                               onChange={handleChange}
-                              disabled
+                              required
                             />
                           </div>
                           </div>
@@ -199,7 +200,7 @@ const EditInspectionReportform = () => {
                           name="qtyReceive"
                           value={form.qtyReceive}
                           onChange={handleChange}
-                          disabled
+                          required
                         />
                       </div>
                           </div>
@@ -381,15 +382,19 @@ const EditInspectionReportform = () => {
                           </table>
                         </div>
                         <div className="col-md-6 p-2 d-flex">
-                            <label className="col-md-4 mt-2">LOT Accepted(Yes/No/With Deviation)</label>
-                            <input
-                              className="form-control w-100"
-                              type="text"
-                              name="lotAccepted"
-                              value={form.lotAccepted}
-                              onChange={handleChange}
-                              required
-                            />
+                            <label className="col-md-4 mt-2">LOT Accepted</label>
+                            <select
+                          className="form-control w-100"
+                          name="lotAccepted"
+                          value={form.lotAccepted}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                          <option value="With Deviation">With Deviation</option>
+                        </select>
                           </div>
                           <div className="col-md-6 p-2 d-flex">
                             <label className="col-md-4 mt-2">Remark(If any)</label>
@@ -399,7 +404,7 @@ const EditInspectionReportform = () => {
                               name="remark"
                               value={form.remark}
                               onChange={handleChange}
-                              required
+                              
                             />
                           </div>
                           </div>

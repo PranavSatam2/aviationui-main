@@ -105,15 +105,11 @@ const StoreInventory = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "id", label: "ID", width: "60px" },
-    { field: "partNum", label: "Name", width: "100px" },
-    { field: "description", label: "Description", width: "150px" },
-    { field: "location", label: "Location", width: "80px" },
-    { field: "quantity", label: "Quantity", width: "100px" }, 
-    { field: "dateOfRecipet", label: "Date Of Recipet", width: "100px" },
-    { field: "dom", label: "Manufacturing Date", width: "80px" },
-    { field: "doe", label: "Date Of Expiry", width: "100px" },    
-
+    { field: "id", label: "ID", width: "150px" },
+    { field: "partNum", label: "Name", width: "200px" },
+    { field: "description", label: "Description", width: "250px" },
+    { field: "location", label: "Location", width: "200px" },
+    { field: "quantity", label: "Quantity", width: "200px" },
   ];
 
   return (
