@@ -173,6 +173,7 @@ const ViewPurchaseOrderPage = () => {
     { field: "pf", label: "PF", width: "80px" },
     { field: "other_Charges", label: "Other Charges", width: "120px" },
     { field: "insurance", label: "Insurance", width: "100px" },
+    { field: "status", label: "Status", width: "100px" },
   ];
 
   const handlePrintClick = (purchaseOrder) => {
