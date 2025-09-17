@@ -685,6 +685,7 @@ export default function PurchaseOrderForm() {
       label: "Unit of Measurement",
       width: "150px",
     },
+    { field: "status", label: "Status", width: "100px" },
   ];
 
   const handleSave = async () => {

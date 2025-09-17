@@ -80,15 +80,18 @@ const ViewPurchaseOrderPage = () => {
   };
 
   // Search functionality
-  const filteredData = tableData.filter((purchaseOrder) => {
-    return Object.entries(purchaseOrder)
-      .filter(([key]) => key !== "id") // Exclude id from search
-      .some(
-        ([_, value]) =>
-          value &&
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      );
-  });
+  // Filter out "close" status first, then search
+  // 1️⃣ Hide requisitions where status === 'close'
+  // 2️⃣ Apply search filter
+  const filteredData = tableData
+  .filter(requisition => requisition.status?.toLowerCase() !== 'close')
+  .filter(requisition =>
+    Object.values(requisition).some(
+      value =>
+        value &&
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
