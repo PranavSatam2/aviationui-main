@@ -420,6 +420,7 @@ export default function PurchaseOrderForm() {
     setIsLoading(true);
     try {
       const response = await listAllPurchaseRequisition();
+      console.log("table ", response);
       setTableData(response || []);
       setIsLoading(false);
     } catch (error) {

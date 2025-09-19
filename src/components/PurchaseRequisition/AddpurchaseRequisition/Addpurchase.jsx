@@ -3,7 +3,7 @@ import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
-import { createPurchaseRequisition } from "../../../services/db_manager";
+import { createPurchaseRequisition,  fetchCurrentQuantityFromStore} from "../../../services/db_manager";
 // Import functions to fetch data from your API
 // Assuming you have these functions in your services
 import { fetchPartNumbersAndDescriptions } from "../../../services/db_manager";
@@ -126,6 +126,26 @@ const AddPurchaseRequisition = () => {
     setSearchTerm(selectedItem.productName);
     setIsDropdownOpen(false);
   };
+
+  useEffect(() => {
+      if (form.partNumber) {
+        const currentQuantity = async () => {
+          try {
+            const result = await fetchCurrentQuantityFromStore(form.partNumber);
+            console.log("Fetched currentQuantity:", result.data);
+            if (result && result.data !== null && result.data !== undefined) {
+          setForm((prev) => ({
+            ...prev,
+            currentStock: result.data, // directly use the integer
+          }));
+        }
+          } catch (err) {
+            console.error("Failed to fetch currentStock", err);
+          }
+        };
+        currentQuantity();
+      }
+    }, [form.partNumber]);
 
   // Handle search input change
   const handleSearchChange = (e) => {

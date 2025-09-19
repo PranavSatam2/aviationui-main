@@ -80,11 +80,11 @@ const AddMaterialNote = () => {
   }, [form.orderNumber]);
 
   // ✅ Fetch Part Details when Part Number selected
-  useEffect(() => {
+useEffect(() => {
     if (form.partNumber) {
       const fetchData = async () => {
         try {
-          const result = await fetchAllPartNODetails(form.partNumber);
+          const result = await fetchAllPartNODetails(form.partNumber, form.orderNumber);
           console.log("Fetched PartNoDetails:", result);
           if (result) {
             const { description, currentStoke, unit } = result.data;
@@ -102,7 +102,7 @@ const AddMaterialNote = () => {
       };
       fetchData();
     }
-  }, [form.partNumber]);
+  }, [form.partNumber,form.orderNumber]);
 
   // ✅ Handle Change
   const handleChange = (e) => {

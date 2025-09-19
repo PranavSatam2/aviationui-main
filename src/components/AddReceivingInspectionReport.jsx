@@ -100,14 +100,14 @@ const AddReceivingInspectionReport = () => {
       if (!partNumber) return;
     
       try {
-        const res = await fetchPartDetails(partNumber);
+        const res = await fetchPartDetails(partNumber ,form.reportNo);
         setForm(prev => ({
   ...prev,
   partNumber,
   partDesc: res.data.partDesc || "",
   purchaseOrderNo: res.data.purchaseOrderNo || "",
   supplierName: res.data.supplierName || "",
-  reportNo: res.data.reportNo || "",
+  //reportNo: res.data.reportNo || "",
   //date: res.data.date || "",
   qty: res.data.qty || "",
   qtyReceive: res.data.qtyReceive || ""

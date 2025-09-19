@@ -160,7 +160,7 @@ const ViewPurchaseOrderPage = () => {
     { field: "paymentTerms", label: "Payment Terms", width: "120px" },
     { field: "partNumber", label: "Part Number", width: "120px" },
     { field: "description", label: "Description", width: "150px" },
-    { field: "currentStoke", label: "Current Stock", width: "120px" },
+    { field: "currentStoke", label: "PO Quantity", width: "120px" },
     { field: "unit", label: "Unit", width: "80px" },
     { field: "ratePerUnit", label: "Rate Per Unit", width: "120px" },
     { field: "grossAmount", label: "Gross Amount", width: "120px" },
