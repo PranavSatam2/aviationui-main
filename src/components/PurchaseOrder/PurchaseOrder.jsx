@@ -108,13 +108,13 @@
 //       {/* Search Section */}
 //       <div className={styles.searchSection}>
 //         <div className={styles.searchInputContainer}>
-//           <label className={styles.searchLabel}>Batch Number</label>
+//           <label className={styles.searchLabel}>Po Number</label>
 //           <input
 //             type="text"
 //             className={styles.searchInput}
 //             value={batchNo}
 //             onChange={(e) => setBatchNo(e.target.value)}
-//             placeholder="Enter Batch Number"
+//             placeholder="Enter Po Number"
 //           />
 //         </div>
 //         <div className={styles.searchButtonContainer}>
@@ -397,7 +397,7 @@ export default function PurchaseOrderForm() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [formData, setFormData] = useState({
-    poNo: "PO-2025-001",
+    poNo: "",
     poDate: "2025-04-26",
     ourReference: "OR-12345",
     yourReference: "YR-54321",
@@ -461,10 +461,11 @@ export default function PurchaseOrderForm() {
   // };
 
   const handleItemChange = (index, field, value) => {
-    // Convert value to number if applicable
     let numValue = value;
     if (field === "requiredQty" || field === "rate") {
       numValue = parseFloat(value) || 0;
+      // Only allow positive values
+      if (numValue <= 0) return;
     }
 
     const updatedItems = [...formData.items];
@@ -473,7 +474,6 @@ export default function PurchaseOrderForm() {
       [field]: numValue,
     };
 
-    // Recalculate gross if requiredQty or rate changes
     if (field === "requiredQty" || field === "rate") {
       updatedItems[index].gross = calculateGross(
         field === "requiredQty" ? numValue : updatedItems[index].requiredQty,
@@ -489,6 +489,8 @@ export default function PurchaseOrderForm() {
 
   const handleAdditionalChargeChange = (field, value) => {
     const numValue = parseFloat(value) || 0;
+    // Only allow positive values
+    if (numValue <= 0) return;
     setFormData({
       ...formData,
       [field]: numValue,
@@ -543,7 +545,7 @@ export default function PurchaseOrderForm() {
     );
   });
 
-  // Group data by batch number
+  // Group data by Po Number
   const groupedData = filteredData.reduce((groups, item) => {
     const batchNumber = item.batchNumber || "No Batch";
     if (!groups[batchNumber]) {
@@ -582,7 +584,7 @@ export default function PurchaseOrderForm() {
   // Calculate total items for display
   const totalItems = filteredData.length;
 
-  // Handle batch number click to open order form
+  // Handle Po Number click to open order form
   const handleBatchClick = async (batchNumber) => {
     setBatchNo(batchNumber);
     setOrderForm(true);
@@ -609,7 +611,7 @@ export default function PurchaseOrderForm() {
           ...formData,
           items: [],
         });
-        toast.info(`No data found for batch number: ${batchNumber}`);
+        toast.info(`No data found for Po Number: ${batchNumber}`);
       }
     } catch (error) {
       console.error(
@@ -673,12 +675,12 @@ export default function PurchaseOrderForm() {
 
   // Column definitions for the table
   const columns = [
-    { field: "batchNumber", label: "Batch Number", width: "200px" },
+    { field: "batchNumber", label: "Po Number", width: "230px" },
     { field: "id", label: "P_REQ_No", width: "100px" },
     { field: "partNumber", label: "Part Number", width: "130px" },
     { field: "description", label: "Description", width: "130px" },
-    { field: "currentStock", label: "Current Stock", width: "70px" },
-    { field: "requiredQty", label: "Required Qty", width: "70px" },
+    { field: "currentStock", label: "Current Stock", width: "100px" },
+    { field: "requiredQty", label: "Required Qty", width: "100px" },
     { field: "requiredDate", label: "Required Date", width: "150px" },
     { field: "remark", label: "Remark", width: "100px" },
     {
@@ -693,7 +695,7 @@ export default function PurchaseOrderForm() {
     try {
       // If no items are loaded, show error
       if (formData.items.length === 0) {
-        alert("Please search for a batch number first to load items.");
+        alert("Please search for a Po Number first to load items.");
         return;
       }
 
@@ -704,8 +706,9 @@ export default function PurchaseOrderForm() {
       // Prepare the payload according to the new structure
       const payload = {
         // Required fields
-        batchNumber: batchNo,
-        poNumber: formData.poNo,
+        poNumber: batchNo,
+         batchNumber: batchNo,
+        // poNumber: formData.poNo,
         poDate: formData.poDate,
         ourReference: formData.ourReference,
         yourReference: formData.yourReference,
@@ -739,11 +742,14 @@ export default function PurchaseOrderForm() {
         forwarder: formData.forwarder,
       };
 
-      console.log("Saving purchase order:", payload);
-
       // Call the API to save the data
       const responce = await createPurchaseOrder(payload);
-      if (responce) {
+      console.log("Save response:", responce);
+      if (responce.status !== 200) {
+        toast.error(
+          "Purchase order already saved or Error for saving Purchase Order."
+        );
+      } else {
         toast.success("Purchase Order saved successfully!");
       }
       // alert("Purchase Order saved successfully!");
@@ -855,6 +861,7 @@ export default function PurchaseOrderForm() {
                         overflowY: "auto",
                         scrollbarWidth: "thin",
                         scrollbarColor: "#ccc transparent",
+                        maxHeight: "45vh",
                       }}
                     >
                       <table className="table table-hover table-striped align-middle">
@@ -1074,7 +1081,7 @@ export default function PurchaseOrderForm() {
                 </div>
               </div>
 
-              {/* Order Form - opens when batch number is clicked */}
+              {/* Order Form - opens when Po Number is clicked */}
               {orderForm && (
                 <div className={styles.formContainer}>
                   {/* Close button */}
@@ -1121,10 +1128,11 @@ export default function PurchaseOrderForm() {
                           <input
                             type="text"
                             className={styles.inputField}
-                            value={formData.poNo}
+                            value={batchNo}
                             onChange={(e) =>
                               handleInputChange("poNo", e.target.value)
                             }
+                            disabled
                           />
                         </div>
                         <div className={styles.orderInfoLabel}>P.O. Date:</div>
@@ -1282,6 +1290,7 @@ export default function PurchaseOrderForm() {
                                 <td className={styles.tableCellCenter}>
                                   <input
                                     type="number"
+                                    min="1"
                                     className={styles.inputField}
                                     value={item.rate}
                                     onChange={(e) =>
@@ -1398,6 +1407,7 @@ export default function PurchaseOrderForm() {
                             <td className={styles.totalValue}>
                               <input
                                 type="number"
+                                min="1"
                                 className={styles.inputField}
                                 value={formData.pf}
                                 onChange={(e) =>
@@ -1416,6 +1426,7 @@ export default function PurchaseOrderForm() {
                             <td className={styles.totalValue}>
                               <input
                                 type="number"
+                                min="1"
                                 className={styles.inputField}
                                 value={formData.transportation}
                                 onChange={(e) =>
@@ -1432,6 +1443,7 @@ export default function PurchaseOrderForm() {
                             <td className={styles.totalValue}>
                               <input
                                 type="number"
+                                min="1"
                                 className={styles.inputField}
                                 value={formData.insurance}
                                 onChange={(e) =>
@@ -1448,6 +1460,7 @@ export default function PurchaseOrderForm() {
                             <td className={styles.totalValue}>
                               <input
                                 type="number"
+                                min="1"
                                 className={styles.inputField}
                                 value={formData.other_Charges}
                                 onChange={(e) =>
