@@ -138,6 +138,11 @@ const AddPurchaseRequisition = () => {
             ...prev,
             currentStock: result.data, // directly use the integer
           }));
+        }else{
+           setForm((prev) => ({
+            ...prev,
+            currentStock: 0, // directly use the integer
+          }));
         }
           } catch (err) {
             console.error("Failed to fetch currentStock", err);
