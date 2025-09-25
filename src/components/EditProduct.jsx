@@ -10,6 +10,17 @@ const EditProduct = () => {
   const { productId } = useParams(); // Get the productId from URL
   const navigate = useNavigate();
   const [showAlternate, setShowAlternate] = useState(false);
+  const [showAlternateName, setShowAlternateName] = useState(false);
+
+  // 🟩 get today’s date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
+
+  useEffect(() => {
+    const loggedUser = sessionStorage.getItem("username"); // username stored at login
+    if (loggedUser) {
+      setForm(prev => ({ ...prev, registeredBy: loggedUser }));
+    }
+  }, []);
 
   const [form, setForm] = useState({
     productName: "",
@@ -19,29 +30,32 @@ const EditProduct = () => {
     oem: "",
     nha: "",
     cmmReferenceNumber: "",
-    registrationDate: "",
-    registeredBy: "",
+    registrationDate: today,
+    registeredBy: sessionStorage.getItem("username") || "",
     alternateProduct: "",  // make sure it’s present
   });
 
   useEffect(() => {
-    const fetchProductDetail = async () => {
-      try {
-        const response = await getProductDetail(productId);
-        if (response.data) {
-          setForm(response.data);
-          // if alternateProduct already has a value, show field
-          if (response.data.alternateProduct) {
-            setShowAlternate(true);
-          }
+  const fetchProductDetail = async () => {
+    try {
+      const response = await getProductDetail(productId);
+      if (response.data) {
+        setForm(response.data);
+
+        // Set alternate product flags
+        if (response.data.alternateProduct) {
+          setShowAlternate(true);      // ✅ radio button shows Yes
+          setShowAlternateName(true);  // ✅ allows swapping button ↕ to appear
         }
-      } catch (error) {
-        console.error("Error fetching product details:", error);
-        alert("Error fetching product details.");
       }
-    };
-    fetchProductDetail();
-  }, [productId]);
+    } catch (error) {
+      console.error("Error fetching product details:", error);
+      alert("Error fetching product details.");
+    }
+  };
+  fetchProductDetail();
+}, [productId]);
+
 
 
   const handleChange = (e) => {
@@ -51,57 +65,34 @@ const EditProduct = () => {
 
   // Helper function to validate each field
   const validateField = (fieldName, value, rules) => {
-    if (!value) return `${fieldName} is required.`;
+    if (rules.required && !value) return `${fieldName} is required.`;
 
-    if (rules.type === "number" && isNaN(value)) {
+    if (rules.type === "number" && value && isNaN(value)) {
       return `${fieldName} should be a number.`;
     }
 
-    if (rules.length && value.length > rules.length) {
+    if (rules.length && value && value.length > rules.length) {
       return `${fieldName} should be at most ${rules.length} characters.`;
     }
 
-    if (rules.regex && !rules.regex.test(value)) {
+    if (rules.regex && value && !rules.regex.test(value)) {
       return `${fieldName} has invalid characters.`;
     }
 
     return null; // No error
   };
 
+
   // New validation rules object
   const validationRules = {
-    productName: {
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    productDescription: {
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    unitOfMeasurement: {
-      length: 6,
-      regex: /^[a-zA-Z]*$/,
-    },
-    materialClassification: {
-      length: 30,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    oem: {
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    nha: {
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    cmmReferenceNumber: {
-      type: "number",
-      length: 12,
-    },
-    registeredBy: {
-      length: 255,
-      regex: /^[a-zA-Z\s]*$/,
-    },
+    productName: { required: true, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
+    productDescription: { required: true, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
+    unitOfMeasurement: { required: true, length: 6, regex: /^[a-zA-Z]*$/ },
+    materialClassification: { required: true, length: 30, regex: /^[a-zA-Z0-9\s-]*$/ },
+    oem: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
+    nha: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
+    cmmReferenceNumber: { required: false, type: "number", length: 12 },
+    registeredBy: { required: true, length: 255, regex: /^[a-zA-Z\s-]*$/ },
   };
 
   const handleSubmit = async (e) => {
@@ -152,22 +143,40 @@ const EditProduct = () => {
                   <form onSubmit={handleSubmit} style={{ height: "100%" }}>
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-1">Product Name</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="productName"
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                          }}
-                          value={form.productName}
-                          onChange={handleChange}
-                          required
-                        />
+                        <label className="col-md-4 mt-1">
+                          Product Name <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <div className="input-group w-100">
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="productName"
+                            onInput={(event) => validateDataType(event, "A")}
+                            value={form.productName}
+                            onChange={handleChange}
+                            required
+                          />
+                          {showAlternateName && (
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              onClick={() => {
+                                setForm((prev) => ({
+                                  ...prev,
+                                  productName: prev.alternateProduct,
+                                  alternateProduct: prev.productName,
+                                }));
+                              }}
+                            >
+                              ↕
+                            </button>
+                          )}
+                        </div>
                       </div>
+
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">
-                          Material Classification
+                          Material Classification <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
                           className="form-control w-100"
@@ -253,7 +262,7 @@ const EditProduct = () => {
 
                     <div className="col-md-12 p-3 d-flex">
                       <label className="col-md-2 mt-2">
-                        Product Description
+                        Product Description <span style={{ color: "red" }}>*</span>
                       </label>
                       <textarea
                         className="form-control w-100"
@@ -271,7 +280,7 @@ const EditProduct = () => {
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-1 d-flex">
                         <label className="col-md-4 mt-2">
-                          Unit of Measurement
+                          Unit of Measurement <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
                           className="form-control w-100"
@@ -304,7 +313,6 @@ const EditProduct = () => {
                           }}
                           value={form.oem}
                           onChange={handleChange}
-                          required
                         />
                       </div>
                     </div>
@@ -321,7 +329,6 @@ const EditProduct = () => {
                             validateDataType(event, "A");
                           }}
                           onChange={handleChange}
-                          required
                         />
                       </div>
 
@@ -338,14 +345,13 @@ const EditProduct = () => {
                           }}
                           value={form.cmmReferenceNumber}
                           onChange={handleChange}
-                          required
                         />
                       </div>
                     </div>
 
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Date</label>
+                        <label className="col-md-4 mt-2">Date<span style={{ color: "red" }}>*</span></label>
                         <input
                           className="form-control w-100"
                           type="date"
@@ -353,11 +359,12 @@ const EditProduct = () => {
                           value={form.registrationDate}
                           onChange={handleChange}
                           required
+                          readOnly // 🟩 prevents manual change
                         />
                       </div>
 
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Registered By</label>
+                        <label className="col-md-4 mt-2">Registered By<span style={{ color: "red" }}>*</span></label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -368,6 +375,7 @@ const EditProduct = () => {
                           }}
                           onChange={handleChange}
                           required
+                          readOnly
                         />
                       </div>
                     </div>
