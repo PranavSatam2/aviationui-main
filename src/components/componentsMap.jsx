@@ -28,6 +28,7 @@ import EditMaterialNote from './EditMaterialNote.jsx';
 import EditProduct from './EditProduct.jsx';
 import EditRepairProduct from './EditRepairProduct.jsx';
 import EditStoreAcceptance from './EditStoreAcceptance.jsx';
+import EditUpdateStore from './EditUpdateStore.jsx';
 import EditUser from './EditUser.jsx';
 import Footer from './Footer.jsx';
 import Header from './Header.jsx';
@@ -48,7 +49,6 @@ import EditPurchaseOrder from './PurchaseOrder/EditPurchaseOrder/EditPurchaseOrd
 import PurchaseOrder from './PurchaseOrder/PurchaseOrder.jsx';
 import PurchaseOrderForm from './PurchaseOrder/PurchaseOrderForm.jsx';
 import PurchaseOrderReport from './PurchaseOrder/PurchaseOrderReport/PurchaseOrderReport.jsx';
-import PurchaseOrderTable from './PurchaseOrder/PurchaseOrderTable.jsx';
 import ViewPurchaseOrder from './PurchaseOrder/ViewPurchaseOrder/ViewPurchaseOrder.jsx';
 import Addpurchase from './PurchaseRequisition/AddpurchaseRequisition/Addpurchase.jsx';
 import EditPurchase from './PurchaseRequisition/EditPurchaseRequisition/EditPurchase.jsx';
@@ -64,6 +64,7 @@ import IncomingInspectionTab from './tabs/supplier_registration/IncomingInspecti
 import MaterialAndOther from './tabs/supplier_registration/MaterialAndOther.jsx';
 import QualityProcessTab from './tabs/supplier_registration/QualityProcessTab.jsx';
 import SupplierAnalysisTab from './tabs/supplier_registration/SupplierAnalysisTab.jsx';
+import UpdateStoreTable from './UpdateStoreTable.jsx';
 import ViewCAForm from './ViewCAForm.jsx';
 import ViewCustomerOrder from './ViewCustomerOrder.jsx';
 import ViewCustomerRegList from './ViewCustomerRegList.jsx';
@@ -110,6 +111,7 @@ const componentsMap = {
   "EditProduct": EditProduct,
   "EditRepairProduct": EditRepairProduct,
   "EditStoreAcceptance": EditStoreAcceptance,
+  "EditUpdateStore": EditUpdateStore,
   "EditUser": EditUser,
   "Footer": Footer,
   "Header": Header,
@@ -130,7 +132,6 @@ const componentsMap = {
   "PurchaseOrder": PurchaseOrder,
   "PurchaseOrderForm": PurchaseOrderForm,
   "PurchaseOrderReport": PurchaseOrderReport,
-  "PurchaseOrderTable": PurchaseOrderTable,
   "ViewPurchaseOrder": ViewPurchaseOrder,
   "Addpurchase": Addpurchase,
   "EditPurchase": EditPurchase,
@@ -146,6 +147,7 @@ const componentsMap = {
   "MaterialAndOther": MaterialAndOther,
   "QualityProcessTab": QualityProcessTab,
   "SupplierAnalysisTab": SupplierAnalysisTab,
+  "UpdateStoreTable": UpdateStoreTable,
   "ViewCAForm": ViewCAForm,
   "ViewCustomerOrder": ViewCustomerOrder,
   "ViewCustomerRegList": ViewCustomerRegList,

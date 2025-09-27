@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useEffect, useRef, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import {
-  deleteCustomer,
-  getAllCustomers,
-  getCustomerById,
+  getStoreDetail,
+  listAllStore,
 } from "../services/db_manager";
+import MyModalComponent from "./partials/MyModalComponent";
+import { useNavigate } from "react-router-dom";
+import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import { toast } from "react-toastify";
 
-const CustomerList = () => {
-  // States
-  const [tableData, setTableData] = useState([]);
+const UpdateStore = () => {
+  // State
+  const [tableData, setTableData] = useState([]); // Store data
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -22,19 +22,23 @@ const CustomerList = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
+  const modalRef = useRef(); // Modal reference
 
-  // Fetch all customers
+  // Fetching data when the component is mounted
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await getAllCustomers();
-        if (response?.data) {
-          setTableData(response.data);
+        const response = await listAllStore();
+        if (response && !response.every((item) => item === null)) {
+          setTableData(response);
+        } else {
+          setTableData([]);
         }
-      } catch (error) {
-        console.error("Error fetching customers", error);
-        toast.error("Failed to load customer data");
+      } catch {
+        toast.error("Failed to load store data");
+        // Set empty array in case of error too
+        setTableData([]);
       } finally {
         setIsLoading(false);
       }
@@ -42,59 +46,34 @@ const CustomerList = () => {
     fetchData();
   }, []);
 
-  // Delete customer
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
-      try {
-        await deleteCustomer(id);
-        setTableData((prev) => prev.filter((item) => item.id !== id));
-        toast.success("Customer deleted successfully");
-      } catch (error) {
-        console.error("Failed to delete customer", error);
-        toast.error("Failed to delete customer. Please try again.");
-      }
-    }
-  };
 
-  // Edit customer
-  const handleEdit = async (id) => {
+  // Edit the selected store item
+  async function editSelectedElement(elementId) {
     try {
-      const response = await getCustomerById(id);
+      const response = await getStoreDetail(elementId);
       if (response?.data) {
-        navigate(`/editCustomer/${id}`);
+        navigate(`/editUpdateStore/${elementId}`);
       }
     } catch (error) {
-      console.error("Error fetching customer details", error);
-      toast.error("Failed to fetch customer details");
+      console.error("Error fetching store details: ", error);
+      toast.error("Failed to fetch store details");
     }
-  };
+  }
 
-  // View customer
-  const handleView = async (id) => {
-    try {
-      const response = await getCustomerById(id);
-      if (response?.data) {
-        navigate(`/viewCustomer/${id}`);
-      }
-    } catch (error) {
-      console.error("Error fetching customer details", error);
-      toast.error("Failed to fetch customer details");
-    }
-  };
-
-  // Filter data by search term
-  const filteredData = tableData.filter((customer) =>
-    Object.values(customer).some(
+  // Search functionality
+  const filteredData = tableData.filter((store) => {
+    return Object.values(store).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+    );
+  });
 
-  // Sort data
+  // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
+
     if (sortDirection === "asc") {
       return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
     } else {
@@ -102,7 +81,7 @@ const CustomerList = () => {
     }
   });
 
-  // Pagination logic
+  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -120,6 +99,7 @@ const CustomerList = () => {
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxPageButtons = 5;
+
     let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
 
@@ -139,22 +119,22 @@ const CustomerList = () => {
         </li>
       );
     }
+
     return pageNumbers;
   };
 
-  // Table columns
+  // Column definitions for the table
   const columns = [
-    { field: "id", label: "ID", width: "60px" },
-    { field: "customerName", label: "Customer Name", width: "150px" },
-    { field: "contactPersonName", label: "Contact Person", width: "150px" },
-    { field: "phoneNo", label: "Phone", width: "100px" },
-    { field: "mobileNumber", label: "Mobile", width: "100px" },
-    { field: "emailId", label: "Email", width: "150px" },
-    { field: "shipToAddress1", label: "Ship To Address 1", width: "100px" },
-    { field: "billToAddress", label: "Bill To Address", width: "100px" },
-    { field: "paymentTerms", label: "Payment Terms", width: "100px" },
-    { field: "gstNo", label: "GST No", width: "120px" },
-    { field: "customerType", label: "Customer Type", width: "100px" },
+    { field: "id", label: "ID", width: "80px" },
+    { field: "partNum", label: "Part Num", width: "80px" },
+    { field: "description", label: "Description", width: "200px" },
+    { field: "batch", label: "Batch" },
+    { field: "supplier", label: "Supplier" },
+    { field: "quantity", label: "Quantity" },
+    { field: "dom", label: "DOM" },
+    { field: "doe", label: "DOE" },
+    { field: "dateOfRecipet", label: "Receipt Date" },
+    { field: "nameOfQualityInsp", label: "Quality Inspector" },
   ];
 
   return (
@@ -163,12 +143,11 @@ const CustomerList = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Customers" />
+          <CustomBreadcrumb breadcrumbsLabel="Update Material In Store " />
 
           <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
             <div className="card-body">
-              {/* Search & Entries */}
-              <div className="row align-items-center mb-3">
+              <div className="row  align-items-center">
                 <div className="col-md-6">
                   <div className="input-group">
                     <span className="input-group-text bg-primary text-white border-0">
@@ -177,7 +156,7 @@ const CustomerList = () => {
                     <input
                       type="text"
                       className="form-control border-start-0 ps-0"
-                      placeholder="Search customers..."
+                      placeholder="Search items..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -205,14 +184,23 @@ const CustomerList = () => {
                 </div>
               </div>
 
-              {/* Table */}
               {isLoading ? (
                 <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status"></div>
+                  <div className="spinner-border text-primary" role="status">
+                    {/* <span className="visually-hidden">Loading...</span> */}
+                  </div>
                   <p className="mt-2 text-muted">Loading data...</p>
                 </div>
               ) : (
-                <div className="table-responsive" style={{ overflowY: "auto" }}>
+                <div
+                  className="table-responsive"
+                  style={{
+                    // height: "60vh",
+                    overflowY: "auto",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#ccc transparent",
+                  }}
+                >
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-light">
@@ -263,16 +251,18 @@ const CustomerList = () => {
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((customer, index) => (
+                        currentItems.map((store, index) => (
                           <tr
-                            key={customer.id}
+                            key={store.partNum}
                             className={
-                              index % 2 === 0 ? "bg-white" : "bg-light bg-opacity-50"
+                              index % 2 === 0
+                                ? "bg-white"
+                                : "bg-light bg-opacity-50"
                             }
                           >
                             {columns.map((column) => (
                               <td
-                                key={`${customer.id}-${column.field}`}
+                                key={`${store.partNum}-${column.field}`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -280,33 +270,19 @@ const CustomerList = () => {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
-                                title={customer[column.field]}
+                                title={store[column.field]}
                               >
-                                {customer[column.field]}
+                                {store[column.field]}
                               </td>
                             ))}
                             <td>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
-                                  className="btn btn-sm btn-outline-info"
-                                  onClick={() => handleView(customer.id)}
-                                  title="View"
-                                >
-                                  <i className="fa-solid fa-eye"></i>
-                                </button>
-                                <button
                                   className="btn btn-sm btn-outline-primary"
-                                  onClick={() => handleEdit(customer.id)}
+                                  onClick={() => editSelectedElement(store.id)}
                                   title="Edit"
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() => handleDelete(customer.id)}
-                                  title="Delete"
-                                >
-                                  <i className="fa-solid fa-trash"></i>
                                 </button>
                               </div>
                             </td>
@@ -314,11 +290,16 @@ const CustomerList = () => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={columns.length + 1} className="text-center py-5">
+                          <td
+                            colSpan={columns.length + 1}
+                            className="text-center py-5"
+                          >
                             {searchTerm ? (
                               <div>
                                 <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No matching records found</p>
+                                <p className="mb-0">
+                                  No matching records found
+                                </p>
                               </div>
                             ) : (
                               <div>
@@ -334,17 +315,21 @@ const CustomerList = () => {
                 </div>
               )}
 
-              {/* Pagination info & controls */}
               <div className="row mt-4 align-items-center">
                 <div className="col-md-6">
                   <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
                     Showing{" "}
-                    <span className="fw-bold text-dark">{indexOfFirstItem + 1}</span>{" "}
+                    <span className="fw-bold text-dark">
+                      {indexOfFirstItem + 1}
+                    </span>{" "}
                     to{" "}
                     <span className="fw-bold text-dark">
                       {Math.min(indexOfLastItem, sortedData.length)}
                     </span>{" "}
-                    of <span className="fw-bold text-dark">{sortedData.length}</span>{" "}
+                    of{" "}
+                    <span className="fw-bold text-dark">
+                      {sortedData.length}
+                    </span>{" "}
                     entries
                     {searchTerm &&
                       ` (filtered from ${tableData.length} total entries)`}
@@ -353,7 +338,11 @@ const CustomerList = () => {
                 <div className="col-md-6">
                   <nav aria-label="Page navigation">
                     <ul className="pagination justify-content-end mb-0">
-                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                      <li
+                        className={`page-item ${
+                          currentPage === 1 ? "disabled" : ""
+                        }`}
+                      >
                         <button
                           className="page-link border-0"
                           onClick={() => setCurrentPage(1)}
@@ -362,7 +351,11 @@ const CustomerList = () => {
                           <i className="fa-solid fa-angles-left"></i>
                         </button>
                       </li>
-                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                      <li
+                        className={`page-item ${
+                          currentPage === 1 ? "disabled" : ""
+                        }`}
+                      >
                         <button
                           className="page-link border-0"
                           onClick={() => setCurrentPage(currentPage - 1)}
@@ -374,7 +367,11 @@ const CustomerList = () => {
 
                       {renderPageNumbers()}
 
-                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                      <li
+                        className={`page-item ${
+                          currentPage === totalPages ? "disabled" : ""
+                        }`}
+                      >
                         <button
                           className="page-link border-0"
                           onClick={() => setCurrentPage(currentPage + 1)}
@@ -383,7 +380,11 @@ const CustomerList = () => {
                           <i className="fa-solid fa-angle-right"></i>
                         </button>
                       </li>
-                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                      <li
+                        className={`page-item ${
+                          currentPage === totalPages ? "disabled" : ""
+                        }`}
+                      >
                         <button
                           className="page-link border-0"
                           onClick={() => setCurrentPage(totalPages)}
@@ -398,6 +399,13 @@ const CustomerList = () => {
               </div>
             </div>
           </div>
+
+          <MyModalComponent
+            ref={modalRef}
+            modalTitle="My Custom Modal Title"
+            modalBodyContent="This is a custom body for the modal."
+            buttonLabel="Open Modal"
+          />
         </div>
         <Footer />
       </div>
@@ -405,4 +413,4 @@ const CustomerList = () => {
   );
 };
 
-export default CustomerList;
+export default UpdateStore;
