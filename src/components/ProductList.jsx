@@ -18,7 +18,7 @@ const ProductList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortField, setSortField] = useState("productId");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -141,7 +141,8 @@ const ProductList = () => {
   const columns = [
     { field: "productId", label: "ID", width: "60px" },
     { field: "productName", label: "Name", width: "100px" },
-    { field: "alternateProduct", label: "Alternate Product Name", width: "150px" },
+    { field: "alternateProduct1", label: "Alternate Product Name 1", width: "150px" },
+    { field: "alternateProduct2", label: "Alternate Product Name 2", width: "150px" },
     {
       field: "materialClassification",
       label: "Material Classification",

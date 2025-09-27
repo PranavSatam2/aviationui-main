@@ -6,7 +6,11 @@ import { createProduct } from "../services/db_manager";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const AddProduct = () => {
-  const [showAlternateName, setShowAlternateName] = useState(false); // toggle state
+  const [showAlternateName1, setShowAlternateName1] = useState(false); // toggle state
+  const [showAlternateName2, setShowAlternateName2] = useState(false);
+  const [mappingType, setMappingType] = useState(""); // "UP", "DOWN", "BOTH"
+
+
 
   // 🟩 get today’s date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0];
@@ -30,7 +34,8 @@ const AddProduct = () => {
     cmmReferenceNumber: "",
     registrationDate: today, // 🟩 set today
     registeredBy: "", // will fill later
-    alternateProduct: "", // new field
+    alternateProduct1: "", // new field
+    alternateProduct2: "",
   });
 
   const handleChange = (e) => {
@@ -70,13 +75,22 @@ const AddProduct = () => {
 
 
   // Optional: validate alternateName only if showAlternateName true
-  if (showAlternateName) {
-    validationRules.alternateProduct = {
+  if (showAlternateName1) {
+    validationRules.alternateProduct1 = {
       required: true,
       length: 255,
       regex: /^[a-zA-Z0-9\s-]*$/,
     };
   }
+
+  if (showAlternateName2) {
+    validationRules.alternateProduct2 = {
+      required: true,
+      length: 255,
+      regex: /^[a-zA-Z0-9\s-]*$/,
+    };
+  }
+
 
   const validateDataType = (event, dataType) => {
     let value = event.target.value;
@@ -103,7 +117,6 @@ const AddProduct = () => {
       }
     }
 
-    // If all validation passes, proceed with submitting
     try {
       const response = await createProduct(form);
       console.log("Product added successfully:", response.data);
@@ -119,16 +132,25 @@ const AddProduct = () => {
         oem: "",
         nha: "",
         cmmReferenceNumber: "",
-        registrationDate: "",
-        registeredBy: "",
-        alternateProduct: "",
+        registrationDate: today,
+        registeredBy: form.registeredBy,
+        alternateProduct1: "",
+        alternateProduct2: "",
       });
-      setShowAlternateName(false);
+      setShowAlternateName1(false);
     } catch (error) {
       console.error("Error adding product:", error);
-      alert("Failed to add product.");
+
+      // 🔹 Show an alert popup instead of inline text
+      if (error.response && error.response.status === 409) {
+        alert("This part number / product name already exists. Please enter a different one.");
+      } else {
+        alert("Failed to add product. Please try again.");
+      }
     }
   };
+
+
 
   return (
     <div className="wrapper">
@@ -161,21 +183,6 @@ const AddProduct = () => {
                             onChange={handleChange}
                             required
                           />
-                          {showAlternateName && (
-                            <button
-                              type="button"
-                              className="btn btn-outline-secondary"
-                              onClick={() => {
-                                setForm((prev) => ({
-                                  ...prev,
-                                  productName: prev.alternateProduct,
-                                  alternateProduct: prev.productName,
-                                }));
-                              }}
-                            >
-                              ↕
-                            </button>
-                          )}
                         </div>
                       </div>
 
@@ -184,7 +191,7 @@ const AddProduct = () => {
                           Material Classification <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
-                          className="form-control w-100"
+                          className="form-select w-100"
                           name="materialClassification"
                           value={form.materialClassification}
                           onChange={handleChange}
@@ -206,6 +213,37 @@ const AddProduct = () => {
                       </div>
                     </div>
 
+                    {(showAlternateName1 || showAlternateName2) && (
+                      <div className="flex items-center space-x-2">
+                        <label className="col-md-2 ml-3 mt-2 p-2">Mapping Type</label>
+                        <button
+                          type="button"
+                          onClick={() => setForm({ ...form, mappingType: 'UP' })}
+                          className={`p-2 rounded ${form.mappingType === 'UP' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        >
+                          UP
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setForm({ ...form, mappingType: 'DOWN' })}
+                          className={`p-2 rounded ${form.mappingType === 'DOWN' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        >
+                          DOWN
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setForm({ ...form, mappingType: 'BOTH' })}
+                          className={`p-2 rounded ${form.mappingType === 'BOTH' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        >
+                          BOTH
+                        </button>
+                      </div>
+                    )}
+
+
+
                     {/* === Alternate Name radio === */}
                     <div className="col-md-12 d-flex p-2">
                       <label className="col-md-2 mt-2">Alternate Name?</label>
@@ -217,8 +255,8 @@ const AddProduct = () => {
                             name="alternateOption"
                             id="alternateYes"
                             value="yes"
-                            onChange={() => setShowAlternateName(true)}
-                            checked={showAlternateName}
+                            onChange={() => setShowAlternateName1(true)}
+                            checked={showAlternateName1}
                           />
                           <label
                             className="form-check-label"
@@ -235,10 +273,10 @@ const AddProduct = () => {
                             id="alternateNo"
                             value="no"
                             onChange={() => {
-                              setShowAlternateName(false);
+                              setShowAlternateName1(false);
                               setForm({ ...form, alternateName: "" });
                             }}
-                            checked={!showAlternateName}
+                            checked={!showAlternateName1}
                           />
                           <label
                             className="form-check-label"
@@ -251,20 +289,75 @@ const AddProduct = () => {
                     </div>
 
                     {/* === Alternate Name Field (conditional) === */}
-                    {showAlternateName && (
+                    {showAlternateName1 && (
                       <div className="col-md-12 d-flex p-2">
-                        <label className="col-md-2 mt-2">Alternate Name</label>
+                        <label className="col-md-2 mt-2">Alternate Name 1</label>
                         <input
                           className="form-control w-100"
                           type="text"
-                          name="alternateProduct"
-                          value={form.alternateProduct}
+                          name="alternateProduct1"
+                          value={form.alternateProduct1}
                           onChange={handleChange}
                           placeholder="Enter alternate name"
-                          required={showAlternateName} // make required if visible
+                          required={showAlternateName1} // make required if visible
                         />
                       </div>
                     )}
+
+                    {/* === Alternate Name 2 radio === */}
+                    <div className="col-md-12 d-flex p-2">
+                      <label className="col-md-2 mt-2">Alternate Name 2?</label>
+                      <div className="col-md-4 d-flex mt-2">
+                        <div className="form-check me-3">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="alternateOption2"
+                            id="alternateYes2"
+                            value="yes"
+                            onChange={() => setShowAlternateName2(true)}
+                            checked={showAlternateName2}
+                          />
+                          <label className="form-check-label" htmlFor="alternateYes2">
+                            Yes
+                          </label>
+                        </div>
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="alternateOption2"
+                            id="alternateNo2"
+                            value="no"
+                            onChange={() => {
+                              setShowAlternateName2(false);
+                              setForm({ ...form, alternateProduct2: "" });
+                            }}
+                            checked={!showAlternateName2}
+                          />
+                          <label className="form-check-label" htmlFor="alternateNo2">
+                            No
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* === Alternate Name 2 Field (conditional) === */}
+                    {showAlternateName2 && (
+                      <div className="col-md-12 d-flex p-2">
+                        <label className="col-md-2 mt-2">Alternate Name 2</label>
+                        <input
+                          className="form-control w-100"
+                          type="text"
+                          name="alternateProduct2"
+                          value={form.alternateProduct2}
+                          onChange={handleChange}
+                          placeholder="Enter alternate name 2"
+                          required={showAlternateName2} // required if visible
+                        />
+                      </div>
+                    )}
+
 
                     <hr className="mx-0 my-2 p-0 border" />
 
@@ -289,7 +382,7 @@ const AddProduct = () => {
                           Unit of Measurement <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
-                          className="form-control w-100"
+                          className="form-select w-100"
                           name="unitOfMeasurement"
                           value={form.unitOfMeasurement}
                           onChange={handleChange}
