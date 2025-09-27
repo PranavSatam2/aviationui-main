@@ -35,6 +35,7 @@ import AddCustomerRepairProduct from "./components/AddRepairProduct.jsx";
 import CustomerRepairProductList from "./components/ViewRepairProducts.jsx";
 import EditCustomerRepairProduct from "./components/EditCustomerRepairProduct.jsx";
 import EditCustomer from "./components/EditRepairProduct.jsx";
+import NewPurchaseOrderForm from "./components/PurchaseOrder/PurchaseOrderForm.jsx";
 const App = () => {
   const token = sessionStorage.getItem('jwt_token') || '';
    const { menuItems = [], loading } = useRoleMenus();
@@ -85,6 +86,8 @@ const App = () => {
             <Route path="/addCustomersRepairProduct" element={<AddCustomerRepairProduct />} />
             <Route path="/viewCustomersRepairProduct" element={<CustomerRepairProductList />} />
             <Route path = "/editCustomersRepairProduct/:id" element={<EditCustomerRepairProduct/>}/>
+            <Route path = "/purchaseOrderForm" element={<NewPurchaseOrderForm/>}/>
+
 
     {menuItems.flatMap((menu) =>
                 menu.subMenus.map((sub) => {

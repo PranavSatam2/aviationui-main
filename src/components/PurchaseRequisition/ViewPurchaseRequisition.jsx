@@ -138,6 +138,7 @@ const ViewPurchaseRequisitionPage = () => {
 
   // Column definitions for the table
   const columns = [
+    { field: "batchNumber", label: "PR_Number", width: "250px"},
     { field: "id", label: "P_REQ_No", width: "100px" },
     { field: "partNumber", label: "Part Number", width: "130px" },
     { field: "description", label: "Description", width: "130px" },
@@ -145,7 +146,6 @@ const ViewPurchaseRequisitionPage = () => {
     { field: "requiredQty", label: "Required Qty", width: "70px" },
     { field: "requiredDate", label: "Required Date", width: "150px" },
     { field: "remark", label: "Remark", width: "100px" },
-    { field: "batchNumber", label: "Batch Number", width: "250px"},
     { field: "unitOfMeasurement", label: "Unit of Measurement", width: "150px" },
     { field: "status", label: "Status", width: "100px" },
   ];

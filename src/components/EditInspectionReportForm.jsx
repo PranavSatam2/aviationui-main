@@ -289,7 +289,7 @@ const EditInspectionReportform = () => {
                                   <td>Must match(Physical Unit lable & all COC)</td>
                                   <td><input
                               className="form-control w-100"
-                              type="text"
+                              type="date"
                               name="dateOfManufacturingObservation"
                               value={form.dateOfManufacturingObservation}
                               onChange={handleChange}
@@ -303,7 +303,7 @@ const EditInspectionReportform = () => {
                                   <td>Must match(Physical Unit lable & all COC)</td>
                                   <td><input
                               className="form-control w-100"
-                              type="text"
+                              type="date"
                               name="dateOfExpiryObservation"
                               value={form.dateOfExpiryObservation}
                               onChange={handleChange}

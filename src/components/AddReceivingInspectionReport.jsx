@@ -21,7 +21,7 @@ const AddReceivingInspectionReport = () => {
     purchaseOrderNo: "",
     supplierName: "",
     reportNo: "",
-    date: "",
+    date: new Date().toISOString().split('T')[0] || "",
     qty: "",
     qtyReceive: "",
     invoiceObservation: "",
@@ -436,11 +436,10 @@ const AddReceivingInspectionReport = () => {
                               <td>Must match(Physical Unit lable & all COC)</td>
                               <td><input
                           className="form-control w-100"
-                          type="text"
+                          type="date"
                           name="dateOfManufacturingObservation"
                           value={form.dateOfManufacturingObservation}
                           onChange={handleChange}
-                          placeholder="Enter Date in 'YYYY-mm-DD' format"
                           required
                         /></td>
                             </tr>
@@ -450,11 +449,10 @@ const AddReceivingInspectionReport = () => {
                               <td>Must match(Physical Unit lable & all COC)</td>
                               <td><input
                           className="form-control w-100"
-                          type="text"
+                          type="date"
                           name="dateOfExpiryObservation"
                           value={form.dateOfExpiryObservation}
                           onChange={handleChange}
-                          placeholder="Enter Date in 'YYYY-mm-DD' format"
                           required
                         /></td>
                             </tr>

@@ -195,10 +195,10 @@ const EditPurchaseRequisition = () => {
       length: 255,
       regex: /^[a-zA-Z0-9\s]*$/,
     },
-    currentStock: {
-      type: "number",
-      length: 10,
-    },
+    // currentStock: {
+    //   type: "number",
+    //   length: 10,
+    // },
     requiredQty: {
       type: "number",
       length: 10,
@@ -382,6 +382,7 @@ const validateDataType = (event, dataType) => {
                           value={selectedProduct}
                           onChange={handleProductChange}
                           required
+                          disabled
                         >
                           <option value="">Select a part number</option>
                           {data.map((item, index) => (
@@ -433,12 +434,10 @@ const validateDataType = (event, dataType) => {
                           className="form-control w-100"
                           type="text"
                           name="currentStock"
-                          onInput={(event) => {
-                            validateDataType(event, "N");
-                          }}
                           value={form.currentStock}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">

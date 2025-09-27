@@ -43,9 +43,12 @@ import MyModalComponent from './partials/MyModalComponent.jsx';
 import PasswordChange from './PasswordChange.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 import ProductList from './ProductList.jsx';
+import AddPurchaseOrder from './PurchaseOrder/AddPurchaseOrder.jsx';
 import EditPurchaseOrder from './PurchaseOrder/EditPurchaseOrder/EditPurchaseOrder.jsx';
 import PurchaseOrder from './PurchaseOrder/PurchaseOrder.jsx';
+import PurchaseOrderForm from './PurchaseOrder/PurchaseOrderForm.jsx';
 import PurchaseOrderReport from './PurchaseOrder/PurchaseOrderReport/PurchaseOrderReport.jsx';
+import PurchaseOrderTable from './PurchaseOrder/PurchaseOrderTable.jsx';
 import ViewPurchaseOrder from './PurchaseOrder/ViewPurchaseOrder/ViewPurchaseOrder.jsx';
 import Addpurchase from './PurchaseRequisition/AddpurchaseRequisition/Addpurchase.jsx';
 import EditPurchase from './PurchaseRequisition/EditPurchaseRequisition/EditPurchase.jsx';
@@ -122,9 +125,12 @@ const componentsMap = {
   "PasswordChange": PasswordChange,
   "PrivateRoute": PrivateRoute,
   "ProductList": ProductList,
+  "AddPurchaseOrder": AddPurchaseOrder,
   "EditPurchaseOrder": EditPurchaseOrder,
   "PurchaseOrder": PurchaseOrder,
+  "PurchaseOrderForm": PurchaseOrderForm,
   "PurchaseOrderReport": PurchaseOrderReport,
+  "PurchaseOrderTable": PurchaseOrderTable,
   "ViewPurchaseOrder": ViewPurchaseOrder,
   "Addpurchase": Addpurchase,
   "EditPurchase": EditPurchase,
