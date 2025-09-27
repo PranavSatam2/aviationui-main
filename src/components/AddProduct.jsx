@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -8,6 +8,18 @@ import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 const AddProduct = () => {
   const [showAlternateName, setShowAlternateName] = useState(false); // toggle state
 
+  // 🟩 get today’s date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
+
+  useEffect(() => {
+    const loggedUser = sessionStorage.getItem("username"); // username stored at login
+    if (loggedUser) {
+      setForm(prev => ({ ...prev, registeredBy: loggedUser }));
+    }
+  }, []);
+
+
+
   const [form, setForm] = useState({
     materialClassification: "",
     productName: "",
@@ -16,8 +28,8 @@ const AddProduct = () => {
     oem: "",
     nha: "",
     cmmReferenceNumber: "",
-    registrationDate: "",
-    registeredBy: "",
+    registrationDate: today, // 🟩 set today
+    registeredBy: "", // will fill later
     alternateProduct: "", // new field
   });
 
@@ -46,71 +58,38 @@ const AddProduct = () => {
   };
 
   const validationRules = {
-    productName: {
-      required: true,
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    productDescription: {
-      required: true,
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    unitOfMeasurement: {
-      required: true,
-      length: 6,
-      regex: /^[a-zA-Z]*$/,
-    },
-    materialClassification: {
-      required: true,
-      length: 30,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    oem: {
-      required: true,
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    nha: {
-      required: true,
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    cmmReferenceNumber: {
-      required: true,
-      type: "number",
-      length: 12,
-    },
-    registeredBy: {
-      required: true,
-      length: 255,
-      regex: /^[a-zA-Z\s]*$/,
-    },
+    productName: { required: true, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
+    productDescription: { required: true, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
+    unitOfMeasurement: { required: true, length: 6, regex: /^[a-zA-Z]*$/ },
+    materialClassification: { required: true, length: 30, regex: /^[a-zA-Z0-9\s-]*$/ },
+    oem: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
+    nha: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
+    cmmReferenceNumber: { required: false, type: "number", length: 12 },
+    registeredBy: { required: true, length: 255, regex: /^[a-zA-Z\s-]*$/ },
   };
+
 
   // Optional: validate alternateName only if showAlternateName true
   if (showAlternateName) {
     validationRules.alternateProduct = {
       required: true,
       length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9\s-]*$/,
     };
   }
 
   const validateDataType = (event, dataType) => {
     let value = event.target.value;
     if (dataType === "A") {
-      value = value.replace(/[^a-zA-Z0-9 ]/g, "");
-      event.target.classList.add("is-valid");
+      value = value.replace(/[^a-zA-Z0-9 \-]/g, ""); // allow hyphen
     } else if (dataType === "N") {
       value = value.replace(/[^0-9]/g, "");
-      event.target.classList.add("is-valid");
     } else if (dataType === "ANS") {
-      value = value.replace(/[^a-zA-Z0-9@.]/g, "");
-      event.target.classList.add("is-valid");
+      value = value.replace(/[^a-zA-Z0-9@\.\-]/g, "");
     }
     event.target.value = value;
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -169,22 +148,40 @@ const AddProduct = () => {
                   <form onSubmit={handleSubmit} style={{ height: "100%" }}>
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-1">Product Name</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="productName"
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                          }}
-                          value={form.productName}
-                          onChange={handleChange}
-                          required
-                        />
+                        <label className="col-md-4 mt-1">
+                          Product Name <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <div className="input-group w-100">
+                          <input
+                            className="form-control"
+                            type="text"
+                            name="productName"
+                            onInput={(event) => validateDataType(event, "A")}
+                            value={form.productName}
+                            onChange={handleChange}
+                            required
+                          />
+                          {showAlternateName && (
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              onClick={() => {
+                                setForm((prev) => ({
+                                  ...prev,
+                                  productName: prev.alternateProduct,
+                                  alternateProduct: prev.productName,
+                                }));
+                              }}
+                            >
+                              ↕
+                            </button>
+                          )}
+                        </div>
                       </div>
+
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">
-                          Material Classification
+                          Material Classification <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
                           className="form-control w-100"
@@ -272,7 +269,7 @@ const AddProduct = () => {
                     <hr className="mx-0 my-2 p-0 border" />
 
                     <div className="col-md-12 p-3 d-flex">
-                      <label className="col-md-2 mt-2">Product Description</label>
+                      <label className="col-md-2 mt-2">Product Description <span style={{ color: "red" }}>*</span></label>
                       <textarea
                         className="form-control w-100"
                         name="productDescription"
@@ -289,7 +286,7 @@ const AddProduct = () => {
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-1 d-flex">
                         <label className="col-md-4 mt-2">
-                          Unit of Measurement
+                          Unit of Measurement <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
                           className="form-control w-100"
@@ -322,7 +319,6 @@ const AddProduct = () => {
                           }}
                           value={form.oem}
                           onChange={handleChange}
-                          required
                         />
                       </div>
                     </div>
@@ -339,7 +335,6 @@ const AddProduct = () => {
                             validateDataType(event, "A");
                           }}
                           onChange={handleChange}
-                          required
                         />
                       </div>
 
@@ -353,26 +348,25 @@ const AddProduct = () => {
                           name="cmmReferenceNumber"
                           value={form.cmmReferenceNumber}
                           onChange={handleChange}
-                          required
                         />
                       </div>
                     </div>
 
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Date</label>
+                        <label className="col-md-4 mt-2">Date<span style={{ color: "red" }}>*</span></label>
                         <input
                           className="form-control w-100"
                           type="date"
                           name="registrationDate"
                           value={form.registrationDate}
                           onChange={handleChange}
-                          required
+                          readOnly // 🟩 prevents manual change
                         />
                       </div>
 
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Registered By</label>
+                        <label className="col-md-4 mt-2">Registered By<span style={{ color: "red" }}>*</span></label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -383,6 +377,7 @@ const AddProduct = () => {
                           }}
                           onChange={handleChange}
                           required
+                          readOnly
                         />
                       </div>
                     </div>
