@@ -20,6 +20,8 @@ const ViewMaterialPage = () => {
   const [sortField, setSortField] = useState("materialId");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const navigate = useNavigate();
 
@@ -72,13 +74,29 @@ const ViewMaterialPage = () => {
     }
   };
 
-  // Search functionality
+  // Search and Date Range Filter
   const filteredData = tableData.filter((material) => {
-    return Object.values(material).some(
+    // Search filter
+    const matchesSearch = Object.values(material).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
+    // Date filter
+    let matchesDate = true;
+    if (startDate) {
+      matchesDate =
+        matchesDate &&
+        material.receiptDate &&
+        material.receiptDate >= startDate;
+    }
+    if (endDate) {
+      matchesDate =
+        matchesDate &&
+        material.receiptDate &&
+        material.receiptDate <= endDate;
+    }
+    return matchesSearch && matchesDate;
   });
 
   // Sorting functionality
@@ -162,6 +180,34 @@ const ViewMaterialPage = () => {
 
           <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
             <div className="card-body">
+              {/* Date Range Filter */}
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <label className="form-label fw-light">Start Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-light">End Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={endDate}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+              </div>
+
               <div className="row align-items-center">
                 <div className="col-md-6">
                   <div className="input-group">

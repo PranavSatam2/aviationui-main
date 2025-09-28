@@ -22,6 +22,8 @@ const ViewPurchaseOrderPage = () => {
   const [sortDirection, setSortDirection] = useState("desc");
   const [isLoading, setIsLoading] = useState(true);
   const [purchaseOrderData, setPurchaseOrderData] = useState();
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -80,18 +82,33 @@ const ViewPurchaseOrderPage = () => {
   };
 
   // Search functionality
-  // Filter out "close" status first, then search
-  // 1️⃣ Hide requisitions where status === 'close'
-  // 2️⃣ Apply search filter
+  // Filter out "close" status first, then search, then date filter
   const filteredData = tableData
-  .filter(requisition => requisition.status?.toLowerCase() !== 'close')
-  .filter(requisition =>
-    Object.values(requisition).some(
-      value =>
-        value &&
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    .filter((requisition) => requisition.status?.toLowerCase() !== "close")
+    .filter((requisition) =>
+      Object.values(requisition).some(
+        (value) =>
+          value &&
+          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
     )
-  );
+    .filter((order) => {
+      // Date filter (assuming poDate is in YYYY-MM-DD format)
+      let matchesDate = true;
+      if (startDate) {
+        matchesDate =
+          matchesDate &&
+          order.poDate &&
+          new Date(order.poDate) >= new Date(startDate);
+      }
+      if (endDate) {
+        matchesDate =
+          matchesDate &&
+          order.poDate &&
+          new Date(order.poDate) <= new Date(endDate);
+      }
+      return matchesDate;
+    });
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -210,6 +227,34 @@ const ViewPurchaseOrderPage = () => {
             ].join(" ")}
           >
             <div className="card-body">
+              {/* Date Range Filter */}
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <label className="form-label fw-light">Start Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-light">End Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={endDate}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+              </div>
+
               <div className="row align-items-center mb-4">
                 <div className="col-md-6">
                   <div className="input-group">
