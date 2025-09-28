@@ -23,6 +23,8 @@ const ViewMaterialRequisitionPage = () => {
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
   const [requisitionData, setRequisitionData] = useState();
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -79,13 +81,29 @@ const ViewMaterialRequisitionPage = () => {
     }
   };
 
-  // Search functionality
+  // Search and Date Range Filter
   const filteredData = tableData.filter((requisition) => {
-    return Object.values(requisition).some(
+    // Search filter
+    const matchesSearch = Object.values(requisition).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
+    // Date filter (assuming requisition.date is in YYYY-MM-DD format)
+    let matchesDate = true;
+    if (startDate) {
+      matchesDate =
+        matchesDate &&
+        requisition.date &&
+        new Date(requisition.date) >= new Date(startDate);
+    }
+    if (endDate) {
+      matchesDate =
+        matchesDate &&
+        requisition.date &&
+        new Date(requisition.date) <= new Date(endDate);
+    }
+    return matchesSearch && matchesDate;
   });
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -182,8 +200,35 @@ const ViewMaterialRequisitionPage = () => {
               styles.normalViewStyle,
             ].join(" ")}
           >
-            {/* <div > */}
             <div className="card-body">
+              {/* Date Range Filter */}
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <label className="form-label fw-light">Start Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-light">End Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={endDate}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+              </div>
+
               <div className="row align-items-center">
                 <div className="col-md-6">
                   <div className="input-group">

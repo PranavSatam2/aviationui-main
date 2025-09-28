@@ -22,6 +22,8 @@ const ViewSupplierRegis = () => {
   const [sortField, setSortField] = useState("id");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   
   const navigate = useNavigate();
   const modalRef = useRef(); // Modal reference
@@ -86,13 +88,29 @@ const ViewSupplierRegis = () => {
     }
   }
 
-  // Search functionality
+  // Search and Date Range Filter
   const filteredData = tableData.filter((store) => {
-    return Object.values(store).some(
-      (value) => 
-        value && 
+    // Search filter
+    const matchesSearch = Object.values(store).some(
+      (value) =>
+        value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
+    // Date filter (convert to Date objects for comparison)
+    let matchesDate = true;
+    if (startDate) {
+      matchesDate =
+        matchesDate &&
+        store.dateOfRecipet &&
+        new Date(store.dateOfRecipet) >= new Date(startDate);
+    }
+    if (endDate) {
+      matchesDate =
+        matchesDate &&
+        store.dateOfRecipet &&
+        new Date(store.dateOfRecipet) <= new Date(endDate);
+    }
+    return matchesSearch && matchesDate;
   });
 
   // Sorting functionality
@@ -169,205 +187,230 @@ const ViewSupplierRegis = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-        <CustomBreadcrumb breadcrumbsLabel="View Store Acceptance" />
+          <CustomBreadcrumb breadcrumbsLabel="View Store Acceptance" />
 
-        <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
-          <div className="card-body">
-            <div className="row  align-items-center">
-              <div className="col-md-6">
-                <div className="input-group">
-                  <span className="input-group-text bg-primary text-white border-0">
-                    <i className="fa fa-search"></i>
-                  </span>
+          <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
+            <div className="card-body">
+              {/* Date Range Filter */}
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <label className="form-label fw-light">Start Date</label>
                   <input
-                    type="text"
-                    className="form-control border-start-0 ps-0"
-                    placeholder="Search items..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    type="date"
+                    className="form-control"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-light">End Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={endDate}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
                   />
                 </div>
               </div>
-              <div className="col-md-3 ms-auto">
-                <div className="d-flex align-items-center justify-content-end">
-                  <label className="me-2 text-muted fw-light">Show</label>
-                  <select
-                    className="form-select form-select-sm w-auto"
-                    value={itemsPerPage}
-                    onChange={(e) => {
-                      setItemsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
-                  <label className="ms-2 text-muted fw-light">entries</label>
+              <div className="row  align-items-center">
+                <div className="col-md-6">
+                  <div className="input-group">
+                    <span className="input-group-text bg-primary text-white border-0">
+                      <i className="fa fa-search"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control border-start-0 ps-0"
+                      placeholder="Search items..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-3 ms-auto">
+                  <div className="d-flex align-items-center justify-content-end">
+                    <label className="me-2 text-muted fw-light">Show</label>
+                    <select
+                      className="form-select form-select-sm w-auto"
+                      value={itemsPerPage}
+                      onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                    <label className="ms-2 text-muted fw-light">entries</label>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {isLoading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
-                  {/* <span className="visually-hidden">Loading...</span> */}
+              {isLoading ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border text-primary" role="status">
+                  </div>
+                  <p className="mt-2 text-muted">Loading data...</p>
                 </div>
-                <p className="mt-2 text-muted">Loading data...</p>
-              </div>
-            ) : (
-              <div 
-                className="table-responsive" 
-                style={{
-                  // height: "60vh",
-                  overflowY: "auto",
-                  scrollbarWidth: "thin",
-                  scrollbarColor: "#ccc transparent",
-                }}
-              >
-                <table className="table table-hover table-striped align-middle">
-                  <thead>
-                    <tr className="bg-light">
-                      {columns.map((column) => (
-                        <th 
-                          key={column.field} 
-                          className="position-sticky top-0 bg-light py-3"
-                          onClick={() => handleSort(column.field)}
-                          style={{ 
-                            cursor: "pointer", 
-                            width: column.width || "auto",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px"
-                          }}
-                        >
-                          <div className="d-flex align-items-center">
-                            <span>{column.label}</span>
-                            {sortField === column.field ? (
-                              <i className={`ms-1 fa fa-sort-${sortDirection === "asc" ? "up" : "down"} text-primary`}></i>
-                            ) : (
-                              <i className="ms-1 fa fa-sort text-muted opacity-50" style={{ fontSize: "0.8rem" }}></i>
-                            )}
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentItems.length > 0 ? (
-                      currentItems.map((store, index) => (
-                        <tr 
-                          key={store.partNum} 
-                          className={index % 2 === 0 ? "bg-white" : "bg-light bg-opacity-50"}
-                        >
-                          {columns.map((column) => (
-                            <td 
-                              key={`${store.partNum}-${column.field}`}
-                              className="text-nowrap py-3"
-                              style={{ 
-                                maxWidth: "150px",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap"
-                              }}
-                              title={store[column.field]}
-                            >
-                              {store[column.field]}
-                            </td>
-                          ))}
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={columns.length} className="text-center py-5">
-                          {searchTerm ? (
-                            <div>
-                              <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                              <p className="mb-0">No matching records found</p>
+              ) : (
+                <div 
+                  className="table-responsive" 
+                  style={{
+                    overflowY: "auto",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#ccc transparent",
+                  }}
+                >
+                  <table className="table table-hover table-striped align-middle">
+                    <thead>
+                      <tr className="bg-light">
+                        {columns.map((column) => (
+                          <th 
+                            key={column.field} 
+                            className="position-sticky top-0 bg-light py-3"
+                            onClick={() => handleSort(column.field)}
+                            style={{ 
+                              cursor: "pointer", 
+                              width: column.width || "auto",
+                              fontSize: "0.9rem",
+                              fontWeight: "600",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px"
+                            }}
+                          >
+                            <div className="d-flex align-items-center">
+                              <span>{column.label}</span>
+                              {sortField === column.field ? (
+                                <i className={`ms-1 fa fa-sort-${sortDirection === "asc" ? "up" : "down"} text-primary`}></i>
+                              ) : (
+                                <i className="ms-1 fa fa-sort text-muted opacity-50" style={{ fontSize: "0.8rem" }}></i>
+                              )}
                             </div>
-                          ) : (
-                            <div>
-                              <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                              <p className="mb-0">No data available</p>
-                            </div>
-                          )}
-                        </td>
+                          </th>
+                        ))}
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                    </thead>
+                    <tbody>
+                      {currentItems.length > 0 ? (
+                        currentItems.map((store, index) => (
+                          <tr 
+                            key={store.partNum} 
+                            className={index % 2 === 0 ? "bg-white" : "bg-light bg-opacity-50"}
+                          >
+                            {columns.map((column) => (
+                              <td 
+                                key={`${store.partNum}-${column.field}`}
+                                className="text-nowrap py-3"
+                                style={{ 
+                                  maxWidth: "150px",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap"
+                                }}
+                                title={store[column.field]}
+                              >
+                                {store[column.field]}
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={columns.length} className="text-center py-5">
+                            {searchTerm ? (
+                              <div>
+                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
+                                <p className="mb-0">No matching records found</p>
+                              </div>
+                            ) : (
+                              <div>
+                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
+                                <p className="mb-0">No data available</p>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
-            <div className="row mt-4 align-items-center">
-              <div className="col-md-6">
-                <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                  Showing <span className="fw-bold text-dark">{indexOfFirstItem + 1}</span> to <span className="fw-bold text-dark">{Math.min(indexOfLastItem, sortedData.length)}</span> of <span className="fw-bold text-dark">{sortedData.length}</span> entries
-                  {searchTerm && ` (filtered from ${tableData.length} total entries)`}
-                </p>
-              </div>
-              <div className="col-md-6">
-                <nav aria-label="Page navigation">
-                  <ul className="pagination justify-content-end mb-0">
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                      <button
-                        className="page-link border-0"
-                        onClick={() => setCurrentPage(1)}
-                        aria-label="First page"
-                      >
-                        <i className="fa-solid fa-angles-left"></i>
-                      </button>
-                    </li>
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                      <button
-                        className="page-link border-0"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        aria-label="Previous page"
-                      >
-                        <i className="fa-solid fa-angle-left"></i>
-                      </button>
-                    </li>
-                    
-                    {renderPageNumbers()}
-                    
-                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                      <button
-                        className="page-link border-0"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        aria-label="Next page"
-                      >
-                        <i className="fa-solid fa-angle-right"></i>
-                      </button>
-                    </li>
-                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                      <button
-                        className="page-link border-0"
-                        onClick={() => setCurrentPage(totalPages)}
-                        aria-label="Last page"
-                      >
-                        <i className="fa-solid fa-angles-right"></i>
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
+              <div className="row mt-4 align-items-center">
+                <div className="col-md-6">
+                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
+                    Showing <span className="fw-bold text-dark">{indexOfFirstItem + 1}</span> to <span className="fw-bold text-dark">{Math.min(indexOfLastItem, sortedData.length)}</span> of <span className="fw-bold text-dark">{sortedData.length}</span> entries
+                    {searchTerm && ` (filtered from ${tableData.length} total entries)`}
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <nav aria-label="Page navigation">
+                    <ul className="pagination justify-content-end mb-0">
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                        <button
+                          className="page-link border-0"
+                          onClick={() => setCurrentPage(1)}
+                          aria-label="First page"
+                        >
+                          <i className="fa-solid fa-angles-left"></i>
+                        </button>
+                      </li>
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                        <button
+                          className="page-link border-0"
+                          onClick={() => setCurrentPage(currentPage - 1)}
+                          aria-label="Previous page"
+                        >
+                          <i className="fa-solid fa-angle-left"></i>
+                        </button>
+                      </li>
+                      
+                      {renderPageNumbers()}
+                      
+                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                        <button
+                          className="page-link border-0"
+                          onClick={() => setCurrentPage(currentPage + 1)}
+                          aria-label="Next page"
+                        >
+                          <i className="fa-solid fa-angle-right"></i>
+                        </button>
+                      </li>
+                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                        <button
+                          className="page-link border-0"
+                          onClick={() => setCurrentPage(totalPages)}
+                          aria-label="Last page"
+                        >
+                          <i className="fa-solid fa-angles-right"></i>
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        <MyModalComponent
-          ref={modalRef}
-          modalTitle="My Custom Modal Title"
-          modalBodyContent="This is a custom body for the modal."
-          buttonLabel="Open Modal"
-        />
-        </div>
-        <Footer />
+          
+          <MyModalComponent
+            ref={modalRef}
+            modalTitle="My Custom Modal Title"
+            modalBodyContent="This is a custom body for the modal."
+            buttonLabel="Open Modal"
+          />
       </div>
+      <Footer />
     </div>
+  </div>
   );
 };
 

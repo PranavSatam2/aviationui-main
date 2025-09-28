@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import {
-    getViewReportList,
-} from "../services/db_manager";
+import { getViewReportList } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import {PrintInspectionReport} from "./PrintInspectionReport";
+import { PrintInspectionReport } from "./PrintInspectionReport";
 import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
 const ViewInspectionReports = () => {
   // State
@@ -28,6 +26,10 @@ const ViewInspectionReports = () => {
   const [actionType, setActionType] = useState(""); // "accept" or "reject"
   const [remark, setRemark] = useState("");
   const [reportData, setReportData] = useState();
+
+  // Date range states
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const navigate = useNavigate();
   const fetchData = async () => {
@@ -63,16 +65,34 @@ const ViewInspectionReports = () => {
     setSelectAll(false);
   }, [currentPage, itemsPerPage]);
 
-  // Search functionality
+  // Search and Date Range Filter
   const filteredData = Array.isArray(tableData)
-  ? tableData.filter((report) =>
-      Object.values(report).some(
-        (value) =>
-          value &&
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    )
-  : [];
+    ? tableData
+        .filter((report) =>
+          Object.values(report).some(
+            (value) =>
+              value &&
+              value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        )
+        .filter((report) => {
+          // Date filter (assuming report.date is in YYYY-MM-DD format)
+          let matchesDate = true;
+          if (startDate) {
+            matchesDate =
+              matchesDate &&
+              report.date &&
+              new Date(report.date) >= new Date(startDate);
+          }
+          if (endDate) {
+            matchesDate =
+              matchesDate &&
+              report.date &&
+              new Date(report.date) <= new Date(endDate);
+          }
+          return matchesDate;
+        })
+    : [];
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -127,7 +147,7 @@ const ViewInspectionReports = () => {
 
     return pageNumbers;
   };
-const handleCheckboxChange = (report) => {
+  const handleCheckboxChange = (report) => {
     // If the same checkbox is clicked again, deselect it
     if (selectedItem === report.inspectionReportId) {
       setSelectedItem("");
@@ -152,7 +172,7 @@ const handleCheckboxChange = (report) => {
   };
   const handlePrintClick = (report) => {
     // Store the report data
-    console.log("Report",report)
+    console.log("Report", report);
     setReportData(report);
 
     // Short delay to ensure React has updated the state and rendered the component
@@ -174,10 +194,13 @@ const handleCheckboxChange = (report) => {
     }, 500);
   };
 
-
   // Column definitions for the table
   const columns = [
-    { field: "inspectionReportId", label: "Inspection Report Id", width: "100px" },
+    {
+      field: "inspectionReportId",
+      label: "Inspection Report Id",
+      width: "100px",
+    },
     { field: "partNumber", label: "Part Number", width: "100px" },
     { field: "partDesc", label: "Part Description", width: "100px" },
     { field: "purchaseOrderNo", label: "Purchase Order No.", width: "100px" },
@@ -186,28 +209,68 @@ const handleCheckboxChange = (report) => {
     { field: "date", label: "Date", width: "100px" },
     { field: "qty", label: "Quantity", width: "100px" },
     { field: "qtyReceive", label: "Receive Quantity", width: "100px" },
-    { field: "invoiceObservation", label: "Invoice  Observation", width: "100px" },
-    { field: "manufacturerCertObservation", label: "Manufacturer Cert Observation", width: "100px" },
-    { field: "supplierCertObservation", label: "Supplier Cert. Observation", width: "100px" },
-    { field: "fullTraceabilityObservation", label: " cert. Full Traceability Observation", width: "100px" },
-    { field: "batchNumberObservation", label: "Batch Number Observation", width: "100px" },
+    {
+      field: "invoiceObservation",
+      label: "Invoice  Observation",
+      width: "100px",
+    },
+    {
+      field: "manufacturerCertObservation",
+      label: "Manufacturer Cert Observation",
+      width: "100px",
+    },
+    {
+      field: "supplierCertObservation",
+      label: "Supplier Cert. Observation",
+      width: "100px",
+    },
+    {
+      field: "fullTraceabilityObservation",
+      label: " cert. Full Traceability Observation",
+      width: "100px",
+    },
+    {
+      field: "batchNumberObservation",
+      label: "Batch Number Observation",
+      width: "100px",
+    },
     {
       field: "dateOfManufacturingObservation",
       label: "Date of Manufacturing & Date of Expiry Observation",
       width: "100px",
     },
-    { field: "selfLifeObservation", label: "Self Life Observation", width: "100px" },
-    { field: "tdsObservation", label: "Technical Data Sheet(TDS) & MSDS Observation", width: "100px" },
-    { field: "materialConditionObservation", label: "Material Condition Observation", width: "100px" },
-    { field: "specificationObservation", label: "Specification Observation", width: "100px" },
-    { field: "documentObservation", label: "Documents Observation", width: "100px" },
+    {
+      field: "selfLifeObservation",
+      label: "Self Life Observation",
+      width: "100px",
+    },
+    {
+      field: "tdsObservation",
+      label: "Technical Data Sheet(TDS) & MSDS Observation",
+      width: "100px",
+    },
+    {
+      field: "materialConditionObservation",
+      label: "Material Condition Observation",
+      width: "100px",
+    },
+    {
+      field: "specificationObservation",
+      label: "Specification Observation",
+      width: "100px",
+    },
+    {
+      field: "documentObservation",
+      label: "Documents Observation",
+      width: "100px",
+    },
     { field: "lotAccepted", label: "Lot Accepted", width: "100px" },
     { field: "remark", label: "Remark", width: "100px" },
     { field: "makerUserName", label: "Maker Name", width: "100px" },
     { field: "makerDate", label: "Maker Date", width: "100px" },
     // { field: "checkerUserName", label: "Checker Name", width: "100px" },
     // { field: "checkerDate", label: "Checker  Date", width: "100px" },
-];
+  ];
 
   return (
     <div className="wrapper">
@@ -228,6 +291,33 @@ const handleCheckboxChange = (report) => {
             ].join(" ")}
           >
             <div className="card-body">
+              {/* Date Range Filter */}
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <label className="form-label fw-light">Start Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-light">End Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={endDate}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+              </div>
               <div className="row align-items-center">
                 <div className="col-md-6">
                   <div className="input-group">
@@ -360,10 +450,10 @@ const handleCheckboxChange = (report) => {
                                   className="form-check-input"
                                   type="checkbox"
                                   id={`check-${report.inspectionReportId}`}
-                                  checked={selectedItem === report.inspectionReportId}
-                                  onChange={() =>
-                                    handleCheckboxChange(report)
+                                  checked={
+                                    selectedItem === report.inspectionReportId
                                   }
+                                  onChange={() => handleCheckboxChange(report)}
                                 />
                               </div>
                             </td>
@@ -382,7 +472,7 @@ const handleCheckboxChange = (report) => {
                                 {report[column.field]}
                               </td>
                             ))}
-                             <td>
+                            <td>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
                                   className="btn btn-sm btn-outline-secondary"
@@ -509,7 +599,6 @@ const handleCheckboxChange = (report) => {
         </div>
         <Footer />
       </div>
-     
     </div>
   );
 };
