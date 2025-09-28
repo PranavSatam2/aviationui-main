@@ -47,35 +47,35 @@ const AddPurchaseRequisition = () => {
         console.error("API Error:", err);
         setError("Failed to load product data. Please try again.");
         // fallback data with alternateProduct field
-        const fallbackData = [
-          {
-            productName: "PART001",
-            alternateProduct: "Aircraft Engine Component",
-            unitOfMeasurement: "EA",
-          },
-          {
-            productName: "PART002",
-            alternateProduct: "Hydraulic Pump Assembly",
-            unitOfMeasurement: "KIT",
-          },
-          {
-            productName: "PART003",
-            alternateProduct: "Electrical Wiring Harness",
-            unitOfMeasurement: "RL",
-          },
-          {
-            productName: "PART004",
-            alternateProduct: "Landing Gear Strut",
-            unitOfMeasurement: "EA",
-          },
-          {
-            productName: "PART005",
-            alternateProduct: "Navigation System Module",
-            unitOfMeasurement: "KIT",
-          },
-        ];
-        setData(fallbackData);
-        setFilteredData(fallbackData);
+        // const fallbackData = [
+        //   {
+        //     productName: "PART001",
+        //     alternateProduct: "Aircraft Engine Component",
+        //     unitOfMeasurement: "EA",
+        //   },
+        //   {
+        //     productName: "PART002",
+        //     alternateProduct: "Hydraulic Pump Assembly",
+        //     unitOfMeasurement: "KIT",
+        //   },
+        //   {
+        //     productName: "PART003",
+        //     alternateProduct: "Electrical Wiring Harness",
+        //     unitOfMeasurement: "RL",
+        //   },
+        //   {
+        //     productName: "PART004",
+        //     alternateProduct: "Landing Gear Strut",
+        //     unitOfMeasurement: "EA",
+        //   },
+        //   {
+        //     productName: "PART005",
+        //     alternateProduct: "Navigation System Module",
+        //     unitOfMeasurement: "KIT",
+        //   },
+        // ];
+        // setData(fallbackData);
+        // setFilteredData(fallbackData);
       } finally {
         setLoading(false);
       }
@@ -202,18 +202,18 @@ const AddPurchaseRequisition = () => {
       length: 255,
       regex: /^[a-zA-Z0-9\s]*$/,
     },
-    currentStock: {
-      type: "number",
-      length: 10,
-    },
+    // currentStock: {
+    //   type: "number",
+    //   length: 10,
+    // },
     requiredQty: {
       type: "number",
       length: 10,
     },
-    remark: {
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
+    // remark: {
+    //   length: 255,
+    //   regex: /^[a-zA-Z0-9\s]*$/,
+    // },
   };
 
   const validateDataType = (event, dataType) => {
@@ -504,12 +504,10 @@ const AddPurchaseRequisition = () => {
                           className="form-control w-100"
                           type="text"
                           name="currentStock"
-                          onInput={(event) => {
-                            validateDataType(event, "N");
-                          }}
                           value={form.currentStock}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
@@ -595,7 +593,7 @@ const AddPurchaseRequisition = () => {
                           }}
                           value={form.remark}
                           onChange={handleChange}
-                          required
+                          
                         />
                       </div>
                     </div>

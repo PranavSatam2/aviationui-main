@@ -24,7 +24,7 @@ export default function PurchaseOrderForm() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortField, setSortField] = useState("id");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -37,6 +37,7 @@ export default function PurchaseOrderForm() {
       const response = await listAllPurchaseRequisition();
       console.log("table ", response);
       setTableData(response || []);
+      console.log(tableData);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching purchase requisitions", error);
@@ -73,6 +74,7 @@ export default function PurchaseOrderForm() {
 
 
   const sortedData = [...filteredData].sort((a, b) => {
+    console.log(filteredData);
   const aValue = a[sortField];
   const bValue = b[sortField];
 
@@ -240,7 +242,7 @@ export default function PurchaseOrderForm() {
                       <table className="table table-hover table-striped align-middle">
                         <thead>
                           <tr className="bg-light">
-                            <th style={{ width: "60px" }}>
+                            <th style={{  width: "40px", textAlign: "center" }}>
                               <input type="checkbox" disabled /> {/* optional master checkbox */}
                               </th>
                             {columns.map((column) => (
@@ -262,7 +264,7 @@ export default function PurchaseOrderForm() {
                                   {sortField === column.field ? (
                                     <i
                                       className={`ms-1 fa fa-sort-${
-                                        sortDirection === "asc" ? "up" : "down"
+                                        sortDirection === "desc" ? "up" : "down"
                                       } text-primary`}
                                     ></i>
                                   ) : (

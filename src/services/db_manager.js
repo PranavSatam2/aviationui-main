@@ -152,6 +152,9 @@ export const getEditingSupplierList = () => {
 export const ApproveSupplier = (Supplier) =>
   axiosInstance.post(`${SUPPLIER_URL}/approve`, Supplier);
 
+let FetchSupplierDetails = REST_API_BASE_URL + "/api/supplier/supplierNamePayment"; 
+export const fetchSupplierDetails = () => axiosInstance.get(`${FetchSupplierDetails}`);
+
 // ######################### PRODUCT #########################
 export const createProduct = (Product) =>
   axiosInstance.post(`${PRODUCT_URL}/create`, Product);

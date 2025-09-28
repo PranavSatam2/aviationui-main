@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef} from "react";
 import { Search, Save } from "lucide-react";
 import styles from "./Purchase.module.css";
 import {
   createPurchaseOrder,
+  fetchSupplierDetails
 } from "../../services/db_manager";
 import Sidebar from "../Sidebar";
 import Header from "../Header";
@@ -16,21 +17,30 @@ export default function PurchaseOrderForm() {
 const location = useLocation();
   const { selectedItems } = location.state || { selectedItems: [] };
 
-  console.log("Received selectedItems:", selectedItems);  const [batchNo, setBatchNo] = useState("");
+  //console.log("Received selectedItems:", selectedItems);  
+  const [batchNo, setBatchNo] = useState("");
   // State for table data
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+   const [data, setData] = useState([]);
+  
+  
   const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [filteredData, setFilteredData] = useState([]);
+  const dropdownRef = useRef(null);
   const [formData, setFormData] = useState({
     poNo: "",
     poDate: "2025-04-26",
     ourReference: "OR-12345",
     yourReference: "YR-54321",
     delivery: "Immediate",
-    deliveryAddress:
-      "AMC TECHNOLOGY\n105, Hiday Industrial Estate, Hira Industrial Park\nOff Western Express Highway, Vasai Phata,\nVasai (East) Dist - Palghar, 401208",
-    paymentTerms: "Net 30 Days",
+    supplierName: "",
+    //deliveryAddress:
+    //  "AMC TECHNOLOGY\n105, Hiday Industrial Estate, Hira Industrial Park\nOff Western Express Highway, Vasai Phata,\nVasai (East) Dist - Palghar, 401208",
+    //paymentTerms: "Net 30 Days",
     items: [],
     pf: 0,
     transportation: 0,
@@ -40,6 +50,93 @@ const location = useLocation();
     currency: "",
     forwarder: "BlueDart Logistics",
   });
+
+useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await fetchSupplierDetails(); // replace with actual API call
+        //console.log("Supplier Details",response.data);
+        if (Array.isArray(response.data)) {
+        setData(response.data);
+        setFilteredData(response);
+      } else {
+        setData([]);
+        setFilteredData([]);
+      }
+      setError(null);
+        //setData(response);
+        //setFilteredData(response);
+        setError(null);
+      } catch (err) {
+        console.error("API Error:", err);
+        setError("Failed to load supplier data. Please try again.");
+        } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+   const handleSearchChange = (e) => {
+    //console.log("Input typed:", e.target.value); 
+    const value = e.target.value;
+     //console.log("Search input:", value); 
+    setSearchTerm(value);
+    setIsDropdownOpen(true);
+
+    // If user clears the search, clear the form
+    if (!value) {
+      setFormData((prevForm) => ({
+        ...prevForm,
+        supplierName: "",
+        deliveryAddress: "",
+        paymentTerms: "",
+      }));
+    }
+  };
+
+   const handlePartSelection = (supplier) => {
+    setFormData((prevForm) => ({
+      ...prevForm,
+      supplierName: supplier.supplierName,
+      deliveryAddress: supplier.address,
+      paymentTerms: supplier.paymentTerms || "",
+    }));
+    setSearchTerm(supplier.supplierName);
+    setIsDropdownOpen(false);
+  };
+
+  // Filter data based on search term
+    useEffect(() => {
+      data.forEach((item) => console.log("Supplier Name:", `"${item.supplierName}"`));
+      if (data.length === 0) return;
+  if (searchTerm) {
+    console.log("searchTerm:", searchTerm);
+    const filtered = data.filter((item) =>
+      item.supplierName.trim().toLowerCase().includes(searchTerm.trim().toLowerCase())
+    );
+        console.log("Filtered suppliers:", filtered);  // 🔹
+
+    setFilteredData(filtered);
+  } else {
+    setFilteredData(data);
+  }
+}, [searchTerm, data]);
+// Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
   if (selectedItems && selectedItems.length > 0) {
@@ -138,19 +235,6 @@ const location = useLocation();
     return calculateTotal() + sgstAmount + cgstAmount + igstAmount;
   };
 
-  // Search functionality
-  const filteredData = tableData.filter((requisition) => {
-    return Object.values(requisition).some(
-      (value) =>
-        value &&
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
-
-
-  // Calculate total items for display
-  const totalItems = filteredData.length;
-
   const handleSave = async () => {
     try {
       // If no items are loaded, show error
@@ -221,6 +305,8 @@ const location = useLocation();
           "Purchase order already saved or Error for saving Purchase Order."
         );
       } else {
+        setSearchTerm("");
+        setIsDropdownOpen(false);
         toast.success("Purchase Order saved successfully!");
         navigate("/purchaseOrder");
 
@@ -335,18 +421,84 @@ const location = useLocation();
                       <div className={styles.addressContainer}>
                         <div className={styles.addressTitle}>To,</div>
                         <div className={styles.addressText}>
-                          <textarea
-                            className={styles.textareaField}
-                            value={formData.deliveryAddress}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "deliveryAddress",
-                                e.target.value
-                              )
-                            }
-                            rows={4}
-                          />
-                        </div>
+                          {loading ? (
+                          <div className="d-flex align-items-center">
+                            <div
+                              className="spinner-border text-primary me-2"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                            <span>Loading part numbers...</span>
+                          </div>
+                        ) : error ? (
+                          <div className="alert alert-danger w-100">
+                            {error}
+                          </div>
+                        ) : (
+                          <div
+                            className="w-100 position-relative"
+                            ref={dropdownRef}
+                          >
+                            <textarea
+                              className={styles.textareaField}
+                              placeholder="Search supplier ..."
+                              value={searchTerm}
+                              onChange={handleSearchChange}
+                              onFocus={() => setIsDropdownOpen(true)}
+                              required
+                              rows={1}
+                            />
+                            {isDropdownOpen && filteredData.length > 0 && (
+                              <div
+                                className="position-absolute w-100 bg-white border border-top-0 rounded-bottom shadow-lg"
+                                style={{
+                                  zIndex: 1000,
+                                  maxHeight: "200px",
+                                  overflowY: "auto",
+                                }}
+                              >
+                                {filteredData.map((supplier, index) => (
+                                  <div
+                                    key={index}
+                                    className="p-2 border-bottom cursor-pointer hover-bg-light"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => handlePartSelection(supplier)}
+                                    onMouseEnter={(e) =>
+                                      (e.target.style.backgroundColor =
+                                        "#f8f9fa")
+                                    }
+                                    onMouseLeave={(e) =>
+                                      (e.target.style.backgroundColor = "white")
+                                    }
+                                  >
+                                    <div className="fw-bold">
+                                      {supplier.supplierName}    
+                                    </div>
+                                    <div className="text-muted small">
+                                      {supplier.address}
+                                    </div>
+                                  </div>
+                                  
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                        <div
+                            className="w-100 position-relative"
+                            ref={dropdownRef}
+                          >
+                            <textarea
+                              className={styles.textareaField}
+                              value={formData.deliveryAddress}
+                              required
+                              rows={2}
+                            />
+                            </div>
                       </div>
                     </div>
                     <div className={styles.deliveryBox}>
@@ -354,7 +506,9 @@ const location = useLocation();
                         <div className={styles.addressTitle}>
                           Delivery Address:
                         </div>
+                        <div>
                         <div className={styles.addressText}>
+                          <div>
                           AMC TECHNOLOGY
                           <br />
                           105, Hiday Industrial Estate, Hira Industrial Park
@@ -363,8 +517,10 @@ const location = useLocation();
                           <br />
                           Vasai (East) Dist - Palghar, 401208
                         </div>
+                        </div>
                       </div>
                     </div>
+                  </div>
                   </div>
 
                   {/* Payment Terms */}

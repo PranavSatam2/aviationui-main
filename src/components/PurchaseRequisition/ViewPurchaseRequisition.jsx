@@ -15,7 +15,7 @@ const ViewPurchaseRequisitionPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortField, setSortField] = useState("purchaseRequisitionNo");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -324,7 +324,7 @@ const ViewPurchaseRequisitionPage = () => {
                               {sortField === column.field ? (
                                 <i
                                   className={`ms-1 fa fa-sort-${
-                                    sortDirection === "asc" ? "up" : "down"
+                                    sortDirection === "desc" ? "up" : "down"
                                   } text-primary`}
                                 ></i>
                               ) : (
