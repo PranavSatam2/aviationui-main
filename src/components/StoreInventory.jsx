@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import {
-  storeInventoryList,
-} from "../services/db_manager";
+import { storeInventoryList } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { toast } from "react-toastify";
+import React from "react";
 
 const StoreInventory = () => {
   // State
@@ -18,6 +17,8 @@ const StoreInventory = () => {
   const [sortField, setSortField] = useState("productId");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const navigate = useNavigate();
 
@@ -40,13 +41,34 @@ const StoreInventory = () => {
     fetchData();
   }, []);
 
-  // Search functionality
+  // Filter by search and date range
   const filteredData = tableData.filter((product) => {
-    return Object.values(product).some(
+    // Search filter
+    const matchesSearch = Object.values(product).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Date filter
+    let matchesDate = true;
+    if (startDate) {
+      matchesDate =
+        matchesDate &&
+        product.updatedDate &&
+        new Date(product.updatedDate) >= new Date(startDate);
+    }
+    if (endDate) {
+      // Add 1 day to endDate to include the end date itself
+      const end = new Date(endDate);
+      end.setDate(end.getDate() + 1);
+      matchesDate =
+        matchesDate &&
+        product.updatedDate &&
+        new Date(product.updatedDate) < end;
+    }
+
+    return matchesSearch && matchesDate;
   });
 
   // Sorting functionality
@@ -106,10 +128,13 @@ const StoreInventory = () => {
   // Column definitions for the table
   const columns = [
     { field: "id", label: "ID", width: "150px" },
-    { field: "partNum", label: "Name", width: "200px" },
-    { field: "description", label: "Description", width: "250px" },
-    { field: "location", label: "Location", width: "200px" },
-    { field: "quantity", label: "Quantity", width: "200px" },
+    { field: "partNum", label: "Name", width: "150px" },
+    { field: "description", label: "Description", width: "150px" },
+    { field: "location", label: "Location", width: "150px" },
+    { field: "quantity", label: "Quantity", width: "150px" },
+    { field: "rackNo", label: "RackNo", width: "150px" },
+    { field: "updatedBy", label: "UpdatedBy", width: "150px" },
+    { field: "updatedDate", label: "Date", width: "150px" },
   ];
 
   return (
@@ -122,6 +147,28 @@ const StoreInventory = () => {
 
           <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
             <div className="card-body">
+              {/* Date Range Filter */}
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <label className="form-label fw-light">Start Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-light">End Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div className="row align-items-center">
                 <div className="col-md-6">
                   <div className="input-group">
@@ -227,17 +274,22 @@ const StoreInventory = () => {
                                 key={`${product.productId}-${column.field}`}
                                 className="text-nowrap py-3"
                                 style={{
-                                  maxWidth: "150px",
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
                                 title={product[column.field]}
                               >
-                                {product[column.field]}
+                                {column.field === "updatedDate" && product[column.field]
+                                  ? new Date(product[column.field])
+                                      .toLocaleDateString("en-GB", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "numeric",
+                                      })
+                                  : product[column.field]}
                               </td>
                             ))}
-                           
                           </tr>
                         ))
                       ) : (

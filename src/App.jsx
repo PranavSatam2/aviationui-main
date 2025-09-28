@@ -13,6 +13,7 @@ import EditMaterialRequisition from "./components/MaterialRequisition/EditMateri
 import EditSupplierTable from "./components/Checker/EditSupplier/EditSupplierTable";
 import EditSupplierfrom from "./components/Checker/EditSupplier/Editsupplierform";
 import EditStoreAcceptance from "./components/EditStoreAcceptance";
+import EditUpdateStore from "./components/EditUpdateStore";
 import EditPurchaseRequisition from "./components/PurchaseRequisition/EditPurchaseRequisition/EditPurchase.jsx";
 import PurchaseOrderForm from "./components/PurchaseOrder/PurchaseOrder.jsx";
 import AddPurchaseRequisition from "./components/PurchaseRequisition/AddpurchaseRequisition/Addpurchase.jsx";
@@ -36,6 +37,7 @@ import CustomerRepairProductList from "./components/ViewRepairProducts.jsx";
 import EditCustomerRepairProduct from "./components/EditCustomerRepairProduct.jsx";
 import EditCustomer from "./components/EditRepairProduct.jsx";
 import NewPurchaseOrderForm from "./components/PurchaseOrder/PurchaseOrderForm.jsx";
+import UpdateStore from "./components/UpdateStoreTable.jsx";
 const App = () => {
   const token = sessionStorage.getItem('jwt_token') || '';
    const { menuItems = [], loading } = useRoleMenus();
@@ -59,6 +61,7 @@ const App = () => {
         <Route path='/editUser' element={<EditUser />} />
         {/* <Route path="/editRole/:roleId" element={<EditRole />} /> */}
         <Route path="/editstoreAcceptance" element={<EditStoreAcceptance />} />
+        <Route path="/editUpdateStore/:id" element={<EditUpdateStore />} />
         <Route path="/editmaterial" element={<EditMaterialNote />} />
         <Route path="/editsupplier" element={<EditSupplierTable />} />
         <Route path="/editsupplierform" element={<EditSupplierfrom />} />
@@ -83,11 +86,13 @@ const App = () => {
          <Route path="/viewCustomers" element={<CustomerList />} />
             <Route path="/addCustomers" element={<AddCustomer />} />
             <Route path = "/editCustomer/:id" element={<EditCustomer/>}/>
+            <Route path = "/viewCustomer/:id" element={<AddCustomer/>}/>
             <Route path="/addCustomersRepairProduct" element={<AddCustomerRepairProduct />} />
             <Route path="/viewCustomersRepairProduct" element={<CustomerRepairProductList />} />
             <Route path = "/editCustomersRepairProduct/:id" element={<EditCustomerRepairProduct/>}/>
             <Route path = "/purchaseOrderForm" element={<NewPurchaseOrderForm/>}/>
 
+            <Route path = "/updatestore" element={<UpdateStore/>}/>
 
     {menuItems.flatMap((menu) =>
                 menu.subMenus.map((sub) => {
