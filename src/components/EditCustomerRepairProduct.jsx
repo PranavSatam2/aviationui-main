@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -33,6 +33,11 @@ const EditCustomerRepairProduct = () => {
           if (!product.productSerialNumbers || product.productSerialNumbers.length === 0) {
             product.productSerialNumbers = [""];
           }
+          
+          // Get username from session storage and set it
+          const username = sessionStorage.getItem('username') || '';
+          product.registerBy = username;
+          
           setForm(product);
         }
       } catch (error) {
@@ -69,6 +74,26 @@ const EditCustomerRepairProduct = () => {
     setForm({ ...form, productSerialNumbers: updatedSerials.length ? updatedSerials : [""] });
   };
 
+  // Validation functions
+  const validateDataType = (event, dataType) => {
+    let value = event.target.value;
+    if (dataType === "A") {
+      value = value.replace(/[^a-zA-Z0-9\s]/g, "");
+    } else if (dataType === "N") {
+      value = value.replace(/[^0-9]/g, "");
+    } else if (dataType === "CMM") {
+      // Allow only numeric and dash for CMM Ref No
+      value = value.replace(/[^0-9-]/g, "");
+    }
+    event.target.value = value;
+  };
+
+  const validateCMMRefNo = (value) => {
+    // CMM Ref No should be numeric OR dash only (examples: 123-456-789, 213123)
+    const cmmPattern = /^[0-9-]+$/;
+    return cmmPattern.test(value);
+  };
+
   // Submit updated product
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,6 +106,12 @@ const EditCustomerRepairProduct = () => {
 
     if (form.productSerialNumbers.some((sn) => !sn)) {
       alert("All Serial Number fields must be filled");
+      return;
+    }
+
+    // CMM Ref No validation
+    if (form.cmmRefNo && !validateCMMRefNo(form.cmmRefNo)) {
+      alert("CMM Ref No should contain only numeric characters and dashes (e.g., 123-456-789 or 213123).");
       return;
     }
 
@@ -114,70 +145,93 @@ const EditCustomerRepairProduct = () => {
           <CustomBreadcrumb breadcrumbsLabel="Edit Customer Repair Product" isBack={true} />
           <div className="my-2 p-2">
             <div className="container-fluid">
-              <div className="row mx-1 card border border-dark shadow-lg py-2">
-                <div className="col-md-12">
+              <div className="row mx-1 card border border-dark shadow-lg py-2 p-4">
+                <div className="col-md-12" style={{ height: "72vh", overflowY: "scroll" }}>
                   <form onSubmit={handleSubmit}>
                     {/* Product Name */}
-                    <div className="col-md-12 p-2 d-flex">
-                      <label className="col-md-2 mt-2">Product Name</label>
-                      <input
-                        type="text"
-                        name="productName"
-                        className="form-control w-75"
-                        value={form.productName}
-                        onChange={handleChange}
-                        required
-                      />
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold">Product Name *</label>
+                        <input
+                          type="text"
+                          name="productName"
+                          className="form-control"
+                          value={form.productName}
+                          onInput={(event) => validateDataType(event, "A")}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold">OEM *</label>
+                        <input
+                          type="text"
+                          name="oem"
+                          className="form-control"
+                          value={form.oem}
+                          onInput={(event) => validateDataType(event, "A")}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
                     </div>
 
                     {/* Serial Numbers */}
-                    <div className="col-md-12 p-2">
-                      <label className="mt-2">Serial Numbers</label>
-                      {form.productSerialNumbers.map((sn, index) => (
-                        <div key={index} className="d-flex mb-2">
-                          <input
-                            type="text"
-                            className="form-control w-75"
-                            value={sn}
-                            onChange={(e) => handleSerialNumberChange(index, e.target.value)}
-                            required
-                          />
-                          <button
-                            type="button"
-                            className="btn btn-danger ms-2"
-                            onClick={() => removeSerialNumberField(index)}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      ))}
-                      <button type="button" className="btn btn-secondary" onClick={addSerialNumberField}>
-                        Add Serial Number
-                      </button>
+                    <div className="row mb-3">
+                      <div className="col-md-12">
+                        <label className="form-label fw-bold">Serial Numbers *</label>
+                        {form.productSerialNumbers.map((sn, index) => (
+                          <div key={index} className="d-flex mb-2">
+                            <input
+                              type="text"
+                              className="form-control me-2"
+                              value={sn}
+                              onInput={(event) => validateDataType(event, "A")}
+                              onChange={(e) => handleSerialNumberChange(index, e.target.value)}
+                              required
+                            />
+                            {form.productSerialNumbers.length > 1 && (
+                              <button
+                                type="button"
+                                className="btn btn-outline-danger"
+                                onClick={() => removeSerialNumberField(index)}
+                              >
+                                <i className="fa fa-trash"></i>
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        <button type="button" className="btn btn-outline-secondary" onClick={addSerialNumberField}>
+                          <i className="fa fa-plus me-1"></i>Add Serial Number
+                        </button>
+                      </div>
                     </div>
 
                     {/* Product Description */}
-                    <div className="col-md-12 p-2 d-flex">
-                      <label className="col-md-2 mt-2">Description</label>
-                      <textarea
-                        name="productDescription"
-                        className="form-control w-75"
-                        value={form.productDescription}
-                        onChange={handleChange}
-                        style={{ height: "70px" }}
-                        required
-                      ></textarea>
+                    <div className="row mb-3">
+                      <div className="col-md-12">
+                        <label className="form-label fw-bold">Product Description *</label>
+                        <textarea
+                          name="productDescription"
+                          className="form-control"
+                          value={form.productDescription}
+                          onInput={(event) => validateDataType(event, "A")}
+                          onChange={handleChange}
+                          rows="3"
+                          required
+                        ></textarea>
+                      </div>
                     </div>
 
-                    {/* Unit of Measurement & OEM */}
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Unit of Measurement</label>
+                    {/* Unit of Measurement */}
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <label className="form-label fw-bold">Unit of Measurement *</label>
                         <select
                           name="unitOfMeasurement"
                           value={form.unitOfMeasurement}
                           onChange={handleChange}
-                          className="form-control w-75"
+                          className="form-select"
                           required
                         >
                           <option value="">Select Unit</option>
@@ -192,60 +246,54 @@ const EditCustomerRepairProduct = () => {
                           <option value="Sq.mtr">Sq.mtr</option>
                         </select>
                       </div>
-
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">OEM</label>
-                        <input
-                          type="text"
-                          name="oem"
-                          className="form-control w-75"
-                          value={form.oem}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
                     </div>
 
-                    {/* CMM Ref, Date, Registered By */}
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-4 p-2 d-flex">
-                        <label className="col-md-5 mt-2">CMM Ref No</label>
+                    {/* CMM Ref No, Date, Registered By */}
+                    <div className="row mb-3">
+                      <div className="col-md-4">
+                        <label className="form-label fw-bold">CMM Ref No</label>
                         <input
                           type="text"
                           name="cmmRefNo"
-                          className="form-control w-75"
+                          className="form-control"
                           value={form.cmmRefNo}
+                          onInput={(event) => validateDataType(event, "CMM")}
                           onChange={handleChange}
+                          placeholder="e.g., 123-456-789 or 213123"
                         />
                       </div>
 
-                      <div className="col-md-4 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Date</label>
+                      <div className="col-md-4">
+                        <label className="form-label fw-bold">Date</label>
                         <input
                           type="date"
                           name="date"
-                          className="form-control w-75"
+                          className="form-control"
                           value={form.date}
                           onChange={handleChange}
                         />
                       </div>
 
-                      <div className="col-md-4 p-2 d-flex">
-                        <label className="col-md-5 mt-2">Registered By</label>
+                      <div className="col-md-4">
+                        <label className="form-label fw-bold">Registered By</label>
                         <input
                           type="text"
                           name="registerBy"
-                          className="form-control w-75"
+                          className="form-control"
                           value={form.registerBy}
-                          onChange={handleChange}
+                          disabled
+                          style={{ backgroundColor: '#f8f9fa', cursor: 'not-allowed' }}
                         />
                       </div>
                     </div>
 
-                    <div className="col-md-12 text-end mt-3">
-                      <button type="submit" className="btn btn-primary">
-                        Update Product
-                      </button>
+                    {/* Submit Button */}
+                    <div className="row">
+                      <div className="col-md-12 text-end">
+                        <button type="submit" className="btn btn-primary px-4 py-2">
+                          <i className="fa fa-save me-2"></i>Update Product
+                        </button>
+                      </div>
                     </div>
                   </form>
                 </div>

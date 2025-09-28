@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
@@ -33,6 +33,20 @@ const AddPurchaseRequisition = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const dropdownRef = useRef(null);
+
+  // Set default system date on component mount
+  useEffect(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    
+    setForm(prev => ({ 
+      ...prev, 
+      requiredDate: formattedDate
+    }));
+  }, []);
 
   // Fetch data once on component mount
   useEffect(() => {
@@ -210,10 +224,7 @@ const AddPurchaseRequisition = () => {
       type: "number",
       length: 10,
     },
-    remark: {
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
+    // remark field removed from validation - now optional
   };
 
   const validateDataType = (event, dataType) => {
@@ -239,21 +250,6 @@ const AddPurchaseRequisition = () => {
     }
   };
 
-  function validateLen(event, minLen, maxLen) {
-    let value = event.target.value.substring(0, maxLen);
-    event.target.value = value;
-    let elementLen = value.length;
-    if (elementLen > maxLen) {
-      event.target.classList.remove("is-valid");
-      event.target.classList.add("is-invalid");
-    } else if (elementLen < minLen) {
-      event.target.classList.remove("is-valid");
-      event.target.classList.add("is-invalid");
-    } else {
-      event.target.classList.add("is-valid");
-      event.target.classList.remove("is-invalid");
-    }
-  }
 
   // Function to clear all validation classes from form inputs
   const clearValidationClasses = () => {
@@ -300,13 +296,20 @@ const AddPurchaseRequisition = () => {
     // Clear validation classes before resetting form
     clearValidationClasses();
 
+    // Get current system date for reset
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
     // Reset the form after adding to the list
     setForm({
       partNumber: "",
       description: "",
       currentStock: "",
       requiredQty: "",
-      requiredDate: "",
+      requiredDate: formattedDate,
       remark: "",
       unitOfMeasurement: "",
     });
@@ -398,7 +401,7 @@ const AddPurchaseRequisition = () => {
                         />
                       </div> */}
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Part Number</label>
+                        <label className="col-md-4 mt-2">Part Number *</label>
                         {loading ? (
                           <div className="d-flex align-items-center">
                             <div
@@ -471,7 +474,7 @@ const AddPurchaseRequisition = () => {
 
                     {/* Description Dropdown (Disabled and auto-selected) */}
                     <div className="col-md-12 p-3 d-flex">
-                      <label className="col-md-2 mt-2">Description</label>
+                      <label className="col-md-2 mt-2">Description *</label>
                       {loading ? (
                         <div className="d-flex align-items-center">
                           <div
@@ -499,7 +502,7 @@ const AddPurchaseRequisition = () => {
                     </div>
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Current Stock</label>
+                        <label className="col-md-4 mt-2">Current Stock *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -513,7 +516,7 @@ const AddPurchaseRequisition = () => {
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Required Qty</label>
+                        <label className="col-md-4 mt-2">Required Qty *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -531,7 +534,7 @@ const AddPurchaseRequisition = () => {
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-1 d-flex">
                         <label className="col-md-4 mt-2">
-                          Unit of Measurement
+                          Unit of Measurement *
                         </label>
                         {loading ? (
                           <div className="d-flex align-items-center">
@@ -574,14 +577,14 @@ const AddPurchaseRequisition = () => {
                     </div>
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Required Date</label>
+                        <label className="col-md-4 mt-2">Required Date *</label>
                         <input
                           className="form-control w-100"
                           type="date"
                           name="requiredDate"
                           value={form.requiredDate}
-                          onChange={handleChange}
-                          required
+                          disabled
+                          style={{ backgroundColor: '#f8f9fa', cursor: 'not-allowed' }}
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
@@ -595,7 +598,6 @@ const AddPurchaseRequisition = () => {
                           }}
                           value={form.remark}
                           onChange={handleChange}
-                          required
                         />
                       </div>
                     </div>

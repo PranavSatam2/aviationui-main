@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
@@ -16,6 +16,24 @@ const AddCustomerRepairProduct = () => {
         date: "",
         registerBy: "",
     });
+
+    // Set current date and username on component mount
+    useEffect(() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        
+        // Get username from session storage
+        const username = sessionStorage.getItem('username') || '';
+        
+        setForm(prev => ({ 
+            ...prev, 
+            date: formattedDate,
+            registerBy: username
+        }));
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -47,9 +65,20 @@ const AddCustomerRepairProduct = () => {
             value = value.replace(/[^a-zA-Z0-9\s]/g, "");
         } else if (dataType === "N") {
             value = value.replace(/[^0-9]/g, "");
+        } else if (dataType === "CMM") {
+            // Allow only numeric and dash for CMM Ref No
+            value = value.replace(/[^0-9-]/g, "");
         }
         event.target.value = value;
     };
+
+
+    const validateCMMRefNo = (value) => {
+        // CMM Ref No should be numeric OR dash only (examples: 123-456-789, 213123)
+        const cmmPattern = /^[0-9-]+$/;
+        return cmmPattern.test(value);
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -57,6 +86,12 @@ const AddCustomerRepairProduct = () => {
         // Simple validation
         if (!form.productName || !form.productDescription || !form.unitOfMeasurement || !form.oem || !form.cmmRefNo || !form.date || !form.registerBy) {
             alert("Please fill all required fields.");
+            return;
+        }
+
+        // CMM Ref No validation
+        if (!validateCMMRefNo(form.cmmRefNo)) {
+            alert("CMM Ref No should contain only numeric characters and dashes (e.g., 123-456-789 or 213123).");
             return;
         }
 
@@ -70,6 +105,9 @@ const AddCustomerRepairProduct = () => {
             const response = await createRepairProduct(form);
             console.log("Customer Repair Product added:", response.data);
             alert("Customer Repair Product Added Successfully!");
+            // Get current username for reset
+            const username = sessionStorage.getItem('username') || '';
+            
             setForm({
                 productName: "",
                 productSerialNumbers: [""],
@@ -78,7 +116,7 @@ const AddCustomerRepairProduct = () => {
                 oem: "",
                 cmmRefNo: "",
                 date: "",
-                registerBy: "",
+                registerBy: username,
             });
         } catch (error) {
             console.error("Error adding product:", error);
@@ -154,10 +192,6 @@ const AddCustomerRepairProduct = () => {
                                                 required
                                             ></textarea>
                                         </div>
-
-
-
-
                                         {/* UOM & OEM */}
                                         <div className="col-md-12 d-flex">
                                             <div className="col-md-6 p-2 d-flex">
@@ -166,7 +200,7 @@ const AddCustomerRepairProduct = () => {
                                                     name="unitOfMeasurement"
                                                     value={form.unitOfMeasurement}
                                                     onChange={handleChange}
-                                                    className="form-control w-75"
+                                                    className="form-select"
                                                     required
                                                 >
                                                     <option value="">Select Unit</option>
@@ -205,7 +239,9 @@ const AddCustomerRepairProduct = () => {
                                                     className="form-control w-100"
                                                     name="cmmRefNo"
                                                     value={form.cmmRefNo}
+                                                    onInput={(event) => validateDataType(event, "CMM")}
                                                     onChange={handleChange}
+                                                    placeholder="e.g., 123-456-789 or 213123"
                                                     required
                                                 />
                                             </div>
@@ -231,9 +267,8 @@ const AddCustomerRepairProduct = () => {
                                                     className="form-control w-100"
                                                     name="registerBy"
                                                     value={form.registerBy}
-                                                    onInput={(event) => validateDataType(event, "A")}
-                                                    onChange={handleChange}
-                                                    required
+                                                    disabled
+                                                    style={{ backgroundColor: '#f8f9fa', cursor: 'not-allowed' }}
                                                 />
                                             </div>
                                         </div>
