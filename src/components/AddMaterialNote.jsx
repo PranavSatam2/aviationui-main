@@ -87,12 +87,13 @@ useEffect(() => {
           const result = await fetchAllPartNODetails(form.partNumber, form.orderNumber);
           console.log("Fetched PartNoDetails:", result);
           if (result) {
-            const { description, currentStoke, unit } = result.data;
+            const { description, currentStoke, unit, poDate} = result.data;
             setForm((prev) => ({
               ...prev,
               partDescription: description || "",
               quantity: currentStoke || "",
               unitOfMeasurement: unit || "",
+              receiptDate: poDate || "",
               storeInchargeSign: sessionStorage.getItem("username") || "",
             }));
           }
@@ -165,7 +166,7 @@ useEffect(() => {
                 <div className="col-md-6 p-2">
                   <label>Supplier</label>
                   <select
-                    className="form-control"
+                    className="from-select"
                     name="supplierName"
                     value={form.supplierName}
                     onChange={handleChange}
@@ -183,7 +184,7 @@ useEffect(() => {
                 <div className="col-md-6 p-2">
                   <label>PO Number</label>
                   <select
-                    className="form-control"
+                    className="from-select"
                     name="orderNumber"
                     value={form.orderNumber}
                     onChange={handleChange}
@@ -196,6 +197,38 @@ useEffect(() => {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              {/* Part Selection + Description */}
+              <div className="col-md-12 p-2 d-flex">
+                <div className="col-md-6 p-2">
+                  <label>Part Number</label>
+                  <select
+                    className="form-control"
+                    name="partNumber"
+                    value={form.partNumber}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">-- Select Part --</option>
+                    {parts.map((p, i) => (
+                      <option key={i} value={`${p.partNumber}|${p.id}`}>
+                        {p.partNumber}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-md-6 p-2">
+                  <label>Description</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="partDescription"
+                    value={form.partDescription}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
 
@@ -222,38 +255,6 @@ useEffect(() => {
                     value={form.receiptDate}
                     onChange={handleChange}
                     required
-                  />
-                </div>
-              </div>
-
-              {/* Part Selection + Description */}
-              <div className="col-md-12 p-2 d-flex">
-                <div className="col-md-6 p-2">
-                  <label>Part Number</label>
-                  <select
-                    className="form-control"
-                    name="partNumber"
-                    value={form.partNumber}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">-- Select Part --</option>
-                    {parts.map((p, i) => (
-                      <option key={i} value={p.partNumber}>
-                        {p.partNumber}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="col-md-6 p-2">
-                  <label>Description</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="partDescription"
-                    value={form.partDescription}
-                    onChange={handleChange}
                   />
                 </div>
               </div>

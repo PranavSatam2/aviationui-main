@@ -243,6 +243,11 @@ useEffect(() => {
         return;
       }
 
+      if (!formData.currency || formData.currency.trim() === "") {
+      toast.error("Please select a currency before saving.");
+      return;
+    }
+
       // Use the first item for the unit, rate and gross values
       // as the new API expects single values instead of arrays
       const firstItem = formData.items[0];

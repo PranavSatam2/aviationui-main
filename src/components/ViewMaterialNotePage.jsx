@@ -160,7 +160,7 @@ const ViewMaterialPage = () => {
     { field: "partNumber", label: "Part Number", width: "120px" },
     { field: "partDescription", label: "Description", width: "200px" },
     { field: "supplierName", label: "Supplier", width: "140px" },
-    { field: "orderNumber", label: "Order Number", width: "140px" },
+    { field: "orderNumber", label: "PO Number", width: "140px" },
     { field: "challanNo", label: "Challan No", width: "140px" },
     { field: "receiptDate", label: "Receipt Date", width: "140px" },
     { field: "quantity", label: "Quantity", width: "140px" },
