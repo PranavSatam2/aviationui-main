@@ -3,7 +3,10 @@ import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
-import { createPurchaseRequisition,  fetchCurrentQuantityFromStore} from "../../../services/db_manager";
+import {
+  createPurchaseRequisition,
+  fetchCurrentQuantityFromStore,
+} from "../../../services/db_manager";
 // Import functions to fetch data from your API
 // Assuming you have these functions in your services
 import { fetchPartNumbersAndDescriptions } from "../../../services/db_manager";
@@ -38,13 +41,13 @@ const AddPurchaseRequisition = () => {
   useEffect(() => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
-    
-    setForm(prev => ({ 
-      ...prev, 
-      requiredDate: formattedDate
+
+    setForm((prev) => ({
+      ...prev,
+      requiredDate: formattedDate,
     }));
   }, []);
 
@@ -142,29 +145,29 @@ const AddPurchaseRequisition = () => {
   };
 
   useEffect(() => {
-      if (form.partNumber) {
-        const currentQuantity = async () => {
-          try {
-            const result = await fetchCurrentQuantityFromStore(form.partNumber);
-            console.log("Fetched currentQuantity:", result.data);
-            if (result && result.data !== null && result.data !== undefined) {
-          setForm((prev) => ({
-            ...prev,
-            currentStock: result.data, // directly use the integer
-          }));
-        }else{
-           setForm((prev) => ({
-            ...prev,
-            currentStock: 0, // directly use the integer
-          }));
-        }
-          } catch (err) {
-            console.error("Failed to fetch currentStock", err);
+    if (form.partNumber) {
+      const currentQuantity = async () => {
+        try {
+          const result = await fetchCurrentQuantityFromStore(form.partNumber);
+          console.log("Fetched currentQuantity:", result.data);
+          if (result && result.data !== null && result.data !== undefined) {
+            setForm((prev) => ({
+              ...prev,
+              currentStock: result.data, // directly use the integer
+            }));
+          } else {
+            setForm((prev) => ({
+              ...prev,
+              currentStock: 0, // directly use the integer
+            }));
           }
-        };
-        currentQuantity();
-      }
-    }, [form.partNumber]);
+        } catch (err) {
+          console.error("Failed to fetch currentStock", err);
+        }
+      };
+      currentQuantity();
+    }
+  }, [form.partNumber]);
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -253,7 +256,6 @@ const AddPurchaseRequisition = () => {
     }
   };
 
-
   // Function to clear all validation classes from form inputs
   const clearValidationClasses = () => {
     const form = document.querySelector("form");
@@ -288,15 +290,6 @@ const AddPurchaseRequisition = () => {
       }
     }
 
-    const duplicate = purchaseRequisitions.some(
-    (req) => req.partNumber === form.partNumber
-    );
-
-     if (duplicate) {
-       alert(`Part Number "${form.partNumber}" is already added to the list!`);
-       return;
-     }
-
     // Add the current form to the purchaseRequisitions array with a unique ID
     const newRequisition = {
       ...form,
@@ -311,8 +304,8 @@ const AddPurchaseRequisition = () => {
     // Get current system date for reset
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
 
     // Reset the form after adding to the list
@@ -469,9 +462,31 @@ const AddPurchaseRequisition = () => {
                                   >
                                     <div className="fw-bold">
                                       {item.productName}
+                                      {item.mappingType === "DOWN" ? (
+                                        <span style={{ fontSize: "20px" }}>
+                                          ↓
+                                        </span>
+                                      ) : item.mappingType === "UP" ? (
+                                        <span style={{ fontSize: "20px" }}>
+                                          ↑
+                                        </span>
+                                      ) : item.mappingType === "BOTH" ? (
+                                        <span style={{ fontSize: "20px" }}>
+                                          ↑↓
+                                        </span>
+                                      ) : (
+                                        ""
+                                      )}
                                     </div>
                                     <div className="text-muted small">
-                                      {item.alternateProduct}
+                                      {`Alternate-Product 1: ${
+                                        item?.alternateProduct1 || "N/A"
+                                      }`}
+                                    </div>
+                                    <div className="text-muted small">
+                                      {`Alternate-Product 2: ${
+                                        item?.alternateProduct2 || "N/A"
+                                      }`}
                                     </div>
                                   </div>
                                 ))}
@@ -594,7 +609,10 @@ const AddPurchaseRequisition = () => {
                           name="requiredDate"
                           value={form.requiredDate}
                           disabled
-                          style={{ backgroundColor: '#f8f9fa', cursor: 'not-allowed' }}
+                          style={{
+                            backgroundColor: "#f8f9fa",
+                            cursor: "not-allowed",
+                          }}
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
@@ -608,7 +626,6 @@ const AddPurchaseRequisition = () => {
                           }}
                           value={form.remark}
                           onChange={handleChange}
-                          
                         />
                       </div>
                     </div>

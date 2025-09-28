@@ -44,7 +44,6 @@ import MyModalComponent from './partials/MyModalComponent.jsx';
 import PasswordChange from './PasswordChange.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 import ProductList from './ProductList.jsx';
-import AddPurchaseOrder from './PurchaseOrder/AddPurchaseOrder.jsx';
 import EditPurchaseOrder from './PurchaseOrder/EditPurchaseOrder/EditPurchaseOrder.jsx';
 import PurchaseOrder from './PurchaseOrder/PurchaseOrder.jsx';
 import PurchaseOrderForm from './PurchaseOrder/PurchaseOrderForm.jsx';
@@ -127,7 +126,6 @@ const componentsMap = {
   "PasswordChange": PasswordChange,
   "PrivateRoute": PrivateRoute,
   "ProductList": ProductList,
-  "AddPurchaseOrder": AddPurchaseOrder,
   "EditPurchaseOrder": EditPurchaseOrder,
   "PurchaseOrder": PurchaseOrder,
   "PurchaseOrderForm": PurchaseOrderForm,

@@ -160,41 +160,41 @@ useEffect(() => {
 }, [selectedItems]);
 
   const handleItemChange = (index, field, value) => {
-    let numValue = value;
-    if (field === "requiredQty" || field === "rate") {
-      numValue = parseFloat(value) || 0;
-      // Only allow positive values
-      if (numValue <= 0) return;
-    }
+  let numValue = value;
+  if (field === "requiredQty" || field === "rate") {
+    numValue = parseFloat(value) || 0;
+    // Only allow positive values for requiredQty, but allow 0 for rate
+    if (field === "requiredQty" && numValue <= 0) return;
+  }
 
-    const updatedItems = [...formData.items];
-    updatedItems[index] = {
-      ...updatedItems[index],
-      [field]: numValue,
-    };
-
-    if (field === "requiredQty" || field === "rate") {
-      updatedItems[index].gross = calculateGross(
-        field === "requiredQty" ? numValue : updatedItems[index].requiredQty,
-        field === "rate" ? numValue : updatedItems[index].rate
-      );
-    }
-
-    setFormData({
-      ...formData,
-      items: updatedItems,
-    });
+  const updatedItems = [...formData.items];
+  updatedItems[index] = {
+    ...updatedItems[index],
+    [field]: numValue,
   };
+
+  if (field === "requiredQty" || field === "rate") {
+    updatedItems[index].gross = calculateGross(
+      field === "requiredQty" ? numValue : updatedItems[index].requiredQty,
+      field === "rate" ? numValue : updatedItems[index].rate
+    );
+  }
+
+  setFormData({
+    ...formData,
+    items: updatedItems,
+  });
+};
 
   const handleAdditionalChargeChange = (field, value) => {
-    const numValue = parseFloat(value) || 0;
-    // Only allow positive values
-    if (numValue <= 0) return;
-    setFormData({
-      ...formData,
-      [field]: numValue,
-    });
-  };
+  let numValue = value === "" ? 0 : parseFloat(value);
+  // Only prevent negative values
+  if (numValue < 0) return;
+  setFormData({
+    ...formData,
+    [field]: numValue,
+  });
+};
 
   const handleInputChange = (field, value) => {
     setFormData({
@@ -242,11 +242,6 @@ useEffect(() => {
         alert("Please search for a Po Number first to load items.");
         return;
       }
-
-      if (!formData.currency || formData.currency.trim() === "") {
-      toast.error("Please select a currency before saving.");
-      return;
-    }
 
       // Use the first item for the unit, rate and gross values
       // as the new API expects single values instead of arrays
@@ -597,12 +592,12 @@ useEffect(() => {
                                     type="number"
                                     min="1"
                                     className={styles.inputField}
-                                    value={item.rate}
+                                    value={item.rate === 0 ? "" : item.rate}
                                     onChange={(e) =>
                                       handleItemChange(
                                         index,
                                         "rate",
-                                        e.target.value
+                                        e.target.value === "" ? 0 : e.target.value
                                       )
                                     }
                                   />
@@ -712,13 +707,16 @@ useEffect(() => {
                             <td className={styles.totalValue}>
                               <input
                                 type="number"
-                                min="1"
+                                min="0"
                                 className={styles.inputField}
-                                value={formData.pf}
-                                onChange={(e) =>
+                                value={formData.pf === 0 ? "" : formData.pf}
+                                onFocus={e => {
+                                  if (formData.pf === 0) handleAdditionalChargeChange("pf", "");
+                                }}
+                                onChange={e =>
                                   handleAdditionalChargeChange(
                                     "pf",
-                                    e.target.value
+                                    e.target.value === "" ? 0 : e.target.value
                                   )
                                 }
                               />
@@ -731,13 +729,16 @@ useEffect(() => {
                             <td className={styles.totalValue}>
                               <input
                                 type="number"
-                                min="1"
+                                min="0"
                                 className={styles.inputField}
-                                value={formData.transportation}
-                                onChange={(e) =>
+                                value={formData.transportation === 0 ? "" : formData.transportation}
+                                onFocus={e => {
+                                  if (formData.transportation === 0) handleAdditionalChargeChange("transportation", "");
+                                }}
+                                onChange={e =>
                                   handleAdditionalChargeChange(
                                     "transportation",
-                                    e.target.value
+                                    e.target.value === "" ? 0 : e.target.value
                                   )
                                 }
                               />
@@ -748,13 +749,16 @@ useEffect(() => {
                             <td className={styles.totalValue}>
                               <input
                                 type="number"
-                                min="1"
+                                min="0"
                                 className={styles.inputField}
-                                value={formData.insurance}
-                                onChange={(e) =>
+                                value={formData.insurance === 0 ? "" : formData.insurance}
+                                onFocus={e => {
+                                  if (formData.insurance === 0) handleAdditionalChargeChange("insurance", "");
+                                }}
+                                onChange={e =>
                                   handleAdditionalChargeChange(
                                     "insurance",
-                                    e.target.value
+                                    e.target.value === "" ? 0 : e.target.value
                                   )
                                 }
                               />
@@ -765,13 +769,16 @@ useEffect(() => {
                             <td className={styles.totalValue}>
                               <input
                                 type="number"
-                                min="1"
+                                min="0"
                                 className={styles.inputField}
-                                value={formData.other_Charges}
-                                onChange={(e) =>
+                                value={formData.other_Charges === 0 ? "" : formData.other_Charges}
+                                onFocus={e => {
+                                  if (formData.other_Charges === 0) handleAdditionalChargeChange("other_Charges", "");
+                                }}
+                                onChange={e =>
                                   handleAdditionalChargeChange(
                                     "other_Charges",
-                                    e.target.value
+                                    e.target.value === "" ? 0 : e.target.value
                                   )
                                 }
                               />
