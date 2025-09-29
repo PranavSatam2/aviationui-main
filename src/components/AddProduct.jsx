@@ -106,6 +106,8 @@ const AddProduct = () => {
       value = value.replace(/[^0-9]/g, "");
     } else if (dataType === "ANS") {
       value = value.replace(/[^a-zA-Z0-9@\.\-]/g, "");
+    } else if (dataType === "L") {
+      value = value.replace(/\D/g, ''); // allow only digits
     }
     event.target.value = value;
   };
@@ -122,8 +124,12 @@ const AddProduct = () => {
       }
     }
 
+    const payload = { ...form };
+    if (!showAlternateName1) delete payload.alternateProduct1;
+    if (!showAlternateName2) delete payload.alternateProduct2;
+
     try {
-      const response = await createProduct(form);
+      const response = await createProduct(payload);
       console.log("Product added successfully:", response.data);
       alert("Product Added Successfully!");
       location.reload();
@@ -224,24 +230,24 @@ const AddProduct = () => {
                     {(showAlternateName1 || showAlternateName2) && (
                       <div className="d-flex align-items-center mb-3">
                         <label className="col-md-2 ml-3 mt-2 p-2 fw-semibold">
-                          Mapping Type
+                          Mapping Type<span style={{ color: "red" }}>*</span>
                         </label>
                         <div
                           className="btn-group"
                           role="group"
                           aria-label="Mapping Type"
                           style={{ marginLeft: "10px" }}
+                          required
                         >
                           <button
                             type="button"
                             onClick={() =>
                               setForm({ ...form, mappingType: "UP" })
                             }
-                            className={`btn ${
-                              form.mappingType === "UP"
+                            className={`btn ${form.mappingType === "UP"
                                 ? "btn-primary"
                                 : "btn-outline-primary"
-                            }`}
+                              }`}
                             style={{
                               minWidth: "80px",
                               fontWeight: "bold",
@@ -255,11 +261,10 @@ const AddProduct = () => {
                             onClick={() =>
                               setForm({ ...form, mappingType: "DOWN" })
                             }
-                            className={`btn ${
-                              form.mappingType === "DOWN"
+                            className={`btn ${form.mappingType === "DOWN"
                                 ? "btn-success"
                                 : "btn-outline-success"
-                            }`}
+                              }`}
                             style={{
                               minWidth: "80px",
                               fontWeight: "bold",
@@ -273,11 +278,10 @@ const AddProduct = () => {
                             onClick={() =>
                               setForm({ ...form, mappingType: "BOTH" })
                             }
-                            className={`btn ${
-                              form.mappingType === "BOTH"
+                            className={`btn ${form.mappingType === "BOTH"
                                 ? "btn-warning text-white"
                                 : "btn-outline-warning"
-                            }`}
+                              }`}
                             style={{
                               minWidth: "80px",
                               fontWeight: "bold",
@@ -293,7 +297,7 @@ const AddProduct = () => {
                     {/* === Alternate Name radio === */}
                     <div className="col-md-12 d-flex p-2">
                       <label className="col-md-2 mt-2">
-                        Alternate Product Name?
+                        Alternate Product Name 1?
                       </label>
                       <div className="col-md-4 d-flex mt-2">
                         <div className="form-check me-3">
@@ -322,7 +326,7 @@ const AddProduct = () => {
                             value="no"
                             onChange={() => {
                               setShowAlternateName1(false);
-                              setForm({ ...form, alternateName: "" });
+                              setForm({ ...form, alternateName1: "" });
                             }}
                             checked={!showAlternateName1}
                           />
@@ -349,6 +353,7 @@ const AddProduct = () => {
                           value={form.alternateProduct1}
                           onChange={handleChange}
                           placeholder="Enter alternate name"
+                          onInput={(event) => validateDataType(event, "A")}
                           required={showAlternateName1} // make required if visible
                         />
                       </div>
@@ -413,6 +418,7 @@ const AddProduct = () => {
                           value={form.alternateProduct2}
                           onChange={handleChange}
                           placeholder="Enter alternate name 2"
+                          onInput={(event) => validateDataType(event, "A")}
                           required={showAlternateName2} // required if visible
                         />
                       </div>
@@ -503,6 +509,7 @@ const AddProduct = () => {
                           type="Number"
                           name="cmmReferenceNumber"
                           value={form.cmmReferenceNumber}
+                          onInput={(event) => validateDataType(event, "L")}
                           onChange={handleChange}
                         />
                       </div>
