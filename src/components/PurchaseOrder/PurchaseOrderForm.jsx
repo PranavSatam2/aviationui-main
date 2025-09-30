@@ -237,6 +237,11 @@ useEffect(() => {
 
   const handleSave = async () => {
     try {
+
+      if (!formData.currency || formData.currency.trim() === "") {
+      toast.error("Currency is required for purchase order.");
+      return;
+    }
       // If no items are loaded, show error
       if (formData.items.length === 0) {
         alert("Please search for a Po Number first to load items.");
