@@ -290,6 +290,15 @@ const AddPurchaseRequisition = () => {
       }
     }
 
+    const alreadyExists = purchaseRequisitions.some(
+    (req) => req.partNumber === form.partNumber
+  );
+
+  if (alreadyExists) {
+    alert(`Part Number "${form.partNumber}" is already in the list!`);
+    return;
+  }
+  
     // Add the current form to the purchaseRequisitions array with a unique ID
     const newRequisition = {
       ...form,

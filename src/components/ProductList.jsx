@@ -346,13 +346,13 @@ const ProductList = () => {
                             ))}
                             <td>
                               <div className="d-flex justify-content-center gap-2">
-                                <button
+                                {/* <button
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() => handleEdit(product.productId)}
                                   title="Edit"
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
+                                </button> */}
                                 <button
                                   className="btn btn-sm btn-outline-danger"
                                   onClick={() =>
