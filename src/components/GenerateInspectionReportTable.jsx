@@ -366,7 +366,7 @@ const handleAddInspectionReport = async (e) => {
                           name="invoiceObservation"
                           value={form.invoiceObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                             <tr>
@@ -379,7 +379,7 @@ const handleAddInspectionReport = async (e) => {
                           name="manufacturerCertObservation"
                           value={form.manufacturerCertObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                             <tr>
@@ -392,7 +392,7 @@ const handleAddInspectionReport = async (e) => {
                           name="supplierCertObservation"
                           value={form.supplierCertObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                             <tr>
@@ -405,7 +405,7 @@ const handleAddInspectionReport = async (e) => {
                           name="fullTraceabilityObservation"
                           value={form.fullTraceabilityObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                             <tr>
@@ -418,7 +418,7 @@ const handleAddInspectionReport = async (e) => {
                           name="batchNumberObservation"
                           value={form.batchNumberObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                             <tr>
@@ -431,7 +431,7 @@ const handleAddInspectionReport = async (e) => {
                           name="dateOfManufacturingObservation"
                           value={form.dateOfManufacturingObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                             <tr>
@@ -444,7 +444,7 @@ const handleAddInspectionReport = async (e) => {
                           name="dateOfExpiryObservation"
                           value={form.dateOfExpiryObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
 
@@ -458,7 +458,7 @@ const handleAddInspectionReport = async (e) => {
                           name="selfLifeObservation"
                           value={form.selfLifeObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
 
@@ -472,7 +472,7 @@ const handleAddInspectionReport = async (e) => {
                           name="tdsObservation"
                           value={form.tdsObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
 
@@ -486,7 +486,7 @@ const handleAddInspectionReport = async (e) => {
                           name="materialConditionObservation"
                           value={form.materialConditionObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                             <tr>
@@ -499,7 +499,7 @@ const handleAddInspectionReport = async (e) => {
                           name="specificationObservation"
                           value={form.specificationObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                             <tr>
@@ -512,7 +512,7 @@ const handleAddInspectionReport = async (e) => {
                           name="documentObservation"
                           value={form.documentObservation}
                           onChange={handleChange}
-                          required
+                          
                         /></td>
                             </tr>
                         </tbody>

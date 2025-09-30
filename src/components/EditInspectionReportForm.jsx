@@ -244,7 +244,7 @@ const EditInspectionReportform = () => {
                               name="invoiceObservation"
                               value={form.invoiceObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
                                 <tr>
@@ -257,7 +257,7 @@ const EditInspectionReportform = () => {
                               name="manufacturerCertObservation"
                               value={form.manufacturerCertObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
                                 <tr>
@@ -270,7 +270,7 @@ const EditInspectionReportform = () => {
                               name="supplierCertObservation"
                               value={form.supplierCertObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
                                 <tr>
@@ -283,7 +283,7 @@ const EditInspectionReportform = () => {
                               name="fullTraceabilityObservation"
                               value={form.fullTraceabilityObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
                                 <tr>
@@ -296,7 +296,7 @@ const EditInspectionReportform = () => {
                               name="batchNumberObservation"
                               value={form.batchNumberObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
                                 <tr>
@@ -309,7 +309,7 @@ const EditInspectionReportform = () => {
                               name="dateOfManufacturingObservation"
                               value={form.dateOfManufacturingObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
 
@@ -323,7 +323,7 @@ const EditInspectionReportform = () => {
                               name="dateOfExpiryObservation"
                               value={form.dateOfExpiryObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
     
@@ -337,7 +337,7 @@ const EditInspectionReportform = () => {
                               name="selfLifeObservation"
                               value={form.selfLifeObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
     
@@ -351,7 +351,7 @@ const EditInspectionReportform = () => {
                               name="tdsObservation"
                               value={form.tdsObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
     
@@ -365,7 +365,7 @@ const EditInspectionReportform = () => {
                               name="materialConditionObservation"
                               value={form.materialConditionObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
                                 <tr>
@@ -378,7 +378,7 @@ const EditInspectionReportform = () => {
                               name="specificationObservation"
                               value={form.specificationObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
                                 <tr>
@@ -391,7 +391,7 @@ const EditInspectionReportform = () => {
                               name="documentObservation"
                               value={form.documentObservation}
                               onChange={handleChange}
-                              required
+                              
                             /></td>
                                 </tr>
                             </tbody>
@@ -404,7 +404,7 @@ const EditInspectionReportform = () => {
                           name="lotAccepted"
                           value={form.lotAccepted}
                           onChange={handleChange}
-                          required
+                          
                         >
                           <option value="">Select</option>
                           <option value="Yes">Yes</option>
