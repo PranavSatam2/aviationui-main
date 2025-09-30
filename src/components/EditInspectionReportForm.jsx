@@ -47,10 +47,23 @@ const EditInspectionReportform = () => {
   useEffect(() => {
       
       if (reportData && reportId) {
-        setForm((prevData) => ({
-          ...prevData,
-          ...reportData, 
-        }));
+        let lotAcceptedValue = reportData.lotAccepted || "";
+        let deviationDateValue = "";
+
+    // If "With Deviation | date" → split into two values
+    if (lotAcceptedValue.includes("|")) {
+      const parts = lotAcceptedValue.split("|");
+      lotAcceptedValue = parts[0].trim();       // "With Deviation"
+      deviationDateValue = parts[1].trim();     // "2025-09-29"
+    }
+
+    setForm((prevData) => ({
+      ...prevData,
+      ...reportData,
+      lotAccepted: lotAcceptedValue,
+      deviationDate: deviationDateValue,
+    }));
+        
       }
     }, [reportData, reportId]);
 
@@ -65,6 +78,9 @@ const EditInspectionReportform = () => {
     try {
       let updateReportData={
               ...form,
+              lotAccepted: form.lotAccepted === "With Deviation" && form.deviationDate
+              ? `${form.lotAccepted} | ${form.deviationDate}`
+              : form.lotAccepted,
               userAction:'1',
               makerUserName: sessionStorage.getItem('username'),
               makerDate: new Date().toISOString().split('T')[0],
@@ -396,6 +412,18 @@ const EditInspectionReportform = () => {
                           <option value="With Deviation">With Deviation</option>
                         </select>
                           </div>
+                          {form.lotAccepted === "With Deviation" && (
+                            <div className="col-md-6 p-2 d-flex">
+                            <label className="col-md-4 mt-2">Deviation Date</label>
+                            <input
+                            type="date"
+                            className="form-control w-100"
+                            name="deviationDate"
+                            value={form.deviationDate}
+                            onChange={handleChange}
+                            />
+                          </div>
+                            )}
                           <div className="col-md-6 p-2 d-flex">
                             <label className="col-md-4 mt-2">Remark(If any)</label>
                             <input

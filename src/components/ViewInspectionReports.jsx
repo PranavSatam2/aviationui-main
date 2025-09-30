@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { getViewReportList } from "../services/db_manager";
+import { getViewReportList,  getReportDetails } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { PrintInspectionReport } from "./PrintInspectionReport";
 import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
+import { Modal, Button, Form } from "react-bootstrap";
+
 const ViewInspectionReports = () => {
   // State
   const [tableData, setTableData] = useState([]);
@@ -20,6 +22,8 @@ const ViewInspectionReports = () => {
   const [selectedItem, setSelectedItem] = useState("");
   const [selectAll, setSelectAll] = useState(false);
   const [selecteReportData, setSelecteReportData] = useState();
+  const [showModal1, setShowModal1] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
@@ -93,6 +97,45 @@ const ViewInspectionReports = () => {
           return matchesDate;
         })
     : [];
+
+    const editSelectedElement = async (elementId) => {
+        if (elementId !== "") {
+          try {
+            let reportId = elementId;
+            let reportData = await getReportDetails(elementId);
+            reportData = reportData.data;
+            console.log("Fetched report data:", reportData);  // Log the fetched data
+    
+            setSelectedRow(reportData);
+            console.log("Selected Row Data: ", reportData);  // Log to verify data
+    
+            setShowModal1(true);
+            // if (reportId !== null) {
+            //   navigate("/ViewSupplier", {
+            //     state: { reportId, reportData },
+            //   });
+            // }
+          } catch (error) {
+            console.error("Error fetching report details: ", error);
+            toast.error("Failed to fetch report details");
+          }
+        }
+      };
+
+      // Modal handlers
+        const handleOpenModal = (type) => {
+          if (!selectedItem) {
+            toast.warning("Please select a report");
+            return;
+          }
+          setActionType(type);
+          setShowModal(true);
+        };
+      
+        const handleCloseModal = () => {
+          setShowModal(false);
+          setRemark("");
+        };
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -193,7 +236,10 @@ const ViewInspectionReports = () => {
       }, 100);
     }, 500);
   };
-
+useEffect(() => {
+    setSelectedItem("");
+    setSelectAll(false);
+  }, [currentPage, itemsPerPage]);
   // Column definitions for the table
   const columns = [
     {
@@ -271,7 +317,7 @@ const ViewInspectionReports = () => {
     // { field: "checkerUserName", label: "Checker Name", width: "100px" },
     // { field: "checkerDate", label: "Checker  Date", width: "100px" },
   ];
-
+  
   return (
     <div className="wrapper">
       <Sidebar />
@@ -475,6 +521,15 @@ const ViewInspectionReports = () => {
                             <td>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
+                                  className="btn btn-sm btn-outline-primary"
+                                  onClick={() =>
+                                    editSelectedElement(report.inspectionReportId)
+                                  }
+                                  title="View Doc"
+                                >
+                                  <i className="fa-solid fa-eye"></i>
+                                </button>
+                                <button
                                   className="btn btn-sm btn-outline-secondary"
                                   onClick={() => handlePrintClick(report)}
                                   title="Print Doc"
@@ -599,6 +654,46 @@ const ViewInspectionReports = () => {
         </div>
         <Footer />
       </div>
+    
+
+    {showModal1 && selectedRow && (
+      <div className="modalBackdrop1">
+        <Modal show={showModal1} onHide={() => setShowModal1(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>Inspection Report</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+      <p><strong>Inspection Report Id:</strong> {selectedRow.inspectionReportId}</p>
+      <p><strong>Part Description:</strong> {selectedRow.partDesc}</p>
+      <p><strong>Purchase Order No.:</strong> {selectedRow.purchaseOrderNo}</p>
+      <p><strong>Supplier Name:</strong> {selectedRow.supplierName}</p>
+      <p><strong>Report No:</strong> {selectedRow.reportNo}</p>
+      <p><strong>Quantity:</strong> {selectedRow.qty}</p>
+      <p><strong>Receive Quantity:</strong> {selectedRow.qtyReceive}</p>
+      <p><strong>Date:</strong> {selectedRow.date}</p>
+      <p><strong>Invoice  Observation:</strong> {selectedRow.invoiceObservation}</p>
+      <p><strong>Manufacturer Cert Observation:</strong> {selectedRow.manufacturerCertObservation}</p>
+      <p><strong>Supplier Cert. Observation:</strong> {selectedRow.supplierCertObservation}</p>
+      <p><strong>Cert. Full Traceability Observation:</strong> {selectedRow.fullTraceabilityObservation}</p>
+      <p><strong>Batch Number Observation:</strong> {selectedRow.batchNumberObservation}</p>
+      <p><strong>Date of Manufacturing & Date of Expiry Observation:</strong> {selectedRow.dateOfManufacturingObservation}</p>
+      <p><strong>Self Life Observation:</strong> {selectedRow.selfLifeObservation}</p>
+      <p><strong>Technical Data Sheet(TDS) & MSDS Observation:</strong> {selectedRow.tdsObservation}</p>
+      <p><strong>Material Condition Observation:</strong> {selectedRow.materialConditionObservation}</p>
+      <p><strong>Specification Observation:</strong> {selectedRow.specificationObservation}</p>
+      <p><strong>Documents Observation:</strong> {selectedRow.documentObservation}</p>
+      <p><strong>Lot Accepted:</strong> {selectedRow.lotAccepted}</p>
+      <p><strong>Remark:</strong> {selectedRow.remark}</p>
+      <p><strong>Maker Name</strong> {selectedRow.makerUserName}</p>
+      <p><strong>Maker Date:</strong> {selectedRow.makerDate}</p>
+    
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={() => setShowModal1(false)}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+      </div>
+      )} 
     </div>
   );
 };

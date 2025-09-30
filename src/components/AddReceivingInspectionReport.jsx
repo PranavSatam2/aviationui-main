@@ -1,594 +1,432 @@
 import React, { useEffect, useState } from "react";
-import Header from "./Header";
+import { Search, Save } from "lucide-react";
+import styles from "./PurchaseOrder/Purchase.module.css";
 import Footer from "./Footer";
+import Header from "./Header";
 import Sidebar from "./Sidebar";
+import {
+   GetAllDataUsingBatchNo,
+  fetchMrnNos,
+} from "../services/db_manager";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-//import { fetchPartNumbers } from "../services/db_manager";
-import {fetchPartDetails,submitInspectionReport,fetchPartNumbers, fetchMrnNos} from "../services/db_manager";
 
-const AddReceivingInspectionReport = () => {
-  const [partNumber, setPartNumber] = useState([]);
-  const [mrnNos, setMrnNos] = useState([]);
-  const [partLoading, setPartLoading] = useState(false);
-  const [partError, setPartError] = useState(null);
-  const [selectedPart, setSelectedPart] = useState("");
-  const [document, setDocument] = useState(null);
 
- const [form, setForm] = useState({
-    partNumber: "",
-    partDesc: "",
-    purchaseOrderNo: "",
-    supplierName: "",
-    reportNo: "",
-    date: new Date().toISOString().split('T')[0] || "",
-    qty: "",
-    qtyReceive: "",
-    invoiceObservation: "",
-    manufacturerCertObservation: "",
-    supplierCertObservation: "",
-    fullTraceabilityObservation: "",
-    batchNumberObservation: "",
-    dateOfManufacturingObservation: "",
-    dateOfExpiryObservation: "",
-    selfLifeObservation: "",
-    tdsObservation: "",
-    materialConditionObservation: "",
-    specificationObservation: "",
-    documentObservation: "",
-    lotAccepted: "",
-    remark: "",
-    makerUserName: "",
-    makerUserId: "",
-    makerDate: "",
-    checkerUserName: "",
-    checkerUserId: "",
-    checkerDate: "",
-    userAction: "",
-    userRole: "",
-  });
-   const [errors, setErrors] = useState({});
+export default function AddReceivingInspectionReport() {
+  //const [batchNo, setBatchNo] = useState("");
+  const [orderForm, setOrderForm] = useState(false);
 
-   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const result = await fetchMrnNos();
+  // State for table data
+  const [tableData, setTableData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [sortField, setSortField] = useState("id");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedItems, setSelectedItems] = useState([]);
 
-      const mrnList = Array.isArray(result.data)
-        ? result.data.map(item => item.reportNo) // only reportNo values
-        : [];
-
-      console.log("Fetched MrnNo list:", result.data); // 👈 log only MRN numbers
-      setMrnNos(mrnList);
-    } catch (err) {
-      console.error("Failed to fetch MrnNo list", err);
-      setMrnNos([]);
-    }
-  };
-  fetchData();
-}, []);
-
-   // Fetch part numbers from API when component mounts
-     useEffect(() => {
-       if (form.reportNo) {
-        console.log(form.reportNo);
-        const mrnNo =form.reportNo;
-       const getPartNumbers = async () => {
-         try {
-           const res = await fetchPartNumbers(mrnNo);
-           console.log("Role data:", res);
-          const actualData = res.data.data || res.data; 
-           setPartNumber(actualData);
-         } catch (err) {
-           console.error("Error fetching part numbers:", err);
-          setPartNumber([]);         } 
-       };
-       
-       getPartNumbers();
-      }
-     }, [form.reportNo]);
-
-  const handleChange = (e) => {
-      const { name, value } = e.target;
-      setForm((prevForm) => ({
-        ...prevForm,
-        [name]: value,
-      }));
-    };
-    const handlePartNumberSelect = async (partNumber) => {
-      setSelectedPart(partNumber);
-      if (!partNumber) return;
-    
-      try {
-        const res = await fetchPartDetails(partNumber ,form.reportNo);
-        setForm(prev => ({
-  ...prev,
-  partNumber,
-  partDesc: res.data.partDesc || "",
-  purchaseOrderNo: res.data.purchaseOrderNo || "",
-  supplierName: res.data.supplierName || "",
-  //reportNo: res.data.reportNo || "",
-  //date: res.data.date || "",
-  qty: res.data.qty || "",
-  qtyReceive: res.data.qtyReceive || ""
-}));
-        //setPartDetails(res.data);
-      } catch (err) {
-        console.error("Failed to fetch part details:", err);
-        setForm({
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+      partNumber: "",
       partDesc: "",
       purchaseOrderNo: "",
       supplierName: "",
       reportNo: "",
-      date: "",
+      date: new Date().toISOString().split('T')[0] || "",
       qty: "",
-      qtyReceive: ""
-    });
-      }
-    };
-    const handleAddInspectionReport = async (e) => {
-      e.preventDefault();
-      //if (!validateForm()) return;
- if (!document) return alert("Please upload the document.");
-  const payload = {
-    partNumber: form.partNumber,
-    partDesc: form.partDesc,
-    purchaseOrderNo: form.purchaseOrderNo,
-    supplierName: form.supplierName,
-    reportNo: form.reportNo,
-    date: form.date,
-    qty: form.qty,
-    qtyReceive: form.qtyReceive,
-    invoiceObservation: form.invoiceObservation,
-    manufacturerCertObservation: form.manufacturerCertObservation,
-    dateOfExpiryObservation: form.dateOfExpiryObservation,
-    supplierCertObservation: form.supplierCertObservation,
-    fullTraceabilityObservation: form.fullTraceabilityObservation,
-    batchNumberObservation: form.batchNumberObservation,
-    dateOfManufacturingObservation: form.dateOfManufacturingObservation,
-    selfLifeObservation: form.selfLifeObservation,
-    tdsObservation: form.tdsObservation,
-    materialConditionObservation: form.materialConditionObservation,
-    specificationObservation: form.specificationObservation,
-    documentObservation: form.documentObservation,
-    lotAccepted: form.lotAccepted,
-    remark: form.remark,
-    makerUserName: sessionStorage.getItem('username'),
-    makerUserId: "",
-    makerDate: new Date().toISOString().split('T')[0],
-    checkerUserName: "",
-    checkerUserId: "",
-    checkerDate: "",
-    userAction: "1",
-    userRole: sessionStorage.getItem('roleId'),
+      qtyReceive: "",
+  });
+
+  // Fetch data for table
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetchMrnNos();
+      console.log("table ", response);
+      setTableData(response.data || []);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching MRN Details", error);
+      toast.error("Failed to load MRN Details /");
+      setIsLoading(false);
+    }
   };
-  const formData = new FormData();
-    formData.append("document", document);
-    formData.append("report", JSON.stringify(payload));
-  try {
-    const response = await submitInspectionReport(formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-    console.log("Report submitted successfully:", response.data);
-    alert("Report submitted successfully");
-     setForm({
-    partNumber: "",
-    partDesc: "",
-    purchaseOrderNo: "",
-    supplierName: "",
-    reportNo: "",
-    date: "",
-    qty: "",
-    qtyReceive: "",
-    invoiceObservation: "",
-    manufacturerCertObservation: "",
-    supplierCertObservation: "",
-    fullTraceabilityObservation: "",
-    batchNumberObservation: "",
-    dateOfManufacturingObservation: "",
-    dateOfExpiryObservation: "",
-    selfLifeObservation: "",
-    tdsObservation: "",
-    materialConditionObservation: "",
-    specificationObservation: "",
-    documentObservation: "",
-    lotAccepted: "",
-    remark: "",
-    makerUserName: "",
-    makerUserId: "",
-    makerDate: "",
-    checkerUserName: "",
-    checkerUserId: "",
-    checkerDate: "",
-    userAction: "",
-    userRole: "",
-    });
 
-    // reset form if needed
-  } catch (err) {
-    console.error("Submission failed", err);
-    alert("Failed to submit report");
+  // Fetching data when the component is mounted
+  useEffect(() => {
+    fetchData();
+  }, []);
+ 
+
+  // Search functionality
+  const filteredData = tableData.filter((requisition) => {
+    return Object.values(requisition).some(
+      (value) =>
+        value &&
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const sortedData = [...filteredData].sort((a, b) => {
+  const aValue = a[sortField];
+  const bValue = b[sortField];
+
+  if (aValue === undefined || bValue === undefined) return 0;
+
+  if (sortDirection === "asc") {
+    return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+  } else {
+    return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
   }
-    };
+});
 
-  // ######################################### HOOK #######################################
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+  // Calculate total items for display
+  const totalItems = filteredData.length;
+
+  //Handle Po Number click to open order form
+  const handleBatchClick = async (mrnNo) => {
+        if (!mrnNo) return;
+       console.log(mrnNo, "response for MRN");
+
+      navigate("/generateInspectionReport", { state: {mrnNo} });
+  };
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPageButtons = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+    if (endPage - startPage + 1 < maxPageButtons) {
+      startPage = Math.max(1, endPage - maxPageButtons + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <li
+          key={i}
+          className={`page-item ${currentPage === i ? "active" : ""}`}
+        >
+          <button className="page-link" onClick={() => setCurrentPage(i)}>
+            {i}
+          </button>
+        </li>
+      );
+    }
+
+    return pageNumbers;
+  };
+
+  // Column definitions for the table
+  const columns = [
+    { field: "reportNo", label: "MRN No", width: "200px" },
+    { field: "partNumber", label: "Part Number", width: "120px" },
+    { field: "partDesc", label: "Description", width: "200px" },
+    { field: "supplierName", label: "Supplier", width: "140px" },
+    { field: "purchaseOrderNo", label: "PO Number", width: "140px" },
+    { field: "qty", label: "Quantity", width: "140px" },
+    { field: "qtyReceive", label: "Received Quantity", width: "140px" },
+  ]
 
   return (
-    <div className="wrapper">
-      <Sidebar />
-      <div className="content">
-        <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="Add Receiving Inspection Report Form"
-                        isBack={true}
-          />
+    <>
+      <div className="wrapper">
+        <Sidebar />
+        <div className="content">
+          <Header />
+          <div style={{ marginTop: "10px" }}>
+            <CustomBreadcrumb
+              breadcrumbsLabel="Generate Inspection Report"
+              // isBack={true}
+            />
+            <div className={styles.container}>
 
-          <div className="my-2 p-2">
-            <div className="container-fluid">
-              <div
-                className="row mx-1 card border border-dark shadow-lg py-2"
-                style={{ minHeight: "397px" }}
+             <div
+                className={[
+                  "normalView",
+                  "card border-0 shadow-lg  rounded-3",
+                ].join(" ")}
               >
-                <div className="col-md-12">
-                  <form onSubmit={handleAddInspectionReport} style={{ height: "100%" }}>
-                    <div className="col-md-12 p-2 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">MRO No.</label>
-                        <select
-                          className="form-control"
-                          name="reportNo"
-                          value={form.reportNo}
-                          onChange={handleChange}
-                          required
-                          >
-                        <option value="">-- Select MRO NO --</option>
-                          {mrnNos.map((s,i) => (
-                          <option key={i} value={s}>
-                            {s}
-                          </option>
-                          ))}
-                        </select>
+                <div className="card-body">
+                  <div className="row align-items-center">
+                    <div className="col-md-4">
+                      <div className="input-group">
+                        <span className="input-group-text bg-primary text-white border-0">
+                          <i className="fa fa-search"></i>
+                        </span>
+                        <input
+                          type="text"
+                          className="form-control border-start-0 ps-0"
+                          placeholder="Search requisitions..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
                       </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Part Number</label>
+                    </div>
+
+                    <div className="col-md-3 ms-auto">
+                      <div className="d-flex align-items-center justify-content-end">
+                        <label className="me-2 text-muted fw-light">Show</label>
                         <select
-                          className="form-control"
-                          name="partNumber"
-                          value={form.partNumber}
+                          className="form-select form-select-sm w-auto"
+                          value={itemsPerPage}
                           onChange={(e) => {
-                            handleChange(e);
-                            handlePartNumberSelect(e.target.value);
+                            setItemsPerPage(Number(e.target.value));
+                            setCurrentPage(1);
                           }}
-                          required
-                       >
-                    <option value="">-- Select Part Number --</option>
-                    {partNumber.map((p, i) => (
-                      <option key={i} value={p.partNumber}>
-                        {p.partNumber}
-                      </option>
-                    ))}
-                  </select>
-                      </div>
-                    </div>
-
-                    <hr className="mx-0 my-2 p-0 border" />
-
-                    <div className="col-md-12 p-3 d-flex">
-                      <label className="col-md-2 mt-2">Part Description</label>
-                      <input
-                          className="form-control w-100"
-                          type="text"
-                          name="partDesc"
-                          value={form.partDesc}
-                          onChange={handleChange}
-                          disabled
-                        />
-                    </div>
-
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Purchase Order No.</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="purchaseOrderNo"
-                          value={form.purchaseOrderNo}
-                          onChange={handleChange}
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Supplier Name</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="supplierName"
-                          value={form.supplierName}
-                          onChange={handleChange}
-                          disabled
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-md-12 d-flex">
-                      
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Date</label>
-                        <input
-                          className="form-control w-100"
-                          type="date"
-                          name="date"
-                          value={form.date}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                      </div>
-                      <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Qty</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="qty"
-                          value={form.qty}
-                          onChange={handleChange}
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Receive Qty</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="qtyReceive"
-                          value={form.qtyReceive}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                      </div>
-
-                      <div className="row mx-1 card border border-dark shadow-lg py-2 mt-4">
-                  <div className="col-md-12">
-                    <div className="table-responsive">
-                      <table className="table table-striped table-bordered">
-                        <thead>
-                          <tr>
-                            <th>SR No</th>
-                            <th>Check List</th>
-                            <th>Requirements</th>
-                            <th> Observation</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                              <td>1</td>
-                              <td>Invoice</td>
-                              <td>Quantity and Unit Price must match with Purchase Order</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="invoiceObservation"
-                          value={form.invoiceObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                            <tr>
-                              <td>2</td>
-                              <td>Manufacturer Certificate</td>
-                              <td>COC must available</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="manufacturerCertObservation"
-                          value={form.manufacturerCertObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                            <tr>
-                              <td>3</td>
-                              <td>Supplier Certificate(Distributor/Third Party)</td>
-                              <td>COC must available, in case "No" direct supply from Mfg.</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="supplierCertObservation"
-                          value={form.supplierCertObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                            <tr>
-                              <td>4</td>
-                              <td>Certificate Full Traceability</td>
-                              <td>Must Available</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="fullTraceabilityObservation"
-                          value={form.fullTraceabilityObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                            <tr>
-                              <td>5</td>
-                              <td>Batch Number</td>
-                              <td>Must match(Physical Unit lable & all COC)</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="batchNumberObservation"
-                          value={form.batchNumberObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                            <tr>
-                              <td>6</td>
-                              <td>Date of Manufacturing(If Applicable)</td>
-                              <td>Must match(Physical Unit lable & all COC)</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="date"
-                          name="dateOfManufacturingObservation"
-                          value={form.dateOfManufacturingObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                            <tr>
-                              <td>7</td>
-                              <td>Date of Expiry(If Applicable)</td>
-                              <td>Must match(Physical Unit lable & all COC)</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="date"
-                          name="dateOfExpiryObservation"
-                          value={form.dateOfExpiryObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-
-                            <tr>
-                              <td>8</td>
-                              <td>Shelf Life(If Applicable)</td>
-                              <td>80% and above</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="selfLifeObservation"
-                          value={form.selfLifeObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-
-                            <tr>
-                              <td>9</td>
-                              <td>Technical Data Sheet(TDS) & MSDS</td>
-                              <td>Must Available</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="tdsObservation"
-                          value={form.tdsObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-
-                            <tr>
-                              <td>10</td>
-                              <td>Material Condition</td>
-                              <td>No Damage / No Leakage</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="materialConditionObservation"
-                          value={form.materialConditionObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                            <tr>
-                            <td>11</td>
-                              <td>Specification(If any)</td>
-                              <td>Must Match with Purchase Order Specification</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="specificationObservation"
-                          value={form.specificationObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                            <tr>
-                            <td>12</td>
-                              <td>Documents(If Import)</td>
-                              <td>Air Way Bill(AWB) & Bill Of Entry(If Available)</td>
-                              <td><input
-                          className="form-control w-100"
-                          type="text"
-                          name="documentObservation"
-                          value={form.documentObservation}
-                          onChange={handleChange}
-                          required
-                        /></td>
-                            </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">LOT Accepted(Yes/No/With Deviation)</label>
-                        <select
-                          className="form-control w-100"
-                          name="lotAccepted"
-                          value={form.lotAccepted}
-                          onChange={handleChange}
-                          required
                         >
-                          <option value="">Select</option>
-                          <option value="Yes">Yes</option>
-                          <option value="No">No</option>
-                          <option value="With Deviation">With Deviation</option>
+                          <option value={5}>5</option>
+                          <option value={10}>10</option>
+                          <option value={25}>25</option>
+                          <option value={50}>50</option>
+                          <option value={100}>100</option>
                         </select>
+                        <label className="ms-2 text-muted fw-light">
+                          entries
+                        </label>
                       </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Remark(If any)</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="remark"
-                          value={form.remark}
-                          onChange={handleChange}
-                          
-                        />
-                      </div>
-                      <div className="col-md-6 p-1 d-flex">
-                      <label className="col-md-4 mt-2">
-                    Upload Documents
-                    </label>
-                      <input
-                    className="form-control w-100 p-0"
-                    type="file"
-                    id="document"
-                    name="document"
-                    onChange={(e) => setDocument(e.target.files[0])}
-                
-                    />
-                       {document && <div className="mt-1"><small>Uploaded: {document.name}</small></div>}
-                    </div>
                     </div>
                   </div>
-                    <div className="text-end mb-3">
-                      <button 
-                        className="btn btn-success"
 
-                      >
-                        Submit
-                      </button>
+                  {isLoading ? (
+                    <div className="text-center py-5">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      ></div>
+                      <p className="mt-2 text-muted">Loading data...</p>
                     </div>
-                      
-                  </form>
+                  ) : (
+                    <div
+                      className="table-responsive"
+                      style={{
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "#ccc transparent",
+                        maxHeight: "45vh",
+                      }}
+                    >
+                      <table className="table table-hover table-striped align-middle">
+                        <thead>
+                          <tr className="bg-light">
+                            {columns.map((column) => (
+                              <th
+                                key={column.field}
+                                className="position-sticky top-0 bg-light py-3"
+                                onClick={() => handleSort(column.field)}
+                                style={{
+                                  cursor: "pointer",
+                                  width: column.width || "auto",
+                                  fontSize: "0.9rem",
+                                  fontWeight: "600",
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.5px",
+                                }}
+                              >
+                                <div className="d-flex align-items-center">
+                                  <span>{column.label}</span>
+                                  {sortField === column.field ? (
+                                    <i
+                                      className={`ms-1 fa fa-sort-${
+                                        sortDirection === "desc" ? "up" : "down"
+                                      } text-primary`}
+                                    ></i>
+                                  ) : (
+                                    <i
+                                      className="ms-1 fa fa-sort text-muted opacity-50"
+                                      style={{ fontSize: "0.8rem" }}
+                                    ></i>
+                                  )}
+                                </div>
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                  
+                          <tbody>
+                                {currentItems.length > 0 ? (
+                                   currentItems.map((requisition, index) => (
+                                  <tr
+                                    key={requisition.reportNo || index}
+                                    className={index % 2 === 0 ? "bg-white" : "bg-light bg-opacity-50"}
+                                    >
+                                      {columns.map((column) => (
+                                      <td
+                                        key={`${requisition.reportNo}-${column.field}`}
+                                        className="text-nowrap py-3"
+                                        style={{
+                                        maxWidth: "150px",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                      }}
+                                    title={requisition[column.field]}
+                                  >
+                                   {column.field === "reportNo" ? (
+                                <button
+                                 className="btn btn-link p-0 text-primary fw-bold"
+                                onClick={() => handleBatchClick(requisition.reportNo)}
+                                style={{
+                                 textDecoration: "underline",
+                                cursor: "pointer",
+                                }}
+                              >
+                                {requisition[column.field]}
+                            </button>
+                                ) : (
+                              requisition[column.field]
+                              )}
+                          </td>
+                            ))}
+                      </tr>
+                      ))
+                      ) : (
+                      <tr>
+                        <td colSpan={columns.length} className="text-center py-5">
+                      {searchTerm ? (
+                      <div>
+                            <i className="fa fa-search fa-2x text-muted mb-3"></i>
+                            <p className="mb-0">No matching records found</p>
+                    </div>
+                       ) : (
+                    <div>
+                            <i className="fa fa-database fa-2x text-muted mb-3"></i>
+                            <p className="mb-0">No data available</p>
+                    </div>
+                          )}
+                        </td>
+                      </tr>
+                      )}
+                      </tbody>
+
+                      </table>
+                    </div>
+                  )}
+
+                  <div className="row mt-4 align-items-center">
+                    <div className="col-md-6">
+                      <p
+                        className="text-muted mb-0"
+                        style={{ fontSize: "0.9rem" }}
+                      >
+                        Showing{" "}
+                        <span className="fw-bold text-dark">
+                          {indexOfFirstItem + 1}
+                        </span>{" "}
+                        to{" "}
+                        <span className="fw-bold text-dark">
+                          {Math.min(indexOfLastItem, sortedData.length)}
+                        </span>{" "}
+                        of{" "}
+                        <span className="fw-bold text-dark">
+                          {sortedData.length}
+                        </span>{" "}
+                        batch groups
+                        {searchTerm &&
+                          ` (filtered from ${
+                            Object.keys(tableData).length
+                          } total batch groups)`}
+                      </p>
+                    </div>
+                    <div className="col-md-6">
+                      <nav aria-label="Page navigation">
+                        <ul className="pagination justify-content-end mb-0">
+                          <li
+                            className={`page-item ${
+                              currentPage === 1 ? "disabled" : ""
+                            }`}
+                          >
+                            <button
+                              className="page-link border-0"
+                              onClick={() => setCurrentPage(1)}
+                              aria-label="First page"
+                            >
+                              <i className="fa-solid fa-angles-left"></i>
+                            </button>
+                          </li>
+                          <li
+                            className={`page-item ${
+                              currentPage === 1 ? "disabled" : ""
+                            }`}
+                          >
+                            <button
+                              className="page-link border-0"
+                              onClick={() => setCurrentPage(currentPage - 1)}
+                              aria-label="Previous page"
+                            >
+                              <i className="fa-solid fa-angle-left"></i>
+                            </button>
+                          </li>
+
+                          {renderPageNumbers()}
+
+                          <li
+                            className={`page-item ${
+                              currentPage === totalPages ? "disabled" : ""
+                            }`}
+                          >
+                            <button
+                              className="page-link border-0"
+                              onClick={() => setCurrentPage(currentPage + 1)}
+                              aria-label="Next page"
+                            >
+                              <i className="fa-solid fa-angle-right"></i>
+                            </button>
+                          </li>
+                          <li
+                            className={`page-item ${
+                              currentPage === totalPages ? "disabled" : ""
+                            }`}
+                          >
+                            <button
+                              className="page-link border-0"
+                              onClick={() => setCurrentPage(totalPages)}
+                              aria-label="Last page"
+                            >
+                              <i className="fa-solid fa-angles-right"></i>
+                            </button>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
                 </div>
               </div>
+{/* Proceed Button */}
+                {/* <div className="mt-3 d-flex justify-content-end">
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleProceed}
+                    disabled={selectedItems.length === 0}
+                  >
+                    Proceed
+                  </button>
+                  </div> */}
+              {/* Order Form - opens when Po Number is clicked */}
+              
             </div>
           </div>
         </div>
-      
-      <Footer />
+        <Footer />
       </div>
-    </div>
+    </>
   );
-};
-
-export default AddReceivingInspectionReport;
+} 

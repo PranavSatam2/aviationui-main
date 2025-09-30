@@ -219,9 +219,7 @@ let UpdateReportNew = REST_API_BASE_URL + "/api/inspectionReport/updateReport"
 let ViewReportList = REST_API_BASE_URL + "/api/inspectionReport/viewReport"
  
 export const fetchPartNumbers = (mrnNo) => axiosInstance.get(`${PARTNumber}/${mrnNo}`);
-export const fetchPartDetails = (PartNo, reportNo) => axiosInstance.get(`${getDetailsByPartNo}/${PartNo}`, {
-    params: {reportNo}
-  });
+export const fetchPartDetails = (reportNo) => axiosInstance.get(`${getDetailsByPartNo}/${reportNo}`);
 export const submitInspectionReport =(payload) => axiosInstance.post(SaveInspectionReport,payload, {
         headers: {
           "Content-Type": "multipart/form-data",
