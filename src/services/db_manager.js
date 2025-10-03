@@ -89,7 +89,9 @@ export const DownloadCSV = () =>
   });
 
 export const DownloadPDF = () =>
-  axiosInstance.get(`${PURCHASE_REQUISITION}/pdf`);
+  axiosInstance.get(`${PURCHASE_REQUISITION}/pdf`, {
+    responseType: "blob", // important!
+  });
 
 export const fetchPartNumbersAndDescriptions = () => {
   return axiosInstance

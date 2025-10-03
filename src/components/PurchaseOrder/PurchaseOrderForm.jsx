@@ -238,15 +238,21 @@ useEffect(() => {
   const handleSave = async () => {
     try {
 
-      if (!formData.currency || formData.currency.trim() === "") {
-      toast.error("Currency is required for purchase order.");
-      return;
-    }
       // If no items are loaded, show error
       if (formData.items.length === 0) {
         alert("Please search for a Po Number first to load items.");
         return;
       }
+
+      if (!formData.currency || formData.currency.trim() === "") {
+      toast.error("Select Currency");
+      return;
+    }
+
+    if (!formData.rate || formData.rate.trim() === "") {
+      toast.error("Rate is required.");
+      return;
+    }
 
       // Use the first item for the unit, rate and gross values
       // as the new API expects single values instead of arrays

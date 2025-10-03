@@ -344,7 +344,7 @@ const AddProduct = () => {
                     {showAlternateName1 && (
                       <div className="col-md-12 d-flex p-2">
                         <label className="col-md-2 mt-2">
-                          Alternate Product Name 1
+                          Alternate Product Name 1 <span style={{ color: "red" }}>*</span>
                         </label>
                         <input
                           className="form-control w-100"
@@ -409,7 +409,7 @@ const AddProduct = () => {
                     {showAlternateName2 && (
                       <div className="col-md-12 d-flex p-2">
                         <label className="col-md-2 mt-2">
-                          Alternate Product Name 2
+                          Alternate Product Name 2 <span style={{ color: "red" }}>*</span>
                         </label>
                         <input
                           className="form-control w-100"

@@ -173,47 +173,74 @@ const ViewPurchaseRequisitionPage = () => {
   //   }, 500);
   // };
   const handleDownloadCSV = async () => {
+
     try {
-      const response = await DownloadCSV()
-      if(!response.error){
-        toast.success("CSV file download successfully.!")
-      }
-      // Create a URL from the file
-      // const url = window.URL.createObjectURL(response.data);
-      console.log(response,"urllll")
+    const response = await DownloadCSV();
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "purchase_requisitions.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    toast.success("CSV file downloaded successfully!");
+  } catch (error) {
+    toast.error("Error downloading CSV file");
+  }
+    // try {
+    //   const response = await DownloadCSV()
+    //   if(!response.error){
+    //     toast.success("CSV file download successfully.!")
+    //   }
+    //   // Create a URL from the file
+    //   // const url = window.URL.createObjectURL(response.data);
+    //   console.log(response,"urllll")
 
-      // const link = document.createElement('a');
-      // link.href = url;
-      // link.setAttribute('download', 'data.csv');
-      // document.body.appendChild(link);
-      // link.click();
+    //   // const link = document.createElement('a');
+    //   // link.href = url;
+    //   // link.setAttribute('download', 'data.csv');
+    //   // document.body.appendChild(link);
+    //   // link.click();
 
-      // // Clean up
-      // link.parentNode.removeChild(link);
-      // window.URL.revokeObjectURL(url);
-    } catch (error) {
-      toast.error('Error downloading the CSV file');
-    }
+    //   // // Clean up
+    //   // link.parentNode.removeChild(link);
+    //   // window.URL.revokeObjectURL(url);
+    // } catch (error) {
+    //   toast.error('Error downloading the CSV file');
+    // }
   };
 
   const handleDownloadPDF = async () => {
-    try {
-      const response = await DownloadPDF()
-      if(!response.error){
-        toast.success("PDF file download successfully .!")
-      }
-      // const url = window.URL.createObjectURL(new Blob([response.data]));
-      // console.log(url,"urllll")
-      // const link = document.createElement('a');
-      // link.href = url;
-      // link.setAttribute('download', 'data.pdf'); // File name
-      // document.body.appendChild(link);
-      // link.click();
-      // link.parentNode.removeChild(link);
-      // window.URL.revokeObjectURL(url);
-    } catch (error) {
-      toast.error('Error downloading PDF');
-    }
+    try{
+    const response = await DownloadPDF();
+    const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "purchase_requisitions.pdf");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    toast.success("PDF file downloaded successfully!");
+  } catch (error) {
+    toast.error("Error downloading PDF file");
+  }
+  //   try {
+  //     const response = await DownloadPDF()
+  //     if(!response.error){
+  //       toast.success("PDF file download successfully .!")
+  //     }
+  //     // const url = window.URL.createObjectURL(new Blob([response.data]));
+  //     // console.log(url,"urllll")
+  //     // const link = document.createElement('a');
+  //     // link.href = url;
+  //     // link.setAttribute('download', 'data.pdf'); // File name
+  //     // document.body.appendChild(link);
+  //     // link.click();
+  //     // link.parentNode.removeChild(link);
+  //     // window.URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     toast.error('Error downloading PDF');
+  //   }
   };
 
   return (

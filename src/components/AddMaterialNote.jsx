@@ -166,7 +166,7 @@ useEffect(() => {
                 <div className="col-md-6 p-2">
                   <label>Supplier</label>
                   <select
-                    className="from-select"
+                    className="form-control"
                     name="supplierName"
                     value={form.supplierName}
                     onChange={handleChange}
@@ -184,7 +184,7 @@ useEffect(() => {
                 <div className="col-md-6 p-2">
                   <label>PO Number</label>
                   <select
-                    className="from-select"
+                    className="form-control"
                     name="orderNumber"
                     value={form.orderNumber}
                     onChange={handleChange}
@@ -228,6 +228,7 @@ useEffect(() => {
                     name="partDescription"
                     value={form.partDescription}
                     onChange={handleChange}
+                    disabled
                   />
                 </div>
               </div>
@@ -235,7 +236,7 @@ useEffect(() => {
               {/* Challan + Receipt Date */}
               <div className="col-md-12 p-2 d-flex">
                 <div className="col-md-6 p-2">
-                  <label>Challan No</label>
+                  <label>Challan No<span style={{ color: "red" }}>*</span></label>
                   <input
                     type="text"
                     className="form-control"
@@ -247,7 +248,7 @@ useEffect(() => {
                 </div>
 
                 <div className="col-md-6 p-2">
-                  <label>Receipt Date</label>
+                  <label>Receipt Date<span style={{ color: "red" }}>*</span></label>
                   <input
                     type="date"
                     className="form-control"
@@ -269,6 +270,7 @@ useEffect(() => {
                     name="quantity"
                     value={form.quantity}
                     onChange={handleChange}
+                    disabled
                   />
                 </div>
 
@@ -280,19 +282,21 @@ useEffect(() => {
                     name="unitOfMeasurement"
                     value={form.unitOfMeasurement}
                     onChange={handleChange}
+                    disabled
                   />
                 </div>
               </div>
 
               {/* Receive Quantity */}
               <div className="col-md-12 p-2">
-                <label>Receive Quantity</label>
+                <label>Receive Quantity<span style={{ color: "red" }}>*</span></label>
                 <input
                   type="number"
                   className="form-control"
                   name="qualityAcceptance"
                   value={form.qualityAcceptance}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
