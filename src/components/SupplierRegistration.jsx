@@ -83,7 +83,7 @@ const SupplierRegistration = () => {
   // ######################################### HOOK #######################################
 
   const [dataMap, setDataMap] = useState(formVariavles);
-  
+
   const [errors, setErrors] = useState({});
 
   const location = useLocation();
@@ -159,6 +159,7 @@ const SupplierRegistration = () => {
       let response = await createSupplier(dataMap);
 
       if (response) {
+        toast.success("Supplier Added successfully");
         setDataMap(formVariavles);
         window.location.reload();
       }
@@ -181,7 +182,15 @@ const SupplierRegistration = () => {
     for (let key of keys) {
       if (
         !dataMap[key] &&
-        !["faxNum", "workYear", "numEmp", "numOpeShift", "rev", "sysdate", "remark"].includes(key)
+        ![
+          "faxNum",
+          "workYear",
+          "numEmp",
+          "numOpeShift",
+          "rev",
+          "sysdate",
+          "remark",
+        ].includes(key)
       ) {
         errorMessages[key] = "This field is required.";
       }
@@ -213,7 +222,15 @@ const SupplierRegistration = () => {
       ...prevErrors,
       [name]:
         value.trim() === "" &&
-        !["faxNum", "workYear", "numEmp", "numOpeShift", "rev", "sysdate", "remark"].includes(name)
+        ![
+          "faxNum",
+          "workYear",
+          "numEmp",
+          "numOpeShift",
+          "rev",
+          "sysdate",
+          "remark",
+        ].includes(name)
           ? "This field is required."
           : "",
     }));

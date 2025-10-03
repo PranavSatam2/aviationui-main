@@ -4,7 +4,7 @@ const GeneralTab = ({
   validateDataType,
   validateLen,
   errors,
-  disabledField
+  disabledField,
 }) => {
   function validateMailId(event) {
     const email = event.target.value;
@@ -22,17 +22,17 @@ const GeneralTab = ({
   return (
     <div className="m-2 p-2 mt-2">
       {/* Supplier/Sub-Contractor Details */}
-      <div className="col-md-12 mb-1 d-flex">
-        <div className="col-md-5">
+      <div className="col-md-10 mb-1 d-flex">
+        <div className="col-md-6">
           <div className="row">
-            <label className="col-md-6 pt-2" htmlFor="supplierName">
+            <label className="col-md-8 pt-2" htmlFor="supplierName">
               Supplier/Sub-Contractor Name
               <span className="text-danger mx-1 " style={{ fontSize: "17px" }}>
                 *
               </span>
             </label>
             <input
-              className="col-md-8 form-control"
+              className="col-md-6 form-control"
               type="text"
               name="supplierName"
               id="supplierName"
@@ -54,8 +54,11 @@ const GeneralTab = ({
         </div>
 
         {/* Payment Terms */}
-        <div className="col-md-5 d-flex mb-3">
-          <div className="col-md-9 d-flex pt-2" style={{ alignItems: 'center' }}>
+        <div className="col-md-10 d-flex mb-3">
+          <div
+            className="col-md-9 d-flex pt-2"
+            style={{ alignItems: "center",justifyContent:"center" }}
+          >
             <label className="col-md-4 pt-2">Select Payment Terms</label>
             {/* 30 Days */}
             <div className="form-check mx-3 p-0">
@@ -120,14 +123,15 @@ const GeneralTab = ({
                 onChange={handleChange}
                 disabled={disabledField}
               />
-              <label className="form-check-label pt-1" htmlFor="paymentTermsAdvance">
+              <label
+                className="form-check-label pt-1"
+                htmlFor="paymentTermsAdvance"
+              >
                 Advance Pay
               </label>
             </div>
           </div>
         </div>
-
-
 
         {/* <div className="col-md-6 ">
                         <div className="row">
@@ -154,7 +158,10 @@ const GeneralTab = ({
       <hr className="mx-0 my-2 p-0 border" />
 
       {/* Contact Details */}
-      <div className="col-md-12 d-flex mb-1" style={{ justifyContent: 'space-between' }}>
+      <div
+        className="col-md-12 d-flex mb-1"
+        style={{ justifyContent: "space-between" }}
+      >
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="phoneNumber">
@@ -204,7 +211,10 @@ const GeneralTab = ({
       </div>
 
       {/* Email & Address */}
-      <div className="col-md-12 d-flex mb-3" style={{ justifyContent: 'space-between' }}>
+      <div
+        className="col-md-12 d-flex mb-3"
+        style={{ justifyContent: "space-between" }}
+      >
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="email">
@@ -267,8 +277,11 @@ const GeneralTab = ({
       <hr className="mx-0 my-2 p-0 border " />
 
       {/* Quality Manager Details */}
-      <h5 className="mb-3 fw-bold text-dark" >Quality Manager Details</h5>
-      <div className="col-md-12 d-flex" style={{ justifyContent: 'space-between' }}>
+      <h5 className="mb-3 fw-bold text-dark">Quality Manager Details</h5>
+      <div
+        className="col-md-12 d-flex"
+        style={{ justifyContent: "space-between" }}
+      >
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="qualityManagerName">
@@ -288,7 +301,6 @@ const GeneralTab = ({
                   validateLen(event, 0, 30);
                 }
               }}
-
               disabled={disabledField}
             />
           </div>
@@ -297,7 +309,6 @@ const GeneralTab = ({
               {errors.qualityManagerName}
             </div>
           )}
-
         </div>
         <div className="col-md-5">
           <div className="row">
@@ -321,7 +332,6 @@ const GeneralTab = ({
                   validateLen(event, 0, 10);
                 }
               }}
-
               disabled={disabledField}
             />
           </div>
@@ -351,7 +361,6 @@ const GeneralTab = ({
                   validateMailId(event);
                 }
               }}
-
               disabled={disabledField}
             />
           </div>
@@ -367,7 +376,10 @@ const GeneralTab = ({
 
       {/* Sales Representative Details */}
       <h5 className="mb-3 fw-bold text-dark">Sales Representative Details</h5>
-      <div className="col-md-12 d-flex" style={{ justifyContent: 'space-between' }}>
+      <div
+        className="col-md-12 d-flex"
+        style={{ justifyContent: "space-between" }}
+      >
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="saleRepresentativeName">
