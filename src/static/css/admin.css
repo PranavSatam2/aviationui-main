@@ -314,3 +314,38 @@ td .scrollable-content {
 .nav-tabs .nav-link {
   color: #000; /* Optional: Set the default text color for inactive tabs */
 }
+/* Compact form fields (30px height) */
+form .form-control,
+form .form-select {
+  height: 30px;          /* smaller height */
+  line-height: 30px;     /* text vertically centered */
+  padding: 2px 8px;      /* tighter padding */
+  font-size: 13px;       /* slightly smaller font */
+}
+
+/* Labels aligned to middle */
+form label {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 0;   /* remove extra spacing */
+}
+
+/* Ensure flex rows align nicely */
+form .d-flex {
+  align-items: center;
+}
+
+/* Selects look same as inputs */
+form .form-select {
+  padding-right: 25px; 
+}
+
+/* Button compact style */
+form button.btn {
+  height: 30px;
+  padding: 2px 12px;
+  font-size: 13px;
+  line-height: 30px;
+}

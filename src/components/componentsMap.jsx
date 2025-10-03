@@ -31,6 +31,7 @@ import EditStoreAcceptance from './EditStoreAcceptance.jsx';
 import EditUpdateStore from './EditUpdateStore.jsx';
 import EditUser from './EditUser.jsx';
 import Footer from './Footer.jsx';
+import GenerateInspectionReportTable from './GenerateInspectionReportTable.jsx';
 import Header from './Header.jsx';
 import HomePage from './HomePage.jsx';
 import ListProducts from './ListProducts.jsx';
@@ -113,6 +114,7 @@ const componentsMap = {
   "EditUpdateStore": EditUpdateStore,
   "EditUser": EditUser,
   "Footer": Footer,
+  "GenerateInspectionReportTable": GenerateInspectionReportTable,
   "Header": Header,
   "HomePage": HomePage,
   "ListProducts": ListProducts,

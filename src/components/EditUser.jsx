@@ -262,7 +262,7 @@ const EditUser = () => {
                      <div className="col-md-6 p-2 d-flex">
                        <label className="col-md-4 mt-2">User Type</label>
                        <select
-                          className="form-control w-100"
+                          className="form-select w-100"
                            name="role"
                            value={form.role}
                             onChange={handleChange}
@@ -277,7 +277,7 @@ const EditUser = () => {
                      </select>
                      </div>
                      <div className="col-md-6 p-2 d-flex">
-                     <label className="col-md-2 mt-2">Date Of Birth</label>
+                     <label className="col-md-4 mt-2">Date Of Birth</label>
                      <input
                        className="form-control w-100"
                        type="date"
