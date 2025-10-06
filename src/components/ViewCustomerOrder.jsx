@@ -177,19 +177,19 @@ const ViewCustomerOrder = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "orderNo", label: "Order No", width: "100px" },
-    { field: "roNo", label: "RO No.", width: "100px" },
-    { field: "roReceiveDate", label: "RO Received Date", width: "100px" },
+    { field: "orderNo", label: "Sales Order Number", width: "100px" },
+    { field: "roNo", label: "Repair Order No", width: "100px" },
+    { field: "roReceiveDate", label: "Received Date", width: "100px" },
     { field: "customerName", label: "Customer Name", width: "100px" },
     { field: "partNo", label: "Part No.", width: "100px" },
     { field: "partDescription", label: "Part Desc", width: "100px" },
     { field: "quantity", label: "Quantity", width: "100px" },
-    { field: "batchNo", label: "Batch No.", width: "100px" },
+    { field: "batchNo", label: "Part Serial Number", width: "100px" },
     { field: "srNo", label: "Sr. No.", width: "100px" },
     { field: "status", label: "Status", width: "100px" },
-    { field: "makerUserName", label: "Maker UserName", width: "100px" },
-    { field: "makerDate", label: "Maker Date", width: "100px" },
-    { field: "userRole", label: "Maker Role", width: "100px" },
+    // { field: "makerUserName", label: "Maker UserName", width: "100px" },
+    // { field: "makerDate", label: "Maker Date", width: "100px" },
+    // { field: "userRole", label: "Maker Role", width: "100px" },
 
 ];
 

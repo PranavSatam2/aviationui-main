@@ -136,21 +136,24 @@ const ViewWorkOrder = () => {
 
   // Column definitions for the table - updated for work order data
   const columns = [
-    { field: "orderNo", label: "Order No", width: "140px" },
-    { field: "srNo", label: "SR No", width: "100px" },
-    { field: "customerName", label: "Customer Name", width: "150px" },
-    { field: "partDesc", label: "Part Description", width: "150px" },
-    { field: "partNo", label: "Part No", width: "120px" },
-    { field: "qty", label: "Quantity", width: "100px" },
+ { field: "orderNo", label: "Sales Order Number", width: "100px" },
+    { field: "roNo", label: "Repair Order No", width: "100px" },
+    { field: "roReceiveDate", label: "Received Date", width: "100px" },
+    { field: "customerName", label: "Customer Name", width: "100px" },
+    { field: "partNo", label: "Part No.", width: "100px" },
+    { field: "partDescription", label: "Part Desc", width: "100px" },
+    { field: "quantity", label: "Quantity", width: "100px" },
+    { field: "batchNo", label: "Part Serial Number", width: "100px" },
+    { field: "srNo", label: "Sr. No.", width: "100px" },
     { field: "status", label: "Status", width: "100px" },
-    { field: "workOrder", label: "Work Order", width: "120px" },
-    { field: "makerUserName", label: "Maker", width: "120px" },
-    { field: "makerDate", label: "Maker Date", width: "140px" },
-    { field: "checkerUserName", label: "Checker", width: "120px" },
-    { field: "checkerDate", label: "Checker Date", width: "140px" },
+    // { field: "workOrder", label: "Work Order", width: "120px" },
+    // { field: "makerUserName", label: "Maker", width: "120px" },
+    // { field: "makerDate", label: "Maker Date", width: "140px" },
+    // { field: "checkerUserName", label: "Checker", width: "120px" },
+    // { field: "checkerDate", label: "Checker Date", width: "140px" },
     // { field: "userRole", label: "User Role", width: "100px" },
     // { field: "userAction", label: "User Action", width: "110px" },
-    { field: "remark", label: "Remark", width: "120px" },
+    // { field: "remark", label: "Remark", width: "120px" },
   ];
 
   const handlePrintClick = (workOrder) => {
