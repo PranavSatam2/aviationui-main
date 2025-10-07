@@ -3,108 +3,85 @@ import Footer from "../Footer";
 import Header from "../Header";
 import Sidebar from "../Sidebar";
 import {
-  listAllMaterialRequisition,
-  deleteMaterialRequisition,
-  getMaterialRequisitionDetail,
+  deletePurchaseOrder,
+  listOfAllWorkorderTable,
 } from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
-import MaterialRequisitionForm from "./MaterialRequisitionReport";
-import styles from "./Viewrequisition.module.css";
 
-const ViewMaterialRequisitionPage = () => {
+const ViewMaterialRequistionWO = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("materialRequisitionNo");
+  const [sortField, setSortField] = useState("workOrderNo");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-  const [requisitionData, setRequisitionData] = useState();
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [workOrderData, setWorkOrderData] = useState();
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    // setIsLoading(true);
     try {
-      const response = await listAllMaterialRequisition();
-      setTableData(response || []);
+      const response = await listOfAllWorkorderTable();
+      setTableData(response.data || []);
       setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching material requisitions", error);
-      toast.error("Failed to load material requisitions");
+      console.error("Error fetching work orders", error);
+      toast.error("Failed to load work orders");
     } finally {
       setIsLoading(false);
     }
   };
+
   // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Delete the selected material requisition
-  const deleteSelectedElement = async (materialRequisitionID) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
+  // Delete the selected work order
+  const deleteSelectedElement = async (workOrderNo) => {
+    if (window.confirm("Are you sure you want to delete this work order?")) {
       try {
-        await deleteMaterialRequisition(materialRequisitionID);
+        await deletePurchaseOrder(workOrderNo);
         setTableData((prevData) =>
-          prevData.filter(
-            (requisition) =>
-              requisition.materialRequisitionID !== materialRequisitionID
-          )
+          prevData.filter((workOrder) => workOrder.workOrderNo !== workOrderNo)
         );
-        toast.success("Material requisition deleted successfully!");
+        toast.success("Work order deleted successfully!");
         fetchData();
       } catch (error) {
-        console.error("Failed to delete material requisition", error);
-        toast.error("Failed to delete material requisition. Please try again.");
+        console.error("Failed to delete work order", error);
+        toast.error("Failed to delete work order. Please try again.");
       }
     }
   };
 
-  // Edit the selected material requisition
-  const editSelectedElement = async (RequisitionID) => {
-    try {
-      const response = await getMaterialRequisitionDetail(RequisitionID);
-      const requisitionData = response?.data;
-      if (requisitionData) {
-        navigate("/editmaterialrequisition", {
-          state: { RequisitionID },
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching material requisition details: ", error);
-      toast.error("Failed to fetch material requisition details");
-    }
+  // Edit the selected work order
+  const editSelectedElement = async (workOrderNo) => {
+    navigate("/EditWorkorder", {
+      state: { workOrderNo },
+    });
   };
 
-  // Search and Date Range Filter
-  const filteredData = tableData.filter((requisition) => {
-    // Search filter
-    const matchesSearch = Object.values(requisition).some(
-      (value) =>
-        value &&
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    // Date filter (assuming requisition.date is in YYYY-MM-DD format)
-    let matchesDate = true;
-    if (startDate) {
-      matchesDate =
-        matchesDate &&
-        requisition.date &&
-        new Date(requisition.date) >= new Date(startDate);
-    }
-    if (endDate) {
-      matchesDate =
-        matchesDate &&
-        requisition.date &&
-        new Date(requisition.date) <= new Date(endDate);
-    }
-    return matchesSearch && matchesDate;
+  // Search functionality
+  const filteredData = tableData.filter((workOrder) => {
+    return Object.entries(workOrder)
+      .filter(
+        ([key]) =>
+          ![
+            "issueDate",
+            "qualityManagerSignDate",
+            "workshopManagerSignDate",
+          ].includes(key)
+      ) // Exclude certain fields from search
+      .some(
+        ([_, value]) =>
+          value &&
+          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      );
   });
+
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
@@ -159,79 +136,65 @@ const ViewMaterialRequisitionPage = () => {
     return pageNumbers;
   };
 
-  // Column definitions for the table
+  // Updated column definitions to match your API response data structure
   const columns = [
-    { field: "materialRequisitionNo", label: "Requisition No", width: "140px" },
-    { field: "workOrderNo", label: "Workorder No", width: "130px" },
-    { field: "date", label: "Issue Date", width: "120px" },
-    { field: "partNumber", label: "Part No", width: "120px" },
-    { field: "description", label: "Description", width: "200px" },
-    { field: "requestedQty", label: "Requested Qty", width: "130px" },
-    // { field: "issueQty", label: "Issue Qty", width: "120px" },
-    { field: "issuedQty", label: "Issued Qty", width: "120px" },
-    // { field: "batchLotNo", label: "Batch/Lot", width: "120px" },
-    // { field: "unitOfMeasurement", label: "UOM", width: "140px" },
-    { field: "supplierName", label: "Supplier Name", width: "150px" },
-    { field: "curDate", label: "Created Date", width: "140px" },
+    { field: "workOrderNo", label: "Work Order No", width: "140px" },
+    { field: "issueDate", label: "Issue Date", width: "120px" },
+    { field: "customerName", label: "Customer Name", width: "150px" },
+    { field: "repairOrderNo", label: "Repair Order No", width: "180px" },
+    { field: "partNumber", label: "Part Number", width: "120px" },
+    { field: "qty", label: "Quantity", width: "100px" },
+    { field: "description", label: "Description", width: "150px" },
+    { field: "cmmRefNo", label: "CMM Ref No", width: "120px" },
+    { field: "revNo", label: "Rev No", width: "100px" },
+    { field: "issuedBy", label: "Issued By", width: "120px" },
+    { field: "technician", label: "Technician", width: "120px" },
+    { field: "totalManHour", label: "Man Hours", width: "110px" },
+    { field: "actionTaken", label: "Action Taken", width: "130px" },
+    { field: "toolsUsed", label: "Tools Used", width: "120px" },
+    { field: "snBn", label: "SN/BN", width: "100px" },
   ];
 
-  const handlePrintClick = (requisition) => {
-    console.log(requisition, "requisition");
-    setRequisitionData(requisition);
+  const handlePrintClick = (workOrder) => {
+    setWorkOrderData(workOrder);
     setTimeout(() => {
       window.print();
     }, 500);
   };
-  // useEffect(() => {
-  //   console.log(requisitionData?.batchLotNo, "requisitionDatsdsdsdsdsdsdsda");
-  // }, [requisitionData]);
+
+  // Format date values
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
+  // Format text with truncation
+  const formatText = (text, maxLength = 20) => {
+    if (!text) return "";
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
+  };
+
   return (
     <div className="wrapper">
       <Sidebar />
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Material Requisitions" />
+          <CustomBreadcrumb breadcrumbsLabel="Material Requistion" />
           <div className="printView">
-            <MaterialRequisitionForm tableData={requisitionData} />
+            {/* <PurchaseOrderForm tableData={workOrderData} /> */}
           </div>
           <div
             className={[
               "normalView",
               "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              styles.normalViewStyle,
             ].join(" ")}
           >
             <div className="card-body">
-              {/* Date Range Filter */}
-              <div className="row mb-3">
-                <div className="col-md-3">
-                  <label className="form-label fw-light">Start Date</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={startDate}
-                    onChange={(e) => {
-                      setStartDate(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label className="form-label fw-light">End Date</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={endDate}
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="row align-items-center">
+              <div className="row align-items-center mb-4">
                 <div className="col-md-6">
                   <div className="input-group">
                     <span className="input-group-text bg-primary text-white border-0">
@@ -240,7 +203,7 @@ const ViewMaterialRequisitionPage = () => {
                     <input
                       type="text"
                       className="form-control border-start-0 ps-0"
-                      placeholder="Search requisitions..."
+                      placeholder="Search work orders..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -266,27 +229,23 @@ const ViewMaterialRequisitionPage = () => {
                     <label className="ms-2 text-muted fw-light">entries</label>
                   </div>
                 </div>
-                {/* <button
-                  className={styles.printBtn}
-                  onClick={() => handlePrintClick()}
-                >
-                  {" "}
-                  Print
-                </button> */}
               </div>
 
               {isLoading ? (
                 <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
+                  <div
+                    className="spinner-border text-primary"
+                    role="status"
+                  ></div>
                   <p className="mt-2 text-muted">Loading data...</p>
                 </div>
               ) : (
                 <div
                   className="table-responsive"
                   style={{
+                    overflowX: "auto",
                     overflowY: "auto",
+                    maxHeight: "65vh",
                     scrollbarWidth: "thin",
                     scrollbarColor: "#ccc transparent",
                   }}
@@ -306,6 +265,7 @@ const ViewMaterialRequisitionPage = () => {
                               fontWeight: "600",
                               textTransform: "uppercase",
                               letterSpacing: "0.5px",
+                              whiteSpace: "nowrap",
                             }}
                           >
                             <div className="d-flex align-items-center">
@@ -325,25 +285,26 @@ const ViewMaterialRequisitionPage = () => {
                             </div>
                           </th>
                         ))}
-                        <th
+                        {/* <th
                           className="position-sticky top-0 bg-light py-3 text-center"
                           style={{
-                            width: "100px",
+                            width: "150px",
                             fontSize: "0.9rem",
                             fontWeight: "600",
                             textTransform: "uppercase",
                             letterSpacing: "0.5px",
+                            whiteSpace: "nowrap",
                           }}
                         >
                           ACTIONS
-                        </th>
+                        </th> */}
                       </tr>
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((requisition, index) => (
+                        currentItems.map((workOrder, index) => (
                           <tr
-                            key={requisition.materialRequisitionNo}
+                            key={workOrder.workOrderNo || index}
                             className={
                               index % 2 === 0
                                 ? "bg-white"
@@ -352,7 +313,9 @@ const ViewMaterialRequisitionPage = () => {
                           >
                             {columns.map((column) => (
                               <td
-                                key={`${requisition.materialRequisitionNo}-${column.field}`}
+                                key={`${workOrder.workOrderNo || index}-${
+                                  column.field
+                                }`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -360,17 +323,46 @@ const ViewMaterialRequisitionPage = () => {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
-                                title={requisition[column.field]}
+                                title={workOrder[column.field]}
                               >
-                                {requisition[column.field]}
+                                {column.field === "issueDate" ||
+                                column.field === "qualityManagerSignDate" ||
+                                column.field === "workshopManagerSignDate"
+                                  ? formatDate(workOrder[column.field])
+                                  : column.field === "description"
+                                  ? formatText(workOrder[column.field], 20)
+                                  : column.field === "actionTaken"
+                                  ? formatText(workOrder[column.field], 15)
+                                  : column.field === "toolsUsed"
+                                  ? formatText(workOrder[column.field], 15)
+                                  : column.field === "workshopManagerRemarks"
+                                  ? formatText(workOrder[column.field], 15)
+                                  : column.field === "workOrderNo" ? (
+                                    <span
+                                        style={{
+                                         color: "blue",
+                                          textDecoration: "underline",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() =>
+                                          navigate("/AddMaterialRequisition", {
+                                            state: { workOrder: workOrder, readOnly: true },
+                                          })
+                                        }
+                                        >
+                                            {workOrder[column.field]}
+                                    </span>
+                                         ) : (
+                                          workOrder[column.field]
+                                        )}
                               </td>
                             ))}
-                            <td>
+                            {/* <td>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() =>
-                                    editSelectedElement(requisition.id)
+                                    editSelectedElement(workOrder.workOrderNo)
                                   }
                                   title="Edit"
                                 >
@@ -379,21 +371,21 @@ const ViewMaterialRequisitionPage = () => {
                                 <button
                                   className="btn btn-sm btn-outline-danger"
                                   onClick={() =>
-                                    deleteSelectedElement(requisition.id)
+                                    deleteSelectedElement(workOrder.workOrderNo)
                                   }
                                   title="Delete"
                                 >
                                   <i className="fa-solid fa-trash"></i>
                                 </button>
                                 <button
-                                  // className={styles.printBtn}
-                                  // style={{ background: "#adc2ff" }}
-                                  onClick={() => handlePrintClick(requisition)}
+                                  className="btn btn-sm btn-outline-success"
+                                  onClick={() => handlePrintClick(workOrder)}
+                                  title="Print"
                                 >
                                   <i className="fa-solid fa-print"></i>
                                 </button>
                               </div>
-                            </td>
+                            </td> */}
                           </tr>
                         ))
                       ) : (
@@ -506,7 +498,6 @@ const ViewMaterialRequisitionPage = () => {
                 </div>
               </div>
             </div>
-            {/* </div> */}
           </div>
         </div>
         <Footer />
@@ -515,4 +506,4 @@ const ViewMaterialRequisitionPage = () => {
   );
 };
 
-export default ViewMaterialRequisitionPage;
+export default ViewMaterialRequistionWO;
