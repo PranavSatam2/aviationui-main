@@ -6,7 +6,11 @@ import Sidebar from "../../Sidebar";
 // import { createWorkorder } from "../services/db_manager";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import { useLocation } from "react-router-dom";
-import { AddWorkOrder, getWorkOrder } from "../../../services/db_manager";
+import {
+  AddWorkOrder,
+  getWorkOrder,
+  getWorkOrderById,
+} from "../../../services/db_manager";
 import { toast } from "react-toastify";
 
 const AddWorkorder = () => {
@@ -131,55 +135,61 @@ const AddWorkorder = () => {
 
   const [form, setForm] = useState(getInitialFormState());
 
-  const fetchPurchaseOrder = async () => {
-    try {
-      const response = await getWorkOrder(srNo);
-      if (response) {
-        // Create material requisition from main part data
-        const mainPartMaterialRequisition = {
-          srNo: 101,
-          description: response.partDesc || "",
-          partNo: response.partNo || "",
-          snbn: "",
-          qty: response.qty || "",
-          remarks: "",
-        };
+const fetchPurchaseOrder = async () => {
+  try {
+    const response = await getWorkOrderById(srNo);
+    if (response) {
+      console.log("API Response:", response); // Debug log
+      
+      // Create material requisition from main part data
+      const mainPartMaterialRequisition = {
+        srNo: 101,
+        description: response.data?.partDescription || "",
+        partNo: response.data?.partNo || "",
+        // snbn: response.data?.batchNo || "",
+        qty: response.data?.quantity || "",
+        remarks: response.data?.remark || "",
+      };
 
-        // Map response data to match the new field names
-        const formattedData = {
-          ...form, // Keep existing form structure
-          customerName: response.customerName,
-          repairOrderNo: response.orderNo || response.repairOrderNo,
-          description: response.partDesc || response.description,
-          partNumber: response.partNo || response.partNumber,
-          qty: response.qty,
-          // Ensure workOrderSteps are preserved
-          workOrderSteps:
-            response.workOrderSteps ||
-            response.workDetails ||
-            form.workOrderSteps,
-          // Sync main part data to materialRequisitions and preserve existing ones
-          materialRequisitions: response.materialRequisitions ||
-            response.partsUsed || [mainPartMaterialRequisition],
-          // Map other fields
-          issueDate: response.date || response.issueDate,
-          cmmRefNo: response.cmmRefNo,
-          snBn: response.snBin || response.snBn,
-          revNo: response.revisionNo || response.revNo,
-          workshopManagerRemarks:
-            response.remarks || response.workshopManagerRemarks,
-          issuedBy: response.issuedByWorkshopManagerName || response.issuedBy,
-          certifyingStaffhours:
-            response.workshopManager || response.certifyingStaffhours,
-        };
+      // Get fresh initial state to avoid stale closure
+      const initialState = getInitialFormState();
 
-        setForm(formattedData);
-      }
-    } catch (error) {
-      console.error("Error fetching Purchase order details:", error);
-      alert("Error fetching Purchase order details.");
+      // Map response data to match the new field names
+      const formattedData = {
+        ...initialState, // Use fresh initial state instead of stale 'form'
+        customerName: response.data?.customerName || "",
+        repairOrderNo: String(response.orderNo || response.data?.roNo || ""),
+        description: response.data?.partDescription || "",
+        partNumber: response.data?.partNo || "",
+        qty: (response.data.quantity || ""),
+        // Ensure workOrderSteps are preserved from initial state
+        workOrderSteps: response.data?.workOrderSteps || response.data?.workDetails || initialState.workOrderSteps,
+        // Sync main part data to materialRequisitions
+        materialRequisitions: response.data?.materialRequisitions || response.data?.partsUsed || [mainPartMaterialRequisition],
+        // Map other fields with proper fallbacks
+        issueDate: response.data?.roDate || response.data?.roReceiveDate || "",
+        cmmRefNo: response.data?.cmmRefNo || "",
+        // snBn: response.data?.batchNo || "",
+        revNo: response.data?.revisionNo || response.data?.revNo || "",
+        workshopManagerRemarks: response.data?.remark || "",
+        // issuedBy: response.data?.makerUserName || "",
+        certifyingStaffhours: response.data?.certifyingStaffhours || "",
+        technician: response.data?.technician || "",
+        totalManHour: response.data?.totalManHour || "",
+        actionTaken: response.data?.actionTaken || "",
+        toolsTextBox1: response.data?.toolsUsed || "",
+        qualityManagerSignDate: response.data?.qualityManagerSignDate || "",
+        workshopManagerSignDate: response.data?.workshopManagerSignDate || "",
+      };
+
+      console.log("Formatted Data:", formattedData); // Debug log
+      setForm(formattedData);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching Purchase order details:", error);
+    alert("Error fetching Purchase order details.");
+  }
+};
 
   useEffect(() => {
     if (srNo) {
@@ -573,7 +583,7 @@ const AddWorkorder = () => {
                         </label>
                         <input
                           className="form-control w-100"
-                          type="text"
+                          type="number"
                           name="certifyingStaffhours"
                           value={form.certifyingStaffhours}
                           onInput={(event) => {
