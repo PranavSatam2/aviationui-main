@@ -5,6 +5,7 @@ import {
   submitCAForm,
   fetchWorkOrderDetails,
   fetchWorkOrder,
+  getCAForm,
 } from "../services/db_manager";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -12,12 +13,16 @@ import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import Footer from "./Footer";
 import { toast } from "react-toastify";
 import logo from "../static/img/logo.png";
+import {PrintCAForm} from "./PrintCAForm";
+
 
 const CAForm = () => {
   const [workOrderNumber, setWorkOrderNumber] = useState([]);
   const [partLoading, setPartLoading] = useState(false);
   const [partError, setPartError] = useState(null);
   const [selectedWorkOrderNumber, setSelectedWorkOrderNumber] = useState("");
+  const [reportData, setReportData] = useState();
+
   const [workOrderDetails, setWorkOrderDetails] = useState({
     description: "",
     partNo: "",
@@ -25,19 +30,19 @@ const CAForm = () => {
     serialNo: "",
   });
 
-  const generateCertificateNumber = () => {
-    const year = new Date().getFullYear();
-    const companyCode = "AMC";
-    const randomId = Math.floor(100 + Math.random() * 900); // Generates number like 231
+  // const generateCertificateNumber = () => {
+  //   const year = new Date().getFullYear();
+  //   const companyCode = "CA-N-";
+  //   const randomId = Math.floor(100 + Math.random() * 900); // Generates number like 231
 
-    return `${year}/${companyCode}/${randomId}`;
-  };
+  //   return `${year}/${companyCode}/${randomId}`;
+  // };
 
-  const certNumber = generateCertificateNumber();
+  //const certNumber = generateCertificateNumber();
 
   const [formData, setFormData] = useState({
     formTrackingNumber: certNumber,
-    workOrderNo: "",
+    workOrderNumber: "",
     item: "1",
     description: "",
     partNo: "",
@@ -104,7 +109,62 @@ const CAForm = () => {
     });
   };
 
+  const editSelectedElement = async (elementId) => {
+        if (elementId !== "") {
+          try {
+            let reportId = elementId;
+            let reportData = await getCAForm(elementId);
+            reportData = reportData.data;
+           
+          } catch (error) {
+            console.error("Error fetching CA Form details: ", error);
+            toast.error("Failed to fetch CA Form details");
+          }
+        }
+      };
+
+  
+  const validateFormData = () => {
+  const errors = [];
+
+  if (!selectedWorkOrderNumber) {
+    errors.push("Work Order Number is required.");
+  }
+
+  if (!formData.item) {
+    errors.push("Item is required.");
+  }
+
+  if (!workOrderDetails.description) {
+    errors.push("Description is required.");
+  }
+
+  if (!workOrderDetails.partNo) {
+    errors.push("Part Number is required.");
+  }
+
+  if (!workOrderDetails.quantity) {
+    errors.push("Quantity is required.");
+  }
+
+  if (!workOrderDetails.serialNo) {
+    errors.push("Serial/Batch Number is required.");
+  }
+
+  return errors;
+};
+
+
+
   const handleSave = async () => {
+const errors = validateFormData();
+
+  if (errors.length > 0) {
+    // Show all errors as toast messages
+    errors.forEach((err) => toast.error(err));
+    return; // Stop save if validation fails
+  }
+
     try {
       const payload = {
         // Required fields
@@ -134,11 +194,45 @@ const CAForm = () => {
 
       // Call the API to save the data
       const responce = await submitCAForm(payload);
+      alert("CA Form saved successfully!");
+      // Fetch the saved CA Form data from backend
+    const savedDataRes = await getCAForm(responce.data.formTrackingNumber);
 
-      toast.success("CA Form saved successfully!");
-    } catch (error) {
-      toast.error(" Error for saving CA Form.");
-    }
+    const savedData = savedDataRes;
+
+    // Update state with latest data
+    setReportData(savedData);
+   // console.log("Save data ",savedDataRes);
+
+    setTimeout(() => handlePrintClick(savedData), 300);
+    window.location.reload();
+
+  } catch (error) {
+    toast.error("Error saving CA Form.");
+  }
+};
+
+const handlePrintClick = (report) => {
+    // Store the report data
+    //console.log("Report",report)
+    setReportData(report.data);
+
+    // Short delay to ensure React has updated the state and rendered the component
+    setTimeout(() => {
+      // Cache original body styles
+      const originalBodyStyle = document.body.style.cssText;
+
+      // Apply print-friendly styles to the body
+      document.body.style.margin = "0";
+      document.body.style.padding = "0";
+
+      // Print the document
+      window.print();
+      setTimeout(() => {
+        document.body.style.cssText = originalBodyStyle;
+        
+      }, 100);
+    }, 300);
   };
 
   return (
@@ -151,6 +245,9 @@ const CAForm = () => {
             breadcrumbsLabel="CA Form"
             // isBack={true}
           />
+          <div className="printView">
+                      <PrintCAForm dataMap={reportData} />
+                    </div>
           <div className={styles.container}>
             <div className={`${styles.formContainer} p-4 pb-5`}>
               <div
@@ -175,13 +272,13 @@ const CAForm = () => {
                   <label htmlFor="formTrackingNumber" className="mr-2">
                     3. Form Tracking Number:
                   </label>
-                  <input
+                  {/* <input
                     id="formTrackingNumber"
                     type="text"
                     className={styles.inputField}
                     value={formData.formTrackingNumber}
                     onChange={(e) => handleInputChange("poNo", e.target.value)}
-                  />
+                  /> */}
                 </div>
               </div>
               <div className={`${styles.companySection} flex items-center `}>
@@ -238,10 +335,10 @@ const CAForm = () => {
                       {Array.isArray(workOrderNumber) &&
                         workOrderNumber.map((workOrder) => (
                           <option
-                            key={workOrder.workOrderNo}
-                            value={workOrder.workOrderNo}
+                            key={workOrder.workOrderNumber}
+                            value={workOrder.workOrderNumber}
                           >
-                            {workOrder.workOrderNo}
+                            {workOrder.workOrderNumber}
                           </option>
                         ))}
                     </select>

@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import {PrintCAForm} from "./PrintCAForm";
 import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
-const ViewCAForm = () => {
+const EditCAFormTable = () => {
   // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,7 +31,6 @@ const ViewCAForm = () => {
   const [remark, setRemark] = useState("");
   const [reportData, setReportData] = useState();
 
-  
   const navigate = useNavigate();
   const fetchData = async () => {
     setIsLoading(true);
@@ -77,6 +76,41 @@ const ViewCAForm = () => {
     )
   : [];
 
+
+  const deleteSelectedElement = async (elementId) => {
+      if (window.confirm("Are you sure you want to delete this CA Form?")) {
+        try {
+          const response = await deleteCAForm(elementId);
+          if (response) {
+            setTableData((prevData) =>
+              prevData.filter((report) => report.formId !== elementId)
+            );
+            toast.success("CA Form deleted successfully");
+          }
+        } catch (error) {
+          console.error("Failed to delete CA Form", error);
+          toast.error("Failed to delete CA Form Please try again.");
+        }
+      }
+    };
+  
+    const editSelectedElement = async (elementId) => {
+      if (elementId !== "") {
+        try {
+          let reportId = elementId;
+          let reportData = await getCAForm(elementId);
+          reportData = reportData.data;
+          if (reportId !== null) {
+            navigate("/editCAForm", {
+              state: { reportId, reportData },
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching CA Form details: ", error);
+          toast.error("Failed to fetch CA Form details");
+        }
+      }
+    };
 
 
   // Sorting functionality
@@ -182,8 +216,8 @@ const handleCheckboxChange = (report) => {
 
   // Column definitions for the table
   const columns = [
-    { field: "formTrackingNumber", label: "CA Form No.", width: "100px" },
-    { field: "repairOrderNo", label: "Customer Order No.", width: "100px" },
+    { field: "formTrackingNumber", label: "Form Trackking No.", width: "100px" },
+    //{ field: "customerOrderNo", label: "Customer Order No.", width: "100px" },
     { field: "workOrderNumber", label: "WorkOrder Number", width: "100px" },
     { field: "customerName", label: "Customer Name", width: "100px" },
     //{ field: "item", label: "Item", width: "100px" },
@@ -212,7 +246,7 @@ const handleCheckboxChange = (report) => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View CA Form" />
+          <CustomBreadcrumb breadcrumbsLabel="Edit CA Form" />
           <div className="printView">
             <PrintCAForm dataMap={reportData} />
           </div>
@@ -281,7 +315,7 @@ const handleCheckboxChange = (report) => {
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-blue">
-                        <th
+                        {/* <th
                           className="position-sticky top-0 bg-light py-3 text-center"
                           style={{ width: "40px" }}
                         >
@@ -294,7 +328,7 @@ const handleCheckboxChange = (report) => {
                               onChange={handleSelectAll}
                             />
                           </div>
-                        </th>
+                        </th> */}
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -351,19 +385,19 @@ const handleCheckboxChange = (report) => {
                                 : "bg-light bg-opacity-50"
                             }
                           >
-                            <td className="text-center">
+                            {/* <td className="text-center">
                               <div className="form-check d-flex justify-content-center">
                                 <input
                                   className="form-check-input"
                                   type="checkbox"
-                                  id={`check-${report.id}`}
-                                  checked={selectedItem === report.id}
+                                  id={`check-${report.formTrackingNumber}`}
+                                  checked={selectedItem === report.formTrackingNumber}
                                   onChange={() =>
                                     handleCheckboxChange(report)
                                   }
                                 />
                               </div>
-                            </td>
+                            </td> */}
                             {columns.map((column) => (
                               <td
                                 key={`${report.formId}-${column.field}`}
@@ -381,27 +415,27 @@ const handleCheckboxChange = (report) => {
                             ))}
                              <td>
                               <div className="d-flex justify-content-center gap-2">
-                                {/* <button
+                                <button
                                 className="btn btn-sm btn-outline-primary"
-                                onClick={() => editSelectedElement(report.id)}
+                                onClick={() => editSelectedElement(report.formTrackingNumber)}
                                 title="Edit"
                               >
                                 <i className="fa-solid fa-pen-to-square"></i>
                               </button>
                               <button
                                 className="btn btn-sm btn-outline-danger"
-                                onClick={() => deleteSelectedElement(report.id)}
+                                onClick={() => deleteSelectedElement(report.formTrackingNumber)}
                                 title="Delete"
                               >
                                 <i className="fa-solid fa-trash"></i>
-                              </button> */}
-                                <button
+                              </button>
+                                {/* <button
                                   className="btn btn-sm btn-outline-secondary"
                                   onClick={() => handlePrintClick(report)}
                                   title="Print Doc"
                                 >
                                   <i className="fa-solid fa-print"></i>
-                                </button>
+                                </button> */}
                               </div>
                             </td>
                           </tr>
@@ -525,4 +559,4 @@ const handleCheckboxChange = (report) => {
   );
 };
 
-export default ViewCAForm;
+export default EditCAFormTable;

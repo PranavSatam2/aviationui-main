@@ -162,25 +162,29 @@ const validationRules = {
     // If all validation passes, proceed with submitting
     try {
       const response = await createUser(form);
-      console.log("User added successfully:", response.data);
+      console.log("User Response:", response);
+      if(response.data.respCode == "004"){
+        alert(response.data.message);
+      }else{
       alert("User Added Successfully!");
-
+       window.location.reload();
+      }
       // Reset the form after successful submission
-      setForm({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    username: "",
-    role: "",
-    dateOfBirth: "",
-    mobileNumber: "",
-    email: "",
-    address: "",
-    city: "",
-    state: "",
-    country: "",
-    location: "",
-      });
+    //   setForm({
+    // firstName: "",
+    // middleName: "",
+    // lastName: "",
+    // username: "",
+    // role: "",
+    // dateOfBirth: "",
+    // mobileNumber: "",
+    // email: "",
+    // address: "",
+    // city: "",
+    // state: "",
+    // country: "",
+    // location: "",
+    //   });
     } catch (error) {
       console.error("Error adding user:", error);
       alert("Failed to user.");

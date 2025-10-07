@@ -92,7 +92,7 @@ try {
           console.log("Id :",formData.id);
             let response = await updateCAForm(reportId, updateOrdertData);
             if (response) {
-              navigate("/viewCAForm");
+              navigate("/editCAForm");
               toast.success("CA Form updated successfully");
             }
     } catch (error) {
@@ -130,7 +130,7 @@ try {
                     type="text"
                     className={styles.inputField}
                     value={formData.formTrackingNumber}
-                    onChange={(e) => handleInputChange("poNo", e.target.value)}
+                    disabled
                   />
             </div>
         </div>
@@ -164,7 +164,7 @@ try {
                     type="text"
                     className={styles.inputField}
                     value={formData.workOrderNo}
-                    onChange={(e) => handleInputChange("workOrderNo", e.target.value)}
+                    disabled
                   />
            </div>
           </div>      
@@ -178,7 +178,7 @@ try {
                     type="text"
                     className={styles.inputField}
                     value={formData.item}
-                    onChange={(e) => handleInputChange("item", e.target.value)}
+                    disabled
                   />
             
             </div>
@@ -191,7 +191,7 @@ try {
                     type="text"
                     className={styles.inputField}
                     value={formData.description}
-                    onChange={(e) => handleInputChange("description", e.target.value)}
+                    disabled
                   />
             
             </div>
@@ -204,7 +204,7 @@ try {
                     type="text"
                     className={styles.inputField}
                     value={formData.partNo}
-                    onChange={(e) => handleInputChange("partNo", e.target.value)}
+                    disabled
                   />
             
             </div>
@@ -217,7 +217,7 @@ try {
                     type="text"
                     className={styles.inputField}
                     value={formData.quantity}
-                    onChange={(e) => handleInputChange("quantity", e.target.value)}
+                    disabled
                   />
             
             </div>
@@ -230,7 +230,7 @@ try {
                     type="text"
                     className={styles.inputField}
                     value={formData.serialNo}
-                    onChange={(e) => handleInputChange("serialNo", e.target.value)}
+                    disabled
                   />
             
             </div>
@@ -260,7 +260,7 @@ try {
                       value={formData.remarks}
                       onChange={(e) => handleInputChange("remarks", e.target.value)}
                       style={{height : '70px'}}
-                      required
+                      
                     ></textarea>
                     
             </div>
