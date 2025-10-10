@@ -12,7 +12,7 @@ import {
 
 const CustomerOrder = () => {
   const [roNo, setRoNo] = useState("");
-  const [roDate, setRoDate] = useState("");
+  const [roDate, setRoDate] = useState(new Date().toISOString().split("T")[0]);
   const [roReceiveDate, setRoReceiveDate] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [partNo, setPartNo] = useState("");
@@ -32,7 +32,6 @@ const CustomerOrder = () => {
 
   const handleInputChange = (e, setter) => setter(e.target.value);
 
-  // Fetch customer names & part numbers
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,7 +49,6 @@ const CustomerOrder = () => {
     fetchData();
   }, []);
 
-  // Fetch part details on partNo change
   useEffect(() => {
     const fetchPartDetails = async () => {
       if (!partNo) {
@@ -65,13 +63,12 @@ const CustomerOrder = () => {
           const partDetails = data[0];
           setPartDescription(partDetails.productDescription || "");
 
-          // Convert object to array of serial values
           const serialArray = partDetails.productSerialNumbers
             ? Object.values(partDetails.productSerialNumbers)
             : [];
 
           setSerialOptions(serialArray);
-          setPartSerialNumber(""); // reset selected value
+          setPartSerialNumber("");
         } else {
           setPartDescription("");
           setSerialOptions([]);
@@ -198,6 +195,8 @@ const CustomerOrder = () => {
             <div className="col-md-12">
               <form onSubmit={handleSubmit}>
                 {/* RO No & Sales Order No */}
+
+                {/*
                 <div className="col-md-12 p-2 d-flex">
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">Sales Order Number</label>
@@ -208,6 +207,10 @@ const CustomerOrder = () => {
                       disabled
                     />
                   </div>
+                </div>
+                */}
+
+                <div className="col-md-12 p-2 d-flex">
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">Repair Order No *</label>
                     <input
@@ -259,9 +262,8 @@ const CustomerOrder = () => {
                         </option>
                       ))}
                     </select>
-
                     {error.partSerialNumber && (
-                      <span className="text-danger">
+                      <span className="text-danger ms-2">
                         {error.partSerialNumber}
                       </span>
                     )}
@@ -310,12 +312,12 @@ const CustomerOrder = () => {
                     ></textarea>
                   </div>
                   <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">RO Date *</label>
+                    <label className="col-md-4 mt-2">RO Submit Date *</label>
                     <input
                       className="form-control w-100"
                       type="date"
                       value={roDate}
-                      onChange={(e) => handleInputChange(e, setRoDate)}
+                      disabled // user cannot edit
                     />
                   </div>
                 </div>
