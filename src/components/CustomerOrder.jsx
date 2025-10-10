@@ -28,6 +28,7 @@ const CustomerOrder = () => {
   const [allPartNos, setAllPartNos] = useState([]);
   const [filteredPartNos, setFilteredPartNos] = useState([]);
   const [isLoadingPartDetails, setIsLoadingPartDetails] = useState(false);
+  const [serialOptions, setSerialOptions] = useState([]);
 
   const handleInputChange = (e, setter) => setter(e.target.value);
 
@@ -63,13 +64,17 @@ const CustomerOrder = () => {
         if (data?.length > 0) {
           const partDetails = data[0];
           setPartDescription(partDetails.productDescription || "");
-          setPartSerialNumber(
-            partDetails.productSerialNumbers
-              ? partDetails.productSerialNumbers.join(", ")
-              : ""
-          );
+
+          // Convert object to array of serial values
+          const serialArray = partDetails.productSerialNumbers
+            ? Object.values(partDetails.productSerialNumbers)
+            : [];
+
+          setSerialOptions(serialArray);
+          setPartSerialNumber(""); // reset selected value
         } else {
           setPartDescription("");
+          setSerialOptions([]);
           setPartSerialNumber("");
         }
       } catch (err) {
@@ -239,16 +244,22 @@ const CustomerOrder = () => {
                     <label className="col-md-4 mt-2">
                       Part Serial Number *
                     </label>
-                    <input
-                      className="form-control w-100"
-                      type="text"
+                    <select
+                      className="form-select w-100"
                       value={partSerialNumber}
                       onChange={(e) =>
                         handleInputChange(e, setPartSerialNumber)
                       }
-                      disabled
-                      placeholder="auto-filled select part number"
-                    />
+                      disabled={serialOptions.length === 0}
+                    >
+                      <option value="">Select Serial Number</option>
+                      {serialOptions.map((serial, idx) => (
+                        <option key={idx} value={serial}>
+                          {serial}
+                        </option>
+                      ))}
+                    </select>
+
                     {error.partSerialNumber && (
                       <span className="text-danger">
                         {error.partSerialNumber}
