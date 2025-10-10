@@ -210,7 +210,7 @@ const AddRequisition = () => {
       });
       // navigate to view page
       // navigate("/MaterialRequisition/ViewMaterialRequisition");
-      navigate("/ViewMaterialRequistionWO");
+      navigate("/materialRequisition");
     } catch (error) {
       console.error("Error adding requisition:", error);
       alert("Failed to add requisition.");

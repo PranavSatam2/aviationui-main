@@ -409,7 +409,7 @@ export const getWorkOrderDetails = (ID) => {
     });
 };
 export const AddWorkOrder = (Workorder) => {
-  axiosInstance.post("/api/customerOrder/uploadWithOrders", Workorder);
+  axiosInstance.post("/api/workorders", Workorder);
 };
 
 //StoreInventory

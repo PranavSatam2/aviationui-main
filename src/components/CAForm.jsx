@@ -41,7 +41,7 @@ const CAForm = () => {
   //const certNumber = generateCertificateNumber();
 
   const [formData, setFormData] = useState({
-    formTrackingNumber: certNumber,
+    formTrackingNumber: "",
     workOrderNumber: "",
     item: "1",
     description: "",
@@ -205,7 +205,7 @@ const errors = validateFormData();
    // console.log("Save data ",savedDataRes);
 
     setTimeout(() => handlePrintClick(savedData), 300);
-    window.location.reload();
+    
 
   } catch (error) {
     toast.error("Error saving CA Form.");
@@ -230,9 +230,42 @@ const handlePrintClick = (report) => {
       window.print();
       setTimeout(() => {
         document.body.style.cssText = originalBodyStyle;
+        setFormData({
+        formTrackingNumber: "",
+        workOrderNumber: "",
+        item: "1",
+        description: "",
+        partNo: "",
+        quantity: "",
+        serialNo: "",
+        status: "",
+        remarks: "",
+        approveDesign13a: "N",
+        nonApproveDesign13a: "N",
+        otherRegulation14a: "N",
+        authorisedSign13b: "",
+        authorisationNumber13c: "",
+        authorisedSign14b: "",
+        approvalRefNo14c: "",
+        name13d: "",
+        date13e: "",
+        name14d: "",
+        date14e: "",
+      });
+
+      setWorkOrderDetails({
+        description: "",
+        partNo: "",
+        quantity: "",
+        serialNo: "",
+      });
+
+      setSelectedWorkOrderNumber("");
+      setReportData(null);
         
       }, 100);
     }, 300);
+    
   };
 
   return (
