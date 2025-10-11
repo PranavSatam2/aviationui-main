@@ -5,7 +5,7 @@ import Sidebar from "../../Sidebar";
 // import axiosInstance from "../axiosConfig";
 // import { createWorkorder } from "../services/db_manager";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   AddWorkOrder,
   getWorkOrder,
@@ -16,7 +16,8 @@ import { toast } from "react-toastify";
 const AddWorkorder = () => {
   const location = useLocation();
   const { srNo } = location.state || "";
-
+  const navigate = useNavigate();
+  console.log(srNo, "srnoooo");
   // Define the initial form structure with default workDetails - Updated to match API
   const getInitialFormState = () => ({
     // Main fields mapped to API
@@ -38,7 +39,7 @@ const AddWorkorder = () => {
     qualityManagerSignDate: "",
     workshopManagerSignDate: "",
     snBn: "",
-
+    srNumber: "",
     // Work Order Steps Section (mapped from workDetails)
     workOrderSteps: [
       {
@@ -135,61 +136,66 @@ const AddWorkorder = () => {
 
   const [form, setForm] = useState(getInitialFormState());
 
-const fetchPurchaseOrder = async () => {
-  try {
-    const response = await getWorkOrderById(srNo);
-    if (response) {
-      console.log("API Response:", response); // Debug log
-      
-      // Create material requisition from main part data
-      const mainPartMaterialRequisition = {
-        srNo: 101,
-        description: response.data?.partDescription || "",
-        partNo: response.data?.partNo || "",
-        // snbn: response.data?.batchNo || "",
-        qty: response.data?.quantity || "",
-        remarks: response.data?.remark || "",
-      };
+  const fetchPurchaseOrder = async () => {
+    try {
+      const response = await getWorkOrderById(srNo);
+      if (response) {
+        console.log("API Response:", response); // Debug log
 
-      // Get fresh initial state to avoid stale closure
-      const initialState = getInitialFormState();
+        // Create material requisition from main part data
+        const mainPartMaterialRequisition = {
+          srNo: 101,
+          description: response.data?.partDescription || "",
+          partNo: response.data?.partNo || "",
+          // snbn: response.data?.batchNo || "",
+          qty: response.data?.quantity || "",
+          remarks: response.data?.remark || "",
+        };
 
-      // Map response data to match the new field names
-      const formattedData = {
-        ...initialState, // Use fresh initial state instead of stale 'form'
-        customerName: response.data?.customerName || "",
-        repairOrderNo: String(response.orderNo || response.data?.roNo || ""),
-        description: response.data?.partDescription || "",
-        partNumber: response.data?.partNo || "",
-        qty: (response.data.quantity || ""),
-        // Ensure workOrderSteps are preserved from initial state
-        workOrderSteps: response.data?.workOrderSteps || response.data?.workDetails || initialState.workOrderSteps,
-        // Sync main part data to materialRequisitions
-        materialRequisitions: response.data?.materialRequisitions || response.data?.partsUsed || [mainPartMaterialRequisition],
-        // Map other fields with proper fallbacks
-        issueDate: response.data?.roDate || response.data?.roReceiveDate || "",
-        cmmRefNo: response.data?.cmmRefNo || "",
-        // snBn: response.data?.batchNo || "",
-        revNo: response.data?.revisionNo || response.data?.revNo || "",
-        workshopManagerRemarks: response.data?.remark || "",
-        // issuedBy: response.data?.makerUserName || "",
-        certifyingStaffhours: response.data?.certifyingStaffhours || "",
-        technician: response.data?.technician || "",
-        totalManHour: response.data?.totalManHour || "",
-        actionTaken: response.data?.actionTaken || "",
-        toolsTextBox1: response.data?.toolsUsed || "",
-        qualityManagerSignDate: response.data?.qualityManagerSignDate || "",
-        workshopManagerSignDate: response.data?.workshopManagerSignDate || "",
-      };
+        // Get fresh initial state to avoid stale closure
+        const initialState = getInitialFormState();
 
-      console.log("Formatted Data:", formattedData); // Debug log
-      setForm(formattedData);
+        // Map response data to match the new field names
+        const formattedData = {
+          ...initialState, // Use fresh initial state instead of stale 'form'
+          customerName: response.data?.customerName || "",
+          repairOrderNo: String(response.orderNo || response.data?.roNo || ""),
+          description: response.data?.partDescription || "",
+          partNumber: response.data?.partNo || "",
+          qty: response.data.quantity || "",
+          // Ensure workOrderSteps are preserved from initial state
+          workOrderSteps:
+            response.data?.workOrderSteps ||
+            response.data?.workDetails ||
+            initialState.workOrderSteps,
+          // Sync main part data to materialRequisitions
+          materialRequisitions: response.data?.materialRequisitions ||
+            response.data?.partsUsed || [mainPartMaterialRequisition],
+          // Map other fields with proper fallbacks
+          issueDate:
+            response.data?.roDate || response.data?.roReceiveDate || "",
+          cmmRefNo: response.data?.cmmRefNo || "",
+          // snBn: response.data?.batchNo || "",
+          revNo: response.data?.revisionNo || response.data?.revNo || "",
+          workshopManagerRemarks: response.data?.remark || "",
+          // issuedBy: response.data?.makerUserName || "",
+          certifyingStaffhours: response.data?.certifyingStaffhours || "",
+          technician: response.data?.technician || "",
+          totalManHour: response.data?.totalManHour || "",
+          actionTaken: response.data?.actionTaken || "",
+          toolsTextBox1: response.data?.toolsUsed || "",
+          qualityManagerSignDate: response.data?.qualityManagerSignDate || "",
+          workshopManagerSignDate: response.data?.workshopManagerSignDate || "",
+        };
+
+        console.log("Formatted Data:", formattedData); // Debug log
+        setForm(formattedData);
+      }
+    } catch (error) {
+      console.error("Error fetching Purchase order details:", error);
+      alert("Error fetching Purchase order details.");
     }
-  } catch (error) {
-    console.error("Error fetching Purchase order details:", error);
-    alert("Error fetching Purchase order details.");
-  }
-};
+  };
 
   useEffect(() => {
     if (srNo) {
@@ -370,6 +376,7 @@ const fetchPurchaseOrder = async () => {
         technicianSign: step.technicianSign,
         certifyingStaffSign: step.certifyingStaffSign,
       })),
+      srNumber: srNo,
       materialRequisitions: form.materialRequisitions.map((material) => ({
         srNo: material.srNo,
         description: material.description,
@@ -388,8 +395,7 @@ const fetchPurchaseOrder = async () => {
       const response = await AddWorkOrder(payload);
       console.log("Work order added successfully:", response);
       toast.success("Work Order Added Successfully!");
-      window.location.reload();
-
+      navigate("/ViewWorkOrder");
       // Reset the form after successful submission
       // setForm(getInitialFormState());
     } catch (error) {
