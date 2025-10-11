@@ -388,7 +388,7 @@ const fetchPurchaseOrder = async () => {
       const response = await AddWorkOrder(payload);
       console.log("Work order added successfully:", response);
       toast.success("Work Order Added Successfully!");
-      // window.location.reload();
+      window.location.reload();
 
       // Reset the form after successful submission
       // setForm(getInitialFormState());
