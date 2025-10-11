@@ -53,7 +53,7 @@
 }
 
 .logoImage {
-  height: 100px;
+  height: 30px !important;
   width: auto;
  margin-right: 1rem;
 }
@@ -349,4 +349,79 @@ padding: 0.75rem 1.5rem;
   .saveButtonContainer, .addButton {
     display: none;
   }
+}/* Combined Section Wrapper */
+.crossSectionWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 10px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  margin-top: 1rem;
+}
+
+/* Individual Section Boxes (13 & 14) */
+.sectionBox {
+  flex: 1;
+  border: 1px solid black;
+  padding: 10px;
+  position: relative;
+  background-color: #fff;
+}
+
+/* 13 Section with diagonal cross */
+.crossBox {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Create the X lines on top */
+.crossBox::before,
+.crossBox::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140%;
+  height: 4px;
+  background-color: black;
+  transform-origin: center;
+  pointer-events: none; /* Let user interact with inputs below */
+  z-index: 5; /* Ensure it stays on top */
+}
+
+/* First diagonal ( / ) */
+.crossBox::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Second diagonal ( \ ) */
+.crossBox::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Section Title */
+.sectionTitle {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-decoration: underline;
+}
+
+/* Signature inputs layout */
+.signatureGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.signatureItem {
+  flex: 1 1 calc(50% - 0.75rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.signatureItem label {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
 }

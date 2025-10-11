@@ -270,7 +270,9 @@
   }
   
   .signature {
-    text-align: right;
+    display: flex;
+    flex-direction: column;
+   float: right;
     margin-top: 0.5rem;
   }
   
@@ -284,9 +286,10 @@
   
   /* FormFooter styles */
   .formFooter {
-    text-align: right;
-    font-size: 0.875rem;
-    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    float: right;
+    font-size: 1rem;
   }
   /* Add these new styles to your existing CSS file */
 

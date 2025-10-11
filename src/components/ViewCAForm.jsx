@@ -18,7 +18,7 @@ const ViewCAForm = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("formId");
+  const [sortField, setSortField] = useState("id");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState("");
@@ -149,7 +149,7 @@ const handleCheckboxChange = (report) => {
     } else {
       // Select the first item when clicking "select all"
       if (currentItems.length > 0) {
-        const firstItemId = currentItems[0].formId;
+        const firstItemId = currentItems[0].id;
         setSelectedItem(firstItemId);
       }
     }
@@ -181,30 +181,18 @@ const handleCheckboxChange = (report) => {
 
 
   // Column definitions for the table
-  const columns = [
-    { field: "formTrackingNumber", label: "CA Form No.", width: "100px" },
-    { field: "repairOrderNo", label: "Customer Order No.", width: "100px" },
-    { field: "workOrderNumber", label: "WorkOrder Number", width: "100px" },
-    { field: "customerName", label: "Customer Name", width: "100px" },
-    //{ field: "item", label: "Item", width: "100px" },
-    { field: "partNo", label: "Part Number.", width: "100px" },
-    { field: "description", label: "Description", width: "100px" },
-    { field: "quantity", label: "Quantity", width: "100px" },
-    { field: "serialNo", label: "Product Serial No.", width: "100px" },
-    { field: "status", label: "Status", width: "100px" },
-    { field: "remarks", label: "Remarks", width: "100px" },
-    // { field: "approveDesign13a", label: "Approved design data", width: "100px" },
-    // { field: "nonApproveDesign13a", label: "Non-approved design data", width: "100px" },
-    // { field: "otherRegulation14a", label: "Other regulation specified to Service", width: "100px" },
-    // { field: "authorisedSign13b", label: " Authorised Signature", width: "100px" },
-    // { field: "authorisationNumber13c", label: "Approval / Authorisation Number", width: "100px" },
-    // { field: "name13d", label: "Name", width: "100px" },
-    // { field: "date13e", label: "Date", width: "100px" },
-    // { field: "selfLiauthorisedSign14bfeObservation", label: "Authorised Signature", width: "100px" },
-    // { field: "approvalRefNo14c", label: "Certificate / Approval Ref No", width: "100px" },
-    // { field: "name14d", label: "Name", width: "100px" },
-    // { field: "date14e", label: "Date", width: "100px" },
+const columns = [
+  { field: "id", label: "CA Form No.", width: "120px" },
+  { field: "workOrderNo", label: "Work Order No.", width: "120px" },
+  { field: "item", label: "Item", width: "80px" },
+  { field: "partNo", label: "Part No.", width: "120px" },
+  { field: "description", label: "Description", width: "200px" },
+  { field: "quantity", label: "Quantity", width: "80px" },
+  { field: "serialNo", label: "Serial No.", width: "150px" },
+  { field: "status", label: "Status", width: "100px" },
+  { field: "remarks", label: "Remarks", width: "200px" },
 ];
+
 
   return (
     <div className="wrapper">
@@ -281,7 +269,7 @@ const handleCheckboxChange = (report) => {
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-blue">
-                        <th
+                        {/* <th
                           className="position-sticky top-0 bg-light py-3 text-center"
                           style={{ width: "40px" }}
                         >
@@ -294,7 +282,7 @@ const handleCheckboxChange = (report) => {
                               onChange={handleSelectAll}
                             />
                           </div>
-                        </th>
+                        </th> */}
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -344,14 +332,14 @@ const handleCheckboxChange = (report) => {
                       {currentItems.length > 0 ? (
                         currentItems.map((report, index) => (
                           <tr
-                            key={report.formId}
+                           key={report.id}
                             className={
                               index % 2 === 0
                                 ? "bg-white"
                                 : "bg-light bg-opacity-50"
                             }
                           >
-                            <td className="text-center">
+                            {/* <td className="text-center">
                               <div className="form-check d-flex justify-content-center">
                                 <input
                                   className="form-check-input"
@@ -363,10 +351,10 @@ const handleCheckboxChange = (report) => {
                                   }
                                 />
                               </div>
-                            </td>
+                            </td> */}
                             {columns.map((column) => (
                               <td
-                                key={`${report.formId}-${column.field}`}
+                               key={`${report.id}-${column.field}`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
