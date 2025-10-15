@@ -69,6 +69,7 @@ const CAForm = () => {
         const res = await fetchWorkOrder();
         console.log("WorkOrder data:", res.data);
         const actualData = res.data.data || res.data;
+        console.log(actualData);
         setWorkOrderNumber(actualData);
       } catch (err) {
         console.error("Error fetching WorkOrder numbers:", err);
@@ -359,10 +360,10 @@ const CAForm = () => {
                       {Array.isArray(workOrderNumber) &&
                         workOrderNumber.map((workOrder) => (
                           <option
-                            key={workOrder.workOrderNo}
-                            value={workOrder.workOrderNo}
+                            key={workOrder.workOrderNumber}
+                            value={workOrder.workOrderNumber}
                           >
-                            {workOrder.workOrderNo}
+                            {workOrder.workOrderNumber}
                           </option>
                         ))}
                     </select>
