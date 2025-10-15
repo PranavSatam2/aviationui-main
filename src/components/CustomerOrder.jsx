@@ -54,6 +54,7 @@ const CustomerOrder = () => {
       if (!partNo) {
         setPartDescription("");
         setPartSerialNumber("");
+        setSerialOptions([]);
         return;
       }
       setIsLoadingPartDetails(true);
@@ -77,6 +78,7 @@ const CustomerOrder = () => {
       } catch (err) {
         console.error("Error fetching part details:", err);
         setPartDescription("");
+        setSerialOptions([]);
         setPartSerialNumber("");
       } finally {
         setIsLoadingPartDetails(false);
@@ -87,9 +89,18 @@ const CustomerOrder = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!/^\d{1,50}$/.test(roNo)) newErrors.roNo = "RO No must be a number";
-    if (!/^\d{1,10}$/.test(quantity))
+    if (!roNo.trim()) {
+      newErrors.roNo = "RO No is required";
+    } else if (!/^\d{1,50}$/.test(roNo)) {
+      newErrors.roNo = "RO No must be a number";
+    }
+
+    if (!quantity.trim()) {
+      newErrors.quantity = "Quantity is required";
+    } else if (!/^\d{1,10}$/.test(quantity)) {
       newErrors.quantity = "Quantity must be a number";
+    }
+
     if (!partSerialNumber.trim())
       newErrors.partSerialNumber = "Part Serial Number is required";
     if (!customerName) newErrors.customerName = "Customer Name is required";
@@ -102,6 +113,19 @@ const CustomerOrder = () => {
 
     setError(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const resetForm = () => {
+    setRoNo("");
+    setRoReceiveDate("");
+    setCustomerName("");
+    setPartNo("");
+    setPartDescription("");
+    setQuantity("");
+    setPartSerialNumber("");
+    setStatus("");
+    setSerialOptions([]);
+    setError({});
   };
 
   const handleSubmit = (e) => {
@@ -126,16 +150,11 @@ const CustomerOrder = () => {
     };
 
     setPurchaseRequisitions([...purchaseRequisitions, newReq]);
-    setRoNo("");
-    setRoDate("");
-    setRoReceiveDate("");
-    setCustomerName("");
-    setPartNo("");
-    setPartDescription("");
-    setQuantity("");
-    setPartSerialNumber("");
-    setStatus("");
-    alert("Customer Order added to the list!");
+    
+    // Reset form for next entry
+    resetForm();
+
+    alert("Customer Order added to the list! You can add more orders.");
   };
 
   const handleRemoveRequisition = (id) =>
@@ -177,6 +196,7 @@ const CustomerOrder = () => {
       alert("All orders submitted successfully.");
       setPurchaseRequisitions([]);
       setDocument(null);
+      resetForm();
     } catch (err) {
       console.error("Submit failed:", err);
       alert("Failed to submit Customer Order. Check console for details.");
@@ -193,35 +213,23 @@ const CustomerOrder = () => {
           {/* Form Card */}
           <div className="row mx-1 card border border-dark shadow-lg py-2">
             <div className="col-md-12">
+              <h5 className="mb-3">Add New Customer Order</h5>
               <form onSubmit={handleSubmit}>
-                {/* RO No & Sales Order No */}
-
-                {/*
-                <div className="col-md-12 p-2 d-flex">
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">Sales Order Number</label>
-                    <input
-                      className="form-control w-100"
-                      type="text"
-                      value="Auto Generated"
-                      disabled
-                    />
-                  </div>
-                </div>
-                */}
-
+                {/* RO No */}
                 <div className="col-md-12 p-2 d-flex">
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">Repair Order No *</label>
-                    <input
-                      className="form-control w-100"
-                      type="text"
-                      value={roNo}
-                      onChange={(e) => handleInputChange(e, setRoNo)}
-                    />
-                    {error.roNo && (
-                      <span className="text-danger ms-2">{error.roNo}</span>
-                    )}
+                    <div className="w-100">
+                      <input
+                        className="form-control w-100"
+                        type="text"
+                        value={roNo}
+                        onChange={(e) => handleInputChange(e, setRoNo)}
+                      />
+                      {error.roNo && (
+                        <span className="text-danger small">{error.roNo}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -229,44 +237,51 @@ const CustomerOrder = () => {
                 <div className="col-md-12 p-2 d-flex">
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">Part Number *</label>
-                    <select
-                      className="form-select"
-                      value={partNo}
-                      onChange={(e) => setPartNo(e.target.value)}
-                      disabled={isLoadingPartDetails}
-                    >
-                      <option value="">Select Part No</option>
-                      {filteredPartNos.map((pn, idx) => (
-                        <option key={idx} value={pn.productName}>
-                          {pn.productName}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="w-100">
+                      <select
+                        className="form-select"
+                        value={partNo}
+                        onChange={(e) => setPartNo(e.target.value)}
+                        disabled={isLoadingPartDetails}
+                      >
+                        <option value="">Select Part No</option>
+                        {filteredPartNos.map((pn, idx) => (
+                          <option key={idx} value={pn.productName}>
+                            {pn.productName}
+                          </option>
+                        ))}
+                      </select>
+                      {error.partNo && (
+                        <span className="text-danger small">{error.partNo}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">
                       Part Serial Number *
                     </label>
-                    <select
-                      className="form-select w-100"
-                      value={partSerialNumber}
-                      onChange={(e) =>
-                        handleInputChange(e, setPartSerialNumber)
-                      }
-                      disabled={serialOptions.length === 0}
-                    >
-                      <option value="">Select Serial Number</option>
-                      {serialOptions.map((serial, idx) => (
-                        <option key={idx} value={serial}>
-                          {serial}
-                        </option>
-                      ))}
-                    </select>
-                    {error.partSerialNumber && (
-                      <span className="text-danger ms-2">
-                        {error.partSerialNumber}
-                      </span>
-                    )}
+                    <div className="w-100">
+                      <select
+                        className="form-select w-100"
+                        value={partSerialNumber}
+                        onChange={(e) =>
+                          handleInputChange(e, setPartSerialNumber)
+                        }
+                        disabled={serialOptions.length === 0}
+                      >
+                        <option value="">Select Serial Number</option>
+                        {serialOptions.map((serial, idx) => (
+                          <option key={idx} value={serial}>
+                            {serial}
+                          </option>
+                        ))}
+                      </select>
+                      {error.partSerialNumber && (
+                        <span className="text-danger small">
+                          {error.partSerialNumber}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -274,27 +289,41 @@ const CustomerOrder = () => {
                 <div className="col-md-12 p-2 d-flex">
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">Customer Name *</label>
-                    <select
-                      className="form-select"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                    >
-                      <option value="">Select Customer</option>
-                      {filteredCustomerNames.map((name, idx) => (
-                        <option key={idx} value={name}>
-                          {name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="w-100">
+                      <select
+                        className="form-select"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                      >
+                        <option value="">Select Customer</option>
+                        {filteredCustomerNames.map((name, idx) => (
+                          <option key={idx} value={name}>
+                            {name}
+                          </option>
+                        ))}
+                      </select>
+                      {error.customerName && (
+                        <span className="text-danger small">
+                          {error.customerName}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">RO Received Date *</label>
-                    <input
-                      className="form-control w-100"
-                      type="date"
-                      value={roReceiveDate}
-                      onChange={(e) => handleInputChange(e, setRoReceiveDate)}
-                    />
+                    <div className="w-100">
+                      <input
+                        className="form-control w-100"
+                        type="date"
+                        value={roReceiveDate}
+                        onChange={(e) => handleInputChange(e, setRoReceiveDate)}
+                      />
+                      {error.roReceiveDate && (
+                        <span className="text-danger small">
+                          {error.roReceiveDate}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -302,14 +331,21 @@ const CustomerOrder = () => {
                 <div className="col-md-12 p-2 d-flex">
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">Part Description *</label>
-                    <textarea
-                      className="form-control w-100"
-                      value={partDescription}
-                      onChange={(e) => handleInputChange(e, setPartDescription)}
-                      style={{ height: "70px" }}
-                      placeholder="auto-filled select part number"
-                      disabled
-                    ></textarea>
+                    <div className="w-100">
+                      <textarea
+                        className="form-control w-100"
+                        value={partDescription}
+                        onChange={(e) => handleInputChange(e, setPartDescription)}
+                        style={{ height: "70px" }}
+                        placeholder="Auto-filled when part number is selected"
+                        disabled
+                      ></textarea>
+                      {error.partDescription && (
+                        <span className="text-danger small">
+                          {error.partDescription}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">RO Submit Date *</label>
@@ -317,7 +353,7 @@ const CustomerOrder = () => {
                       className="form-control w-100"
                       type="date"
                       value={roDate}
-                      disabled // user cannot edit
+                      disabled
                     />
                   </div>
                 </div>
@@ -326,17 +362,24 @@ const CustomerOrder = () => {
                 <div className="col-md-12 p-2 d-flex">
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">Quantity *</label>
-                    <input
-                      className="form-control w-100"
-                      type="text"
-                      value={quantity}
-                      onChange={(e) => handleInputChange(e, setQuantity)}
-                    />
+                    <div className="w-100">
+                      <input
+                        className="form-control w-100"
+                        type="text"
+                        value={quantity}
+                        onChange={(e) => handleInputChange(e, setQuantity)}
+                      />
+                      {error.quantity && (
+                        <span className="text-danger small">
+                          {error.quantity}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 {/* Add to list */}
-                <div className="col-md-12 text-end mt-1">
+                <div className="col-md-12 text-end mt-3">
                   <button type="submit" className="btn btn-primary">
                     Add to List
                   </button>
@@ -347,13 +390,14 @@ const CustomerOrder = () => {
 
           {/* Display Table */}
           {purchaseRequisitions.length > 0 && (
-            <div className="row mx-1 card border border-dark shadow-lg py-5 mt-4">
+            <div className="row mx-1 card border border-dark shadow-lg py-4 mt-4">
               <div className="col-md-12">
-                <h4>Customer Order List</h4>
+                <h4>Customer Order List ({purchaseRequisitions.length} {purchaseRequisitions.length === 1 ? 'order' : 'orders'})</h4>
                 <div className="table-responsive">
                   <table className="table table-striped table-bordered">
                     <thead>
                       <tr>
+                        <th>#</th>
                         <th>RO No</th>
                         <th>RO Date</th>
                         <th>RO Received Date</th>
@@ -366,8 +410,9 @@ const CustomerOrder = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {purchaseRequisitions.map((req) => (
+                      {purchaseRequisitions.map((req, index) => (
                         <tr key={req.id}>
+                          <td>{index + 1}</td>
                           <td>{req.roNo}</td>
                           <td>{req.roDate}</td>
                           <td>{req.roReceiveDate}</td>
@@ -393,17 +438,21 @@ const CustomerOrder = () => {
                 {/* Upload & Submit */}
                 <div className="col-md-6 p-1 d-flex mb-3">
                   <label className="col-md-4 mt-2">Upload Document *</label>
-                  <input
-                    className="form-control w-100"
-                    type="file"
-                    onChange={(e) => setDocument(e.target.files[0])}
-                  />
-                  {document && (
-                    <small className="mt-1">Uploaded: {document.name}</small>
-                  )}
+                  <div className="w-100">
+                    <input
+                      className="form-control w-100"
+                      type="file"
+                      onChange={(e) => setDocument(e.target.files[0])}
+                    />
+                    {document && (
+                      <small className="text-success mt-1 d-block">
+                        ✓ Uploaded: {document.name}
+                      </small>
+                    )}
+                  </div>
                 </div>
-                <button className="btn btn-success" onClick={handleSubmitAll}>
-                  Submit All Orders
+                <button className="btn btn-success btn-lg" onClick={handleSubmitAll}>
+                  Submit All {purchaseRequisitions.length} Orders
                 </button>
               </div>
             </div>

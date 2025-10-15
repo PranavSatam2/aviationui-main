@@ -4,7 +4,7 @@ import Header from "../Header";
 import Sidebar from "../Sidebar";
 import {
   deletePurchaseOrder,
-  listAllWorkorder,
+  listAllOpenWorkorder,
 } from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -27,7 +27,7 @@ const ViewWorkOrder = () => {
 
   const fetchData = async () => {
     try {
-      const response = await listAllWorkorder();
+      const response = await listAllOpenWorkorder();
       setTableData(response.data || []);
       setIsLoading(false);
     } catch (error) {
