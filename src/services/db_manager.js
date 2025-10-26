@@ -355,6 +355,17 @@ export const getDispatchReportById = (reportId) => {
       console.error("Error fetching dispatch report by ID:", error);
     });
 };
+export const fetchStatusClosed = () => {
+  return axiosInstance
+    .get(`${DispatchReport}/closed`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching closed status dispatch reports:", error);
+      throw error;
+    });
+}
 
 //CAForm
 let WORKORDER = REST_API_BASE_URL + "/api/caForm/workOrderList";
@@ -380,6 +391,7 @@ export const updateCAForm = (formId, formData) =>
 let WORKORDERFROMCHECKER = REST_API_BASE_URL + "/api/customerOrder/all";
 let OPENWORKORDER = REST_API_BASE_URL + "/api/workorders/open";
 let WORKORDERLIST = REST_API_BASE_URL + "/api/workorders";
+let CLOSEDWORKORDER = REST_API_BASE_URL + "/api/workorders/closed";
 
 export const listAllOpenWorkorder = () =>
   axiosInstance.get(`${OPENWORKORDER}`);
@@ -399,6 +411,8 @@ export const getWorkOrder = (ID) => {
 };
 export const listOfAllWorkorderTable = () =>
   axiosInstance.get(`${WORKORDERLIST}`);
+export const listOfClosedWorkorders = () =>
+  axiosInstance.get(`${CLOSEDWORKORDER}`);
 export const updateWorkOrder = (ID, order) =>
   axiosInstance.put(`${WORKORDERLIST}/${ID}`, order);
 export const getWorkOrderDetails = (ID) => {

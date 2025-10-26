@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import { createProduct } from "../services/db_manager";
+import { createProduct, fetchPartNumbersAndDescriptions } from "../services/db_manager";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const AddProduct = () => {
   const [showAlternateName1, setShowAlternateName1] = useState(false); // toggle state
   const [showAlternateName2, setShowAlternateName2] = useState(false);
   const [mappingType, setMappingType] = useState(""); // "UP", "DOWN", "BOTH"
+  const [partList, setPartList] = useState([]);
+
 
   // 🟩 get today’s date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0];
@@ -18,6 +20,15 @@ const AddProduct = () => {
     if (loggedUser) {
       setForm((prev) => ({ ...prev, registeredBy: loggedUser }));
     }
+
+    // Fetch part numbers from API
+    fetchPartNumbersAndDescriptions()
+      .then((data) => {
+        setPartList(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching part numbers:", error);
+      });
   }, []);
 
   const [form, setForm] = useState({
@@ -77,7 +88,7 @@ const AddProduct = () => {
     },
     oem: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
     nha: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
-    cmmReferenceNumber: { required: false, type: "number", length: 12 },
+    cmmReferenceNumber: { required: false, regex: /^[0-9\s-]*$/, length: 12 },
     registeredBy: { required: true, length: 255, regex: /^[a-zA-Z\s-]*$/ },
   };
 
@@ -107,7 +118,7 @@ const AddProduct = () => {
     } else if (dataType === "ANS") {
       value = value.replace(/[^a-zA-Z0-9@\.\-]/g, "");
     } else if (dataType === "L") {
-      value = value.replace(/\D/g, ''); // allow only digits
+      value = value.replace(/[^0-9 \-]/g, "");// allow only digits
     }
     event.target.value = value;
   };
@@ -182,7 +193,7 @@ const AddProduct = () => {
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-1">
-                          Product Name <span style={{ color: "red" }}>*</span>
+                          Product Number <span style={{ color: "red" }}>*</span>
                         </label>
                         <div className="input-group w-100">
                           <input
@@ -245,8 +256,8 @@ const AddProduct = () => {
                               setForm({ ...form, mappingType: "UP" })
                             }
                             className={`btn ${form.mappingType === "UP"
-                                ? "btn-primary"
-                                : "btn-outline-primary"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
                               }`}
                             style={{
                               minWidth: "80px",
@@ -256,7 +267,7 @@ const AddProduct = () => {
                           >
                             <i className="bi bi-arrow-up"></i> UP
                           </button>
-                          <button
+                          {/* <button
                             type="button"
                             onClick={() =>
                               setForm({ ...form, mappingType: "DOWN" })
@@ -272,15 +283,15 @@ const AddProduct = () => {
                             }}
                           >
                             <i className="bi bi-arrow-down"></i> DOWN
-                          </button>
+                          </button> */}
                           <button
                             type="button"
                             onClick={() =>
                               setForm({ ...form, mappingType: "BOTH" })
                             }
                             className={`btn ${form.mappingType === "BOTH"
-                                ? "btn-warning text-white"
-                                : "btn-outline-warning"
+                              ? "btn-warning text-white"
+                              : "btn-outline-warning"
                               }`}
                             style={{
                               minWidth: "80px",
@@ -297,7 +308,7 @@ const AddProduct = () => {
                     {/* === Alternate Name radio === */}
                     <div className="col-md-12 d-flex p-2">
                       <label className="col-md-2 mt-2">
-                        Alternate Product Name 1?
+                        Alternate Product Number 1?
                       </label>
                       <div className="col-md-4 d-flex mt-2">
                         <div className="form-check me-3">
@@ -344,25 +355,30 @@ const AddProduct = () => {
                     {showAlternateName1 && (
                       <div className="col-md-12 d-flex p-2">
                         <label className="col-md-2 mt-2">
-                          Alternate Product Name 1 <span style={{ color: "red" }}>*</span>
+                          Alternate Product Number 1 <span style={{ color: "red" }}>*</span>
                         </label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
+                        <select
+                          className="form-select w-100"
                           name="alternateProduct1"
                           value={form.alternateProduct1}
                           onChange={handleChange}
-                          placeholder="Enter alternate name"
-                          onInput={(event) => validateDataType(event, "A")}
-                          required={showAlternateName1} // make required if visible
-                        />
+                          required={showAlternateName1}
+                        >
+                          <option value="">Select Alternate Product 1</option>
+                          {partList.map((part, index) => (
+                            <option key={index} value={part.productNumber || part.partNo}>
+                              {part.productName || part.partNo}
+                            </option>
+                          ))}
+                        </select>
+
                       </div>
                     )}
 
                     {/* === Alternate Name 2 radio === */}
                     <div className="col-md-12 d-flex p-2">
                       <label className="col-md-2 mt-2">
-                        Alternate Product Name 2?
+                        Alternate Product Number 2?
                       </label>
                       <div className="col-md-4 d-flex mt-2">
                         <div className="form-check me-3">
@@ -409,18 +425,22 @@ const AddProduct = () => {
                     {showAlternateName2 && (
                       <div className="col-md-12 d-flex p-2">
                         <label className="col-md-2 mt-2">
-                          Alternate Product Name 2 <span style={{ color: "red" }}>*</span>
+                          Alternate Product Number 2 <span style={{ color: "red" }}>*</span>
                         </label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
+                        <select
+                          className="form-select w-100"
                           name="alternateProduct2"
                           value={form.alternateProduct2}
                           onChange={handleChange}
-                          placeholder="Enter alternate name 2"
-                          onInput={(event) => validateDataType(event, "A")}
-                          required={showAlternateName2} // required if visible
-                        />
+                          required={showAlternateName2}
+                        >
+                          <option value="">Select Alternate Product 2</option>
+                          {partList.map((part, index) => (
+                            <option key={index} value={part.productNumber || part.partNo}>
+                              {part.productName || part.partNo}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     )}
 
@@ -506,7 +526,7 @@ const AddProduct = () => {
                         </label>
                         <input
                           className="form-control w-100"
-                          type="Number"
+                          type="text"
                           name="cmmReferenceNumber"
                           value={form.cmmReferenceNumber}
                           onInput={(event) => validateDataType(event, "L")}

@@ -353,7 +353,8 @@ const CustomerOrder = () => {
                       className="form-control w-100"
                       type="date"
                       value={roDate}
-                      disabled
+                      onChange={(e) => handleInputChange(e, setRoDate)}
+                      // disabled
                     />
                   </div>
                 </div>

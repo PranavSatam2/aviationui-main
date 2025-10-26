@@ -1,15 +1,16 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Footer from "./Footer";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 import { saveDispatchReport, fetchPartNumbersAndDescriptions } from "../services/db_manager";
 
 const AddDispatchReport = () => {
   const [form, setForm] = useState({
     reportNo: "",
-    reportDate: "",
+    reportDate: new Date().toISOString().split("T")[0],
     partNo: "",
     partDescription: "",
     orderNo: "",
@@ -36,6 +37,31 @@ const AddDispatchReport = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // 🔹 Get work order data from navigation state
+  const location = useLocation();
+  const workOrderData = location.state?.workOrder || null;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+      const loggedUser = sessionStorage.getItem("username"); // username stored at login
+      if (loggedUser) {
+        setForm((prev) => ({ ...prev, storesInChargeName: loggedUser }));
+      }
+    }, []);
+
+  useEffect(() => {
+    if (workOrderData) {
+      setForm((prevForm) => ({
+        ...prevForm,
+        orderNo: workOrderData.workOrderNo || "",
+        customerName: workOrderData.customerName || "",
+        partNo: workOrderData.partNumber || "",
+        partDescription: workOrderData.description || "",
+        quantity: workOrderData.qty || ""
+      }));
+    }
+  }, [workOrderData]);
+
 
   // Fetch data once on component mount
   useEffect(() => {
@@ -63,15 +89,15 @@ const AddDispatchReport = () => {
 
   // Handle part number (productName) change
   const handleProductChange = (e) => {
-  const selected = e.target.value;
-  const match = data.find((item) => item.productName === selected);
+    const selected = e.target.value;
+    const match = data.find((item) => item.productName === selected);
 
-  setForm((prevForm) => ({
-    ...prevForm,
-    partNo: selected,
-    partDescription: match ? match.productDescription : ""
-  }));
-};
+    setForm((prevForm) => ({
+      ...prevForm,
+      partNo: selected,
+      partDescription: match ? match.productDescription : ""
+    }));
+  };
 
 
   const handleChange = (e) => {
@@ -83,18 +109,19 @@ const AddDispatchReport = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await saveDispatchReport(form);
-    // response could be response.data if you are using axios
-    alert(response?.message || "Dispatch report saved successfully!");
-    resetForm();
-    window.location.reload(); // reload after saving
-  } catch (error) {
-    console.error("Error saving dispatch report", error);
-    alert(error?.response?.data?.message || "Failed to save dispatch report.");
-  }
-};
+    e.preventDefault();
+    try {
+      const response = await saveDispatchReport(form);
+      // response could be response.data if you are using axios
+      alert(response?.message || "Dispatch report saved successfully!");
+      // resetForm();
+      // window.location.reload(); // reload after saving
+      navigate("/ViewWorkOrderClosed"); // navigate to view page
+    } catch (error) {
+      console.error("Error saving dispatch report", error);
+      alert(error?.response?.data?.message || "Failed to save dispatch report.");
+    }
+  };
 
 
   const resetForm = () => {
@@ -117,7 +144,7 @@ const AddDispatchReport = () => {
       caFormDate: "",
       caFormRemark: "",
       ewayBill: "",
-      storesInchargeName: "",
+      storesInchargeName: form.storesInChargeName,
       storesInchargeSign: "",
       ewayBillDate: "",
       ewayBillRemark: ""
@@ -170,25 +197,13 @@ const AddDispatchReport = () => {
             style={{ minHeight: "80vh" }}
           >
             <form onSubmit={handleSubmit} style={{ maxWidth: "100%", marginLeft: "3%", marginRight: "3%" }}>
-              {/* Report No. & Date */}
-              <div style={sectionStyle}>
-                <div>
-                  <label style={labelStyle}>Report No.</label>
-                  <input name="reportNo" style={inputStyle} value={form.reportNo} onChange={handleChange} />
-                </div>
-                <div>
-                  <label style={labelStyle}>Date</label>
-                  <input type="date" name="reportDate" style={inputStyle} value={form.reportDate} onChange={handleChange} />
-                </div>
-              </div>
-
               {/* Part Info */}
               {/* Part No. & Quantity */}
               <div style={sectionStyle}>
-                <div>
+                {/* <div>
                   <label style={labelStyle}>Part No.</label>
                   {loading ? (
-                    <div>Loading part numbers...</div>  
+                    <div>Loading part numbers...</div>
                   ) : error ? (
                     <div style={{ color: "red" }}>{error}</div>
                   ) : (
@@ -206,6 +221,16 @@ const AddDispatchReport = () => {
                       ))}
                     </select>
                   )}
+                </div> */}
+
+                <div>
+                  <label style={labelStyle}>Part Number</label>
+                  <input
+                    name="partNo"
+                    style={inputStyle}
+                    value={form.partNo}
+                    disabled
+                  />
                 </div>
 
                 <div>
@@ -215,6 +240,7 @@ const AddDispatchReport = () => {
                     style={inputStyle}
                     value={form.quantity}
                     onChange={handleChange}
+                    disabled
                   />
                 </div>
               </div>
@@ -231,13 +257,8 @@ const AddDispatchReport = () => {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>Batch No.</label>
-                  <input
-                    name="batchNo"
-                    style={inputStyle}
-                    value={form.batchNo}
-                    onChange={handleChange}
-                  />
+                  <label style={labelStyle}>Report Date</label>
+                  <input type="date" name="reportDate" style={inputStyle} value={form.reportDate} onChange={handleChange} disabled/>
                 </div>
               </div>
 
@@ -245,12 +266,22 @@ const AddDispatchReport = () => {
               {/* Order & Customer */}
               <div style={sectionStyle}>
                 <div>
-                  <label style={labelStyle}>Order No.</label>
-                  <input name="orderNo" style={inputStyle} value={form.orderNo} onChange={handleChange} />
+                  <label style={labelStyle}>Work Order No.</label>
+                  <input name="orderNo" style={inputStyle} value={form.orderNo} onChange={handleChange} disabled/>
                 </div>
                 <div>
                   <label style={labelStyle}>Customer Name</label>
-                  <input name="customerName" style={inputStyle} value={form.customerName} onChange={handleChange} />
+                  <input name="customerName" style={inputStyle} value={form.customerName} onChange={handleChange} disabled/>
+                </div>
+                <div>
+                  <label style={labelStyle}>Serial No.<span style={{ color: "red" }}>*</span></label>
+                  <input
+                    name="batchNo"
+                    style={inputStyle}
+                    value={form.batchNo}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               </div>
 
@@ -262,12 +293,12 @@ const AddDispatchReport = () => {
               {/* Challan */}
               <div style={threeColStyle}>
                 <div>
-                  <label style={labelStyle}>Challan No.</label>
-                  <input name="challanNo" style={inputStyle} value={form.challanNo} onChange={handleChange} />
+                  <label style={labelStyle}>Challan No.<span style={{ color: "red" }}>*</span></label>
+                  <input name="challanNo" style={inputStyle} value={form.challanNo} onChange={handleChange} required/>
                 </div>
                 <div>
-                  <label style={labelStyle}>Date</label>
-                  <input type="date" name="challanDate" style={inputStyle} value={form.challanDate} onChange={handleChange} />
+                  <label style={labelStyle}>Date<span style={{ color: "red" }}>*</span></label>
+                  <input type="date" name="challanDate" style={inputStyle} value={form.challanDate} onChange={handleChange} required/>
                 </div>
                 <div>
                   <label style={labelStyle}>Remark</label>
@@ -278,12 +309,12 @@ const AddDispatchReport = () => {
               {/* Invoice */}
               <div style={threeColStyle}>
                 <div>
-                  <label style={labelStyle}>Invoice No.</label>
-                  <input name="invoiceNo" style={inputStyle} value={form.invoiceNo} onChange={handleChange} />
+                  <label style={labelStyle}>Invoice No.<span style={{ color: "red" }}>*</span></label>
+                  <input name="invoiceNo" style={inputStyle} value={form.invoiceNo} onChange={handleChange} required/>
                 </div>
                 <div>
-                  <label style={labelStyle}>Date</label>
-                  <input type="date" name="invoiceDate" style={inputStyle} value={form.invoiceDate} onChange={handleChange} />
+                  <label style={labelStyle}>Date<span style={{ color: "red" }}>*</span></label>
+                  <input type="date" name="invoiceDate" style={inputStyle} value={form.invoiceDate} onChange={handleChange} required/>
                 </div>
                 <div>
                   <label style={labelStyle}>Remark</label>
@@ -294,12 +325,12 @@ const AddDispatchReport = () => {
               {/* CA Form */}
               <div style={threeColStyle}>
                 <div>
-                  <label style={labelStyle}>CA Form No.</label>
-                  <input name="caFormNo" style={inputStyle} value={form.caFormNo} onChange={handleChange} />
+                  <label style={labelStyle}>CA Form No.<span style={{ color: "red" }}>*</span></label>
+                  <input name="caFormNo" style={inputStyle} value={form.c} onChange={handleChange} required/>
                 </div>
                 <div>
-                  <label style={labelStyle}>Date</label>
-                  <input type="date" name="caFormDate" style={inputStyle} value={form.caFormDate} onChange={handleChange} />
+                  <label style={labelStyle}>Date<span style={{ color: "red" }}>*</span></label>
+                  <input type="date" name="caFormDate" style={inputStyle} value={form.caFormDate} onChange={handleChange} required/>
                 </div>
                 <div>
                   <label style={labelStyle}>Remark</label>
@@ -310,12 +341,12 @@ const AddDispatchReport = () => {
               {/* E-WAY Bill */}
               <div style={threeColStyle}>
                 <div>
-                  <label style={labelStyle}>E-WAY Bill</label>
-                  <input name="ewayBill" style={inputStyle} value={form.ewayBill} onChange={handleChange} />
+                  <label style={labelStyle}>E-WAY Bill<span style={{ color: "red" }}>*</span></label>
+                  <input name="ewayBill" style={inputStyle} value={form.ewayBill} onChange={handleChange} required/>
                 </div>
                 <div>
-                  <label style={labelStyle}>Date</label>
-                  <input type="date" name="ewayBillDate" style={inputStyle} value={form.ewayBillDate} onChange={handleChange} />
+                  <label style={labelStyle}>Date<span style={{ color: "red" }}>*</span></label>
+                  <input type="date" name="ewayBillDate" style={inputStyle} value={form.ewayBillDate} onChange={handleChange} required/>
                 </div>
                 <div>
                   <label style={labelStyle}>Remark</label>
@@ -327,7 +358,7 @@ const AddDispatchReport = () => {
               <div style={sectionStyle}>
                 <div>
                   <label style={labelStyle}>Stores In-Charge Name</label>
-                  <input name="storesInChargeName" style={inputStyle} value={form.storesInChargeName} onChange={handleChange} />
+                  <input name="storesInChargeName" style={inputStyle} value={form.storesInChargeName} onChange={handleChange} disabled />
                 </div>
                 <div>
                   <label style={labelStyle}>Stores In-Charge Sign</label>
