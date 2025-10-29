@@ -4,12 +4,15 @@ import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
-import { getPurchaseOrder, updatePurchaseOrder } from "../../../services/db_manager";
+import {
+  getPurchaseOrder,
+  updatePurchaseOrder,
+} from "../../../services/db_manager";
 import { toast } from "react-toastify";
 import { Save } from "lucide-react";
 
 // Import Purchase.module.css styles
-import styles from '../Purchase.module.css';
+import styles from "../Purchase.module.css";
 
 const EditPurchaseOrder = () => {
   const location = useLocation();
@@ -18,7 +21,7 @@ const EditPurchaseOrder = () => {
 
   // Store the original data to compare changes
   const [originalData, setOriginalData] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     poNo: "",
     poDate: "",
@@ -27,15 +30,18 @@ const EditPurchaseOrder = () => {
     delivery: "",
     deliveryAddress: "",
     paymentTerms: "",
-    items: [{ 
-      srNo: 1,
-      partNumber: "",
-      description: "",
-      requiredQty: 0,
-      units: "",
-      rate: 0,
-      gross: 0
-    }],
+    address: "",
+    items: [
+      {
+        srNo: 1,
+        partNumber: "",
+        description: "",
+        requiredQty: 0,
+        units: "",
+        rate: 0,
+        gross: 0,
+      },
+    ],
     pf: 0,
     transportation: 0,
     insurance: 0,
@@ -50,7 +56,7 @@ const EditPurchaseOrder = () => {
     cgst: "",
     igst: "",
     total: 0,
-    grandTotal: 0
+    grandTotal: 0,
   });
 
   const fetchPurchaseOrder = async () => {
@@ -59,15 +65,17 @@ const EditPurchaseOrder = () => {
       console.log(response, "response");
       if (response) {
         // Create an items array since it's not in the response
-        const itemsArray = [{
-          srNo: response.srNo || 1,
-          partNumber: response.partNumber || "",
-          description: response.description || "",
-          requiredQty: response.currentStoke || 0,
-          units: response.unit || "",
-          rate: response.ratePerUnit || 0,
-          gross: response.grossAmount || 0
-        }];
+        const itemsArray = [
+          {
+            srNo: response.srNo || 1,
+            partNumber: response.partNumber || "",
+            description: response.description || "",
+            requiredQty: response.currentStoke || 0,
+            units: response.unit || "",
+            rate: response.ratePerUnit || 0,
+            gross: response.grossAmount || 0,
+          },
+        ];
 
         const formattedData = {
           ...response,
@@ -81,9 +89,9 @@ const EditPurchaseOrder = () => {
           other_Charges: response.other_Charges || 0,
           sgst: response.sgstPercentage || 0,
           cgst: response.cgstPercentage || 0,
-          igst: response.igstPercentage || 0
+          igst: response.igstPercentage || 0,
         };
-        
+
         // Store original data for comparison
         setOriginalData(formattedData);
         setFormData(formattedData);
@@ -99,48 +107,47 @@ const EditPurchaseOrder = () => {
       fetchPurchaseOrder();
     }
   }, [purchaseOrderID]);
-  
+
   // Always recalculate values when inputs change
   useEffect(() => {
     // This recalculates the gross amount when quantity or rate changes
-    const updatedItems = formData.items.map(item => ({
+    const updatedItems = formData.items.map((item) => ({
       ...item,
-      gross: calculateGross(item.requiredQty, item.rate)
+      gross: calculateGross(item.requiredQty, item.rate),
     }));
-    
-    setFormData(prevData => ({
+
+    setFormData((prevData) => ({
       ...prevData,
-      items: updatedItems
+      items: updatedItems,
     }));
-    
   }, [
-    formData.items.map(item => item.requiredQty).join(','),
-    formData.items.map(item => item.rate).join(','),
+    formData.items.map((item) => item.requiredQty).join(","),
+    formData.items.map((item) => item.rate).join(","),
     formData.pf,
     formData.transportation,
     formData.insurance,
     formData.other_Charges,
     formData.sgst,
     formData.cgst,
-    formData.igst
+    formData.igst,
   ]);
 
   const handleChange = (field, value) => {
-    setFormData(prevData => ({ 
-      ...prevData, 
-      [field]: value
+    setFormData((prevData) => ({
+      ...prevData,
+      [field]: value,
     }));
   };
 
   const handleNumberChange = (field, value) => {
     const numValue = parseFloat(value) || 0;
-    
-    setFormData(prevData => {
-      const updatedData = { 
-        ...prevData, 
-        [field]: numValue
+
+    setFormData((prevData) => {
+      const updatedData = {
+        ...prevData,
+        [field]: numValue,
       };
-      
+
       return updatedData;
     });
   };
@@ -148,28 +155,28 @@ const EditPurchaseOrder = () => {
   const handleItemChange = (index, field, value) => {
     // Convert value to number if applicable
     let numValue = value;
-    if (field === 'requiredQty' || field === 'rate') {
+    if (field === "requiredQty" || field === "rate") {
       numValue = parseFloat(value) || 0;
     }
-    
-    setFormData(prevData => {
+
+    setFormData((prevData) => {
       const updatedItems = [...prevData.items];
       updatedItems[index] = {
         ...updatedItems[index],
         [field]: numValue,
       };
-      
+
       // Recalculate gross if requiredQty or rate changes
-      if (field === 'requiredQty' || field === 'rate') {
+      if (field === "requiredQty" || field === "rate") {
         updatedItems[index].gross = calculateGross(
-          field === 'requiredQty' ? numValue : updatedItems[index].requiredQty,
-          field === 'rate' ? numValue : updatedItems[index].rate
+          field === "requiredQty" ? numValue : updatedItems[index].requiredQty,
+          field === "rate" ? numValue : updatedItems[index].rate
         );
       }
-      
+
       return {
         ...prevData,
-        items: updatedItems
+        items: updatedItems,
       };
     });
   };
@@ -207,15 +214,17 @@ const EditPurchaseOrder = () => {
   };
 
   const calculateTotal = () => {
-    return calculateSubtotal() + 
-           (parseFloat(formData.pf) || 0) + 
-           (parseFloat(formData.transportation) || 0) + 
-           (parseFloat(formData.insurance) || 0) + 
-           (parseFloat(formData.other_Charges) || 0);
+    return (
+      calculateSubtotal() +
+      (parseFloat(formData.pf) || 0) +
+      (parseFloat(formData.transportation) || 0) +
+      (parseFloat(formData.insurance) || 0) +
+      (parseFloat(formData.other_Charges) || 0)
+    );
   };
 
   const calculateTax = (taxRate) => {
-    return calculateTotal() * (parseFloat(taxRate) || 0) / 100;
+    return (calculateTotal() * (parseFloat(taxRate) || 0)) / 100;
   };
 
   // Calculate tax amounts based on current tax rates and total
@@ -225,30 +234,33 @@ const EditPurchaseOrder = () => {
   };
 
   const calculateGrandTotal = () => {
-    const sgstAmount = getTaxAmount('sgst');
-    const cgstAmount = getTaxAmount('cgst');
-    const igstAmount = getTaxAmount('igst');
-    
-    return calculateTotal() + sgstAmount + cgstAmount + igstAmount;
-  };
+    // Only calculate GST if currency is INR
+    if (formData.currency === "INR") {
+      const sgstAmount = getTaxAmount("sgst");
+      const cgstAmount = getTaxAmount("cgst");
+      const igstAmount = getTaxAmount("igst");
 
+      return calculateTotal() + sgstAmount + cgstAmount + igstAmount;
+    }
+
+    // For other currencies, grand total equals total
+    return calculateTotal();
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Extract the first item data since the backend expects it flattened
       const firstItem = formData.items[0] || {};
-      
-      // Calculate the tax amounts based on current values
-      const sgstAmount = getTaxAmount('sgst');
-      const cgstAmount = getTaxAmount('cgst');
-      const igstAmount = getTaxAmount('igst');
-      
-      // Calculate all values to ensure consistency
+
+      // Calculate the tax amounts based on current values (only if INR)
+      const sgstAmount = formData.currency === "INR" ? getTaxAmount("sgst") : 0;
+      const cgstAmount = formData.currency === "INR" ? getTaxAmount("cgst") : 0;
+      const igstAmount = formData.currency === "INR" ? getTaxAmount("igst") : 0;
+
       const subtotal = calculateSubtotal();
       const total = calculateTotal();
       const grandTotal = calculateGrandTotal();
-      
+
       const payload = {
         id: purchaseOrderID,
         poNumber: formData.poNo,
@@ -261,32 +273,36 @@ const EditPurchaseOrder = () => {
         incoterm: formData.incoterm,
         currency: formData.currency,
         forwarder: formData.forwarder,
-        // Item data flattened
+        address: formData.address,
         srNo: firstItem.srNo,
         partNumber: firstItem.partNumber,
         description: firstItem.description,
         currentStoke: firstItem.requiredQty,
         unit: firstItem.units,
         ratePerUnit: firstItem.rate,
-        // Calculations
         grossAmount: subtotal,
         pf: parseFloat(formData.pf) || 0,
         transportation: parseFloat(formData.transportation) || 0,
         insurance: parseFloat(formData.insurance) || 0,
         other_Charges: parseFloat(formData.other_Charges) || 0,
         total: total,
-        // Tax values with calculated amounts
+        // Tax values with calculated amounts (0 if not INR)
         sgst: sgstAmount,
         cgst: cgstAmount,
         igst: igstAmount,
-        // Tax percentages
-        sgstPercentage: parseFloat(formData.sgst) || 0,
-        cgstPercentage: parseFloat(formData.cgst) || 0,
-        igstPercentage: parseFloat(formData.igst) || 0,
+        // Tax percentages (0 if not INR)
+        sgstPercentage:
+          formData.currency === "INR" ? parseFloat(formData.sgst) || 0 : 0,
+        cgstPercentage:
+          formData.currency === "INR" ? parseFloat(formData.cgst) || 0 : 0,
+        igstPercentage:
+          formData.currency === "INR" ? parseFloat(formData.igst) || 0 : 0,
         grandTotal: grandTotal,
-        termsAndConditions: formData.termsAndConditions || "All contracts shall be deemed to have been wholly made in Mumbai and all claims thereunder are payable in Mumbai City..."
+        termsAndConditions:
+          formData.termsAndConditions ||
+          "All contracts shall be deemed to have been wholly made in Mumbai and all claims thereunder are payable in Mumbai City...",
       };
-      
+
       console.log(payload);
       const response = await updatePurchaseOrder(purchaseOrderID, payload);
       if (response.status === 200) {
@@ -298,14 +314,83 @@ const EditPurchaseOrder = () => {
       toast.error("Failed to update purchase order.");
     }
   };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     // Extract the first item data since the backend expects it flattened
+  //     const firstItem = formData.items[0] || {};
+
+  //     // Calculate the tax amounts based on current values
+  //     const sgstAmount = getTaxAmount("sgst");
+  //     const cgstAmount = getTaxAmount("cgst");
+  //     const igstAmount = getTaxAmount("igst");
+
+  //     // Calculate all values to ensure consistency
+  //     const subtotal = calculateSubtotal();
+  //     const total = calculateTotal();
+  //     const grandTotal = calculateGrandTotal();
+
+  //     const payload = {
+  //       id: purchaseOrderID,
+  //       poNumber: formData.poNo,
+  //       poDate: formData.poDate,
+  //       ourReference: formData.ourReference,
+  //       yourReference: formData.yourReference,
+  //       delivery: formData.delivery,
+  //       deliveryAddress: formData.deliveryAddress,
+  //       paymentTerms: formData.paymentTerms,
+  //       incoterm: formData.incoterm,
+  //       currency: formData.currency,
+  //       forwarder: formData.forwarder,
+  //       address: formData.address,
+  //       // Item data flattened
+  //       srNo: firstItem.srNo,
+  //       partNumber: firstItem.partNumber,
+  //       description: firstItem.description,
+  //       currentStoke: firstItem.requiredQty,
+  //       unit: firstItem.units,
+  //       ratePerUnit: firstItem.rate,
+  //       // Calculations
+  //       grossAmount: subtotal,
+  //       pf: parseFloat(formData.pf) || 0,
+  //       transportation: parseFloat(formData.transportation) || 0,
+  //       insurance: parseFloat(formData.insurance) || 0,
+  //       other_Charges: parseFloat(formData.other_Charges) || 0,
+  //       total: total,
+  //       // Tax values with calculated amounts
+  //       sgst: sgstAmount,
+  //       cgst: cgstAmount,
+  //       igst: igstAmount,
+  //       // Tax percentages
+  //       sgstPercentage: parseFloat(formData.sgst) || 0,
+  //       cgstPercentage: parseFloat(formData.cgst) || 0,
+  //       igstPercentage: parseFloat(formData.igst) || 0,
+  //       grandTotal: grandTotal,
+  //       termsAndConditions:
+  //         formData.termsAndConditions ||
+  //         "All contracts shall be deemed to have been wholly made in Mumbai and all claims thereunder are payable in Mumbai City...",
+  //     };
+
+  //     console.log(payload);
+  //     const response = await updatePurchaseOrder(purchaseOrderID, payload);
+  //     if (response.status === 200) {
+  //       toast.success("Purchase Order Updated Successfully!");
+  //       navigate("/ViewPurchaseOrder");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating purchase order:", error);
+  //     toast.error("Failed to update purchase order.");
+  //   }
+  // };
 
   // Handle tax percentage change
   const handleTaxChange = (taxType, value) => {
     const numValue = parseFloat(value) || 0;
-    
-    setFormData(prevData => ({
+
+    setFormData((prevData) => ({
       ...prevData,
-      [taxType]: numValue
+      [taxType]: numValue,
     }));
   };
 
@@ -324,19 +409,31 @@ const EditPurchaseOrder = () => {
             {/* <div className={styles.header}>
               <h1 className={styles.headerTitle}>PURCHASE ORDER</h1>
             </div> */}
-            
+
             <div className={styles.formContainer}>
               {/* Company Section */}
               <div className={styles.companySection}>
                 <div className={styles.companyInfo}>
                   <div className={styles.companyLogo}>
-                    <img src="/api/placeholder/100/50" alt="AMC Technology Logo" className={styles.logoImage} />
+                    <img
+                      src="/api/placeholder/100/50"
+                      alt="AMC Technology Logo"
+                      className={styles.logoImage}
+                    />
                     <div>
                       <h2 className={styles.companyName}>AMC TECHNOLOGY</h2>
-                      <p className={styles.companyAddress}>105, Hiday Industrial Estate, Hira Industrial Park</p>
-                      <p className={styles.companyAddress}>Off Western Express Highway, Vasai Phata,</p>
-                      <p className={styles.companyAddress}>Vasai (East) Dist - Palghar, 401208</p>
-                      <p className={styles.companyAddress}>GST NO: 27ABTPS4731Z1ZA</p>
+                      <p className={styles.companyAddress}>
+                        105, Hiday Industrial Estate, Hira Industrial Park
+                      </p>
+                      <p className={styles.companyAddress}>
+                        Off Western Express Highway, Vasai Phata,
+                      </p>
+                      <p className={styles.companyAddress}>
+                        Vasai (East) Dist - Palghar, 401208
+                      </p>
+                      <p className={styles.companyAddress}>
+                        GST NO: 27ABTPS4731Z1ZA
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -346,11 +443,12 @@ const EditPurchaseOrder = () => {
                     <div>
                       <input
                         type="text"
+                        disabled
                         className={styles.inputField}
                         value={formData.poNo}
                         onChange={(e) => {
                           validateDataType(e, "ANS");
-                          handleChange('poNo', e.target.value);
+                          handleChange("poNo", e.target.value);
                         }}
                       />
                     </div>
@@ -358,20 +456,22 @@ const EditPurchaseOrder = () => {
                     <div>
                       <input
                         type="date"
+                        disabled
                         className={styles.inputField}
                         value={formData.poDate}
-                        onChange={(e) => handleChange('poDate', e.target.value)}
+                        onChange={(e) => handleChange("poDate", e.target.value)}
                       />
                     </div>
                     <div className={styles.orderInfoLabel}>Our Reference:</div>
                     <div>
                       <input
                         type="text"
+                        disabled
                         className={styles.inputField}
                         value={formData.ourReference}
                         onChange={(e) => {
                           validateDataType(e, "ANS");
-                          handleChange('ourReference', e.target.value);
+                          handleChange("ourReference", e.target.value);
                         }}
                       />
                     </div>
@@ -379,11 +479,12 @@ const EditPurchaseOrder = () => {
                     <div>
                       <input
                         type="text"
+                        disabled
                         className={styles.inputField}
                         value={formData.yourReference}
                         onChange={(e) => {
                           validateDataType(e, "ANS");
-                          handleChange('yourReference', e.target.value);
+                          handleChange("yourReference", e.target.value);
                         }}
                       />
                     </div>
@@ -391,11 +492,12 @@ const EditPurchaseOrder = () => {
                     <div>
                       <input
                         type="text"
+                        disabled
                         className={styles.inputField}
                         value={formData.delivery}
                         onChange={(e) => {
                           validateDataType(e, "A");
-                          handleChange('delivery', e.target.value);
+                          handleChange("delivery", e.target.value);
                         }}
                       />
                     </div>
@@ -410,13 +512,14 @@ const EditPurchaseOrder = () => {
                     <div className={styles.addressTitle}>To,</div>
                     <div className={styles.addressText}>
                       <textarea
+                        disabled
                         className={styles.textareaField}
                         value={formData.deliveryAddress}
                         onChange={(e) => {
                           validateDataType(e, "ANS");
-                          handleChange('deliveryAddress', e.target.value);
+                          handleChange("deliveryAddress", e.target.value);
                         }}
-                        rows={4}
+                        rows={3}
                       />
                     </div>
                   </div>
@@ -425,10 +528,16 @@ const EditPurchaseOrder = () => {
                   <div className={styles.addressContainer}>
                     <div className={styles.addressTitle}>Delivery Address:</div>
                     <div className={styles.addressText}>
-                      AMC TECHNOLOGY<br />
-                      105, Hiday Industrial Estate, Hira Industrial Park<br />
-                      Off Western Express Highway, Vasai Phata,<br />
-                      Vasai (East) Dist - Palghar, 401208
+                      <textarea
+                        className={styles.textareaField}
+                        placeholder="Enter delivery address..."
+                        value={formData.address}
+                        onChange={(e) =>
+                          handleChange("address", e.target.value)
+                        }
+                        rows={4}
+                        style={{ width: "100%", resize: "vertical" }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -445,9 +554,9 @@ const EditPurchaseOrder = () => {
                       value={formData.paymentTerms}
                       onChange={(e) => {
                         validateDataType(e, "ANS");
-                        handleChange('paymentTerms', e.target.value);
+                        handleChange("paymentTerms", e.target.value);
                       }}
-                      style={{ width: '100%' }}
+                      style={{ width: "100%" }}
                     />
                   </div>
                 </div>
@@ -473,13 +582,13 @@ const EditPurchaseOrder = () => {
                         <tr key={index}>
                           <td className={styles.tableCell}>{item.srNo}</td>
                           <td className={styles.tableCell}>
-                          {item.partNumber}
+                            {item.partNumber}
                           </td>
                           <td className={styles.tableCell}>
-                          {item.description}
+                            {item.description}
                           </td>
                           <td className={styles.tableCellCenter}>
-                          {item.requiredQty}
+                            {item.requiredQty}
                           </td>
                           <td className={styles.tableCellCenter}>
                             <input
@@ -488,7 +597,11 @@ const EditPurchaseOrder = () => {
                               value={item.units}
                               onChange={(e) => {
                                 validateDataType(e, "A");
-                                handleItemChange(index, 'units', e.target.value);
+                                handleItemChange(
+                                  index,
+                                  "units",
+                                  e.target.value
+                                );
                               }}
                             />
                           </td>
@@ -499,7 +612,7 @@ const EditPurchaseOrder = () => {
                               value={item.rate}
                               onChange={(e) => {
                                 validateDataType(e, "N");
-                                handleItemChange(index, 'rate', e.target.value);
+                                handleItemChange(index, "rate", e.target.value);
                               }}
                             />
                           </td>
@@ -510,7 +623,9 @@ const EditPurchaseOrder = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="7" className="text-center">No items available</td>
+                        <td colSpan="7" className="text-center">
+                          No items available
+                        </td>
                       </tr>
                     )}
                   </tbody>
@@ -521,11 +636,25 @@ const EditPurchaseOrder = () => {
               <div className={styles.footerSection}>
                 <div className={styles.footerLeft}>
                   <div className={styles.legalText}>
-                    <div className={styles.legalTitle}>JURISDICTION OF COURTS:</div>
-                    <p>All contracts shall be deemed to have been wholly made in Mumbai and all claims thereunder are payable in Mumbai City and it is the distinct condition of the order that no suit or action for the purpose of enforcing any claim in respect of the order shall be instituted in any Court other than that situated in Mumbai City, Maharashtra State, India i.e. courts in Mumbai shall alone have jurisdiction to decide upon any dispute arising out of or in Respect of the contract.</p>
+                    <div className={styles.legalTitle}>
+                      JURISDICTION OF COURTS:
+                    </div>
+                    <p>
+                      All contracts shall be deemed to have been wholly made in
+                      Mumbai and all claims thereunder are payable in Mumbai
+                      City and it is the distinct condition of the order that no
+                      suit or action for the purpose of enforcing any claim in
+                      respect of the order shall be instituted in any Court
+                      other than that situated in Mumbai City, Maharashtra
+                      State, India i.e. courts in Mumbai shall alone have
+                      jurisdiction to decide upon any dispute arising out of or
+                      in Respect of the contract.
+                    </p>
                   </div>
                   <div className={styles.termsSection}>
-                    <div className={styles.termsTitle}>TERMS AND CONDITION:</div>
+                    <div className={styles.termsTitle}>
+                      TERMS AND CONDITION:
+                    </div>
                     <div className={styles.termsGrid}>
                       <div>Incoterm:</div>
                       <div>
@@ -535,7 +664,7 @@ const EditPurchaseOrder = () => {
                           value={formData.incoterm}
                           onChange={(e) => {
                             validateDataType(e, "ANS");
-                            handleChange('incoterm', e.target.value);
+                            handleChange("incoterm", e.target.value);
                           }}
                         />
                       </div>
@@ -544,7 +673,9 @@ const EditPurchaseOrder = () => {
                         <select
                           className={styles.inputField}
                           value={formData.currency}
-                          onChange={(e) => handleChange('currency', e.target.value)}
+                          onChange={(e) =>
+                            handleChange("currency", e.target.value)
+                          }
                         >
                           <option value="">Select Currency</option>
                           <option value="USD">USD</option>
@@ -561,7 +692,7 @@ const EditPurchaseOrder = () => {
                           value={formData.forwarder}
                           onChange={(e) => {
                             validateDataType(e, "A");
-                            handleChange('forwarder', e.target.value);
+                            handleChange("forwarder", e.target.value);
                           }}
                         />
                       </div>
@@ -587,7 +718,7 @@ const EditPurchaseOrder = () => {
                             value={formData.pf}
                             onChange={(e) => {
                               const validatedValue = validateDataType(e, "N");
-                              handleNumberChange('pf', validatedValue);
+                              handleNumberChange("pf", validatedValue);
                             }}
                           />
                         </td>
@@ -602,7 +733,10 @@ const EditPurchaseOrder = () => {
                             value={formData.transportation}
                             onChange={(e) => {
                               const validatedValue = validateDataType(e, "N");
-                              handleNumberChange('transportation', validatedValue);
+                              handleNumberChange(
+                                "transportation",
+                                validatedValue
+                              );
                             }}
                           />
                         </td>
@@ -617,7 +751,7 @@ const EditPurchaseOrder = () => {
                             value={formData.insurance}
                             onChange={(e) => {
                               const validatedValue = validateDataType(e, "N");
-                              handleNumberChange('insurance', validatedValue);
+                              handleNumberChange("insurance", validatedValue);
                             }}
                           />
                         </td>
@@ -632,7 +766,10 @@ const EditPurchaseOrder = () => {
                             value={formData.other_Charges}
                             onChange={(e) => {
                               const validatedValue = validateDataType(e, "N");
-                              handleNumberChange('other_Charges', validatedValue);
+                              handleNumberChange(
+                                "other_Charges",
+                                validatedValue
+                              );
                             }}
                           />
                         </td>
@@ -643,69 +780,106 @@ const EditPurchaseOrder = () => {
                           {calculateTotal().toFixed(2)}
                         </td>
                       </tr>
-                      <tr>
-                        <td className={styles.totalLabel}>
-                          <div className={styles.taxInputContainer}>
-                            <span>SGST @ </span>
-                            <input
-                              type="number"
-                              step="0.01"
-                              className={styles.taxRateInput}
-                              value={formData.sgst}
-                              onChange={(e) => {
-                                const validatedValue = validateDataType(e, "N");
-                                handleTaxChange('sgst', validatedValue);
-                              }}
-                            />
-                            <span>%</span>
-                          </div>
-                        </td>
-                        <td className={styles.totalValue}>
-                          {getTaxAmount('sgst').toFixed(2)}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className={styles.totalLabel}>
-                          <div className={styles.taxInputContainer}>
-                            <span>CGST @ </span>
-                            <input
-                              type="number"
-                              step="0.01"
-                              className={styles.taxRateInput}
-                              value={formData.cgst}
-                              onChange={(e) => {
-                                const validatedValue = validateDataType(e, "N");
-                                handleTaxChange('cgst', validatedValue);
-                              }}
-                            />
-                            <span>%</span>
-                          </div>
-                        </td>
-                        <td className={styles.totalValue}>
-                          {getTaxAmount('cgst').toFixed(2)}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className={styles.totalLabel}>
-                          <div className={styles.taxInputContainer}>
-                            <span>IGST @ </span>
-                            <input
-                              type="number"
-                              step="0.01" 
-                              className={styles.taxRateInput}
-                              value={formData.igst}
-                              onChange={(e) => {
-                                const validatedValue = validateDataType(e, "N");
-                                handleTaxChange('igst', validatedValue);
-                              }}
-                            />
-                            <span>%</span>
-                          </div>
-                        </td>
-                        <td className={styles.totalValue}>
-                          {getTaxAmount('igst').toFixed(2)}
-                        </td>
-                      </tr>
+
+                      {/* Conditionally render GST fields only when currency is INR */}
+                      {formData.currency === "INR" && (
+                        <>
+                          <tr>
+                            <td className={styles.totalLabel}>
+                              <div className={styles.taxInputContainer}>
+                                <span>SGST @ </span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  step="0.01"
+                                  className={styles.taxRateInput}
+                                  value={
+                                    formData.sgst === 0 ? "" : formData.sgst
+                                  }
+                                  onChange={(e) => {
+                                    const validatedValue = validateDataType(
+                                      e,
+                                      "N"
+                                    );
+                                    handleTaxChange(
+                                      "sgst",
+                                      validatedValue === "" ? 0 : validatedValue
+                                    );
+                                  }}
+                                />
+                                <span>%</span>
+                              </div>
+                            </td>
+                            <td className={styles.totalValue}>
+                              {getTaxAmount("sgst").toFixed(2)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className={styles.totalLabel}>
+                              <div className={styles.taxInputContainer}>
+                                <span>CGST @ </span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  step="0.01"
+                                  className={styles.taxRateInput}
+                                  value={
+                                    formData.cgst === 0 ? "" : formData.cgst
+                                  }
+                                  onChange={(e) => {
+                                    const validatedValue = validateDataType(
+                                      e,
+                                      "N"
+                                    );
+                                    handleTaxChange(
+                                      "cgst",
+                                      validatedValue === "" ? 0 : validatedValue
+                                    );
+                                  }}
+                                />
+                                <span>%</span>
+                              </div>
+                            </td>
+                            <td className={styles.totalValue}>
+                              {getTaxAmount("cgst").toFixed(2)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className={styles.totalLabel}>
+                              <div className={styles.taxInputContainer}>
+                                <span>IGST @ </span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  step="0.01"
+                                  className={styles.taxRateInput}
+                                  value={
+                                    formData.igst === 0 ? "" : formData.igst
+                                  }
+                                  onChange={(e) => {
+                                    const validatedValue = validateDataType(
+                                      e,
+                                      "N"
+                                    );
+                                    handleTaxChange(
+                                      "igst",
+                                      validatedValue === "" ? 0 : validatedValue
+                                    );
+                                  }}
+                                />
+                                <span>%</span>
+                              </div>
+                            </td>
+                            <td className={styles.totalValue}>
+                              {getTaxAmount("igst").toFixed(2)}
+                            </td>
+                          </tr>
+                        </>
+                      )}
+
                       <tr>
                         <td className={styles.totalLabel}>Grand Total</td>
                         <td className={styles.totalValue}>
@@ -715,9 +889,13 @@ const EditPurchaseOrder = () => {
                     </tbody>
                   </table>
                   <div className={styles.signature}>
-                    <div className={styles.signatureTitle}>FOR AMC TECHNOLOGY</div>
+                    <div className={styles.signatureTitle}>
+                      FOR AMC TECHNOLOGY
+                    </div>
                     <div className={styles.signatureSpace}>
-                      <div className={styles.signatureTitle}>Authorised Signatory</div>
+                      <div className={styles.signatureTitle}>
+                        Authorised Signatory
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -732,10 +910,7 @@ const EditPurchaseOrder = () => {
 
               {/* Save Button */}
               <div className={styles.saveButtonContainer}>
-                <button
-                  onClick={handleSubmit}
-                  className={styles.saveButton}
-                >
+                <button onClick={handleSubmit} className={styles.saveButton}>
                   <Save size={18} className={styles.saveIcon} />
                   Update Purchase Order
                 </button>

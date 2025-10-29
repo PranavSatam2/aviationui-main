@@ -8,7 +8,7 @@ import {
   listAllSupplier,
   getpendingAllSupplier,
   ApproveSupplier,
-  getEditingSupplierList
+  getEditingSupplierList,
 } from "../../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -148,8 +148,8 @@ const EditSupplierTable = () => {
       ...selecteSupplierData,
       remark: remark,
       // supplierId: selectedItem,
-      userRole:'QM',
-      userAction:'2'
+      userRole: "QM",
+      userAction: "2",
     };
     try {
       const response = await ApproveSupplier(updatedSupplierData);
@@ -159,14 +159,13 @@ const EditSupplierTable = () => {
       console.error("Error fetching supplier details: ", error);
       toast.error("Failed to fetch supplier details");
     }
-  
+
     // Reset states
     setSelectedItem("");
     setSelectAll(false);
     setRemark("");
     handleCloseModal();
   };
-  
 
   // Search functionality
   const filteredData = tableData.filter((supplier) => {
@@ -350,20 +349,6 @@ const EditSupplierTable = () => {
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-blue">
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{ width: "40px" }}
-                        >
-                          <div className="form-check d-flex justify-content-center">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="selectAll"
-                              checked={selectAll}
-                              onChange={handleSelectAll}
-                            />
-                          </div>
-                        </th>
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -420,19 +405,6 @@ const EditSupplierTable = () => {
                                 : "bg-light bg-opacity-50"
                             }
                           >
-                            <td className="text-center">
-                              <div className="form-check d-flex justify-content-center">
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`check-${supplier.supplierId}`}
-                                  checked={selectedItem === supplier.supplierId}
-                                  onChange={() =>
-                                    handleCheckboxChange(supplier)
-                                  }
-                                />
-                              </div>
-                            </td>
                             {columns.map((column) => (
                               <td
                                 key={`${supplier.formId}-${column.field}`}
@@ -450,7 +422,7 @@ const EditSupplierTable = () => {
                             ))}
                             <td>
                               <div className="d-flex justify-content-center gap-2">
-                              <button
+                                <button
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() =>
                                     editSelectedElement(supplier.supplierId)
@@ -482,7 +454,7 @@ const EditSupplierTable = () => {
                       ) : (
                         <tr>
                           <td
-                            colSpan={columns.length + 2}
+                            colSpan={columns.length + 1}
                             className="text-center py-5"
                           >
                             {searchTerm ? (

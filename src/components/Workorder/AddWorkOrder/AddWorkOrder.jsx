@@ -15,12 +15,13 @@ import { toast } from "react-toastify";
 
 const AddWorkorder = () => {
   const location = useLocation();
-  const { srNo } = location.state || "";
+  const { srNo, SerialNumber } = location.state || "";
   const navigate = useNavigate();
   console.log(srNo, "srnoooo");
   // Define the initial form structure with default workDetails - Updated to match API
   const getInitialFormState = () => ({
     // Main fields mapped to API
+    cmm_rev_date: "",
     issueDate: "",
     customerName: "",
     repairOrderNo: "",
@@ -31,7 +32,7 @@ const AddWorkorder = () => {
     revNo: "",
     workshopManagerRemarks: "",
     issuedBy: "",
-    certifyingStaffhours: "",
+    certifyingStaffhours: sessionStorage.getItem("username"),
     technician: "",
     totalManHour: "",
     actionTaken: "",
@@ -179,7 +180,7 @@ const AddWorkorder = () => {
           revNo: response.data?.revisionNo || response.data?.revNo || "",
           workshopManagerRemarks: response.data?.remark || "",
           // issuedBy: response.data?.makerUserName || "",
-          certifyingStaffhours: response.data?.certifyingStaffhours || "",
+          certifyingStaffhours: sessionStorage.getItem("username") || "",
           technician: response.data?.technician || "",
           totalManHour: response.data?.totalManHour || "",
           actionTaken: response.data?.actionTaken || "",
@@ -282,18 +283,19 @@ const AddWorkorder = () => {
     },
     cmmRefNo: {
       length: 50,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9\s\-/._]*$/, // Added hyphen, slash, dot, underscore
     },
-    snBn: {
-      length: 50,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
+    // snBn: {
+    //   length: 50,
+    //   regex: /^[a-zA-Z0-9\s]*$/,
+    // },
     revNo: {
+      type: "text",
       length: 50,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9\s-]*$/,
     },
     certifyingStaffhours: {
-      type: "number",
+      type: "text",
       length: 50,
       // regex: /^[a-zA-Z\s]*$/,
     },
@@ -310,13 +312,17 @@ const AddWorkorder = () => {
   const validateDataType = (event, dataType) => {
     let value = event.target.value;
     if (dataType === "A") {
-      value = value.replace(/[^a-zA-Z0-9 ]/g, "");
+      value = value.replace(/[^a-zA-Z0-9 \-\/._]/g, ""); // Allow hyphen, slash, dot, underscore
       event.target.classList.add("is-valid");
     } else if (dataType === "N") {
       value = value.replace(/[^0-9]/g, "");
       event.target.classList.add("is-valid");
     } else if (dataType === "ANS") {
       value = value.replace(/[^a-zA-Z0-9@.]/g, "");
+      event.target.classList.add("is-valid");
+    } else if (dataType === "REF") {
+      // New type for reference numbers
+      value = value.replace(/[^a-zA-Z0-9 \-/._]/g, ""); // Removed unnecessary escape from /
       event.target.classList.add("is-valid");
     }
     event.target.value = value;
@@ -352,6 +358,7 @@ const AddWorkorder = () => {
 
     // Create the payload with proper structure
     const payload = {
+      cmm_rev_date: form.cmm_rev_date,
       issueDate: form.issueDate,
       customerName: form.customerName,
       repairOrderNo: form.repairOrderNo,
@@ -369,7 +376,7 @@ const AddWorkorder = () => {
       toolsUsed: form.toolsTextBox1 || "", // Map toolsTextBox1 to toolsUsed
       qualityManagerSignDate: form.qualityManagerSignDate,
       workshopManagerSignDate: form.workshopManagerSignDate,
-      snBn: form.snBn,
+      snBn: SerialNumber,
       workOrderSteps: form.workOrderSteps.map((step) => ({
         stepNo: step.stepNo,
         detailOfWorkDone: step.detailOfWorkDone,
@@ -381,7 +388,7 @@ const AddWorkorder = () => {
         srNo: material.srNo,
         description: material.description,
         partNo: material.partNo,
-        snbn: material.snbn,
+        snbn: SerialNumber,
         qty: parseInt(material.qty) || 0, // Ensure it's a number
         remarks: material.remarks,
       })),
@@ -392,10 +399,14 @@ const AddWorkorder = () => {
 
     // If all validation passes, proceed with submitting
     try {
-      const response = await AddWorkOrder(payload);
-      console.log("Work order added successfully:", response);
-      toast.success("Work Order Added Successfully!");
-      navigate("/ViewWorkOrder");
+      const response = AddWorkOrder(payload);
+      if (!response) {
+        alert("Failed to add work order.");
+      } else {
+        console.log("Work order added successfully:", response);
+        toast.success("Work Order Added Successfully!");
+        navigate("/ViewWorkOrder");
+      }
       // Reset the form after successful submission
       // setForm(getInitialFormState());
     } catch (error) {
@@ -526,12 +537,13 @@ const AddWorkorder = () => {
                           type="text"
                           name="cmmRefNo"
                           onInput={(event) => {
-                            validateDataType(event, "A");
+                            validateDataType(event, "REF"); // Use new REF type
                             validateLen(event, 1, 50);
                           }}
                           value={form.cmmRefNo}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                     </div>
@@ -539,18 +551,19 @@ const AddWorkorder = () => {
                     {/* Fourth Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">SNBN</label>
+                        <label className="col-md-4 mt-2">Serial Number</label>
                         <input
                           className="form-control w-100"
                           type="text"
                           name="snBn"
-                          value={form.snBn}
+                          value={SerialNumber}
                           onInput={(event) => {
                             validateDataType(event, "A");
                             validateLen(event, 1, 50);
                           }}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
@@ -569,7 +582,19 @@ const AddWorkorder = () => {
                         />
                       </div>
                     </div>
-
+                    <div className="col-md-12 d-flex">
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">CMM Rev Date</label>
+                        <input
+                          className="form-control w-100"
+                          type="date"
+                          name="cmm_rev_date"
+                          value={form.cmm_rev_date}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
                     {/* Fifth Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
@@ -581,6 +606,7 @@ const AddWorkorder = () => {
                           value={form.issueDate}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
@@ -589,13 +615,14 @@ const AddWorkorder = () => {
                         </label>
                         <input
                           className="form-control w-100"
-                          type="number"
+                          type="text"
                           name="certifyingStaffhours"
                           value={form.certifyingStaffhours}
                           onInput={(event) => {
                             validateDataType(event, "A");
                             validateLen(event, 1, 50);
                           }}
+                          disabled
                           onChange={handleChange}
                           required
                         />
@@ -686,8 +713,8 @@ const AddWorkorder = () => {
                     </div>
 
                     {/* Work Order Steps Section */}
-                    <hr className="mx-0 my-2 p-0 border" />
-                    <div className="col-md-12 p-2">
+                    {/* <hr className="mx-0 my-2 p-0 border" /> */}
+                    {/* <div className="col-md-12 p-2">
                       <h6 className="mb-3">Work Order Steps</h6>
                       <div className="table-responsive">
                         <table className="table table-bordered table-sm">
@@ -761,7 +788,7 @@ const AddWorkorder = () => {
                           </tbody>
                         </table>
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Signature Dates Section */}
                     <hr className="mx-0 my-2 p-0 border" />
@@ -814,7 +841,7 @@ const AddWorkorder = () => {
                               <th style={{ width: "5%" }}>Sr.No</th>
                               <th style={{ width: "30%" }}>Description</th>
                               <th style={{ width: "20%" }}>Part No</th>
-                              <th style={{ width: "15%" }}>S.N,B.N</th>
+                              <th style={{ width: "15%" }}>Serial Number</th>
                               <th style={{ width: "10%" }}>Qty</th>
                               <th style={{ width: "15%" }}>Remarks</th>
                               {/* <th style={{ width: "5%" }}>Action</th> */}
@@ -832,6 +859,7 @@ const AddWorkorder = () => {
                                       type="text"
                                       className="form-control form-control-sm"
                                       value={material.description}
+                                      disabled
                                       onChange={(e) =>
                                         handleMaterialRequisitionChange(
                                           index,
@@ -846,6 +874,7 @@ const AddWorkorder = () => {
                                       type="text"
                                       className="form-control form-control-sm"
                                       value={material.partNo}
+                                      disabled
                                       onChange={(e) =>
                                         handleMaterialRequisitionChange(
                                           index,
@@ -859,7 +888,8 @@ const AddWorkorder = () => {
                                     <input
                                       type="text"
                                       className="form-control form-control-sm"
-                                      value={material.snbn}
+                                      value={SerialNumber}
+                                      disabled
                                       onChange={(e) =>
                                         handleMaterialRequisitionChange(
                                           index,
@@ -874,6 +904,7 @@ const AddWorkorder = () => {
                                       type="number"
                                       className="form-control form-control-sm"
                                       value={material.qty}
+                                      disabled
                                       onChange={(e) =>
                                         handleMaterialRequisitionChange(
                                           index,

@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import {
-    getViewCustomerOrderList,
-} from "../services/db_manager";
+import { getViewCustomerOrderList } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import {PrintInspectionReport} from "./PrintInspectionReport";
+import { PrintInspectionReport } from "./PrintInspectionReport";
 import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
 const ViewCustomerOrder = () => {
   // State
@@ -65,14 +63,14 @@ const ViewCustomerOrder = () => {
 
   // Search functionality
   const filteredData = Array.isArray(tableData)
-  ? tableData.filter((report) =>
-      Object.values(report).some(
-        (value) =>
-          value &&
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    ? tableData.filter((report) =>
+        Object.values(report).some(
+          (value) =>
+            value &&
+            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        )
       )
-    )
-  : [];
+    : [];
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -127,71 +125,69 @@ const ViewCustomerOrder = () => {
 
     return pageNumbers;
   };
-// const handleCheckboxChange = (report) => {
-//     // If the same checkbox is clicked again, deselect it
-//     if (selectedItem === report.inspectionReportId) {
-//       setSelectedItem("");
-//     } else {
-//       setSelectedItem(report.inspectionReportId);
-//       setSelecteReportData(report);
-//     }
-//   };
+  // const handleCheckboxChange = (report) => {
+  //     // If the same checkbox is clicked again, deselect it
+  //     if (selectedItem === report.inspectionReportId) {
+  //       setSelectedItem("");
+  //     } else {
+  //       setSelectedItem(report.inspectionReportId);
+  //       setSelecteReportData(report);
+  //     }
+  //   };
 
   // Modified: Handle select all - now it just clears selection
-//   const handleSelectAll = () => {
-//     if (selectAll) {
-//       setSelectedItem("");
-//     } else {
-//       // Select the first item when clicking "select all"
-//       if (currentItems.length > 0) {
-//         const firstItemId = currentItems[0].formId;
-//         setSelectedItem(firstItemId);
-//       }
-//     }
-//     setSelectAll(!selectAll);
-//   };
-//   const handlePrintClick = (report) => {
-//     // Store the report data
-//     console.log("Report",report)
-//     setReportData(report);
+  //   const handleSelectAll = () => {
+  //     if (selectAll) {
+  //       setSelectedItem("");
+  //     } else {
+  //       // Select the first item when clicking "select all"
+  //       if (currentItems.length > 0) {
+  //         const firstItemId = currentItems[0].formId;
+  //         setSelectedItem(firstItemId);
+  //       }
+  //     }
+  //     setSelectAll(!selectAll);
+  //   };
+  //   const handlePrintClick = (report) => {
+  //     // Store the report data
+  //     console.log("Report",report)
+  //     setReportData(report);
 
-//     // Short delay to ensure React has updated the state and rendered the component
-//     setTimeout(() => {
-//       // Cache original body styles
-//       const originalBodyStyle = document.body.style.cssText;
+  //     // Short delay to ensure React has updated the state and rendered the component
+  //     setTimeout(() => {
+  //       // Cache original body styles
+  //       const originalBodyStyle = document.body.style.cssText;
 
-//       // Apply print-friendly styles to the body
-//       document.body.style.margin = "0";
-//       document.body.style.padding = "0";
+  //       // Apply print-friendly styles to the body
+  //       document.body.style.margin = "0";
+  //       document.body.style.padding = "0";
 
-//       // Print the document
-//       window.print();
+  //       // Print the document
+  //       window.print();
 
-//       // Restore original body styles after printing dialog is closed
-//       setTimeout(() => {
-//         document.body.style.cssText = originalBodyStyle;
-//       }, 100);
-//     }, 500);
-//   };
-
+  //       // Restore original body styles after printing dialog is closed
+  //       setTimeout(() => {
+  //         document.body.style.cssText = originalBodyStyle;
+  //       }, 100);
+  //     }, 500);
+  //   };
 
   // Column definitions for the table
   const columns = [
-    { field: "orderNo", label: "Sales Order Number", width: "100px" },
+    { field: "orderNo", label: "Sales Order No", width: "100px" },
     { field: "roNo", label: "Repair Order No", width: "100px" },
-    { field: "roReceiveDate", label: "Received Date", width: "100px" },
+    { field: "roReceiveDate", label: "RO Date", width: "100px" },
+    { field: "roDate", label: "Unit Submit Date", width: "100px" },
     { field: "customerName", label: "Customer Name", width: "100px" },
     { field: "partNo", label: "Part No.", width: "100px" },
     { field: "partDescription", label: "Part Desc", width: "100px" },
-    { field: "quantity", label: "Quantity", width: "100px" },
+    // { field: "quantity", label: "Quantity", width: "100px" },
     { field: "batchNo", label: "Part Serial Number", width: "100px" },
-    { field: "srNo", label: "Sr. No.", width: "100px" },
     { field: "status", label: "Status", width: "100px" },
     // { field: "makerUserName", label: "Maker UserName", width: "100px" },
     // { field: "makerDate", label: "Maker Date", width: "100px" },
     // { field: "userRole", label: "Maker Role", width: "100px" },
-
-];
+  ];
 
   return (
     <div className="wrapper">
@@ -299,7 +295,6 @@ const ViewCustomerOrder = () => {
                             </div>
                           </th>
                         ))}
-                        
                       </tr>
                     </thead>
                     <tbody>
@@ -328,7 +323,6 @@ const ViewCustomerOrder = () => {
                                 {report[column.field]}
                               </td>
                             ))}
-                            
                           </tr>
                         ))
                       ) : (
@@ -445,7 +439,6 @@ const ViewCustomerOrder = () => {
         </div>
         <Footer />
       </div>
-     
     </div>
   );
 };

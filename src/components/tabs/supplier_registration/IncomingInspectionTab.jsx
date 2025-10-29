@@ -3,10 +3,11 @@ const IncomingInspectionTab = ({
   handleChange,
   validateDataType,
   errors,
-  disabledField
+  disabledField,
 }) => {
   return (
     <div className="row m-2 p-2 mt-4">
+      {/* ------------------------ Q1 ------------------------ */}
       <div className="col-md-12">
         <div className="row">
           <div className="col-md-12 d-flex">
@@ -17,49 +18,34 @@ const IncomingInspectionTab = ({
               </span>
             </label>
             <div className="d-flex">
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="processDocumented1"
-                  name="processDocumented"
-                  value="Yes"
-                  checked={dataMap.processDocumented === "Yes"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="processDocumented1"
-                >
-                  Yes
-                </label>
-              </div>
-
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="processDocumented2"
-                  name="processDocumented"
-                  value="No"
-                  checked={dataMap.processDocumented === "No"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="processDocumented2"
-                >
-                  No
-                </label>
-              </div>
+              {["Yes", "No", "N/A"].map((option, idx) => (
+                <div className="form-check mx-3 p-0" key={idx}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    id={`processDocumented_${option}`}
+                    name="processDocumented"
+                    value={option}
+                    checked={dataMap.processDocumented === option}
+                    onChange={handleChange}
+                    disabled={disabledField}
+                  />
+                  <label
+                    className="form-check-label pt-1"
+                    htmlFor={`processDocumented_${option}`}
+                  >
+                    {option}
+                  </label>
+                </div>
+              ))}
               {errors.processDocumented && (
                 <div style={{ color: "red" }}>{errors.processDocumented}</div>
               )}
             </div>
           </div>
         </div>
+
+        {/* ------------------------ Q2 ------------------------ */}
         <div className="row">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-8">
@@ -69,43 +55,26 @@ const IncomingInspectionTab = ({
               </span>
             </label>
             <div className="d-flex">
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="samplingIncomingInsp1"
-                  name="samplingIncomingInsp"
-                  value="Yes"
-                  checked={dataMap.samplingIncomingInsp === "Yes"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="samplingIncomingInsp1"
-                >
-                  Yes
-                </label>
-              </div>
-
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="samplingIncomingInsp2"
-                  name="samplingIncomingInsp"
-                  value="No"
-                  checked={dataMap.samplingIncomingInsp === "No"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="samplingIncomingInsp2"
-                >
-                  No
-                </label>
-              </div>
+              {["Yes", "No", "N/A"].map((option, idx) => (
+                <div className="form-check mx-3 p-0" key={idx}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    id={`samplingIncomingInsp_${option}`}
+                    name="samplingIncomingInsp"
+                    value={option}
+                    checked={dataMap.samplingIncomingInsp === option}
+                    onChange={handleChange}
+                    disabled={disabledField}
+                  />
+                  <label
+                    className="form-check-label pt-1"
+                    htmlFor={`samplingIncomingInsp_${option}`}
+                  >
+                    {option}
+                  </label>
+                </div>
+              ))}
               {errors.samplingIncomingInsp && (
                 <div style={{ color: "red" }}>{errors.samplingIncomingInsp}</div>
               )}
@@ -114,7 +83,8 @@ const IncomingInspectionTab = ({
         </div>
       </div>
 
-      <div className="col-md-12">
+      {/* ------------------------ Q3 ------------------------ */}
+      <div className="col-md-12 mt-3">
         <div className="row">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-8">
@@ -125,51 +95,37 @@ const IncomingInspectionTab = ({
               </span>
             </label>
             <div className="d-flex">
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="receivingInspectionResultsOnFile1"
-                  name="receivingInspectionResultsOnFile"
-                  value="Yes"
-                  checked={dataMap.receivingInspectionResultsOnFile === "Yes"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="receivingInspectionResultsOnFile1"
-                >
-                  Yes
-                </label>
-              </div>
-
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="receivingInspectionResultsOnFile2"
-                  name="receivingInspectionResultsOnFile"
-                  value="No"
-                  checked={dataMap.receivingInspectionResultsOnFile === "No"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="receivingInspectionResultsOnFile2"
-                >
-                  No
-                </label>
-              </div>
+              {["Yes", "No", "N/A"].map((option, idx) => (
+                <div className="form-check mx-3 p-0" key={idx}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    id={`receivingInspectionResultsOnFile_${option}`}
+                    name="receivingInspectionResultsOnFile"
+                    value={option}
+                    checked={dataMap.receivingInspectionResultsOnFile === option}
+                    onChange={handleChange}
+                    disabled={disabledField}
+                  />
+                  <label
+                    className="form-check-label pt-1"
+                    htmlFor={`receivingInspectionResultsOnFile_${option}`}
+                  >
+                    {option}
+                  </label>
+                </div>
+              ))}
               {errors.receivingInspectionResultsOnFile && (
-                <div style={{ color: "red" }}>{errors.receivingInspectionResultsOnFile}</div>
+                <div style={{ color: "red" }}>
+                  {errors.receivingInspectionResultsOnFile}
+                </div>
               )}
             </div>
           </div>
         </div>
 
-        <div className="row">
+        {/* ------------------------ Q4 ------------------------ */}
+        <div className="row mt-3">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-8">
               Is lot number or other traceability identification maintained?
@@ -178,52 +134,38 @@ const IncomingInspectionTab = ({
               </span>
             </label>
             <div className="d-flex">
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="identificationMaintained1"
-                  name="identificationMaintained"
-                  value="Yes"
-                  checked={dataMap.identificationMaintained === "Yes"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="identificationMaintained1"
-                >
-                  Yes
-                </label>
-              </div>
-
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="identificationMaintained2"
-                  name="identificationMaintained"
-                  value="No"
-                  checked={dataMap.identificationMaintained === "No"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="identificationMaintained2"
-                >
-                  No
-                </label>
-              </div>
+              {["Yes", "No", "N/A"].map((option, idx) => (
+                <div className="form-check mx-3 p-0" key={idx}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    id={`identificationMaintained_${option}`}
+                    name="identificationMaintained"
+                    value={option}
+                    checked={dataMap.identificationMaintained === option}
+                    onChange={handleChange}
+                    disabled={disabledField}
+                  />
+                  <label
+                    className="form-check-label pt-1"
+                    htmlFor={`identificationMaintained_${option}`}
+                  >
+                    {option}
+                  </label>
+                </div>
+              ))}
               {errors.identificationMaintained && (
-                <div style={{ color: "red" }}>{errors.identificationMaintained}</div>
+                <div style={{ color: "red" }}>
+                  {errors.identificationMaintained}
+                </div>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="col-md-12">
+      {/* ------------------------ Q5 ------------------------ */}
+      <div className="col-md-12 mt-3">
         <div className="row">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-8">
@@ -233,43 +175,26 @@ const IncomingInspectionTab = ({
               </span>
             </label>
             <div className="d-flex">
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="sepInsMaterial1"
-                  name="sepInsMaterial"
-                  value="Yes"
-                  checked={dataMap.sepInsMaterial === "Yes"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="sepInsMaterial1"
-                >
-                  Yes
-                </label>
-              </div>
-
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="sepInsMaterial2"
-                  name="sepInsMaterial"
-                  value="No"
-                  checked={dataMap.sepInsMaterial === "No"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="sepInsMaterial2"
-                >
-                  No
-                </label>
-              </div>
+              {["Yes", "No", "N/A"].map((option, idx) => (
+                <div className="form-check mx-3 p-0" key={idx}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    id={`sepInsMaterial_${option}`}
+                    name="sepInsMaterial"
+                    value={option}
+                    checked={dataMap.sepInsMaterial === option}
+                    onChange={handleChange}
+                    disabled={disabledField}
+                  />
+                  <label
+                    className="form-check-label pt-1"
+                    htmlFor={`sepInsMaterial_${option}`}
+                  >
+                    {option}
+                  </label>
+                </div>
+              ))}
               {errors.sepInsMaterial && (
                 <div style={{ color: "red" }}>{errors.sepInsMaterial}</div>
               )}
@@ -277,7 +202,8 @@ const IncomingInspectionTab = ({
           </div>
         </div>
 
-        <div className="row">
+        {/* ------------------------ Q6 ------------------------ */}
+        <div className="row mt-3">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-8">
               Is there any procedure for isolating nonconforming material?
@@ -286,52 +212,36 @@ const IncomingInspectionTab = ({
               </span>
             </label>
             <div className="d-flex">
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="nonConMaterial1"
-                  name="nonConMaterial"
-                  value="Yes"
-                  checked={dataMap.nonConMaterial === "Yes"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="nonConMaterial1"
-                >
-                  Yes
-                </label>
-              </div>
-
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="nonConMaterial2"
-                  name="nonConMaterial"
-                  value="No"
-                  checked={dataMap.nonConMaterial === "No"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="nonConMaterial2"
-                >
-                  No
-                </label>
-              </div>
+              {["Yes", "No", "N/A"].map((option, idx) => (
+                <div className="form-check mx-3 p-0" key={idx}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    id={`nonConMaterial_${option}`}
+                    name="nonConMaterial"
+                    value={option}
+                    checked={dataMap.nonConMaterial === option}
+                    onChange={handleChange}
+                    disabled={disabledField}
+                  />
+                  <label
+                    className="form-check-label pt-1"
+                    htmlFor={`nonConMaterial_${option}`}
+                  >
+                    {option}
+                  </label>
+                </div>
+              ))}
               {errors.nonConMaterial && (
-              <div style={{ color: "red" }}>{errors.nonConMaterial}</div>
-            )}
+                <div style={{ color: "red" }}>{errors.nonConMaterial}</div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="col-md-12">
+      {/* ------------------------ Q7 ------------------------ */}
+      <div className="col-md-12 mt-3">
         <div className="row">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-8">
@@ -342,46 +252,29 @@ const IncomingInspectionTab = ({
               </span>
             </label>
             <div className="d-flex">
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="affectCusReq1"
-                  name="affectCusReq"
-                  value="Yes"
-                  checked={dataMap.affectCusReq === "Yes"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="affectCusReq1"
-                >
-                  Yes
-                </label>
-              </div>
-
-              <div className="form-check mx-3 p-0">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="affectCusReq2"
-                  name="affectCusReq"
-                  value="No"
-                  checked={dataMap.affectCusReq === "No"}
-                  onChange={handleChange}
-                  disabled={disabledField}
-                />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="affectCusReq2"
-                >
-                  No
-                </label>
-              </div>
+              {["Yes", "No", "N/A"].map((option, idx) => (
+                <div className="form-check mx-3 p-0" key={idx}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    id={`affectCusReq_${option}`}
+                    name="affectCusReq"
+                    value={option}
+                    checked={dataMap.affectCusReq === option}
+                    onChange={handleChange}
+                    disabled={disabledField}
+                  />
+                  <label
+                    className="form-check-label pt-1"
+                    htmlFor={`affectCusReq_${option}`}
+                  >
+                    {option}
+                  </label>
+                </div>
+              ))}
               {errors.affectCusReq && (
-              <div style={{ color: "red" }}>{errors.affectCusReq}</div>
-            )}
+                <div style={{ color: "red" }}>{errors.affectCusReq}</div>
+              )}
             </div>
           </div>
         </div>

@@ -61,9 +61,9 @@ const ViewWorkOrder = () => {
   };
 
   // Edit the selected work order
-  const editSelectedElement = async (srNo) => {
+  const editSelectedElement = async (srNo,SerialNumber) => {
     navigate("/Addworkorder", {
-      state: { srNo },
+      state: { srNo ,SerialNumber},
     });
   };
 
@@ -136,7 +136,7 @@ const ViewWorkOrder = () => {
 
   // Column definitions for the table - updated for work order data
   const columns = [
- { field: "orderNo", label: "Sales Order Number", width: "100px" },
+    { field: "orderNo", label: "Sales Order Number", width: "100px" },
     { field: "roNo", label: "Repair Order No", width: "100px" },
     { field: "roReceiveDate", label: "Received Date", width: "100px" },
     { field: "customerName", label: "Customer Name", width: "100px" },
@@ -355,13 +355,14 @@ const ViewWorkOrder = () => {
                             <td>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
-                                  className="btn btn-sm btn-outline-primary"
+                                  className="btn btn-sm btn-primary"
                                   onClick={() =>
-                                    editSelectedElement(workOrder.srNo)
+                                    editSelectedElement(workOrder.srNo,workOrder.batchNo)
                                   }
-                                  title="Edit"
+                                  title="Generate Work Order"
                                 >
-                                  <i className="fa-solid fa-pen-to-square"></i>
+                                  <i className="fa-solid fa-file-lines me-1"></i>
+                                  Generate Work Order
                                 </button>
                               </div>
                             </td>

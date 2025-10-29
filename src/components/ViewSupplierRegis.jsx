@@ -24,21 +24,21 @@ const ViewSupplierRegis = () => {
   const navigate = useNavigate();
 
   // Fetching data when the component is mounted
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await listAllSupplier();
-        if (response) {
-          setTableData(response);
-        }
-      } catch (error) {
-        console.error("Error fetching data", error);
-        toast.error("Failed to load suppliers");
-      } finally {
-        setIsLoading(false);
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await listAllSupplier();
+      if (response) {
+        setTableData(response);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching data", error);
+      toast.error("Failed to load suppliers");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -51,6 +51,7 @@ const ViewSupplierRegis = () => {
             prevData.filter((supplier) => supplier.formId !== elementId)
           );
           toast.success("Supplier deleted successfully");
+          fetchData();
         }
       } catch (error) {
         console.error("Failed to delete supplier", error);

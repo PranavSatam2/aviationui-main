@@ -349,3 +349,9 @@ form button.btn {
   font-size: 13px;
   line-height: 30px;
 }
+.uniform-input {
+  height: 38px !important;
+  line-height: 1.4;
+  font-size: 14px;
+  border-radius: 6px;
+}
