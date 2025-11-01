@@ -40,6 +40,7 @@ import NewPurchaseOrderForm from "./components/PurchaseOrder/PurchaseOrderForm.j
 import UpdateStore from "./components/UpdateStoreTable.jsx";
 import GenerateInspectionReportTable from "./components/GenerateInspectionReportTable.jsx";
 import AddRequisition from "./components/MaterialRequisition/AddMaterialRequisition/AddMaterialRequisition.jsx";  
+import AddDispatchReport from "./components/AddDispatchReport.jsx";
 
 const App = () => {
   const token = sessionStorage.getItem('jwt_token') || '';
@@ -98,6 +99,7 @@ const App = () => {
             <Route path = "/updatestore" element={<UpdateStore/>}/>
             <Route path = "/generateInspectionReport" element={<GenerateInspectionReportTable/>}/>
             <Route path = "/AddMaterialRequisition" element={<AddRequisition/>}/>
+            <Route path = "/AddDispatchReport" element={<AddDispatchReport/>}/>
 
     {menuItems.flatMap((menu) =>
                 menu.subMenus.map((sub) => {

@@ -1,104 +1,88 @@
 import { useEffect, useState } from "react";
-import Footer from "./Footer";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
+import Footer from "../Footer";
+import Header from "../Header";
+import Sidebar from "../Sidebar";
 import {
-  deleteProduct,
-  getProductDetail,
-  listAllProduct,
-} from "../services/db_manager";
+  deletePurchaseOrder,
+  listOfAllWorkorderTable,
+  listOfClosedWorkorders,
+  fetchStatusClosed
+} from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { toast } from "react-toastify";
+import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
+import { View } from "lucide-react";
 
-const ProductList = () => {
+const ViewWorkOrderClosed = () => {
   // State
-  const [tableData, setTableData] = useState([]); // Product data
+  const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("productId");
-  const [sortDirection, setSortDirection] = useState("desc");
+  const [sortField, setSortField] = useState("workOrderNo");
+  const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
+  const [workOrderData, setWorkOrderData] = useState();
   const navigate = useNavigate();
+
+  const fetchData = async () => {
+    try {
+      const response = await listOfClosedWorkorders();
+      setTableData(response.data || []);
+    } catch (error) {
+      console.error("Error fetching closed work orders", error);
+      toast.error("Failed to load closed work orders");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   // Fetching data when the component is mounted
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await listAllProduct();
-        if (response && response.data) {
-          setTableData(response.data); // Update state with response data
-        }
-      } catch (error) {
-        console.error("Error fetching products", error);
-        toast.error("Failed to load product data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
-  // Delete the selected product
-  async function handleDelete(productId) {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+  // Delete the selected work order
+  const deleteSelectedElement = async (workOrderNo) => {
+    if (window.confirm("Are you sure you want to delete this work order?")) {
       try {
-        const response = await deleteProduct(productId);
-        if (response) {
-          setTableData((prevData) =>
-            prevData.filter((item) => item.productId !== productId)
-          );
-          toast.success("Product deleted successfully");
-        }
+        await deletePurchaseOrder(workOrderNo);
+        setTableData((prevData) =>
+          prevData.filter((workOrder) => workOrder.workOrderNo !== workOrderNo)
+        );
+        toast.success("Work order deleted successfully!");
+        fetchData();
       } catch (error) {
-        console.error("Failed to delete product", error);
-        toast.error("Failed to delete product. Please try again.");
+        console.error("Failed to delete work order", error);
+        toast.error("Failed to delete work order. Please try again.");
       }
     }
-  }
+  };
 
-  // Edit the selected product
-  async function handleEdit(productId) {
-    try {
-      const response = await getProductDetail(productId);
-      const productData = response?.data;
-      if (productData) {
-        navigate(`/editProduct/${productId}`);
-      }
-    } catch (error) {
-      console.error("Error fetching product details: ", error);
-      toast.error("Failed to fetch product details");
-    }
-  }
+  // Edit the selected work order
+  const editSelectedElement = async (workOrderNo) => {
+    navigate("/EditWorkorder", {
+      state: { workOrderNo },
+    });
+  };
 
-  // Search and Date Range Filter
-  const filteredData = tableData.filter((product) => {
-    // Search filter
-    const matchesSearch = Object.values(product).some(
-      (value) =>
-        value &&
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    // Date filter
-    let matchesDate = true;
-    if (startDate) {
-      matchesDate =
-        matchesDate &&
-        product.registrationDate &&
-        product.registrationDate >= startDate;
-    }
-    if (endDate) {
-      matchesDate =
-        matchesDate &&
-        product.registrationDate &&
-        product.registrationDate <= endDate;
-    }
-    return matchesSearch && matchesDate;
+  // Search functionality
+  const filteredData = tableData.filter((workOrder) => {
+    return Object.entries(workOrder)
+      .filter(
+        ([key]) =>
+          ![
+            "issueDate",
+            "qualityManagerSignDate",
+            "workshopManagerSignDate",
+          ].includes(key)
+      ) // Exclude certain fields from search
+      .some(
+        ([_, value]) =>
+          value &&
+          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      );
   });
 
   // Sorting functionality
@@ -155,30 +139,46 @@ const ProductList = () => {
     return pageNumbers;
   };
 
-  // Column definitions for the table
+  // Updated column definitions to match your API response data structure
   const columns = [
-    { field: "productId", label: "ID", width: "60px" },
-    { field: "productName", label: "Name", width: "100px" },
-    { field: "alternateProduct1", label: "Alternate Product Name 1", width: "150px" },
-    { field: "alternateProduct2", label: "Alternate Product Name 2", width: "150px" },
-    { field: "mappingType", label: "Mapping Type", width: "120px" },
-    {
-      field: "materialClassification",
-      label: "Material Classification",
-      width: "150px",
-    },
-    { field: "productDescription", label: "Description", width: "150px" },
-    { field: "unitOfMeasurement", label: "UOM", width: "80px" },
-    { field: "oem", label: "OEM", width: "100px" },
-    { field: "nha", label: "NHA", width: "100px" },
-    {
-      field: "cmmReferenceNumber",
-      label: "CMM Reference Number",
-      width: "150px",
-    },
-    { field: "registrationDate", label: "Date", width: "100px" },
-    { field: "registeredBy", label: "Registered By", width: "120px" },
+    { field: "workOrderNo", label: "Work Order No", width: "140px" },
+    { field: "issueDate", label: "Issue Date", width: "120px" },
+    { field: "customerName", label: "Customer Name", width: "150px" },
+    { field: "repairOrderNo", label: "Repair Order No", width: "180px" },
+    { field: "partNumber", label: "Part Number", width: "120px" },
+    { field: "qty", label: "Quantity", width: "100px" },
+    { field: "description", label: "Description", width: "150px" },
+    { field: "cmmRefNo", label: "CMM Ref No", width: "120px" },
+    { field: "revNo", label: "Rev No", width: "100px" },
+    { field: "issuedBy", label: "Issued By", width: "120px" },
+    { field: "technician", label: "Technician", width: "120px" },
+    { field: "totalManHour", label: "Man Hours", width: "110px" },
+    { field: "actionTaken", label: "Action Taken", width: "130px" },
+    { field: "toolsUsed", label: "Tools Used", width: "120px" },
+    { field: "snBn", label: "SN/BN", width: "100px" },
   ];
+
+  const handlePrintClick = (workOrder) => {
+    setWorkOrderData(workOrder);
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+
+  // Format date values
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
+  // Format text with truncation
+  const formatText = (text, maxLength = 20) => {
+    if (!text) return "";
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
+  };
 
   return (
     <div className="wrapper">
@@ -186,39 +186,18 @@ const ProductList = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Product" />
-
-          <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
+          <CustomBreadcrumb breadcrumbsLabel="View All Work Orders" />
+          <div className="printView">
+            {/* <PurchaseOrderForm tableData={workOrderData} /> */}
+          </div>
+          <div
+            className={[
+              "normalView",
+              "card border-0 shadow-lg mx-4 my-4 rounded-3",
+            ].join(" ")}
+          >
             <div className="card-body">
-              {/* Date Range Filter */}
-              <div className="row mb-3">
-                <div className="col-md-3">
-                  <label className="form-label fw-light">Start Date</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={startDate}
-                    onChange={(e) => {
-                      setStartDate(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label className="form-label fw-light">End Date</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={endDate}
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="row align-items-center">
+              <div className="row align-items-center mb-4">
                 <div className="col-md-6">
                   <div className="input-group">
                     <span className="input-group-text bg-primary text-white border-0">
@@ -227,7 +206,7 @@ const ProductList = () => {
                     <input
                       type="text"
                       className="form-control border-start-0 ps-0"
-                      placeholder="Search products..."
+                      placeholder="Search work orders..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -257,16 +236,19 @@ const ProductList = () => {
 
               {isLoading ? (
                 <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
+                  <div
+                    className="spinner-border text-primary"
+                    role="status"
+                  ></div>
                   <p className="mt-2 text-muted">Loading data...</p>
                 </div>
               ) : (
                 <div
                   className="table-responsive"
                   style={{
+                    overflowX: "auto",
                     overflowY: "auto",
+                    maxHeight: "65vh",
                     scrollbarWidth: "thin",
                     scrollbarColor: "#ccc transparent",
                   }}
@@ -286,15 +268,15 @@ const ProductList = () => {
                               fontWeight: "600",
                               textTransform: "uppercase",
                               letterSpacing: "0.5px",
+                              whiteSpace: "nowrap",
                             }}
                           >
                             <div className="d-flex align-items-center">
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
-                                    sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  className={`ms-1 fa fa-sort-${sortDirection === "asc" ? "up" : "down"
+                                    } text-primary`}
                                 ></i>
                               ) : (
                                 <i
@@ -305,25 +287,26 @@ const ProductList = () => {
                             </div>
                           </th>
                         ))}
-                        <th
+                        {/* <th
                           className="position-sticky top-0 bg-light py-3 text-center"
                           style={{
-                            width: "100px",
+                            width: "150px",
                             fontSize: "0.9rem",
                             fontWeight: "600",
                             textTransform: "uppercase",
                             letterSpacing: "0.5px",
+                            whiteSpace: "nowrap",
                           }}
                         >
                           ACTIONS
-                        </th>
+                        </th> */}
                       </tr>
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
-                        currentItems.map((product, index) => (
+                        currentItems.map((workOrder, index) => (
                           <tr
-                            key={product.productId}
+                            key={workOrder.workOrderNo || index}
                             className={
                               index % 2 === 0
                                 ? "bg-white"
@@ -332,7 +315,7 @@ const ProductList = () => {
                           >
                             {columns.map((column) => (
                               <td
-                                key={`${product.productId}-${column.field}`}
+                                key={`${workOrder.workOrderNo || index}-${column.field}`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -340,16 +323,42 @@ const ProductList = () => {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                 }}
-                                title={product[column.field]}
+                                title={workOrder[column.field]}
                               >
-                                {product[column.field]}
+                                {column.field === "workOrderNo" ? (
+                                  <span
+                                    style={{ color: "#0d6efd", cursor: "pointer", textDecoration: "underline" }}
+                                    onClick={() =>
+                                      navigate("/AddDispatchReport", { state: { workOrder } })
+                                    }
+                                  >
+                                    {workOrder.workOrderNo}
+                                  </span>
+                                ) : column.field === "issueDate" ||
+                                  column.field === "qualityManagerSignDate" ||
+                                  column.field === "workshopManagerSignDate" ? (
+                                  formatDate(workOrder[column.field])
+                                ) : column.field === "description" ? (
+                                  formatText(workOrder[column.field], 20)
+                                ) : column.field === "actionTaken" ? (
+                                  formatText(workOrder[column.field], 15)
+                                ) : column.field === "toolsUsed" ? (
+                                  formatText(workOrder[column.field], 15)
+                                ) : column.field === "workshopManagerRemarks" ? (
+                                  formatText(workOrder[column.field], 15)
+                                ) : (
+                                  workOrder[column.field]
+                                )}
                               </td>
                             ))}
-                            <td>
+
+                            {/* <td>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
                                   className="btn btn-sm btn-outline-primary"
-                                  onClick={() => handleEdit(product.productId)}
+                                  onClick={() =>
+                                    editSelectedElement(workOrder.workOrderNo)
+                                  }
                                   title="Edit"
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
@@ -357,14 +366,21 @@ const ProductList = () => {
                                 <button
                                   className="btn btn-sm btn-outline-danger"
                                   onClick={() =>
-                                    handleDelete(product.productId)
+                                    deleteSelectedElement(workOrder.workOrderNo)
                                   }
                                   title="Delete"
                                 >
                                   <i className="fa-solid fa-trash"></i>
                                 </button>
+                                <button
+                                  className="btn btn-sm btn-outline-success"
+                                  onClick={() => handlePrintClick(workOrder)}
+                                  title="Print"
+                                >
+                                  <i className="fa-solid fa-print"></i>
+                                </button>
                               </div>
-                            </td>
+                            </td> */}
                           </tr>
                         ))
                       ) : (
@@ -418,9 +434,8 @@ const ProductList = () => {
                   <nav aria-label="Page navigation">
                     <ul className="pagination justify-content-end mb-0">
                       <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === 1 ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link border-0"
@@ -431,9 +446,8 @@ const ProductList = () => {
                         </button>
                       </li>
                       <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === 1 ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link border-0"
@@ -447,9 +461,8 @@ const ProductList = () => {
                       {renderPageNumbers()}
 
                       <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link border-0"
@@ -460,9 +473,8 @@ const ProductList = () => {
                         </button>
                       </li>
                       <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link border-0"
@@ -485,4 +497,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default ViewWorkOrderClosed;
