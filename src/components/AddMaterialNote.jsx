@@ -163,23 +163,6 @@ useEffect(() => {
             <form onSubmit={handleSubmit}>
               {/* Supplier + PO */}
               <div className="col-md-12 p-2 d-flex">
-                <div className="col-md-6 p-2">
-                  <label>Supplier</label>
-                  <select
-                    className="form-control"
-                    name="supplierName"
-                    value={form.supplierName}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">-- Select Supplier --</option>
-                    {suppliers.map((s,i) => (
-                      <option key={i} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                </div>
 
                 <div className="col-md-6 p-2">
                   <label>PO Number</label>
@@ -198,6 +181,26 @@ useEffect(() => {
                     ))}
                   </select>
                 </div>
+                
+                <div className="col-md-6 p-2">
+                  <label>Supplier</label>
+                  <select
+                    className="form-control"
+                    name="supplierName"
+                    value={form.supplierName}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">-- Select Supplier --</option>
+                    {suppliers.map((s,i) => (
+                      <option key={i} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                
               </div>
 
               {/* Part Selection + Description */}

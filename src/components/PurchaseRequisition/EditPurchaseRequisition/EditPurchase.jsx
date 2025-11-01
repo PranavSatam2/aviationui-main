@@ -203,10 +203,10 @@ const EditPurchaseRequisition = () => {
       type: "number",
       length: 10,
     },
-    remark: {
-      length: 255,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
+    // remark: {
+    //   length: 255,
+    //   regex: /^[a-zA-Z0-9\s]*$/,
+    // },
   };
 
 const validateDataType = (event, dataType) => {
@@ -358,75 +358,33 @@ const validateDataType = (event, dataType) => {
                           required
                         />
                       </div> */}
-                    </div>
+                    
                     <div className="col-md-6 p-2 d-flex">
                       <label className="col-md-4 mt-2">Part Number</label>
-                      {partLoading ? (
-                        <div className="d-flex align-items-center">
-                          <div
-                            className="spinner-border text-primary me-2"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                          <span>Loading part numbers...</span>
-                        </div>
-                      ) : partError ? (
-                        <div className="alert alert-danger w-100">
-                          {partError}
-                        </div>
-                      ) : (
-                        <select
-                          className="form-select w-100"
+                        <input
+                          className="form-control w-100"
+                          type="text"
                           name="partNumber"
-                          value={selectedProduct}
-                          onChange={handleProductChange}
+                          value={form.partNumber}
+                          onChange={handleChange}
                           required
                           disabled
-                        >
-                          <option value="">Select a part number</option>
-                          {data.map((item, index) => (
-                            <option key={index} value={item.productName}>
-                              {item.productName}
-                            </option>
-                          ))}
-                        </select>
-                      )}
+                        />
                     </div>
-
-                    <hr className="mx-0 my-2 p-0 border" />
-
-                    {/* Description Dropdown (Disabled and auto-selected) */}
-                    <div className="col-md-12 p-3 d-flex">
-                      <label className="col-md-2 mt-2">Description</label>
-                      {descLoading ? (
-                        <div className="d-flex align-items-center">
-                          <div
-                            className="spinner-border text-primary me-2"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                          <span>Loading descriptions...</span>
-                        </div>
-                      ) : descError ? (
-                        <div className="alert alert-danger w-100">
-                          {descError}
-                        </div>
-                      ) : (
-                        <select
-                          className="form-select w-100"
+              
+                    <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">Description</label>
+                        <input
+                          className="form-control w-100"
+                          type="text"
                           name="description"
-                          value={selectedDescription}
+                          value={form.description}
+                          onChange={handleChange}
+                          required
                           disabled
-                        >
-                          <option value="">
-                            {selectedDescription || "Auto-selected"}
-                          </option>
-                        </select>
-                      )}
+                        />
                     </div>
-
+</div>
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">Current Stock</label>
@@ -498,12 +456,9 @@ const validateDataType = (event, dataType) => {
                           className="form-control w-100"
                           type="text"
                           name="remark"
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                          }}
                           value={form.remark}
                           onChange={handleChange}
-                          required
+                          
                         />
                       </div>
                     </div>

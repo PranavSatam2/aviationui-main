@@ -130,11 +130,14 @@ const StoreInventory = () => {
     { field: "id", label: "ID", width: "150px" },
     { field: "partNum", label: "Name", width: "150px" },
     { field: "description", label: "Description", width: "150px" },
-    { field: "location", label: "Location", width: "150px" },
     { field: "quantity", label: "Quantity", width: "150px" },
+    { field: "altProd1", label: "Alternate Product1", width: "150px" },
+    { field: "altProd2", label: "Alternate Product2", width: "150px" },
+    { field: "location", label: "Location", width: "150px" },
     { field: "rackNo", label: "RackNo", width: "150px" },
     { field: "updatedBy", label: "UpdatedBy", width: "150px" },
     { field: "updatedDate", label: "Date", width: "150px" },
+    
   ];
 
   return (
