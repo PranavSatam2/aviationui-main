@@ -13,12 +13,16 @@ import { createSupplier, updateSupplier } from "../services/db_manager";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import { error } from "jquery";
 const SupplierRegistration = () => {
   // Variables
   const navigate = useNavigate();
   let formVariavles = {
     supplierName: "",
     // formId               : '',
+    countryCode: "",
+    qualityManagerCountryCode: "", // Add this
+    saleRepresentativeCountryCode: "", // Add this
     phoneNumber: "",
     faxNum: "",
     email: "",
@@ -31,17 +35,19 @@ const SupplierRegistration = () => {
     saleRepresentativePhoneNumber: "",
     coreProcess: "",
     workYear: "",
-    areYouIsoRegistered: "",
+    // areYouIsoRegistered: "",
     isoRegistered: "",
     //ontKnow              : '',
     isoStandard: "",
     carDgcaApproval: "",
     isoRegistrationPlans: "",
+    isoCertificate: "",
     //registerCar           : '',
     numEmp: "",
     numOpeShift: "",
     quaManual: "",
     turnOver: "",
+    paymentTerms: "",
     independenceManuf: "",
     documentedOperative: "",
     documentedProcedure: "",
@@ -141,37 +147,33 @@ const SupplierRegistration = () => {
       setErrors({});
       return;
     }
-
     const missingFields = getMissingFields();
     if (Object.keys(missingFields).length > 0) {
+      console.log(missingFields), "vvvv";
+
       setErrors(missingFields);
-      // Block submission if any required field is missing
       setInvalidFeedback("text-danger col-md-4");
       setInvalidFeedbackMsg(msg.invalidFld);
       toast.error("Please fill all required fields");
-      return; // Stop further execution if errors are present
+      return;
     }
 
+    console.log("✅ VALIDATION PASSED - Proceeding with submission");
     setErrors({});
 
-    if (supplierId === "" || supplierId === undefined) {
-      // Do NOT clear the form before creating; submit current values
+    try {
       let response = await createSupplier(dataMap);
-
       if (response) {
         toast.success("Supplier Added successfully");
         setDataMap(formVariavles);
         window.location.reload();
+      } else if (response?.error) {
+        toast.error(response.error.message);
       }
-    } else {
-      let response = await updateSupplier(supplierId, dataMap);
-      if (response) {
-        setDataMap(response.data);
-        setInvalidFeedbackMsg(msg.dataSaved);
-        setInvalidFeedback("text-success col-md-4");
-        navigate("/ViewSupplierRegis");
-        toast.success("Supplier updated successfully");
-      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to create supplier"
+      );
     }
   }
 
@@ -190,6 +192,14 @@ const SupplierRegistration = () => {
           "rev",
           "sysdate",
           "remark",
+          "carDgcaApproval",
+          "isoCertificate",
+          "qualityManagerName",
+          "qualityManagerEmailId",
+          "qualityManagerPhoneNumber",
+          "qualityManagerCountryCode",
+          "isoRegistrationPlans",
+          "paymentTerms",
         ].includes(key)
       ) {
         errorMessages[key] = "This field is required.";
@@ -230,6 +240,13 @@ const SupplierRegistration = () => {
           "rev",
           "sysdate",
           "remark",
+          "carDgcaApproval",
+          "isoCertificate",
+          "qualityManagerName",
+          "qualityManagerEmailId",
+          "qualityManagerPhoneNumber",
+          "qualityManagerCountryCode",
+          "paymentTerms",
         ].includes(name)
           ? "This field is required."
           : "",
@@ -250,6 +267,8 @@ const SupplierRegistration = () => {
       value = value.replace(/[^0-9]/g, "");
     } else if (dataType === "ANS") {
       value = value.replace(/[^a-zA-Z0-9@.]/g, "");
+    } else if (dataType === "ANS-") {
+      value = value.replace(/[^a-zA-Z0-9\- ]/g, "");
     }
 
     event.target.value = value;

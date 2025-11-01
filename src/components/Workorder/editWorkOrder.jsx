@@ -591,7 +591,7 @@ const EditWorkorder = () => {
                     {/* Fourth Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">SNBN</label>
+                        <label className="col-md-4 mt-2">Serial Number</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -862,7 +862,7 @@ const EditWorkorder = () => {
                               <th style={{ width: "5%" }}>Sr.No</th>
                               <th style={{ width: "30%" }}>Description</th>
                               <th style={{ width: "20%" }}>Part No</th>
-                              <th style={{ width: "15%" }}>S.N,B.N</th>
+                              <th style={{ width: "15%" }}>Serial Number</th>
                               <th style={{ width: "10%" }}>Qty</th>
                               <th style={{ width: "15%" }}>Remarks</th>
                               <th style={{ width: "5%" }}>Action</th>

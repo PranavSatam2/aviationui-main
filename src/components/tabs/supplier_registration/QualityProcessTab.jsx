@@ -8,6 +8,7 @@ const QualityProcessTab = ({
   return (
     <div className="row m-2 p-2 mt-4">
       <div className="col-md-12 mb-0">
+        {/* Question 1 */}
         <div className="col-md-12 d-flex">
           <label className="col-form-label col-md-9 px-0">
             Does quality assurance have independence from manufacturing?
@@ -16,6 +17,7 @@ const QualityProcessTab = ({
             </span>
           </label>
           <div className="d-flex pl-1">
+            {/* Yes */}
             <div className="form-check mx-3 p-0">
               <input
                 className="form-check-input"
@@ -27,14 +29,12 @@ const QualityProcessTab = ({
                 onChange={handleChange}
                 disabled={disabledField}
               />
-              <label
-                className="form-check-label pt-1"
-                htmlFor="independenceManuf1"
-              >
+              <label className="form-check-label pt-1" htmlFor="independenceManuf1">
                 Yes
               </label>
             </div>
 
+            {/* No */}
             <div className="form-check mx-3 p-0">
               <input
                 className="form-check-input"
@@ -46,28 +46,45 @@ const QualityProcessTab = ({
                 onChange={handleChange}
                 disabled={disabledField}
               />
-              <label
-                className="form-check-label pt-1"
-                htmlFor="independenceManuf2"
-              >
+              <label className="form-check-label pt-1" htmlFor="independenceManuf2">
                 No
               </label>
             </div>
+
+            {/* N/A */}
+            <div className="form-check mx-3 p-0">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="independenceManuf3"
+                name="independenceManuf"
+                value="N/A"
+                checked={dataMap.independenceManuf === "N/A"}
+                onChange={handleChange}
+                disabled={disabledField}
+              />
+              <label className="form-check-label pt-1" htmlFor="independenceManuf3">
+                N/A
+              </label>
+            </div>
+
             {errors.independenceManuf && (
               <div style={{ color: "red" }}>{errors.independenceManuf}</div>
             )}
           </div>
         </div>
+
+        {/* Question 2 */}
         <div className="row">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-9">
-              Do you have a documented operative system for internal and
-              external corrective and preventive action?
+              Do you have a documented operative system for internal and external corrective and preventive action?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
               </span>
             </label>
             <div className="d-flex">
+              {/* Yes */}
               <div className="form-check mx-3 p-0">
                 <input
                   className="form-check-input"
@@ -79,14 +96,12 @@ const QualityProcessTab = ({
                   onChange={handleChange}
                   disabled={disabledField}
                 />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="documentedOperative1"
-                >
+                <label className="form-check-label pt-1" htmlFor="documentedOperative1">
                   Yes
                 </label>
               </div>
 
+              {/* No */}
               <div className="form-check mx-3 p-0">
                 <input
                   className="form-check-input"
@@ -98,13 +113,28 @@ const QualityProcessTab = ({
                   onChange={handleChange}
                   disabled={disabledField}
                 />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="documentedOperative2"
-                >
+                <label className="form-check-label pt-1" htmlFor="documentedOperative2">
                   No
                 </label>
               </div>
+
+              {/* N/A */}
+              <div className="form-check mx-3 p-0">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="documentedOperative3"
+                  name="documentedOperative"
+                  value="N/A"
+                  checked={dataMap.documentedOperative === "N/A"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label pt-1" htmlFor="documentedOperative3">
+                  N/A
+                </label>
+              </div>
+
               {errors.documentedOperative && (
                 <div style={{ color: "red" }}>{errors.documentedOperative}</div>
               )}
@@ -113,17 +143,18 @@ const QualityProcessTab = ({
         </div>
       </div>
 
+      {/* Question 3 */}
       <div className="col-md-12 mb-3">
         <div className="row">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-9">
-              Are there documented procedures for identification, collation,
-              filing, storage, & maintenance of quality records?
+              Are there documented procedures for identification, collation, filing, storage, & maintenance of quality records?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
               </span>
             </label>
             <div className="d-flex">
+              {/* Yes */}
               <div className="form-check mx-3 p-0">
                 <input
                   className="form-check-input"
@@ -135,14 +166,12 @@ const QualityProcessTab = ({
                   onChange={handleChange}
                   disabled={disabledField}
                 />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="documentedProcedure1"
-                >
+                <label className="form-check-label pt-1" htmlFor="documentedProcedure1">
                   Yes
                 </label>
               </div>
 
+              {/* No */}
               <div className="form-check mx-3 p-0">
                 <input
                   className="form-check-input"
@@ -154,13 +183,28 @@ const QualityProcessTab = ({
                   onChange={handleChange}
                   disabled={disabledField}
                 />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="documentedProcedure2"
-                >
+                <label className="form-check-label pt-1" htmlFor="documentedProcedure2">
                   No
                 </label>
               </div>
+
+              {/* N/A */}
+              <div className="form-check mx-3 p-0">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="documentedProcedure3"
+                  name="documentedProcedure"
+                  value="N/A"
+                  checked={dataMap.documentedProcedure === "N/A"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label pt-1" htmlFor="documentedProcedure3">
+                  N/A
+                </label>
+              </div>
+
               {errors.documentedProcedure && (
                 <div style={{ color: "red" }}>{errors.documentedProcedure}</div>
               )}
@@ -168,16 +212,17 @@ const QualityProcessTab = ({
           </div>
         </div>
 
+        {/* Question 4 */}
         <div className="row">
           <div className="col-md-12 d-flex">
             <label className="col-form-label col-md-9">
-              Does your system assure that products shipped meet customer
-              applicable revision of specifications?
+              Does your system assure that products shipped meet customer applicable revision of specifications?
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
               </span>
             </label>
             <div className="d-flex">
+              {/* Yes */}
               <div className="form-check mx-3 p-0">
                 <input
                   className="form-check-input"
@@ -189,14 +234,12 @@ const QualityProcessTab = ({
                   onChange={handleChange}
                   disabled={disabledField}
                 />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="productShipment1"
-                >
+                <label className="form-check-label pt-1" htmlFor="productShipment1">
                   Yes
                 </label>
               </div>
 
+              {/* No */}
               <div className="form-check mx-3 p-0">
                 <input
                   className="form-check-input"
@@ -208,13 +251,28 @@ const QualityProcessTab = ({
                   onChange={handleChange}
                   disabled={disabledField}
                 />
-                <label
-                  className="form-check-label pt-1"
-                  htmlFor="productShipment2"
-                >
+                <label className="form-check-label pt-1" htmlFor="productShipment2">
                   No
                 </label>
               </div>
+
+              {/* N/A */}
+              <div className="form-check mx-3 p-0">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="productShipment3"
+                  name="productShipment"
+                  value="N/A"
+                  checked={dataMap.productShipment === "N/A"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label pt-1" htmlFor="productShipment3">
+                  N/A
+                </label>
+              </div>
+
               {errors.productShipment && (
                 <div style={{ color: "red" }}>{errors.productShipment}</div>
               )}

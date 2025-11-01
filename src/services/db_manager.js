@@ -105,8 +105,9 @@ export const fetchPartNumbersAndDescriptions = () => {
     });
 };
 // Supplier Registration
-export const createSupplier = (Supplier) =>
-  axiosInstance.post(`${SUPPLIER_URL}/supplierReg`, Supplier);
+export const createSupplier = (Supplier) => {
+  return axiosInstance.post(`${SUPPLIER_URL}/supplierReg`, Supplier);
+};
 // export const listAllSupplier = () => axios.get(`${SUPPLIER_URL}/`);
 export const deleteSupplier = (SupplierId) =>
   axiosInstance.delete(`${SUPPLIER_URL}/${SupplierId}`);
@@ -393,8 +394,7 @@ let OPENWORKORDER = REST_API_BASE_URL + "/api/workorders/open";
 let WORKORDERLIST = REST_API_BASE_URL + "/api/workorders";
 let CLOSEDWORKORDER = REST_API_BASE_URL + "/api/workorders/closed";
 
-export const listAllOpenWorkorder = () =>
-  axiosInstance.get(`${OPENWORKORDER}`);
+export const listAllOpenWorkorder = () => axiosInstance.get(`${OPENWORKORDER}`);
 
 export const listAllWorkorder = () =>
   axiosInstance.get(`${WORKORDERFROMCHECKER}`);
@@ -427,7 +427,7 @@ export const getWorkOrderDetails = (ID) => {
     });
 };
 export const AddWorkOrder = (Workorder) => {
-  axiosInstance.post("/api/workorders", Workorder);
+  return axiosInstance.post("/api/workorders", Workorder);
 };
 
 //StoreInventory

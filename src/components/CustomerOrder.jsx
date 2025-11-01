@@ -29,6 +29,7 @@ const CustomerOrder = () => {
   const [filteredPartNos, setFilteredPartNos] = useState([]);
   const [isLoadingPartDetails, setIsLoadingPartDetails] = useState(false);
   const [serialOptions, setSerialOptions] = useState([]);
+  const [cmmRefNo, setCmmRefNo] = useState(""); // Add this line
 
   const handleInputChange = (e, setter) => setter(e.target.value);
 
@@ -55,6 +56,7 @@ const CustomerOrder = () => {
         setPartDescription("");
         setPartSerialNumber("");
         setSerialOptions([]);
+        setCmmRefNo(""); // Add this line
         return;
       }
       setIsLoadingPartDetails(true);
@@ -70,31 +72,39 @@ const CustomerOrder = () => {
 
           setSerialOptions(serialArray);
           setPartSerialNumber("");
+          setCmmRefNo(partDetails.cmmRefNo || ""); // Add this line
         } else {
           setPartDescription("");
           setSerialOptions([]);
           setPartSerialNumber("");
+          setCmmRefNo("");
         }
       } catch (err) {
         console.error("Error fetching part details:", err);
         setPartDescription("");
         setSerialOptions([]);
         setPartSerialNumber("");
+        setCmmRefNo("");
       } finally {
         setIsLoadingPartDetails(false);
       }
     };
     fetchPartDetails();
   }, [partNo]);
-
+  const handleRoNoChange = (e) => {
+    const value = e.target.value;
+    // Allow only alphanumeric characters and hyphens
+    const filteredValue = value.replace(/[^a-zA-Z0-9-]/g, "");
+    setRoNo(filteredValue);
+  };
   const validateForm = () => {
     const newErrors = {};
     if (!roNo.trim()) {
       newErrors.roNo = "RO No is required";
-    } else if (!/^\d{1,50}$/.test(roNo)) {
-      newErrors.roNo = "RO No must be a number";
+    } else if (!/^[a-zA-Z0-9-]{1,50}$/.test(roNo)) {
+      newErrors.roNo =
+        "RO No must be alphanumeric (letters, numbers, and hyphens only)";
     }
-
     if (!quantity.trim()) {
       newErrors.quantity = "Quantity is required";
     } else if (!/^\d{1,10}$/.test(quantity)) {
@@ -126,6 +136,7 @@ const CustomerOrder = () => {
     setStatus("");
     setSerialOptions([]);
     setError({});
+    setCmmRefNo("");
   };
 
   const handleSubmit = (e) => {
@@ -142,6 +153,7 @@ const CustomerOrder = () => {
       quantity,
       partSerialNumber,
       status,
+      cmmRefNo,
       id: Date.now(),
       makerUserName: sessionStorage.getItem("username"),
       makerDate: new Date().toISOString().split("T")[0],
@@ -150,7 +162,7 @@ const CustomerOrder = () => {
     };
 
     setPurchaseRequisitions([...purchaseRequisitions, newReq]);
-    
+
     // Reset form for next entry
     resetForm();
 
@@ -164,10 +176,10 @@ const CustomerOrder = () => {
     if (!document) return alert("Please upload the document.");
     if (purchaseRequisitions.length === 0)
       return alert("No Customer Order to submit!");
-
     try {
       const ordersPayload = purchaseRequisitions.map((req) => ({
-        roNo: Number(req.roNo),
+        roNo: req.roNo,
+
         roDate: req.roDate,
         roReceiveDate: req.roReceiveDate,
         customerName: req.customerName,
@@ -175,6 +187,7 @@ const CustomerOrder = () => {
         partDescription: req.partDescription,
         quantity: Number(req.quantity),
         batchNo: req.partSerialNumber,
+        cmmRefNo: req.cmmRefNo,
         makerUserName: req.makerUserName,
         makerDate: req.makerDate,
         userAction: "1",
@@ -185,7 +198,7 @@ const CustomerOrder = () => {
       formData.append("document", document);
       formData.append("orders", JSON.stringify(ordersPayload));
 
-      await axiosInstance.post(
+     const response = await axiosInstance.post(
         "/api/customerOrder/uploadWithOrders",
         formData,
         {
@@ -197,9 +210,12 @@ const CustomerOrder = () => {
       setPurchaseRequisitions([]);
       setDocument(null);
       resetForm();
+      if (response) {
+        console.error("Server error:", response);
+      }
     } catch (err) {
-      console.error("Submit failed:", err);
-      alert("Failed to submit Customer Order. Check console for details.");
+      console.error("Submit failed:", err.response.data);
+      alert(err.response.data);
     }
   };
 
@@ -224,10 +240,27 @@ const CustomerOrder = () => {
                         className="form-control w-100"
                         type="text"
                         value={roNo}
-                        onChange={(e) => handleInputChange(e, setRoNo)}
+                        onChange={handleRoNoChange}
+                        placeholder="Enter RO No"
                       />
                       {error.roNo && (
                         <span className="text-danger small">{error.roNo}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-md-6 p-1 d-flex">
+                    <label className="col-md-4 mt-2">RO Received Date *</label>
+                    <div className="w-100">
+                      <input
+                        className="form-control w-100"
+                        type="date"
+                        value={roReceiveDate}
+                        onChange={(e) => handleInputChange(e, setRoReceiveDate)}
+                      />
+                      {error.roReceiveDate && (
+                        <span className="text-danger small">
+                          {error.roReceiveDate}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -252,7 +285,9 @@ const CustomerOrder = () => {
                         ))}
                       </select>
                       {error.partNo && (
-                        <span className="text-danger small">{error.partNo}</span>
+                        <span className="text-danger small">
+                          {error.partNo}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -310,20 +345,13 @@ const CustomerOrder = () => {
                     </div>
                   </div>
                   <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">RO Received Date *</label>
-                    <div className="w-100">
-                      <input
-                        className="form-control w-100"
-                        type="date"
-                        value={roReceiveDate}
-                        onChange={(e) => handleInputChange(e, setRoReceiveDate)}
-                      />
-                      {error.roReceiveDate && (
-                        <span className="text-danger small">
-                          {error.roReceiveDate}
-                        </span>
-                      )}
-                    </div>
+                    <label className="col-md-4 mt-2">Unit Submit date *</label>
+                    <input
+                      className="form-control w-100"
+                      type="date"
+                      value={roDate}
+                      disabled
+                    />
                   </div>
                 </div>
 
@@ -335,7 +363,9 @@ const CustomerOrder = () => {
                       <textarea
                         className="form-control w-100"
                         value={partDescription}
-                        onChange={(e) => handleInputChange(e, setPartDescription)}
+                        onChange={(e) =>
+                          handleInputChange(e, setPartDescription)
+                        }
                         style={{ height: "70px" }}
                         placeholder="Auto-filled when part number is selected"
                         disabled
@@ -347,20 +377,6 @@ const CustomerOrder = () => {
                       )}
                     </div>
                   </div>
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">RO Submit Date *</label>
-                    <input
-                      className="form-control w-100"
-                      type="date"
-                      value={roDate}
-                      onChange={(e) => handleInputChange(e, setRoDate)}
-                      // disabled
-                    />
-                  </div>
-                </div>
-
-                {/* Quantity */}
-                <div className="col-md-12 p-2 d-flex">
                   <div className="col-md-6 p-1 d-flex">
                     <label className="col-md-4 mt-2">Quantity *</label>
                     <div className="w-100">
@@ -378,7 +394,6 @@ const CustomerOrder = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* Add to list */}
                 <div className="col-md-12 text-end mt-3">
                   <button type="submit" className="btn btn-primary">
@@ -393,14 +408,17 @@ const CustomerOrder = () => {
           {purchaseRequisitions.length > 0 && (
             <div className="row mx-1 card border border-dark shadow-lg py-4 mt-4">
               <div className="col-md-12">
-                <h4>Customer Order List ({purchaseRequisitions.length} {purchaseRequisitions.length === 1 ? 'order' : 'orders'})</h4>
+                <h4>
+                  Customer Order List ({purchaseRequisitions.length}{" "}
+                  {purchaseRequisitions.length === 1 ? "order" : "orders"})
+                </h4>
                 <div className="table-responsive">
                   <table className="table table-striped table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
                         <th>RO No</th>
-                        <th>RO Date</th>
+                        <th>Unit Submit Date</th>
                         <th>RO Received Date</th>
                         <th>Customer Name</th>
                         <th>Part No</th>
@@ -452,7 +470,10 @@ const CustomerOrder = () => {
                     )}
                   </div>
                 </div>
-                <button className="btn btn-success btn-lg" onClick={handleSubmitAll}>
+                <button
+                  className="btn btn-success btn-lg"
+                  onClick={handleSubmitAll}
+                >
                   Submit All {purchaseRequisitions.length} Orders
                 </button>
               </div>
