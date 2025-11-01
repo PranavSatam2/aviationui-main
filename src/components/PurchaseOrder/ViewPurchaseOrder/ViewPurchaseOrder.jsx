@@ -187,7 +187,7 @@ const ViewPurchaseOrderPage = () => {
     // { field: "total", label: "Total", width: "120px" },
     // { field: "grandTotal", label: "Grand Total", width: "120px" },
     // { field: "incoterm", label: "Incoterm", width: "100px" },
-    // { field: "currency", label: "Currency", width: "100px" },
+    { field: "currency", label: "Currency", width: "100px" },
     // { field: "forwarder", label: "Forwarder", width: "120px" },
     // { field: "transportation", label: "Transportation", width: "120px" },
     // { field: "pf", label: "PF", width: "80px" },
