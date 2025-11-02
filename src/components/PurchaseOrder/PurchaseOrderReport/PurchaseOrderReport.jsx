@@ -889,15 +889,17 @@
 // }
 import { useEffect, useState, useRef } from "react";
 import { Save } from "lucide-react";
-import styles from "./Purchase.module.css";
+import styles from "./PurchaseOrderReport.module.css";
 import {
   createPurchaseOrder,
   fetchSupplierDetails,
-} from "../../services/db_manager";
-import Sidebar from "../Sidebar";
-import Header from "../Header";
-import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
-import Footer from "../Footer";
+}  from "../../../services/db_manager";
+
+import Sidebar from "../../Sidebar";
+
+import Header from "../../Header";
+import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
+import Footer from "../../Footer";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom"; // <-- For navigation
 
