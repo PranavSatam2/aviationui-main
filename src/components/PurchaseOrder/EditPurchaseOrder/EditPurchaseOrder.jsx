@@ -557,6 +557,7 @@ const EditPurchaseOrder = () => {
                         handleChange("paymentTerms", e.target.value);
                       }}
                       style={{ width: "100%" }}
+                      disabled
                     />
                   </div>
                 </div>
@@ -708,7 +709,7 @@ const EditPurchaseOrder = () => {
                           {calculateSubtotal().toFixed(2)}
                         </td>
                       </tr>
-                      <tr>
+                      {/*}<tr>
                         <td className={styles.totalLabel}>P&F</td>
                         <td className={styles.totalValue}>
                           <input
@@ -773,7 +774,7 @@ const EditPurchaseOrder = () => {
                             }}
                           />
                         </td>
-                      </tr>
+                      </tr>*/}
                       <tr>
                         <td className={styles.totalLabel}>Total</td>
                         <td className={styles.totalValue}>
