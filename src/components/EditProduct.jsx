@@ -3,7 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProductDetail, updateProduct } from "../services/db_manager"; // Assuming these API functions are defined
+import { getProductDetail, updateProduct, fetchPartNumbersAndDescriptions } from "../services/db_manager"; // Assuming these API functions are defined
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const EditProduct = () => {
@@ -11,29 +11,45 @@ const EditProduct = () => {
   const navigate = useNavigate();
   const [showAlternate, setShowAlternate] = useState(false);
   const [showAlternateName, setShowAlternateName] = useState(false);
+  const [showAlternateName1, setShowAlternateName1] = useState(false); // toggle state
+    const [showAlternateName2, setShowAlternateName2] = useState(false);
+  const [partList, setPartList] = useState([]);
 
   // 🟩 get today’s date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
-    const loggedUser = sessionStorage.getItem("username"); // username stored at login
-    if (loggedUser) {
-      setForm(prev => ({ ...prev, registeredBy: loggedUser }));
-    }
-  }, []);
+      const loggedUser = sessionStorage.getItem("username"); // username stored at login
+      if (loggedUser) {
+        setForm((prev) => ({ ...prev, registeredBy: loggedUser }));
+      }
+  
+      // Fetch part numbers from API
+      fetchPartNumbersAndDescriptions()
+        .then((data) => {
+          setPartList(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching part numbers:", error);
+        });
+    }, []);
+  
 
   const [form, setForm] = useState({
-    productName: "",
-    materialClassification: "",
-    productDescription: "",
-    unitOfMeasurement: "",
-    oem: "",
-    nha: "",
-    cmmReferenceNumber: "",
-    registrationDate: today,
-    registeredBy: sessionStorage.getItem("username") || "",
-    alternateProduct: "",  // make sure it’s present
-  });
+  productName: "",
+  materialClassification: "",
+  productDescription: "",
+  unitOfMeasurement: "",
+  oem: "",
+  nha: "",
+  cmmReferenceNumber: "",
+  registrationDate: today,
+  registeredBy: sessionStorage.getItem("username") || "",
+  alternateProduct1: "",
+  alternateProduct2: "",
+  mappingType: "",
+});
+
 
   useEffect(() => {
   const fetchProductDetail = async () => {
@@ -43,10 +59,17 @@ const EditProduct = () => {
         setForm(response.data);
 
         // Set alternate product flags
-        if (response.data.alternateProduct) {
-          setShowAlternate(true);      // ✅ radio button shows Yes
-          setShowAlternateName(true);  // ✅ allows swapping button ↕ to appear
-        }
+        if (response.data) {
+  setForm(response.data);
+
+  if (response.data.alternateProduct1) {
+    setShowAlternateName1(true);
+  }
+  if (response.data.alternateProduct2) {
+    setShowAlternateName2(true);
+  }
+}
+
       }
     } catch (error) {
       console.error("Error fetching product details:", error);
@@ -87,7 +110,11 @@ const EditProduct = () => {
   const validationRules = {
     productName: { required: true, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
     productDescription: { required: true, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
-    unitOfMeasurement: { required: true, length: 6, regex: /^[a-zA-Z]*$/ },
+    unitOfMeasurement: {
+      required: true,
+      length: 10,
+      regex: /^[a-zA-Z0-9.\s-]*$/,
+    },
     materialClassification: { required: true, length: 30, regex: /^[a-zA-Z0-9\s-]*$/ },
     oem: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
     nha: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
@@ -203,57 +230,209 @@ const EditProduct = () => {
                       </div>
                     </div>
 
-                    {/* Yes/No radio for Alternate Product */}
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Alternate Product?</label>
-                        <div className="d-flex align-items-center">
-                          <div className="form-check me-2">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="alternateProductOption"
-                              id="altYes"
-                              checked={showAlternate === true}
-                              onChange={() => setShowAlternate(true)}
-                            />
-                            <label className="form-check-label" htmlFor="altYes">
-                              Yes
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="alternateProductOption"
-                              id="altNo"
-                              checked={showAlternate === false}
-                              onChange={() => {
-                                setShowAlternate(false);
-                                setForm({ ...form, alternateProduct: "" });
-                              }}
-                            />
-                            <label className="form-check-label" htmlFor="altNo">
-                              No
-                            </label>
-                          </div>
+                    {(showAlternateName1 || showAlternateName2) && (
+                      <div className="d-flex align-items-center mb-3">
+                        <label className="col-md-2 ml-3 mt-2 p-2 fw-semibold">
+                          Mapping Type<span style={{ color: "red" }}>*</span>
+                        </label>
+                        <div
+                          className="btn-group"
+                          role="group"
+                          aria-label="Mapping Type"
+                          style={{ marginLeft: "10px" }}
+                          required
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setForm({ ...form, mappingType: "UP" })
+                            }
+                            className={`btn ${form.mappingType === "UP"
+                              ? "btn-primary"
+                              : "btn-outline-primary"
+                              }`}
+                            style={{
+                              minWidth: "80px",
+                              fontWeight: "bold",
+                              letterSpacing: "1px",
+                            }}
+                          >
+                            <i className="bi bi-arrow-up"></i> UP
+                          </button>
+                          {/* <button
+                            type="button"
+                            onClick={() =>
+                              setForm({ ...form, mappingType: "DOWN" })
+                            }
+                            className={`btn ${form.mappingType === "DOWN"
+                                ? "btn-success"
+                                : "btn-outline-success"
+                              }`}
+                            style={{
+                              minWidth: "80px",
+                              fontWeight: "bold",
+                              letterSpacing: "1px",
+                            }}
+                          >
+                            <i className="bi bi-arrow-down"></i> DOWN
+                          </button> */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setForm({ ...form, mappingType: "BOTH" })
+                            }
+                            className={`btn ${form.mappingType === "BOTH"
+                              ? "btn-warning text-white"
+                              : "btn-outline-warning"
+                              }`}
+                            style={{
+                              minWidth: "80px",
+                              fontWeight: "bold",
+                              letterSpacing: "1px",
+                            }}
+                          >
+                            <i className="bi bi-arrow-down-up"></i> BOTH
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* === Alternate Name radio === */}
+                    <div className="col-md-12 d-flex p-2">
+                      <label className="col-md-2 mt-2">
+                        Alternate Product Number 1?
+                      </label>
+                      <div className="col-md-4 d-flex mt-2">
+                        <div className="form-check me-3">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="alternateOption"
+                            id="alternateYes"
+                            value="yes"
+                            onChange={() => setShowAlternateName1(true)}
+                            checked={showAlternateName1}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="alternateYes"
+                          >
+                            Yes
+                          </label>
+                        </div>
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="alternateOption"
+                            id="alternateNo"
+                            value="no"
+                            onChange={() => {
+                              setShowAlternateName1(false);
+                              setForm(prev => ({ ...prev, alternateProduct1: "" }));
+                            }}
+                            checked={!showAlternateName1}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="alternateNo"
+                          >
+                            No
+                          </label>
                         </div>
                       </div>
                     </div>
 
-                    {/* Only show alternate product field if Yes */}
-                    {showAlternate && (
-                      <div className="col-md-12 d-flex">
-                        <div className="col-md-6 p-2 d-flex">
-                          <label className="col-md-4 mt-2">Alternate Product Name</label>
+                    {/* === Alternate Name Field (conditional) === */}
+                    {showAlternateName1 && (
+                      <div className="col-md-12 d-flex p-2">
+                        <label className="col-md-2 mt-2">
+                          Alternate Product Number 1 <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <select
+                          className="form-select w-100"
+                          name="alternateProduct1"
+                          value={form.alternateProduct1}
+                          onChange={handleChange}
+                          required={showAlternateName1}
+                        >
+                          <option value="">Select Alternate Product 1</option>
+                          {partList.map((part, index) => (
+                            <option key={index} value={part.productNumber || part.partNo}>
+                              {part.productName || part.partNo}
+                            </option>
+                          ))}
+                        </select>
+
+                      </div>
+                    )}
+
+                    {/* === Alternate Name 2 radio === */}
+                    <div className="col-md-12 d-flex p-2">
+                      <label className="col-md-2 mt-2">
+                        Alternate Product Number 2?
+                      </label>
+                      <div className="col-md-4 d-flex mt-2">
+                        <div className="form-check me-3">
                           <input
-                            className="form-control w-100"
-                            type="text"
-                            name="alternateProduct"
-                            value={form.alternateProduct || ""}
-                            onChange={handleChange}
+                            className="form-check-input"
+                            type="radio"
+                            name="alternateOption2"
+                            id="alternateYes2"
+                            value="yes"
+                            onChange={() => setShowAlternateName2(true)}
+                            checked={showAlternateName2}
                           />
+                          <label
+                            className="form-check-label"
+                            htmlFor="alternateYes2"
+                          >
+                            Yes
+                          </label>
                         </div>
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="alternateOption2"
+                            id="alternateNo2"
+                            value="no"
+                            onChange={() => {
+                              setShowAlternateName2(false);
+                              setForm(prev => ({ ...prev, alternateProduct2: "" }));
+                            }}
+                            checked={!showAlternateName2}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="alternateNo2"
+                          >
+                            No
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* === Alternate Name 2 Field (conditional) === */}
+                    {showAlternateName2 && (
+                      <div className="col-md-12 d-flex p-2">
+                        <label className="col-md-2 mt-2">
+                          Alternate Product Number 2 <span style={{ color: "red" }}>*</span>
+                        </label>
+                        <select
+                          className="form-select w-100"
+                          name="alternateProduct2"
+                          value={form.alternateProduct2}
+                          onChange={handleChange}
+                          required={showAlternateName2}
+                        >
+                          <option value="">Select Alternate Product 2</option>
+                          {partList.map((part, index) => (
+                            <option key={index} value={part.productNumber || part.partNo}>
+                              {part.productName || part.partNo}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     )}
 
