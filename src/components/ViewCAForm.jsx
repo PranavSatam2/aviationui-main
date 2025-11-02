@@ -182,15 +182,15 @@ const handleCheckboxChange = (report) => {
 
   // Column definitions for the table
 const columns = [
-  { field: "id", label: "CA Form No.", width: "120px" },
-  { field: "workOrderNo", label: "Work Order No.", width: "120px" },
+  { field: "formTrackingNumber", label: "CA Form No.", width: "220px" },
+  { field: "workOrderNumber", label: "Work Order No.", width: "180px" },
   { field: "item", label: "Item", width: "80px" },
   { field: "partNo", label: "Part No.", width: "120px" },
   { field: "description", label: "Description", width: "200px" },
   { field: "quantity", label: "Quantity", width: "80px" },
   { field: "serialNo", label: "Serial No.", width: "150px" },
   { field: "status", label: "Status", width: "100px" },
-  { field: "remarks", label: "Remarks", width: "200px" },
+  { field: "remarks", label: "Remarks", width: "100px" },
 ];
 
 

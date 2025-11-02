@@ -14,19 +14,26 @@ import Footer from "./Footer";
 import { toast } from "react-toastify";
 import logo from "../static/img/logo.png";
 import { PrintCAForm } from "./PrintCAForm";
+import { useLocation , useNavigate } from "react-router-dom"; // <-- For navigation
 
 const CAForm = () => {
-  const [workOrderNumber, setWorkOrderNumber] = useState([]);
+  //const [workOrderNumber, setWorkOrderNumber] = useState([]);
   const [partLoading, setPartLoading] = useState(false);
   const [partError, setPartError] = useState(null);
   const [selectedWorkOrderNumber, setSelectedWorkOrderNumber] = useState("");
   const [reportData, setReportData] = useState();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { workOrderNo } = location.state || { workOrderNo: [] };
+
 
   const [workOrderDetails, setWorkOrderDetails] = useState({
+    workOrderNumber: "",
     description: "",
     partNo: "",
     quantity: "",
     serialNo: "",
+    status: "",
   });
 
   // const generateCertificateNumber = () => {
@@ -58,19 +65,18 @@ const CAForm = () => {
     approvalRefNo14c: "",
     name13d: "",
     date13e: "",
-    name14d: "",
-    date14e: "",
+    name14d: sessionStorage.getItem("username") || "",
+    date14e: new Date().toLocaleDateString('en-GB').replace(/\//g, '-')
   });
 
   useEffect(() => {
     const getWorkOrderNumber = async () => {
-      setPartLoading(true);
+      console.log("WorkOrderNo : ",workOrderNo);
+      //setPartLoading(true);
       try {
-        const res = await fetchWorkOrder();
-        console.log("WorkOrder data:", res.data);
-        const actualData = res.data.data || res.data;
-        console.log(actualData);
-        setWorkOrderNumber(actualData);
+      const res = await fetchWorkOrderDetails(workOrderNo);
+      console.log(res);
+      setWorkOrderDetails(res.data);
       } catch (err) {
         console.error("Error fetching WorkOrder numbers:", err);
         setPartError(
@@ -91,17 +97,17 @@ const CAForm = () => {
     }));
   };
 
-  const handlePartNumberSelect = async (workOrder) => {
-    setSelectedWorkOrderNumber(workOrder);
-    if (!workOrder) return;
+  // const handlePartNumberSelect = async (workOrder) => {
+  //   setSelectedWorkOrderNumber(workOrder);
+  //   if (!workOrder) return;
 
-    try {
-      const res = await fetchWorkOrderDetails(workOrder);
-      setWorkOrderDetails(res.data);
-    } catch (err) {
-      console.error("Failed to fetch workOrder details:", err);
-    }
-  };
+  //   try {
+  //     const res = await fetchWorkOrderDetails(workOrder);
+  //     setWorkOrderDetails(res.data);
+  //   } catch (err) {
+  //     console.error("Failed to fetch workOrder details:", err);
+  //   }
+  // };
   const handleInputChange = (field, value) => {
     setFormData({
       ...formData,
@@ -125,10 +131,6 @@ const CAForm = () => {
   const validateFormData = () => {
     const errors = [];
 
-    if (!selectedWorkOrderNumber) {
-      errors.push("Work Order Number is required.");
-    }
-
     if (!formData.item) {
       errors.push("Item is required.");
     }
@@ -148,6 +150,14 @@ const CAForm = () => {
     if (!workOrderDetails.serialNo) {
       errors.push("Serial/Batch Number is required.");
     }
+    if (!workOrderDetails.status) {
+      errors.push("Status is required.");
+    }
+
+    if (!formData.remarks) {
+      errors.push("Remark is required.");
+    }
+
 
     return errors;
   };
@@ -165,7 +175,7 @@ const CAForm = () => {
       const payload = {
         // Required fields
         formTrackingNumber: formData.formTrackingNumber,
-        workOrderNo: selectedWorkOrderNumber,
+        workOrderNo: workOrderDetails.workOrderNumber,
         item: formData.item,
         description: workOrderDetails.description,
         partNo: workOrderDetails.partNo,
@@ -336,7 +346,14 @@ const CAForm = () => {
                   <label className="col-md-4 mt-2">
                     5. Work Order/Contract/Invoice:
                   </label>
-                  {partLoading ? (
+                  <input
+                    id="workOrderNumber"
+                    type="text"
+                    className={styles.inputField}
+                    value={workOrderDetails.workOrderNumber}
+                    onChange={(e) => handleInputChange("workOrderNumbers", e.target.value)}
+                  />
+                  {/* {partLoading ? (
                     <div className="d-flex align-items-center">
                       <div
                         className="spinner-border text-primary me-2"
@@ -367,7 +384,7 @@ const CAForm = () => {
                           </option>
                         ))}
                     </select>
-                  )}
+                  )} */}
                 </div>
               </div>
               <div className={`${styles.companySection} flex items-center `}>
@@ -462,10 +479,11 @@ const CAForm = () => {
                     id="status"
                     type="text"
                     className={styles.inputField}
-                    value={formData.status}
-                    onChange={(e) =>
-                      handleInputChange("status", e.target.value)
-                    }
+                    value={workOrderDetails.status}
+                    // onChange={(e) =>
+                    //   handleInputChange("status", e.target.value)
+                    // }
+                    required
                   />
                 </div>
               </div>
@@ -638,6 +656,7 @@ const CAForm = () => {
                         onChange={(e) =>
                           handleInputChange("name14d", e.target.value)
                         }
+                        disabled
                       />
                     </div>
                     <div className={styles.signatureItem}>
@@ -649,6 +668,7 @@ const CAForm = () => {
                         onChange={(e) =>
                           handleInputChange("date14e", e.target.value)
                         }
+                        disabled
                       />
                     </div>
                   </div>

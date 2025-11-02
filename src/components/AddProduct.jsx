@@ -193,7 +193,7 @@ const AddProduct = () => {
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-1">
-                          Product Number <span style={{ color: "red" }}>*</span>
+                          Part Number <span style={{ color: "red" }}>*</span>
                         </label>
                         <div className="input-group w-100">
                           <input
@@ -265,7 +265,10 @@ const AddProduct = () => {
                               letterSpacing: "1px",
                             }}
                           >
-                            <i className="bi bi-arrow-up"></i> UP
+                            <span style={{ fontSize: "20px" }}>
+                                          ↑
+                                        </span>
+                            {/* <i className="bi bi-arrow-up"></i> UP */}
                           </button>
                           {/* <button
                             type="button"
@@ -299,7 +302,10 @@ const AddProduct = () => {
                               letterSpacing: "1px",
                             }}
                           >
-                            <i className="bi bi-arrow-down-up"></i> BOTH
+                            <span style={{ fontSize: "20px" }}>
+                                          ↑↓
+                                        </span>
+                            {/* <i className="bi bi-arrow-down-up"></i> BOTH */}
                           </button>
                         </div>
                       </div>

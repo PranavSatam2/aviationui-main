@@ -66,7 +66,6 @@ const validationRules = {
     regex: /^[a-zA-Z]*$/,
   },
   middleName: {
-    length: 50,
     regex: /^[a-zA-Z]*$/,
   },
   lastName: {
@@ -232,7 +231,7 @@ const validationRules = {
                         onInput={(event) => {validateDataType(event,'A')}}
                         value={form.middleName}
                         onChange={handleChange}
-                        required
+                        
                       />
                     </div>
                     </div>
