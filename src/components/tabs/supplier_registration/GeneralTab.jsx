@@ -82,7 +82,12 @@ const GeneralTab = ({
             className="col-md-9 d-flex pt-2"
             style={{ alignItems: "center", justifyContent: "center" }}
           >
-            <label className="col-md-4 pt-2">Select Payment Terms</label>
+            <label className="col-md-4 pt-2">
+              Select Payment Terms
+              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
+                *
+              </span>
+            </label>
             {/* 30 Days */}
             <div className="form-check mx-3 p-0">
               <input
@@ -153,10 +158,19 @@ const GeneralTab = ({
                 Advance Pay
               </label>
             </div>
+            {errors.paymentTerms && (
+              <div className="col-md-4 mb-2">
+                <div
+                  className="col-md-6"
+                  style={{ color: "red", textAlign: "end" }}
+                >
+                  {errors.paymentTerms}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
       <hr className="mx-0 my-2 p-0 border" />
 
       {/* Contact Details */}
@@ -356,9 +370,7 @@ const GeneralTab = ({
                 style={{ width: "150px", height: "38px" }}
               >
                 {" "}
-                <option value="">
-                  Country Code
-                </option>
+                <option value="">Country Code</option>
                 {countryCodes.map((item) => (
                   <option key={item.code} value={item.code}>
                     {`${item.code} - ${item.country}`}
@@ -376,7 +388,7 @@ const GeneralTab = ({
                 onInput={(event) => {
                   if (event.target.value.trim() !== "") {
                     validateDataType(event, "N");
-                    validateLen(event, 0, 10);
+                    validateLen(event, 10, 10);
                   }
                 }}
                 disabled={disabledField}

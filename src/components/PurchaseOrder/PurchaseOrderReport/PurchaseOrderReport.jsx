@@ -2,8 +2,10 @@
 import { useState, useEffect } from "react";
 import styles from "./PurchaseOrderReport.module.css";
 import { Save } from "lucide-react";
+import { getPurchaseOrder } from "../../../services/db_manager";
+import { toast } from "react-toastify";
 
-const PurchaseOrderForm = ({ tableData }) => {
+const PurchaseOrderForm = ({ tableData, purchaseOrderID }) => {
   const [formData, setFormData] = useState({
     poNo: "",
     poDate: "",
@@ -34,13 +36,82 @@ const PurchaseOrderForm = ({ tableData }) => {
     sgst: "",
     cgst: "",
     igst: "",
-    total:"",
-    grandTotal:"",
+    total: "",
+    grandTotal: "",
+    cgstPercentage: "",
+    igstPercentage: "",
+    sgstPercentage: "",
   });
 
-  // Update form when tableData changes
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch purchase order data using API when purchaseOrderID is provided
+  const fetchPurchaseOrder = async () => {
+    if (!purchaseOrderID) return;
+
+    setIsLoading(true);
+    try {
+      const response = await getPurchaseOrder(purchaseOrderID);
+      if (response) {
+        // Create an items array since it's not in the response
+        const itemsArray = [
+          {
+            id: 1,
+            srNo: response.srNo || 1,
+            partNumber: response.partNumber || "",
+            description: response.description || "",
+            requiredQty: response.currentStoke || 0,
+            units: response.unit || "",
+            rate: response.ratePerUnit || 0,
+            gross: response.grossAmount || 0,
+          },
+        ];
+
+        setFormData({
+          poNo: response.poNumber || "",
+          poDate: response.poDate || "",
+          ourReference: response.ourReference || "",
+          yourReference: response.yourReference || "",
+          delivery: response.delivery || "",
+          deliveryAddress: response.deliveryAddress || "",
+          paymentTerms: response.paymentTerms || "",
+          items: itemsArray,
+          incoterm: response.incoterm || "",
+          currency: response.currency || "",
+          forwarder: response.forwarder || "",
+          sgst: response.sgst || 0,
+          cgst: response.cgst || 0,
+          igst: response.igst || 0,
+          total: response.total || 0,
+          grandTotal: response.grandTotal || 0,
+          pf: response.pf || 0,
+          transportation: response.transportation || 0,
+          insurance: response.insurance || 0,
+          other_Charges: response.other_Charges || 0,
+          cgstPercentage: response.cgstPercentage,
+          igstPercentage: response.cgstPercentage,
+          sgstPercentage: response.cgstPercentage,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching Purchase order details:", error);
+      toast.error("Error fetching Purchase order details.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch data when purchaseOrderID changes
   useEffect(() => {
-    if (tableData && Object.keys(tableData).length > 0) {
+    if (purchaseOrderID) {
+      fetchPurchaseOrder();
+    }
+  }, [purchaseOrderID]);
+
+  // Update form when tableData changes (backward compatibility)
+  useEffect(() => {
+    // Only use tableData if purchaseOrderID is not provided
+    if (!purchaseOrderID && tableData && Object.keys(tableData).length > 0) {
       // Create an items array with the first item from tableData
       const itemsArray = [
         {
@@ -56,7 +127,6 @@ const PurchaseOrderForm = ({ tableData }) => {
       ];
 
       setFormData({
-        ...formData,
         poNo: tableData.poNumber || "",
         poDate: tableData.poDate || "",
         ourReference: tableData.ourReference || "",
@@ -71,16 +141,15 @@ const PurchaseOrderForm = ({ tableData }) => {
         sgst: tableData.sgst,
         cgst: tableData.cgst,
         igst: tableData.igst,
-        total:tableData.total,
-        grandTotal:tableData.grandTotal,
+        total: tableData.total,
+        grandTotal: tableData.grandTotal,
         pf: tableData.pf,
         transportation: tableData.transportation,
         insurance: tableData.insurance,
         other_Charges: tableData.other_Charges,
-
       });
     }
-  }, [tableData]);
+  }, [tableData, purchaseOrderID]);
 
   const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -180,6 +249,20 @@ const PurchaseOrderForm = ({ tableData }) => {
     return calculateTotal() + sgstAmount + cgstAmount + igstAmount;
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.printContainer}>
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status"></div>
+            <p className="mt-2">Loading purchase order...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.printContainer}>
@@ -222,6 +305,7 @@ const PurchaseOrderForm = ({ tableData }) => {
                       validateDataType(e, "ANS");
                       handleChange("poNo", e.target.value);
                     }}
+                    readOnly
                   />
                 </div>
                 <div className={styles.orderInfoLabel}>P.O. Date:</div>
@@ -231,6 +315,7 @@ const PurchaseOrderForm = ({ tableData }) => {
                     className={styles.inputField}
                     value={formData.poDate}
                     onChange={(e) => handleChange("poDate", e.target.value)}
+                    readOnly
                   />
                 </div>
                 <div className={styles.orderInfoLabel}>Our Reference:</div>
@@ -243,6 +328,7 @@ const PurchaseOrderForm = ({ tableData }) => {
                       validateDataType(e, "ANS");
                       handleChange("ourReference", e.target.value);
                     }}
+                    readOnly
                   />
                 </div>
                 <div className={styles.orderInfoLabel}>Your Reference:</div>
@@ -255,6 +341,7 @@ const PurchaseOrderForm = ({ tableData }) => {
                       validateDataType(e, "ANS");
                       handleChange("yourReference", e.target.value);
                     }}
+                    readOnly
                   />
                 </div>
                 <div className={styles.orderInfoLabel}>Delivery:</div>
@@ -267,6 +354,7 @@ const PurchaseOrderForm = ({ tableData }) => {
                       validateDataType(e, "A");
                       handleChange("delivery", e.target.value);
                     }}
+                    readOnly
                   />
                 </div>
               </div>
@@ -287,6 +375,7 @@ const PurchaseOrderForm = ({ tableData }) => {
                       handleChange("deliveryAddress", e.target.value);
                     }}
                     rows={4}
+                    readOnly
                   />
                 </div>
               </div>
@@ -321,6 +410,7 @@ const PurchaseOrderForm = ({ tableData }) => {
                     handleChange("paymentTerms", e.target.value);
                   }}
                   style={{ width: "100%" }}
+                  readOnly
                 />
               </div>
             </div>
@@ -345,73 +435,13 @@ const PurchaseOrderForm = ({ tableData }) => {
                   formData.items.map((item, index) => (
                     <tr key={item.id}>
                       <td className={styles.tableCell}>{item.srNo}</td>
-                      <td className={styles.tableCell}>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={item.partNumber}
-                          onChange={(e) => {
-                            validateDataType(e, "ANS");
-                            handleItemChange(
-                              index,
-                              "partNumber",
-                              e.target.value
-                            );
-                          }}
-                        />
-                      </td>
-                      <td className={styles.tableCell}>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={item.description}
-                          onChange={(e) => {
-                            validateDataType(e, "ANS");
-                            handleItemChange(
-                              index,
-                              "description",
-                              e.target.value
-                            );
-                          }}
-                        />
-                      </td>
+                      <td className={styles.tableCell}>{item.partNumber}</td>
+                      <td className={styles.tableCell}>{item.description}</td>
                       <td className={styles.tableCellCenter}>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={item.requiredQty}
-                          onChange={(e) => {
-                            validateDataType(e, "N");
-                            handleItemChange(
-                              index,
-                              "requiredQty",
-                              e.target.value
-                            );
-                          }}
-                        />
+                        {item.requiredQty}
                       </td>
-                      <td className={styles.tableCellCenter}>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={item.units}
-                          onChange={(e) => {
-                            validateDataType(e, "A");
-                            handleItemChange(index, "units", e.target.value);
-                          }}
-                        />
-                      </td>
-                      <td className={styles.tableCellCenter}>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={item.rate}
-                          onChange={(e) => {
-                            validateDataType(e, "N");
-                            handleItemChange(index, "rate", e.target.value);
-                          }}
-                        />
-                      </td>
+                      <td className={styles.tableCellCenter}>{item.units}</td>
+                      <td className={styles.tableCellCenter}>{item.rate}</td>
                       <td className={styles.tableCellCenter}>
                         {(item.gross || 0).toFixed(2)}
                       </td>
@@ -426,11 +456,6 @@ const PurchaseOrderForm = ({ tableData }) => {
                 )}
               </tbody>
             </table>
-            <div className={styles.addButtonContainer}>
-              <button className={styles.addButton} onClick={handleAddItem}>
-                Add Item
-              </button>
-            </div>
           </div>
 
           {/* Footer Section */}
@@ -458,25 +483,17 @@ const PurchaseOrderForm = ({ tableData }) => {
                       type="text"
                       className={styles.inputField}
                       value={formData.incoterm}
-                      onChange={(e) => {
-                        validateDataType(e, "ANS");
-                        handleChange("incoterm", e.target.value);
-                      }}
+                      readOnly
                     />
                   </div>
                   <div>Currency:</div>
                   <div>
-                    <select
+                    <input
+                      type="text"
                       className={styles.inputField}
                       value={formData.currency}
-                      onChange={(e) => handleChange("currency", e.target.value)}
-                    >
-                      <option value="">Select Currency</option>
-                      <option value="USD">USD</option>
-                      <option value="GBP">GBP</option>
-                      <option value="EURO">EURO</option>
-                      <option value="INR">INR</option>
-                    </select>
+                      readOnly
+                    />
                   </div>
                   <div>Forwarder:</div>
                   <div>
@@ -484,10 +501,7 @@ const PurchaseOrderForm = ({ tableData }) => {
                       type="text"
                       className={styles.inputField}
                       value={formData.forwarder}
-                      onChange={(e) => {
-                        validateDataType(e, "A");
-                        handleChange("forwarder", e.target.value);
-                      }}
+                      readOnly
                     />
                   </div>
                 </div>
@@ -502,67 +516,64 @@ const PurchaseOrderForm = ({ tableData }) => {
                       {calculateSubtotal().toFixed(2)}
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <td className={styles.totalLabel}>P&F</td>
                     <td className={styles.totalValue}>
-                    {formData.pf}
-                      {/* <input
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.pf}
-                        onInput={(e) => validateDataType(e, "N")}
-                        onChange={(e) =>
-                          handleNumberChange("pf", e.target.value)
-                        }
-                      /> */}
+                      {(parseFloat(formData.pf) || 0).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
                     <td className={styles.totalLabel}>Transportation</td>
                     <td className={styles.totalValue}>
-                    {formData.transportation}
+                      {(parseFloat(formData.transportation) || 0).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
                     <td className={styles.totalLabel}>Insurance</td>
                     <td className={styles.totalValue}>
-                    {formData.insurance}
+                      {(parseFloat(formData.insurance) || 0).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
                     <td className={styles.totalLabel}>Other Charges</td>
                     <td className={styles.totalValue}>
-                    {formData.other_Charges}
+                      {(parseFloat(formData.other_Charges) || 0).toFixed(2)}
                     </td>
-                  </tr>
+                  </tr> */}
                   <tr>
                     <td className={styles.totalLabel}>Total</td>
                     <td className={styles.totalValue}>
-                      {formData?.total}
+                      {(parseFloat(formData.total) || 0).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
-                    <td className={styles.totalLabel}>SGST @ 9%</td>
+                    <td className={styles.totalLabel}>
+                      SGST{formData.sgstPercentage}%
+                    </td>
                     <td className={styles.totalValue}>
-                      {formData.sgst}
+                      {(parseFloat(formData.sgst) || 0).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
-                    <td className={styles.totalLabel}>CGST @ 9%</td>
+                    <td className={styles.totalLabel}>
+                      CGST {formData.cgstPercentage}%
+                    </td>
                     <td className={styles.totalValue}>
-                      {formData.cgst}
+                      {(parseFloat(formData.cgst) || 0).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
-                    <td className={styles.totalLabel}>IGST @ 18%</td>
+                    <td className={styles.totalLabel}>
+                      IGST {formData.igstPercentage}%
+                    </td>
                     <td className={styles.totalValue}>
-                      {formData.igst}
+                      {(parseFloat(formData.igst) || 0).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
                     <td className={styles.totalLabel}>Grand Total</td>
                     <td className={styles.totalValue}>
-                      {formData?.grandTotal}
+                      {(parseFloat(formData.grandTotal) || 0).toFixed(2)}
                     </td>
                   </tr>
                 </tbody>
@@ -583,14 +594,6 @@ const PurchaseOrderForm = ({ tableData }) => {
             <p>Form: AMC-32</p>
             <p>Rev:00</p>
             <p>Date: Jan 2021</p>
-          </div>
-
-          {/* Save Button */}
-          <div className={styles.saveButtonContainer}>
-            <button className={styles.saveButton}>
-              <Save size={18} className={styles.saveIcon} />
-              Save Purchase Order
-            </button>
           </div>
         </div>
       </div>
