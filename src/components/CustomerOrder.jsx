@@ -345,7 +345,7 @@ const CustomerOrder = () => {
                     </div>
                   </div>
                   <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">Unit Submit date *</label>
+                    <label className="col-md-4 mt-2">Unit Receive date *</label>
                     <input
                       className="form-control w-100"
                       type="date"

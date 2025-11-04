@@ -10,6 +10,7 @@ import {
 } from "../../../services/db_manager";
 import { toast } from "react-toastify";
 import { Save } from "lucide-react";
+import AMCLOGO from "../../../static/img/AMCLOGO.jpg";
 
 // Import Purchase.module.css styles
 import styles from "../Purchase.module.css";
@@ -416,7 +417,7 @@ const EditPurchaseOrder = () => {
                 <div className={styles.companyInfo}>
                   <div className={styles.companyLogo}>
                     <img
-                      src="/api/placeholder/100/50"
+                      src={AMCLOGO}
                       alt="AMC Technology Logo"
                       className={styles.logoImage}
                     />

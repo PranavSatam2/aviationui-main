@@ -15,37 +15,58 @@ body {
 .printView {
   display: none;
 }
+
 .printViewDetails {
   display: none;
 }
+
 @media print {
   @page {
-    size: A4;
-    margin: 0;
+    size: A4 portrait;
+    margin: 15mm 10mm;
   }
 
-  html,
+  html {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
   body {
-    width: 1400px;
-    height: 50%;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  .normalView {
-    display: none !important;
-  }
-
-  .printView {
-    display: block !important;
-  }
+  .normalView,
   .normalViewDetails {
     display: none !important;
   }
 
+  .printView,
   .printViewDetails {
-    display: block;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  /* Allow page breaks everywhere */
+  * {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  .page-break {
+    page-break-before: always;
+    break-before: always;
   }
 }
-
 .wrapper {
   display: flex;
   position: fixed;
@@ -317,10 +338,10 @@ td .scrollable-content {
 /* Compact form fields (30px height) */
 form .form-control,
 form .form-select {
-  height: 30px;          /* smaller height */
-  line-height: 30px;     /* text vertically centered */
-  padding: 2px 8px;      /* tighter padding */
-  font-size: 13px;       /* slightly smaller font */
+  height: 30px; /* smaller height */
+  line-height: 30px; /* text vertically centered */
+  padding: 2px 8px; /* tighter padding */
+  font-size: 13px; /* slightly smaller font */
 }
 
 /* Labels aligned to middle */
@@ -329,7 +350,7 @@ form label {
   align-items: center;
   font-weight: 500;
   font-size: 13px;
-  margin-bottom: 0;   /* remove extra spacing */
+  margin-bottom: 0; /* remove extra spacing */
 }
 
 /* Ensure flex rows align nicely */
@@ -339,7 +360,7 @@ form .d-flex {
 
 /* Selects look same as inputs */
 form .form-select {
-  padding-right: 25px; 
+  padding-right: 25px;
 }
 
 /* Button compact style */

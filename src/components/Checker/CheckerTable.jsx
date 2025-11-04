@@ -143,7 +143,7 @@ const Checker = () => {
       ...selecteSupplierData,
       remark: remark,
       // supplierId: selectedItem,
-      userRole:'QM',
+      userRole: "QM",
       userAction: action === "rejected" ? "3" : "2", // 👈 conditional value
     };
     try {
@@ -154,14 +154,13 @@ const Checker = () => {
       console.error("Error fetching supplier details: ", error);
       toast.error("Failed to fetch supplier details");
     }
-  
+
     // Reset states
     setSelectedItem("");
     setSelectAll(false);
     setRemark("");
     handleCloseModal();
   };
-  
 
   // Search functionality
   const filteredData = tableData.filter((supplier) => {
@@ -227,26 +226,647 @@ const Checker = () => {
   };
 
   const handlePrintClick = (supplier) => {
-    // Store the supplier data
-    setSupplierData(supplier);
+    // Create print window immediately with the supplier data
+    const printWindow = window.open("", "_blank", "width=800,height=600");
 
-    // Short delay to ensure React has updated the state and rendered the component
-    setTimeout(() => {
-      // Cache original body styles
-      const originalBodyStyle = document.body.style.cssText;
+    if (!printWindow) {
+      alert("Please allow pop-ups for printing");
+      return;
+    }
 
-      // Apply print-friendly styles to the body
-      document.body.style.margin = "0";
-      document.body.style.padding = "0";
+    // Write the complete HTML with inline data
+    printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Print Supplier Registration - ${
+          supplier.supplierName || "Supplier"
+        }</title>
+        <meta charset="UTF-8">
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 10mm;
+          }
+          
+          * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: white;
+            font-size: 12px;
+          }
+          
+          .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+          }
+          
+          table {
+            border-collapse: collapse;
+            width: 100%;
+            page-break-inside: auto;
+            border: 1px solid black;
+          }
+          
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+          
+          td, th {
+            page-break-inside: avoid;
+            border: 1px solid black;
+            padding: 6px;
+          }
+          
+          thead {
+            display: table-header-group;
+          }
+          
+          tbody {
+            display: table-row-group;
+          }
+          
+          strong {
+            font-weight: bold;
+          }
+          
+          @media print {
+            body {
+              padding: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <!-- Header Section -->
+          <div style="display: flex; border: 1px solid black; margin-bottom: 15px;">
+            <div style="width: 20%; padding: 10px; border-right: 1px solid black; font-weight: bold;">
+              amc
+            </div>
+            <div style="width: 55%; text-align: center; padding: 10px; font-weight: bold; font-size: 16px; border-right: 1px solid black;">
+              SUPPLIER / SUB-CONTRACTOR EVALUATION FORM
+            </div>
+            <div style="width: 25%; padding: 10px;">
+              <div>Form: AMC-29</div>
+              <div>Rev.: 00</div>
+              <div>Date: Jan 2021</div>
+            </div>
+          </div>
 
-      // Print the document
-      window.print();
+          <!-- General Information Section -->
+          <div style="margin-bottom: 20px; border: 1px solid black; padding: 10px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div style="width: 60%;">
+                <strong>Supplier Name:</strong> ${
+                  supplier.supplierName || "N/A"
+                }
+              </div>
+              <div style="width: 40%;">
+                <strong>Date:</strong> ${
+                  supplier.date || new Date().toLocaleDateString()
+                }
+              </div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <strong>Address:</strong> ${supplier.address || "N/A"}
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div style="width: 33%;">
+                <strong>Phone:</strong> ${supplier.countryCode || ""} ${
+      supplier.phoneNumber || "N/A"
+    }
+              </div>
+              <div style="width: 33%;">
+                <strong>Fax:</strong> ${supplier.faxNum || "N/A"}
+              </div>
+              <div style="width: 33%;">
+                <strong>Email:</strong> ${supplier.email || "N/A"}
+              </div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <strong>Payment Terms:</strong> ${
+                supplier.paymentTerms
+                  ? `${supplier.paymentTerms} ${
+                      supplier.paymentTerms !== "Advance Pay" ? "Days" : ""
+                    }`
+                  : "N/A"
+              }
+            </div>
+            <div style="margin-bottom: 10px; border-top: 1px solid #ddd; padding-top: 10px;">
+              <div style="font-weight: bold; margin-bottom: 5px;">Quality Manager Contact:</div>
+              <div style="display: flex; justify-content: space-between;">
+                <div style="width: 33%;">
+                  <strong>Name:</strong> ${supplier.qualityManagerName || "N/A"}
+                </div>
+                <div style="width: 33%;">
+                  <strong>Phone:</strong> ${
+                    supplier.qualityManagerCountryCode || ""
+                  } ${supplier.qualityManagerPhoneNumber || "N/A"}
+                </div>
+                <div style="width: 33%;">
+                  <strong>Email:</strong> ${
+                    supplier.qualityManagerEmailId || "N/A"
+                  }
+                </div>
+              </div>
+            </div>
+            <div style="border-top: 1px solid #ddd; padding-top: 10px;">
+              <div style="font-weight: bold; margin-bottom: 5px;">Sales Representative Contact:</div>
+              <div style="display: flex; justify-content: space-between;">
+                <div style="width: 33%;">
+                  <strong>Name:</strong> ${
+                    supplier.saleRepresentativeName || "N/A"
+                  }
+                </div>
+                <div style="width: 33%;">
+                  <strong>Phone:</strong> ${
+                    supplier.saleRepresentativeCountryCode || ""
+                  } ${supplier.saleRepresentativePhoneNumber || "N/A"}
+                </div>
+                <div style="width: 33%;">
+                  <strong>Email:</strong> ${
+                    supplier.saleRepresentativeEmailId || "N/A"
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
 
-      // Restore original body styles after printing dialog is closed
-      setTimeout(() => {
-        document.body.style.cssText = originalBodyStyle;
-      }, 100);
-    }, 500);
+          <!-- Supplier Analysis Section -->
+          <div style="border: 1px solid black; margin-bottom: 15px;">
+            <div style="padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5; border-bottom: 1px solid black;">
+              SUPPLIER ANALYSIS
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; padding: 8px; font-size: 0.85em;">
+              <div><strong>1) Core products/Process:</strong><br/>${
+                supplier.coreProcess || "N/A"
+              }</div>
+              <div><strong>2) Years in Business:</strong><br/>${
+                supplier.workYear || "N/A"
+              } years</div>
+              <div><strong>3) ISO Registered?</strong><br/>${
+                supplier.isoRegistered || "N/A"
+              }</div>
+              <div><strong>4) ISO Standard:</strong><br/>${
+                supplier.isoStandard || "N/A"
+              }</div>
+              <div><strong>5) ISO Certificate:</strong><br/>${
+                supplier.isoCertificate || "N/A"
+              }</div>
+              <div><strong>6) CAR 145 / DGCA Approval:</strong><br/>${
+                supplier.carDgcaApproval || "N/A"
+              }</div>
+              <div><strong>7) ISO Registration Plans:</strong><br/>${
+                supplier.isoRegistrationPlans || "N/A"
+              }</div>
+              <div><strong>8) Total Employees:</strong><br/>${
+                supplier.numEmp || "N/A"
+              }</div>
+              <div><strong>9) Operating Shifts:</strong><br/>${
+                supplier.numOpeShift || "N/A"
+              }</div>
+              <div><strong>10) Quality Manual Available?</strong><br/>${
+                supplier.quaManual || "N/A"
+              }</div>
+              <div><strong>11) Annual Turnover (INR):</strong><br/>${
+                supplier.turnOver || "N/A"
+              }</div>
+            </div>
+          </div>
+
+          <!-- Quality Process Section -->
+          <div style="margin-bottom: 15px;">
+            <div style="border: 1px solid black; border-bottom: none; padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5;">
+              QUALITY PROCESS
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="padding: 6px; width: 70%; text-align: left;">QMS</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">YES</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">NO</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 6px;">Does quality assurance have independence from Mfg.?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.independenceManuf === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.independenceManuf === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.independenceManuf === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Do you have documented operative system for internal & external Corrective & preventive actions</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedOperative === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedOperative === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedOperative === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are there documented procedure for identification, collection, filing, Storage & maintenance of Quality records?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedProcedure === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedProcedure === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedProcedure === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Does your system assure that product shipped meets customers applicable revision of specifications</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.productShipment === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.productShipment === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.productShipment === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Incoming Inspection Section -->
+          <div style="margin-bottom: 15px;">
+            <div style="border: 1px solid black; border-bottom: none; padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5;">
+              INCOMING INSPECTION
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="padding: 6px; width: 70%; text-align: left;">Questions</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">YES</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">NO</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 6px;">Is incoming process documented?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.processDocumented === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.processDocumented === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.processDocumented === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">What sampling plan is used for incoming inspection?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.samplingIncomingInsp === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.samplingIncomingInsp === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.samplingIncomingInsp === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is objective evidence of receiving inspection results maintained on file?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.receivingInspectionResultsOnFile === "Yes"
+                      ? "✓"
+                      : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.receivingInspectionResultsOnFile === "No"
+                      ? "✓"
+                      : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.receivingInspectionResultsOnFile === "N/A"
+                      ? "✓"
+                      : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is lot number or other traceability identification maintained?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.identificationMaintained === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.identificationMaintained === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.identificationMaintained === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is incoming material kept separate from inspected material?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.sepInsMaterial === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.sepInsMaterial === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.sepInsMaterial === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is there any procedure for isolating nonconforming material?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.nonConMaterial === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.nonConMaterial === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.nonConMaterial === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are deviations that affect the customer's requirement referred to customers for disposition?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.affectCusReq === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.affectCusReq === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.affectCusReq === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Process/Document/Procurement Control Section -->
+          <div style="margin-bottom: 15px; padding-top:30px;">
+            <div style="border: 1px solid black; border-bottom: none; padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5;">
+              PROCESS / DOCUMENT / PROCUREMENT CONTROL
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="padding: 6px; width: 70%; text-align: left;">Questions</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">YES</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">NO</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 6px;">Are written work instructions available at work stations?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.writtenWorkInstructionsAvaibleInStation === "Yes"
+                      ? "✓"
+                      : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.writtenWorkInstructionsAvaibleInStation === "No"
+                      ? "✓"
+                      : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.writtenWorkInstructionsAvaibleInStation === "N/A"
+                      ? "✓"
+                      : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Does the finished product show evidence of final inspection acceptance?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.finalInspectionEvidence === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.finalInspectionEvidence === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.finalInspectionEvidence === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are statistical methods used to control the process?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.statisMethod === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.statisMethod === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.statisMethod === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are procedures in place for control of customer-supplied documents?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.suppliedDocument === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.suppliedDocument === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.suppliedDocument === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Does range procedure include a method for handling revision changes & obsolete documents?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.includeMethod === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.includeMethod === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.includeMethod === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are quality capabilities of suppliers evaluated prior to procurement?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.qualityCapabilities === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.qualityCapabilities === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.qualityCapabilities === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Do you have an approved supplier list?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.approvedSupplierList === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.approvedSupplierList === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.approvedSupplierList === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is the supplier competent with respect to market price?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.marketPrice === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.marketPrice === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.marketPrice === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are certified test reports & certifications of conformance obtained on purchased material?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.certifiedTestReports === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.certifiedTestReports === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.certifiedTestReports === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is the supplier capable of on-time delivery?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.supplierOnTimeDelivery === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.supplierOnTimeDelivery === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.supplierOnTimeDelivery === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Material and Other Section -->
+          <div style="margin-bottom: 15px;">
+            <div style="border: 1px solid black; border-bottom: none; padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5;">
+              MATERIAL AND OTHER
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="padding: 6px; width: 70%; text-align: left;">Questions</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">YES</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">NO</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 6px;">Are equipment calibrated?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.equipCalibrated === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.equipCalibrated === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.equipCalibrated === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are gauges and test equipment periodically certified, and are records maintained for frequency of recalibration?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.recalibration === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.recalibration === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.recalibration === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are gauges, test equipment available and sufficient for our scope of work?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.scopeOfWork === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.scopeOfWork === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.scopeOfWork === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is there adequate area & safety programs in place?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.safetyProgram === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.safetyProgram === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.safetyProgram === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is there a procedure in place for housekeeping?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.houseKeeping === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.houseKeeping === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.houseKeeping === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Internal Use Section -->
+          <div style="margin-top: 30px; border-top: 1px solid black; padding-top: 10px;">
+            <div style="margin-bottom: 10px; font-weight: bold;">FOR AMC TECHNOLOGY INTERNAL USE</div>
+            <div style="margin-bottom: 10px;">Approval to vendor (Yes / No): _________________</div>
+            <div style="margin-bottom: 20px;">Remark (If Any): _______________________________</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+              <div>Quality Manager</div>
+              <div>Date: ________________</div>
+            </div>
+          </div>
+        </div>
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 500);
+          };
+        </script>
+      </body>
+    </html>
+  `);
+
+    printWindow.document.close();
   };
 
   // Column definitions for the table

@@ -9,7 +9,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
-import PurchaseOrderReport from "../PurchaseOrderReport/PurchaseOrderReport";
 import styles from "../ViewPurchaseOrder/ViewPurchaseOrder.module.css";
 import PurchaseOrderForm from "../PurchaseOrderReport/PurchaseOrderReport";
 const ViewPurchaseOrderPage = () => {
@@ -197,7 +196,7 @@ const ViewPurchaseOrderPage = () => {
   ];
 
   const handlePrintClick = (purchaseOrder) => {
-    setPurchaseOrderData(purchaseOrder);
+    setPurchaseOrderData(purchaseOrder.id); // Pass ID instead of entire object
     setTimeout(() => {
       window.print();
     }, 500);
@@ -217,7 +216,7 @@ const ViewPurchaseOrderPage = () => {
         <div style={{ marginTop: "10px" }}>
           <CustomBreadcrumb breadcrumbsLabel="View Purchase Orders" />
           <div className="printView">
-            <PurchaseOrderForm tableData={purchaseOrderData} />
+            <PurchaseOrderForm purchaseOrderID={purchaseOrderData} />
           </div>
           <div
             className={[

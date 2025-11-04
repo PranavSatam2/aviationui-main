@@ -166,7 +166,9 @@ const SupplierRegistration = () => {
       if (response) {
         toast.success("Supplier Added successfully");
         setDataMap(formVariavles);
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       } else if (response?.error) {
         toast.error(response.error.message);
       }
@@ -199,7 +201,6 @@ const SupplierRegistration = () => {
           "qualityManagerPhoneNumber",
           "qualityManagerCountryCode",
           "isoRegistrationPlans",
-          "paymentTerms",
         ].includes(key)
       ) {
         errorMessages[key] = "This field is required.";
@@ -246,7 +247,6 @@ const SupplierRegistration = () => {
           "qualityManagerEmailId",
           "qualityManagerPhoneNumber",
           "qualityManagerCountryCode",
-          "paymentTerms",
         ].includes(name)
           ? "This field is required."
           : "",

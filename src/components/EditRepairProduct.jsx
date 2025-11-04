@@ -7,8 +7,32 @@ import { getCustomerById, updateCustomer } from "../services/db_manager";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const EditCustomer = () => {
-  const { id } = useParams(); // get ID from route
+  const { id } = useParams();
   const navigate = useNavigate();
+
+  // Country codes list
+  const countryCodes = [
+    { code: "+1", country: "USA/Canada" },
+    { code: "+44", country: "UK" },
+    { code: "+91", country: "India" },
+    { code: "+86", country: "China" },
+    { code: "+81", country: "Japan" },
+    { code: "+49", country: "Germany" },
+    { code: "+33", country: "France" },
+    { code: "+39", country: "Italy" },
+    { code: "+61", country: "Australia" },
+    { code: "+971", country: "UAE" },
+    { code: "+65", country: "Singapore" },
+    { code: "+82", country: "South Korea" },
+    { code: "+7", country: "Russia" },
+    { code: "+55", country: "Brazil" },
+    { code: "+27", country: "South Africa" },
+    { code: "+52", country: "Mexico" },
+    { code: "+34", country: "Spain" },
+    { code: "+31", country: "Netherlands" },
+    { code: "+46", country: "Sweden" },
+    { code: "+41", country: "Switzerland" },
+  ];
 
   const [form, setForm] = useState({
     customerName: "",
@@ -57,13 +81,12 @@ const EditCustomer = () => {
         break;
 
       case "phoneNo":
-        if (!/^[0-9]{12}$/.test(value))
-          return `Phone number must be exactly 12 digits.`;
+        if (!/^[0-9]{10}$/.test(value))
+          return `Phone number must be exactly 10 digits.`;
         break;
 
       case "countryCode":
-        if (!/^[0-9]{2}$/.test(value))
-          return `Country code must be exactly 2 digits.`;
+        if (!value) return "Country code is required.";
         break;
 
       case "mobileNumber":
@@ -125,7 +148,7 @@ const EditCustomer = () => {
       const response = await updateCustomer(id, form);
       if (response.status === 200) {
         alert("Customer updated successfully!");
-        navigate("/viewCustomers"); // go back to list page
+        navigate("/viewCustomers");
       }
     } catch (error) {
       console.error("Error updating customer:", error);
@@ -171,34 +194,37 @@ const EditCustomer = () => {
                       </div>
                     </div>
 
-
                     {/* Phone, Country Code & Mobile */}
                     <div className="row mb-3">
                       <div className="col-md-4">
-                        <label className="form-label fw-bold">Phone No * (12 digits)</label>
+                        <label className="form-label fw-bold">Phone No * </label>
                         <input
                           className="form-control"
                           type="text"
                           name="phoneNo"
                           value={form.phoneNo}
                           onChange={handleChange}
-                          placeholder="Enter 12 digit phone number"
-                          maxLength="12"
+                          placeholder="Enter phone number"
+                          maxLength="10"
                           required
                         />
                       </div>
                       <div className="col-md-2">
-                        <label className="form-label fw-bold">Country Code * (2 digits)</label>
-                        <input
-                          className="form-control"
-                          type="text"
+                        <label className="form-label fw-bold">Country Code *</label>
+                        <select
+                          className="form-select"
                           name="countryCode"
                           value={form.countryCode}
                           onChange={handleChange}
-                          placeholder="e.g., 91"
-                          maxLength="2"
                           required
-                        />
+                        >
+                          <option value="">Select</option>
+                          {countryCodes.map((item) => (
+                            <option key={item.code} value={item.code}>
+                              {`${item.code} - ${item.country}`}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div className="col-md-6">
                         <label className="form-label fw-bold">Mobile Number * (10 digits)</label>
@@ -332,8 +358,6 @@ const EditCustomer = () => {
                         />
                       </div>
                     </div>
-
-
 
                     {/* Submit Button */}
                     <div className="row">

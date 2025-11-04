@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import { addCustomer, getCustomerById } from "../services/db_manager"; // service to call API
+import { addCustomer, getCustomerById } from "../services/db_manager";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const AddCustomer = () => {
@@ -11,6 +11,30 @@ const AddCustomer = () => {
   const navigate = useNavigate();
   const isViewMode = window.location.pathname.includes('/viewCustomer/');
   const isEditMode = window.location.pathname.includes('/editCustomer/');
+  
+  // Country codes list
+  const countryCodes = [
+    { code: "+1", country: "USA/Canada" },
+    { code: "+44", country: "UK" },
+    { code: "+91", country: "India" },
+    { code: "+86", country: "China" },
+    { code: "+81", country: "Japan" },
+    { code: "+49", country: "Germany" },
+    { code: "+33", country: "France" },
+    { code: "+39", country: "Italy" },
+    { code: "+61", country: "Australia" },
+    { code: "+971", country: "UAE" },
+    { code: "+65", country: "Singapore" },
+    { code: "+82", country: "South Korea" },
+    { code: "+7", country: "Russia" },
+    { code: "+55", country: "Brazil" },
+    { code: "+27", country: "South Africa" },
+    { code: "+52", country: "Mexico" },
+    { code: "+34", country: "Spain" },
+    { code: "+31", country: "Netherlands" },
+    { code: "+46", country: "Sweden" },
+    { code: "+41", country: "Switzerland" },
+  ];
   
   const [form, setForm] = useState({
     customerName: "",
@@ -68,8 +92,8 @@ const AddCustomer = () => {
   const validationRules = {
     customerName: { required: true, maxLength: 255 },
     contactPersonName: { required: true, maxLength: 255 },
-    phoneNo: { required: true, pattern: /^[0-9]{12}$/ },
-    countryCode: { required: true, pattern: /^[0-9]{2}$/ },
+    phoneNo: { required: true, pattern: /^[0-9]{10}$/ },
+    countryCode: { required: true }, // Updated - removed pattern validation
     mobileNumber: { required: true, pattern: /^[0-9]{10}$/ },
     emailId: { required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
     shipToAddress1: { required: true, maxLength: 500 },
@@ -85,7 +109,7 @@ const AddCustomer = () => {
     e.preventDefault();
 
     if (isViewMode) {
-      return; // Don't submit in view mode
+      return;
     }
 
     // Validate fields
@@ -99,17 +123,13 @@ const AddCustomer = () => {
 
     try {
       if (isEditMode) {
-        // Handle edit mode - you'll need to implement updateCustomer in your service
-        // const response = await updateCustomer(id, form);
         alert("Edit functionality needs to be implemented in the service");
         return;
       } else {
-        // Handle add mode
         const response = await addCustomer(form);
         console.log("Customer added successfully:", response.data);
         alert("Customer Added Successfully!");
 
-        // Reset form
         setForm({
           customerName: "",
           contactPersonName: "",
@@ -191,25 +211,29 @@ const AddCustomer = () => {
                           name="phoneNo"
                           value={form.phoneNo}
                           onChange={handleChange}
-                          placeholder="Enter 12 digit phone number"
-                          maxLength="12"
+                          placeholder="Enter phone number"
+                          maxLength="10"
                           readOnly={isViewMode}
                           required
                         />
                       </div>
                       <div className="col-md-2">
                         <label>Country Code *</label>
-                        <input
-                          className="form-control"
-                          type="text"
+                        <select
+                          className="form-select"
                           name="countryCode"
                           value={form.countryCode}
                           onChange={handleChange}
-                          placeholder="e.g., 91"
-                          maxLength="2"
-                          readOnly={isViewMode}
+                          disabled={isViewMode}
                           required
-                        />
+                        >
+                          <option value="">Select</option>
+                          {countryCodes.map((item) => (
+                            <option key={item.code} value={item.code}>
+                              {`${item.code} - ${item.country}`}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div className="col-md-6">
                         <label>Mobile Number *</label>
