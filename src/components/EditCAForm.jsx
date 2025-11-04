@@ -281,6 +281,7 @@ const EditCAForm = () => {
                       handleInputChange("remarks", e.target.value)
                     }
                     style={{ height: "70px" }}
+                    required
                   ></textarea>
                 </div>
               </div>
@@ -496,7 +497,7 @@ const EditCAForm = () => {
               <div>
                 <button onClick={handleSave} className={styles.saveButton}>
                   <Save size={15} className={styles.saveIcon} />
-                  Save CA Form
+                  Edit CA Form
                 </button>
               </div>
             </div>

@@ -4,6 +4,7 @@ import CheckboxWithTick from "./CheckboxWithTick";
 import logo from "../static/img/logo.png";
 
 export const PrintCAForm = ({ dataMap }) => {
+  console.log("Print",dataMap);
   // Changed from (dataMap) to ({ dataMap })
   return (
     <div className={styles.container}>
@@ -41,7 +42,7 @@ export const PrintCAForm = ({ dataMap }) => {
             <div style={{ width: "30%", padding: "10px", fontWeight: "bold" }}>
               3. Form Tracking Number
               <br />
-              {dataMap?.id || "N/A"}
+              {dataMap?.formTrackingNumber || "N/A"}
             </div>
           </div>
 
@@ -92,7 +93,7 @@ export const PrintCAForm = ({ dataMap }) => {
             <div style={{ width: "30%", padding: "10px" }}>
               5. Work Order/Contract/Invoice:
               <br />
-              {dataMap?.workOrderNo || "N/A"}
+              {dataMap?.workOrderNumber || "N/A"}
             </div>
           </div>
 
@@ -230,7 +231,7 @@ export const PrintCAForm = ({ dataMap }) => {
               12. Remarks:
               <br />
               <div style={{ paddingLeft: "60px" }}>
-                {dataMap?.remarks || "N/A"}
+                {dataMap?.remark || "N/A"}
               </div>
             </div>
           </div>

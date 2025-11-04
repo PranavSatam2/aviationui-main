@@ -218,7 +218,7 @@ const CAForm = () => {
 
   const handlePrintClick = (report) => {
     // Store the report data
-    //console.log("Report",report)
+    console.log("Report",report)
     setReportData(report.data);
 
     // Short delay to ensure React has updated the state and rendered the component

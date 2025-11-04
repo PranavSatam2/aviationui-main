@@ -154,7 +154,7 @@ export default function GenerateCAForm() {
           <Header />
           <div style={{ marginTop: "10px" }}>
             <CustomBreadcrumb
-              breadcrumbsLabel="Generate Inspection Report"
+              breadcrumbsLabel="Generate CA Form"
               // isBack={true}
             />
             <div className={styles.container}>
