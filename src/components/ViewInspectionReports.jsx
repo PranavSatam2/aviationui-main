@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { getViewReportList,  getReportDetails } from "../services/db_manager";
+import { getViewReportList, getReportDetails } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
@@ -98,44 +98,44 @@ const ViewInspectionReports = () => {
         })
     : [];
 
-    const editSelectedElement = async (elementId) => {
-        if (elementId !== "") {
-          try {
-            let reportId = elementId;
-            let reportData = await getReportDetails(elementId);
-            reportData = reportData.data;
-            console.log("Fetched report data:", reportData);  // Log the fetched data
-    
-            setSelectedRow(reportData);
-            console.log("Selected Row Data: ", reportData);  // Log to verify data
-    
-            setShowModal1(true);
-            // if (reportId !== null) {
-            //   navigate("/ViewSupplier", {
-            //     state: { reportId, reportData },
-            //   });
-            // }
-          } catch (error) {
-            console.error("Error fetching report details: ", error);
-            toast.error("Failed to fetch report details");
-          }
-        }
-      };
+  const editSelectedElement = async (elementId) => {
+    if (elementId !== "") {
+      try {
+        let reportId = elementId;
+        let reportData = await getReportDetails(elementId);
+        reportData = reportData.data;
+        console.log("Fetched report data:", reportData); // Log the fetched data
 
-      // Modal handlers
-        const handleOpenModal = (type) => {
-          if (!selectedItem) {
-            toast.warning("Please select a report");
-            return;
-          }
-          setActionType(type);
-          setShowModal(true);
-        };
-      
-        const handleCloseModal = () => {
-          setShowModal(false);
-          setRemark("");
-        };
+        setSelectedRow(reportData);
+        console.log("Selected Row Data: ", reportData); // Log to verify data
+
+        setShowModal1(true);
+        // if (reportId !== null) {
+        //   navigate("/ViewSupplier", {
+        //     state: { reportId, reportData },
+        //   });
+        // }
+      } catch (error) {
+        console.error("Error fetching report details: ", error);
+        toast.error("Failed to fetch report details");
+      }
+    }
+  };
+
+  // Modal handlers
+  const handleOpenModal = (type) => {
+    if (!selectedItem) {
+      toast.warning("Please select a report");
+      return;
+    }
+    setActionType(type);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setRemark("");
+  };
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -218,25 +218,12 @@ const ViewInspectionReports = () => {
     console.log("Report", report);
     setReportData(report);
 
-    // Short delay to ensure React has updated the state and rendered the component
+    // Longer delay to ensure React has updated the state and rendered the component
     setTimeout(() => {
-      // Cache original body styles
-      const originalBodyStyle = document.body.style.cssText;
-
-      // Apply print-friendly styles to the body
-      document.body.style.margin = "0";
-      document.body.style.padding = "0";
-
-      // Print the document
       window.print();
-
-      // Restore original body styles after printing dialog is closed
-      setTimeout(() => {
-        document.body.style.cssText = originalBodyStyle;
-      }, 100);
-    }, 500);
+    }, 100); // Reduced from 500ms, the setTimeout is enough for React to update
   };
-useEffect(() => {
+  useEffect(() => {
     setSelectedItem("");
     setSelectAll(false);
   }, [currentPage, itemsPerPage]);
@@ -317,7 +304,7 @@ useEffect(() => {
     // { field: "checkerUserName", label: "Checker Name", width: "100px" },
     // { field: "checkerDate", label: "Checker  Date", width: "100px" },
   ];
-  
+
   return (
     <div className="wrapper">
       <Sidebar />
@@ -325,7 +312,10 @@ useEffect(() => {
         <Header />
         <div style={{ marginTop: "10px" }}>
           <CustomBreadcrumb breadcrumbsLabel="View Inspection Report" />
-          <div className="printView">
+          <div
+            className="printView"
+            style={{ position: "absolute", left: "-9999px", top: 0 }}
+          >
             <PrintInspectionReport dataMap={reportData} />
           </div>
 
@@ -523,7 +513,9 @@ useEffect(() => {
                                 <button
                                   className="btn btn-sm btn-outline-primary"
                                   onClick={() =>
-                                    editSelectedElement(report.inspectionReportId)
+                                    editSelectedElement(
+                                      report.inspectionReportId
+                                    )
                                   }
                                   title="View Doc"
                                 >
@@ -654,46 +646,105 @@ useEffect(() => {
         </div>
         <Footer />
       </div>
-    
 
-    {showModal1 && selectedRow && (
-      <div className="modalBackdrop1">
-        <Modal show={showModal1} onHide={() => setShowModal1(false)}>
-      <Modal.Header closeButton>
-        <Modal.Title>Inspection Report</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-      <p><strong>Inspection Report Id:</strong> {selectedRow.inspectionReportId}</p>
-      <p><strong>Part Description:</strong> {selectedRow.partDesc}</p>
-      <p><strong>Purchase Order No.:</strong> {selectedRow.purchaseOrderNo}</p>
-      <p><strong>Supplier Name:</strong> {selectedRow.supplierName}</p>
-      <p><strong>Report No:</strong> {selectedRow.reportNo}</p>
-      <p><strong>Quantity:</strong> {selectedRow.qty}</p>
-      <p><strong>Receive Quantity:</strong> {selectedRow.qtyReceive}</p>
-      <p><strong>Date:</strong> {selectedRow.date}</p>
-      <p><strong>Invoice  Observation:</strong> {selectedRow.invoiceObservation}</p>
-      <p><strong>Manufacturer Cert Observation:</strong> {selectedRow.manufacturerCertObservation}</p>
-      <p><strong>Supplier Cert. Observation:</strong> {selectedRow.supplierCertObservation}</p>
-      <p><strong>Cert. Full Traceability Observation:</strong> {selectedRow.fullTraceabilityObservation}</p>
-      <p><strong>Batch Number Observation:</strong> {selectedRow.batchNumberObservation}</p>
-      <p><strong>Date of Manufacturing & Date of Expiry Observation:</strong> {selectedRow.dateOfManufacturingObservation}</p>
-      <p><strong>Self Life Observation:</strong> {selectedRow.selfLifeObservation}</p>
-      <p><strong>Technical Data Sheet(TDS) & MSDS Observation:</strong> {selectedRow.tdsObservation}</p>
-      <p><strong>Material Condition Observation:</strong> {selectedRow.materialConditionObservation}</p>
-      <p><strong>Specification Observation:</strong> {selectedRow.specificationObservation}</p>
-      <p><strong>Documents Observation:</strong> {selectedRow.documentObservation}</p>
-      <p><strong>Lot Accepted:</strong> {selectedRow.lotAccepted}</p>
-      <p><strong>Remark:</strong> {selectedRow.remark}</p>
-      <p><strong>Maker Name</strong> {selectedRow.makerUserName}</p>
-      <p><strong>Maker Date:</strong> {selectedRow.makerDate}</p>
-    
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={() => setShowModal1(false)}>Close</Button>
-      </Modal.Footer>
-    </Modal>
-      </div>
-      )} 
+      {showModal1 && selectedRow && (
+        <div className="modalBackdrop1">
+          <Modal show={showModal1} onHide={() => setShowModal1(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Inspection Report</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>
+                <strong>Inspection Report Id:</strong>{" "}
+                {selectedRow.inspectionReportId}
+              </p>
+              <p>
+                <strong>Part Description:</strong> {selectedRow.partDesc}
+              </p>
+              <p>
+                <strong>Purchase Order No.:</strong>{" "}
+                {selectedRow.purchaseOrderNo}
+              </p>
+              <p>
+                <strong>Supplier Name:</strong> {selectedRow.supplierName}
+              </p>
+              <p>
+                <strong>Report No:</strong> {selectedRow.reportNo}
+              </p>
+              <p>
+                <strong>Quantity:</strong> {selectedRow.qty}
+              </p>
+              <p>
+                <strong>Receive Quantity:</strong> {selectedRow.qtyReceive}
+              </p>
+              <p>
+                <strong>Date:</strong> {selectedRow.date}
+              </p>
+              <p>
+                <strong>Invoice Observation:</strong>{" "}
+                {selectedRow.invoiceObservation}
+              </p>
+              <p>
+                <strong>Manufacturer Cert Observation:</strong>{" "}
+                {selectedRow.manufacturerCertObservation}
+              </p>
+              <p>
+                <strong>Supplier Cert. Observation:</strong>{" "}
+                {selectedRow.supplierCertObservation}
+              </p>
+              <p>
+                <strong>Cert. Full Traceability Observation:</strong>{" "}
+                {selectedRow.fullTraceabilityObservation}
+              </p>
+              <p>
+                <strong>Batch Number Observation:</strong>{" "}
+                {selectedRow.batchNumberObservation}
+              </p>
+              <p>
+                <strong>
+                  Date of Manufacturing & Date of Expiry Observation:
+                </strong>{" "}
+                {selectedRow.dateOfManufacturingObservation}
+              </p>
+              <p>
+                <strong>Self Life Observation:</strong>{" "}
+                {selectedRow.selfLifeObservation}
+              </p>
+              <p>
+                <strong>Technical Data Sheet(TDS) & MSDS Observation:</strong>{" "}
+                {selectedRow.tdsObservation}
+              </p>
+              <p>
+                <strong>Material Condition Observation:</strong>{" "}
+                {selectedRow.materialConditionObservation}
+              </p>
+              <p>
+                <strong>Specification Observation:</strong>{" "}
+                {selectedRow.specificationObservation}
+              </p>
+              <p>
+                <strong>Documents Observation:</strong>{" "}
+                {selectedRow.documentObservation}
+              </p>
+              <p>
+                <strong>Lot Accepted:</strong> {selectedRow.lotAccepted}
+              </p>
+              <p>
+                <strong>Remark:</strong> {selectedRow.remark}
+              </p>
+              <p>
+                <strong>Maker Name</strong> {selectedRow.makerUserName}
+              </p>
+              <p>
+                <strong>Maker Date:</strong> {selectedRow.makerDate}
+              </p>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={() => setShowModal1(false)}>Close</Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
+      )}
     </div>
   );
 };

@@ -362,6 +362,12 @@ export default function PurchaseOrderForm() {
         toast.error("Select delivery address.");
         return;
       }
+      // Add validation for supplier name
+      if (!formData.supplierName || formData.supplierName.trim() === "") {
+        toast.error("Please select a supplier.");
+        return;
+      }
+
       const itemsWithoutRate = formData.items.filter(
         (item) => !item.rate || item.rate === 0
       );
@@ -397,6 +403,7 @@ export default function PurchaseOrderForm() {
         delivery: formData.delivery,
         deliveryAddress: formData.deliveryAddress,
         paymentTerms: formData.paymentTerms,
+        supplierName: formData.supplierName,
 
         // Use the first item's values as per the API requirements
         ratePerUnit: firstItem.rate,
@@ -444,6 +451,7 @@ export default function PurchaseOrderForm() {
           gross: item.gross,
         })),
       };
+
       // Call the API to save the data
       const responce = await createPurchaseOrder(payload);
       console.log("Save response:", responce);
@@ -493,7 +501,7 @@ export default function PurchaseOrderForm() {
                   <div className={styles.companyInfo}>
                     <div className={styles.companyLogo}>
                       <img
-                      src={AMCLOGO}
+                        src={AMCLOGO}
                         alt="AMC Technology Logo"
                         className={styles.logoImage}
                       />

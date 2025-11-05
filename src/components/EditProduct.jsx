@@ -15,7 +15,7 @@ const EditProduct = () => {
     const [showAlternateName2, setShowAlternateName2] = useState(false);
   const [partList, setPartList] = useState([]);
 
-  // 🟩 get today’s date in YYYY-MM-DD format
+  // 🟩 get today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
@@ -120,6 +120,20 @@ const EditProduct = () => {
     nha: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
     cmmReferenceNumber: { required: false, type: "number", length: 12 },
     registeredBy: { required: true, length: 255, regex: /^[a-zA-Z\s-]*$/ },
+  };
+
+  const validateDataType = (event, dataType) => {
+    let value = event.target.value;
+    if (dataType === "A") {
+      value = value.replace(/[^a-zA-Z0-9 \-]/g, ""); // allow hyphen
+    } else if (dataType === "N") {
+      value = value.replace(/[^0-9]/g, "");
+    } else if (dataType === "ANS") {
+      value = value.replace(/[^a-zA-Z0-9@\.\-]/g, "");
+    } else if (dataType === "L") {
+      value = value.replace(/[^0-9 \-]/g, "");// allow only digits
+    }
+    event.target.value = value;
   };
 
   const handleSubmit = async (e) => {
@@ -257,7 +271,10 @@ const EditProduct = () => {
                               letterSpacing: "1px",
                             }}
                           >
-                            <i className="bi bi-arrow-up"></i> UP
+                            <span style={{ fontSize: "20px" }}>
+                                          ↑
+                                        </span>
+                            {/* <i className="bi bi-arrow-up"></i> UP */}
                           </button>
                           {/* <button
                             type="button"
@@ -291,7 +308,10 @@ const EditProduct = () => {
                               letterSpacing: "1px",
                             }}
                           >
-                            <i className="bi bi-arrow-down-up"></i> BOTH
+                            <span style={{ fontSize: "20px" }}>
+                                          ↑↓
+                                        </span>
+                            {/* <i className="bi bi-arrow-down-up"></i> BOTH */}
                           </button>
                         </div>
                       </div>
@@ -517,11 +537,9 @@ const EditProduct = () => {
                         </label>
                         <input
                           className="form-control w-100"
-                          type="Number"
+                          type="text"
                           name="cmmReferenceNumber"
-                          onInput={(event) => {
-                            validateLen(event, 1, 12);
-                          }}
+                          onInput={(event) => validateDataType(event, "L")}
                           value={form.cmmReferenceNumber}
                           onChange={handleChange}
                         />
