@@ -12,72 +12,72 @@ const EditProduct = () => {
   const [showAlternate, setShowAlternate] = useState(false);
   const [showAlternateName, setShowAlternateName] = useState(false);
   const [showAlternateName1, setShowAlternateName1] = useState(false); // toggle state
-    const [showAlternateName2, setShowAlternateName2] = useState(false);
+  const [showAlternateName2, setShowAlternateName2] = useState(false);
   const [partList, setPartList] = useState([]);
 
   // 🟩 get today’s date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
-      const loggedUser = sessionStorage.getItem("username"); // username stored at login
-      if (loggedUser) {
-        setForm((prev) => ({ ...prev, registeredBy: loggedUser }));
-      }
-  
-      // Fetch part numbers from API
-      fetchPartNumbersAndDescriptions()
-        .then((data) => {
-          setPartList(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching part numbers:", error);
-        });
-    }, []);
-  
+    const loggedUser = sessionStorage.getItem("username"); // username stored at login
+    if (loggedUser) {
+      setForm((prev) => ({ ...prev, registeredBy: loggedUser }));
+    }
+
+    // Fetch part numbers from API
+    fetchPartNumbersAndDescriptions()
+      .then((data) => {
+        setPartList(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching part numbers:", error);
+      });
+  }, []);
+
 
   const [form, setForm] = useState({
-  productName: "",
-  materialClassification: "",
-  productDescription: "",
-  unitOfMeasurement: "",
-  oem: "",
-  nha: "",
-  cmmReferenceNumber: "",
-  registrationDate: today,
-  registeredBy: sessionStorage.getItem("username") || "",
-  alternateProduct1: "",
-  alternateProduct2: "",
-  mappingType: "",
-});
+    productName: "",
+    materialClassification: "",
+    productDescription: "",
+    unitOfMeasurement: "",
+    oem: "",
+    nha: "",
+    cmmReferenceNumber: "",
+    registrationDate: today,
+    registeredBy: sessionStorage.getItem("username") || "",
+    alternateProduct1: "",
+    alternateProduct2: "",
+    mappingType: "",
+  });
 
 
   useEffect(() => {
-  const fetchProductDetail = async () => {
-    try {
-      const response = await getProductDetail(productId);
-      if (response.data) {
-        setForm(response.data);
-
-        // Set alternate product flags
+    const fetchProductDetail = async () => {
+      try {
+        const response = await getProductDetail(productId);
         if (response.data) {
-  setForm(response.data);
+          setForm(response.data);
 
-  if (response.data.alternateProduct1) {
-    setShowAlternateName1(true);
-  }
-  if (response.data.alternateProduct2) {
-    setShowAlternateName2(true);
-  }
-}
+          // Set alternate product flags
+          if (response.data) {
+            setForm(response.data);
 
+            if (response.data.alternateProduct1) {
+              setShowAlternateName1(true);
+            }
+            if (response.data.alternateProduct2) {
+              setShowAlternateName2(true);
+            }
+          }
+
+        }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+        alert("Error fetching product details.");
       }
-    } catch (error) {
-      console.error("Error fetching product details:", error);
-      alert("Error fetching product details.");
-    }
-  };
-  fetchProductDetail();
-}, [productId]);
+    };
+    fetchProductDetail();
+  }, [productId]);
 
 
 
@@ -171,7 +171,7 @@ const EditProduct = () => {
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-1">
-                          Product Name <span style={{ color: "red" }}>*</span>
+                          Product Number <span style={{ color: "red" }}>*</span>
                         </label>
                         <div className="input-group w-100">
                           <input
@@ -358,12 +358,11 @@ const EditProduct = () => {
                         >
                           <option value="">Select Alternate Product 1</option>
                           {partList.map((part, index) => (
-                            <option key={index} value={part.productNumber || part.partNo}>
-                              {part.productName || part.partNo}
+                            <option key={index} value={part.productName}>
+                              {part.productName} → {part.alternateQuantity2}
                             </option>
                           ))}
                         </select>
-
                       </div>
                     )}
 
@@ -428,8 +427,8 @@ const EditProduct = () => {
                         >
                           <option value="">Select Alternate Product 2</option>
                           {partList.map((part, index) => (
-                            <option key={index} value={part.productNumber || part.partNo}>
-                              {part.productName || part.partNo}
+                            <option key={index} value={part.productName}>
+                              {part.productName} → {part.alternateQuantity2}
                             </option>
                           ))}
                         </select>

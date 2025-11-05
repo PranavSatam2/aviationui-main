@@ -266,8 +266,8 @@ const AddProduct = () => {
                             }}
                           >
                             <span style={{ fontSize: "20px" }}>
-                                          ↑
-                                        </span>
+                              ↑
+                            </span>
                             {/* <i className="bi bi-arrow-up"></i> UP */}
                           </button>
                           {/* <button
@@ -303,8 +303,8 @@ const AddProduct = () => {
                             }}
                           >
                             <span style={{ fontSize: "20px" }}>
-                                          ↑↓
-                                        </span>
+                              ↑↓
+                            </span>
                             {/* <i className="bi bi-arrow-down-up"></i> BOTH */}
                           </button>
                         </div>
@@ -372,8 +372,8 @@ const AddProduct = () => {
                         >
                           <option value="">Select Alternate Product 1</option>
                           {partList.map((part, index) => (
-                            <option key={index} value={part.productNumber || part.partNo}>
-                              {part.productName || part.partNo}
+                            <option key={index} value={part.productName}>
+                              {part.productName} → {part.alternateQuantity1}
                             </option>
                           ))}
                         </select>
@@ -442,8 +442,8 @@ const AddProduct = () => {
                         >
                           <option value="">Select Alternate Product 2</option>
                           {partList.map((part, index) => (
-                            <option key={index} value={part.productNumber || part.partNo}>
-                              {part.productName || part.partNo}
+                            <option key={index} value={part.productName}>
+                              {part.productName} → {part.alternateQuantity2}
                             </option>
                           ))}
                         </select>
