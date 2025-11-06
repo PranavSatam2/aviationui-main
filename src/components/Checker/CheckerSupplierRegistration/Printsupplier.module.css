@@ -158,4 +158,47 @@
   .companyInfo {
     width: 50%;
   }
+}.container {
+  width: 100%;
+  max-width: 210mm; /* A4 width */
+  margin: 0 auto;
+  background: white;
+}
+
+.printContainer {
+  width: 100%;
+  padding: 10mm;
+  background: white;
+}
+
+/* Make sure all content is visible */
+.printContainer * {
+  visibility: visible !important;
+  display: block !important;
+}
+
+.printContainer table {
+  display: table !important;
+}
+
+.printContainer tr {
+  display: table-row !important;
+}
+
+.printContainer td,
+.printContainer th {
+  display: table-cell !important;
+}
+
+@media print {
+  .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .printContainer {
+    padding: 0;
+    width: 100%;
+  }
 }

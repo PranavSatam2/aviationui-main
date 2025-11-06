@@ -32,6 +32,7 @@ import EditStoreAcceptance from './EditStoreAcceptance.jsx';
 import EditUpdateStore from './EditUpdateStore.jsx';
 import EditUser from './EditUser.jsx';
 import Footer from './Footer.jsx';
+import GenerateCAForm from './GenerateCAForm.jsx';
 import GenerateInspectionReportTable from './GenerateInspectionReportTable.jsx';
 import Header from './Header.jsx';
 import HomePage from './HomePage.jsx';
@@ -118,6 +119,7 @@ const componentsMap = {
   "EditUpdateStore": EditUpdateStore,
   "EditUser": EditUser,
   "Footer": Footer,
+  "GenerateCAForm": GenerateCAForm,
   "GenerateInspectionReportTable": GenerateInspectionReportTable,
   "Header": Header,
   "HomePage": HomePage,

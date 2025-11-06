@@ -77,7 +77,15 @@ const AddCustomer = () => {
   const handleChange = (e) => {
     if (!isViewMode) {
       const { name, value } = e.target;
-      setForm({ ...form, [name]: value });
+      
+      // Validate numeric fields (phoneNo and mobileNumber)
+      if (name === "phoneNo" || name === "mobileNumber") {
+        // Only allow digits and limit to 10 characters
+        const numericValue = value.replace(/\D/g, "").slice(0, 10);
+        setForm({ ...form, [name]: numericValue });
+      } else {
+        setForm({ ...form, [name]: value });
+      }
     }
   };
 
@@ -86,15 +94,17 @@ const AddCustomer = () => {
     if (rules.pattern && !rules.pattern.test(value)) return `${fieldName} is invalid.`;
     if (rules.maxLength && value.length > rules.maxLength)
       return `${fieldName} should not exceed ${rules.maxLength} characters.`;
+    if (rules.exactLength && value.length !== rules.exactLength)
+      return `${fieldName} must be exactly ${rules.exactLength} digits.`;
     return null;
   };
 
   const validationRules = {
     customerName: { required: true, maxLength: 255 },
     contactPersonName: { required: true, maxLength: 255 },
-    phoneNo: { required: true, pattern: /^[0-9]{10}$/ },
-    countryCode: { required: true }, // Updated - removed pattern validation
-    mobileNumber: { required: true, pattern: /^[0-9]{10}$/ },
+    phoneNo: { required: true, pattern: /^[0-9]{10}$/, exactLength: 10 },
+    countryCode: { required: true },
+    mobileNumber: { required: true, pattern: /^[0-9]{10}$/, exactLength: 10 },
     emailId: { required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
     shipToAddress1: { required: true, maxLength: 500 },
     shipToAddress2: { required: false, maxLength: 500 },
@@ -204,18 +214,23 @@ const AddCustomer = () => {
                       </div>
 
                       <div className="col-md-4">
-                        <label>Phone No *</label>
+                        <label>Phone No * (10 digits)</label>
                         <input
                           className="form-control"
                           type="text"
                           name="phoneNo"
                           value={form.phoneNo}
                           onChange={handleChange}
-                          placeholder="Enter phone number"
+                          placeholder="Enter 10 digit phone number"
                           maxLength="10"
                           readOnly={isViewMode}
                           required
                         />
+                        {form.phoneNo && form.phoneNo.length < 10 && (
+                          <small className="text-danger">
+                            Phone number must be exactly 10 digits ({form.phoneNo.length}/10)
+                          </small>
+                        )}
                       </div>
                       <div className="col-md-2">
                         <label>Country Code *</label>
@@ -236,7 +251,7 @@ const AddCustomer = () => {
                         </select>
                       </div>
                       <div className="col-md-6">
-                        <label>Mobile Number *</label>
+                        <label>Mobile Number * (10 digits)</label>
                         <input
                           className="form-control"
                           type="text"
@@ -248,6 +263,11 @@ const AddCustomer = () => {
                           readOnly={isViewMode}
                           required
                         />
+                        {form.mobileNumber && form.mobileNumber.length < 10 && (
+                          <small className="text-danger">
+                            Mobile number must be exactly 10 digits ({form.mobileNumber.length}/10)
+                          </small>
+                        )}
                       </div>
 
                       <div className="col-md-6 p-2">

@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 const EditWorkorder = () => {
   const location = useLocation();
   const params = useParams();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // Get work order number from URL params or location state
   const workOrderNo = params.workOrderNo || location.state?.workOrderNo || "";
@@ -18,6 +18,7 @@ const EditWorkorder = () => {
   // Define the initial form structure
   const getInitialFormState = () => ({
     // Main fields mapped to API
+    cmm_rev_date: "", // Added field from AddWorkorder
     issueDate: "",
     customerName: "",
     repairOrderNo: "",
@@ -161,9 +162,12 @@ const EditWorkorder = () => {
           remarks: response.remarks || "Main part from order",
         };
 
+        // Get fresh initial state to avoid stale closure
+        const initialState = getInitialFormState();
+
         // Map response data to form structure
         const formattedData = {
-          ...form, // Keep existing form structure
+          ...initialState, // Use fresh initial state
           customerName: response.customerName || "",
           repairOrderNo: response.orderNo || response.repairOrderNo || "",
           description: response.partDesc || response.description || "",
@@ -171,6 +175,7 @@ const EditWorkorder = () => {
           qty: response.qty || "",
           issueDate: response.date || response.issueDate || "",
           cmmRefNo: response.cmmRefNo || "",
+          cmm_rev_date: response.cmm_rev_date || "", // Added field
           snBn: response.snBin || response.snBn || "",
           revNo: response.revisionNo || response.revNo || "",
           workshopManagerRemarks: response.remarks || response.workshopManagerRemarks || "",
@@ -184,7 +189,7 @@ const EditWorkorder = () => {
           workshopManagerSignDate: response.workshopManagerSignDate || "",
           
           // Preserve work order steps from API or use defaults
-          workOrderSteps: response.workOrderSteps || response.workDetails || form.workOrderSteps,
+          workOrderSteps: response.workOrderSteps || response.workDetails || initialState.workOrderSteps,
           
           // Handle material requisitions
           materialRequisitions: response.materialRequisitions || response.partsUsed || [mainPartMaterialRequisition],
@@ -277,7 +282,7 @@ const EditWorkorder = () => {
     return null; // No error
   };
 
-  // Validation rules
+  // Updated validation rules to match AddWorkorder
   const validationRules = {
     repairOrderNo: {
       length: 20,
@@ -301,19 +306,17 @@ const EditWorkorder = () => {
     },
     cmmRefNo: {
       length: 50,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
-    snBn: {
-      length: 50,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9\s\-/._]*$/, // Added hyphen, slash, dot, underscore
     },
     revNo: {
+      type: "text",
       length: 50,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9\s-]*$/,
     },
     certifyingStaffhours: {
-      type: "number",
+      type: "text",
       length: 50,
+      // No regex as per AddWorkorder
     },
     workshopManagerRemarks: {
       length: 500,
@@ -328,13 +331,17 @@ const EditWorkorder = () => {
   const validateDataType = (event, dataType) => {
     let value = event.target.value;
     if (dataType === "A") {
-      value = value.replace(/[^a-zA-Z0-9 ]/g, "");
+      value = value.replace(/[^a-zA-Z0-9 \-\/._]/g, ""); // Allow hyphen, slash, dot, underscore
       event.target.classList.add("is-valid");
     } else if (dataType === "N") {
       value = value.replace(/[^0-9]/g, "");
       event.target.classList.add("is-valid");
     } else if (dataType === "ANS") {
       value = value.replace(/[^a-zA-Z0-9@.]/g, "");
+      event.target.classList.add("is-valid");
+    } else if (dataType === "REF") {
+      // New type for reference numbers (from AddWorkorder)
+      value = value.replace(/[^a-zA-Z0-9 \-/._]/g, "");
       event.target.classList.add("is-valid");
     }
     event.target.value = value;
@@ -371,6 +378,7 @@ const EditWorkorder = () => {
     // Create the payload for PUT request
     const payload = {
       workOrderNo: workOrderNo, // Include work order number for identification
+      cmm_rev_date: form.cmm_rev_date, // Added field
       issueDate: form.issueDate,
       customerName: form.customerName,
       repairOrderNo: form.repairOrderNo,
@@ -412,8 +420,7 @@ const EditWorkorder = () => {
       const response = await updateWorkOrder(workOrderNo, payload);
       console.log("Work order updated successfully:", response.data);
       toast.success("Work Order Updated Successfully!");
-          navigate(-1)
-
+      navigate(-1);
     } catch (error) {
       console.error("Error updating work order:", error);
       toast.error("Failed to update work order");
@@ -496,8 +503,9 @@ const EditWorkorder = () => {
                           }}
                           value={form.repairOrderNo}
                           onChange={handleChange}
-                          placeholder="Repair Order Number"
+                          placeholder="Auto Generated"
                           required
+                          disabled
                         />
                       </div>
                     </div>
@@ -517,6 +525,7 @@ const EditWorkorder = () => {
                           value={form.customerName}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
@@ -532,6 +541,7 @@ const EditWorkorder = () => {
                           value={form.partNumber}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                     </div>
@@ -552,6 +562,7 @@ const EditWorkorder = () => {
                         onChange={handleChange}
                         style={{ height: "70px" }}
                         required
+                        disabled
                       ></textarea>
                     </div>
 
@@ -569,6 +580,7 @@ const EditWorkorder = () => {
                           value={form.qty}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="col-md-6 d-flex">
@@ -578,12 +590,13 @@ const EditWorkorder = () => {
                           type="text"
                           name="cmmRefNo"
                           onInput={(event) => {
-                            validateDataType(event, "A");
+                            validateDataType(event, "REF"); // Use new REF type
                             validateLen(event, 1, 50);
                           }}
                           value={form.cmmRefNo}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                     </div>
@@ -603,6 +616,7 @@ const EditWorkorder = () => {
                           }}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
@@ -622,6 +636,21 @@ const EditWorkorder = () => {
                       </div>
                     </div>
 
+                    {/* CMM Rev Date Row - Added from AddWorkorder */}
+                    <div className="col-md-12 d-flex">
+                      <div className="col-md-6 p-2 d-flex">
+                        <label className="col-md-4 mt-2">CMM Rev Date</label>
+                        <input
+                          className="form-control w-100"
+                          type="date"
+                          name="cmm_rev_date"
+                          value={form.cmm_rev_date}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
+
                     {/* Fifth Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
@@ -633,6 +662,7 @@ const EditWorkorder = () => {
                           value={form.issueDate}
                           onChange={handleChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
@@ -648,6 +678,7 @@ const EditWorkorder = () => {
                             validateDataType(event, "A");
                             validateLen(event, 1, 50);
                           }}
+                          disabled
                           onChange={handleChange}
                           required
                         />
@@ -679,6 +710,10 @@ const EditWorkorder = () => {
                           name="totalManHour"
                           value={form.totalManHour}
                           onChange={handleChange}
+                          onInput={(event) => {
+                            validateDataType(event, "A"); // 👈 allow only alphanumeric (from AddWorkorder)
+                            validateLen(event, 1, 10); // 👈 optional: set min/max length
+                          }}
                           required
                         />
                       </div>
@@ -733,8 +768,8 @@ const EditWorkorder = () => {
                       </div>
                     </div>
 
-                    {/* Work Order Steps Section */}
-                    <hr className="mx-0 my-2 p-0 border" />
+                    {/* Work Order Steps Section - Commented out as in AddWorkorder */}
+                    {/* <hr className="mx-0 my-2 p-0 border" />
                     <div className="col-md-12 p-2">
                       <h6 className="mb-3">Work Order Steps</h6>
                       <div className="table-responsive">
@@ -778,7 +813,7 @@ const EditWorkorder = () => {
                                   <input
                                     type="text"
                                     className="form-control form-control-sm"
-                                    placeholder="Technician signature"
+                                    placeholder="Text box"
                                     value={step.technicianSign}
                                     onChange={(e) =>
                                       handleWorkOrderStepChange(
@@ -793,7 +828,7 @@ const EditWorkorder = () => {
                                   <input
                                     type="text"
                                     className="form-control form-control-sm"
-                                    placeholder="Staff signature"
+                                    placeholder="Text box"
                                     value={step.certifyingStaffSign}
                                     onChange={(e) =>
                                       handleWorkOrderStepChange(
@@ -809,7 +844,7 @@ const EditWorkorder = () => {
                           </tbody>
                         </table>
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Signature Dates Section */}
                     <hr className="mx-0 my-2 p-0 border" />
@@ -845,16 +880,7 @@ const EditWorkorder = () => {
                     {/* Material Requisitions Section */}
                     <hr className="mx-0 my-2 p-0 border" />
                     <div className="col-md-12 p-2">
-                      <div className="d-flex justify-content-between align-items-center mb-2">
-                        <h6>Material Requisitions</h6>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-success"
-                          onClick={addMaterialRequisitionRow}
-                        >
-                          Add Row
-                        </button>
-                      </div>
+                      {/* Removed Add Row button as in AddWorkorder */}
                       <div className="table-responsive">
                         <table className="table table-bordered table-sm">
                           <thead className="table-light">
@@ -865,7 +891,7 @@ const EditWorkorder = () => {
                               <th style={{ width: "15%" }}>Serial Number</th>
                               <th style={{ width: "10%" }}>Qty</th>
                               <th style={{ width: "15%" }}>Remarks</th>
-                              <th style={{ width: "5%" }}>Action</th>
+                              {/* Removed Action column */}
                             </tr>
                           </thead>
                           <tbody>
@@ -880,6 +906,7 @@ const EditWorkorder = () => {
                                       type="text"
                                       className="form-control form-control-sm"
                                       value={material.description}
+                                      disabled
                                       onChange={(e) =>
                                         handleMaterialRequisitionChange(
                                           index,
@@ -894,6 +921,7 @@ const EditWorkorder = () => {
                                       type="text"
                                       className="form-control form-control-sm"
                                       value={material.partNo}
+                                      disabled
                                       onChange={(e) =>
                                         handleMaterialRequisitionChange(
                                           index,
@@ -908,6 +936,7 @@ const EditWorkorder = () => {
                                       type="text"
                                       className="form-control form-control-sm"
                                       value={material.snbn}
+                                      disabled
                                       onChange={(e) =>
                                         handleMaterialRequisitionChange(
                                           index,
@@ -922,6 +951,7 @@ const EditWorkorder = () => {
                                       type="number"
                                       className="form-control form-control-sm"
                                       value={material.qty}
+                                      disabled
                                       onChange={(e) =>
                                         handleMaterialRequisitionChange(
                                           index,
@@ -945,19 +975,7 @@ const EditWorkorder = () => {
                                       }
                                     />
                                   </td>
-                                  <td>
-                                    {form.materialRequisitions.length > 1 && (
-                                      <button
-                                        type="button"
-                                        className="btn btn-sm btn-danger"
-                                        onClick={() =>
-                                          removeMaterialRequisitionRow(index)
-                                        }
-                                      >
-                                        ×
-                                      </button>
-                                    )}
-                                  </td>
+                                  {/* Removed delete button */}
                                 </tr>
                               )
                             )}
@@ -985,18 +1003,9 @@ const EditWorkorder = () => {
 
                     {/* Submit Button */}
                     <div className="col-md-12 text-end m-1 p-4 text-right">
-                      <div className="d-flex gap-2 justify-content-end">
-                        <button 
-                          type="button" 
-                          className="btn btn-secondary"
-                          onClick={() => window.history.back()}
-                        >
-                          Cancel
-                        </button>
-                        <button type="submit" className="btn btn-primary">
-                          Update Work Order
-                        </button>
-                      </div>
+                      <button type="submit" className="btn btn-primary">
+                        Update Work Order
+                      </button>
                     </div>
                   </form>
                 </div>
