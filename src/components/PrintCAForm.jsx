@@ -1,5 +1,5 @@
 // import { useEffect, useState } from "react";
-import styles from "./Checker/CheckerSupplierRegistration/PrintSupplier.module.css";
+import styles from "./Checker/CheckerSupplierRegistration/PrintReport.module.css";
 import CheckboxWithTick from "./CheckboxWithTick";
 import logo from "../static/img/logo.png";
 
@@ -7,7 +7,7 @@ export const PrintCAForm = ({ dataMap }) => {
   console.log("Print",dataMap);
   // Changed from (dataMap) to ({ dataMap })
   return (
-    <div className={styles.container}>
+    <div  className={styles.container}>
       <div className={styles.printContainer}>
         <div style={{ border: "1px solid black", margin: "1px" }}>
           {/* Header Section */}
