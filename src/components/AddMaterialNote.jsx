@@ -47,21 +47,20 @@ const AddMaterialNote = () => {
 
   // ✅ Fetch PO Numbers based on Supplier
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const result = await fetchAllPurchaseOrder();
-          console.log("Fetched PO list:", result);
-          setPoNumbers(Array.isArray(result.data) ? result.data : []);
-        } catch (err) {
-          console.error("Failed to fetch PO list", err);
-          setPoNumbers([]);
-        }
-      };
-      fetchData();
-    
+    const fetchData = async () => {
+      try {
+        const result = await fetchAllPurchaseOrder();
+        console.log("Fetched PO list:", result);
+        setPoNumbers(Array.isArray(result.data) ? result.data : []);
+      } catch (err) {
+        console.error("Failed to fetch PO list", err);
+        setPoNumbers([]);
+      }
+    };
+    fetchData();
   }, []);
 
-  // ✅ Fetch Parts based on PO Number
+  // ✅ Fetch Parts based on PO Number AND Auto-select Supplier
   useEffect(() => {
     if (form.orderNumber) {
       console.log(form.orderNumber);
@@ -70,24 +69,39 @@ const AddMaterialNote = () => {
           const result = await fetchAllPartNO(form.orderNumber);
           console.log("Fetched PartNo list:", result);
           setParts(Array.isArray(result.data) ? result.data : []);
+          
+          // ✅ Auto-populate supplier name from the first item
+          if (result.data && result.data.length > 0 && result.data[0].supplierName) {
+            setForm((prev) => ({
+              ...prev,
+              supplierName: result.data[0].supplierName,
+            }));
+          }
         } catch (err) {
           console.error("Failed to fetch Parts list", err);
           setParts([]);
         }
       };
       fetchData();
+    } else {
+      // Reset parts and supplier when PO is cleared
+      setParts([]);
+      setForm((prev) => ({
+        ...prev,
+        supplierName: "",
+      }));
     }
   }, [form.orderNumber]);
 
   // ✅ Fetch Part Details when Part Number selected
-useEffect(() => {
+  useEffect(() => {
     if (form.partNumber) {
       const fetchData = async () => {
         try {
           const result = await fetchAllPartNODetails(form.partNumber, form.orderNumber);
           console.log("Fetched PartNoDetails:", result);
           if (result) {
-            const { description, currentStoke, unit, poDate} = result.data;
+            const { description, currentStoke, unit, poDate } = result.data;
             setForm((prev) => ({
               ...prev,
               partDescription: description || "",
@@ -103,7 +117,7 @@ useEffect(() => {
       };
       fetchData();
     }
-  }, [form.partNumber,form.orderNumber]);
+  }, [form.partNumber, form.orderNumber]);
 
   // ✅ Handle Change
   const handleChange = (e) => {
@@ -121,12 +135,10 @@ useEffect(() => {
     } catch (error) {
       console.error("Error saving material:", error);
       const backendMessage =
-      error.response?.data?.message || "Failed to save material receipt note.";
+        error.response?.data?.message || "Failed to save material receipt note.";
 
-    toast.error(backendMessage);
-  }
-      //toast.error("Failed to save material receipt note.");
-    
+      toast.error(backendMessage);
+    }
   };
 
   // ✅ Reset Form
@@ -143,6 +155,7 @@ useEffect(() => {
       qualityAcceptance: "",
       storeInchargeSign: "",
     });
+    setParts([]);
   };
 
   return (
@@ -163,7 +176,6 @@ useEffect(() => {
             <form onSubmit={handleSubmit}>
               {/* Supplier + PO */}
               <div className="col-md-12 p-2 d-flex">
-
                 <div className="col-md-6 p-2">
                   <label>PO Number</label>
                   <select
@@ -181,26 +193,19 @@ useEffect(() => {
                     ))}
                   </select>
                 </div>
-                
+
                 <div className="col-md-6 p-2">
                   <label>Supplier</label>
-                  <select
+                  <input
+                    type="text"
                     className="form-control"
                     name="supplierName"
                     value={form.supplierName}
                     onChange={handleChange}
-                    required
-                  >
-                    <option value="">-- Select Supplier --</option>
-                    {suppliers.map((s,i) => (
-                      <option key={i} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+                    disabled
+                    placeholder="Auto-populated from PO"
+                  />
                 </div>
-
-                
               </div>
 
               {/* Part Selection + Description */}
@@ -239,7 +244,9 @@ useEffect(() => {
               {/* Challan + Receipt Date */}
               <div className="col-md-12 p-2 d-flex">
                 <div className="col-md-6 p-2">
-                  <label>Challan No<span style={{ color: "red" }}>*</span></label>
+                  <label>
+                    Challan No<span style={{ color: "red" }}>*</span>
+                  </label>
                   <input
                     type="text"
                     className="form-control"
@@ -251,7 +258,9 @@ useEffect(() => {
                 </div>
 
                 <div className="col-md-6 p-2">
-                  <label>Receipt Date<span style={{ color: "red" }}>*</span></label>
+                  <label>
+                    Receipt Date<span style={{ color: "red" }}>*</span>
+                  </label>
                   <input
                     type="date"
                     className="form-control"
@@ -292,7 +301,9 @@ useEffect(() => {
 
               {/* Receive Quantity */}
               <div className="col-md-12 p-2">
-                <label>Receive Quantity<span style={{ color: "red" }}>*</span></label>
+                <label>
+                  Receive Quantity<span style={{ color: "red" }}>*</span>
+                </label>
                 <input
                   type="number"
                   className="form-control"

@@ -22,6 +22,7 @@ const ProductList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const userRole = sessionStorage.getItem("role");
 
   const navigate = useNavigate();
 
@@ -158,9 +159,9 @@ const ProductList = () => {
   // Column definitions for the table
   const columns = [
     { field: "productId", label: "ID", width: "60px" },
-    { field: "productName", label: "Name", width: "100px" },
-    { field: "alternateProduct1", label: "Alternate Product Name 1", width: "150px" },
-    { field: "alternateProduct2", label: "Alternate Product Name 2", width: "150px" },
+    { field: "productName", label: "Product Number", width: "100px" },
+    { field: "alternateProduct1", label: "Alternate Product Number 1", width: "150px" },
+    { field: "alternateProduct2", label: "Alternate Product Number 2", width: "150px" },
     { field: "mappingType", label: "Mapping Type", width: "120px" },
     {
       field: "materialClassification",
@@ -292,9 +293,8 @@ const ProductList = () => {
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
-                                    sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  className={`ms-1 fa fa-sort-${sortDirection === "asc" ? "up" : "down"
+                                    } text-primary`}
                                 ></i>
                               ) : (
                                 <i
@@ -347,13 +347,15 @@ const ProductList = () => {
                             ))}
                             <td>
                               <div className="d-flex justify-content-center gap-2">
-                                <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() => handleEdit(product.productId)}
-                                  title="Edit"
-                                >
-                                  <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
+                                {userRole === "Admin" && (
+                                  <button
+                                    className="btn btn-sm btn-outline-primary"
+                                    onClick={() => handleEdit(product.productId)}
+                                    title="Edit"
+                                  >
+                                    <i className="fa-solid fa-pen-to-square"></i>
+                                  </button>
+                                )}
                                 <button
                                   className="btn btn-sm btn-outline-danger"
                                   onClick={() =>
@@ -418,9 +420,8 @@ const ProductList = () => {
                   <nav aria-label="Page navigation">
                     <ul className="pagination justify-content-end mb-0">
                       <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === 1 ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link border-0"
@@ -431,9 +432,8 @@ const ProductList = () => {
                         </button>
                       </li>
                       <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === 1 ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link border-0"
@@ -447,9 +447,8 @@ const ProductList = () => {
                       {renderPageNumbers()}
 
                       <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link border-0"
@@ -460,9 +459,8 @@ const ProductList = () => {
                         </button>
                       </li>
                       <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link border-0"

@@ -12,72 +12,72 @@ const EditProduct = () => {
   const [showAlternate, setShowAlternate] = useState(false);
   const [showAlternateName, setShowAlternateName] = useState(false);
   const [showAlternateName1, setShowAlternateName1] = useState(false); // toggle state
-    const [showAlternateName2, setShowAlternateName2] = useState(false);
+  const [showAlternateName2, setShowAlternateName2] = useState(false);
   const [partList, setPartList] = useState([]);
 
-  // 🟩 get today’s date in YYYY-MM-DD format
+  // 🟩 get today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
-      const loggedUser = sessionStorage.getItem("username"); // username stored at login
-      if (loggedUser) {
-        setForm((prev) => ({ ...prev, registeredBy: loggedUser }));
-      }
-  
-      // Fetch part numbers from API
-      fetchPartNumbersAndDescriptions()
-        .then((data) => {
-          setPartList(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching part numbers:", error);
-        });
-    }, []);
-  
+    const loggedUser = sessionStorage.getItem("username"); // username stored at login
+    if (loggedUser) {
+      setForm((prev) => ({ ...prev, registeredBy: loggedUser }));
+    }
+
+    // Fetch part numbers from API
+    fetchPartNumbersAndDescriptions()
+      .then((data) => {
+        setPartList(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching part numbers:", error);
+      });
+  }, []);
+
 
   const [form, setForm] = useState({
-  productName: "",
-  materialClassification: "",
-  productDescription: "",
-  unitOfMeasurement: "",
-  oem: "",
-  nha: "",
-  cmmReferenceNumber: "",
-  registrationDate: today,
-  registeredBy: sessionStorage.getItem("username") || "",
-  alternateProduct1: "",
-  alternateProduct2: "",
-  mappingType: "",
-});
+    productName: "",
+    materialClassification: "",
+    productDescription: "",
+    unitOfMeasurement: "",
+    oem: "",
+    nha: "",
+    cmmReferenceNumber: "",
+    registrationDate: today,
+    registeredBy: sessionStorage.getItem("username") || "",
+    alternateProduct1: "",
+    alternateProduct2: "",
+    mappingType: "",
+  });
 
 
   useEffect(() => {
-  const fetchProductDetail = async () => {
-    try {
-      const response = await getProductDetail(productId);
-      if (response.data) {
-        setForm(response.data);
-
-        // Set alternate product flags
+    const fetchProductDetail = async () => {
+      try {
+        const response = await getProductDetail(productId);
         if (response.data) {
-  setForm(response.data);
+          setForm(response.data);
 
-  if (response.data.alternateProduct1) {
-    setShowAlternateName1(true);
-  }
-  if (response.data.alternateProduct2) {
-    setShowAlternateName2(true);
-  }
-}
+          // Set alternate product flags
+          if (response.data) {
+            setForm(response.data);
 
+            if (response.data.alternateProduct1) {
+              setShowAlternateName1(true);
+            }
+            if (response.data.alternateProduct2) {
+              setShowAlternateName2(true);
+            }
+          }
+
+        }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+        alert("Error fetching product details.");
       }
-    } catch (error) {
-      console.error("Error fetching product details:", error);
-      alert("Error fetching product details.");
-    }
-  };
-  fetchProductDetail();
-}, [productId]);
+    };
+    fetchProductDetail();
+  }, [productId]);
 
 
 
@@ -120,6 +120,20 @@ const EditProduct = () => {
     nha: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
     cmmReferenceNumber: { required: false, type: "number", length: 12 },
     registeredBy: { required: true, length: 255, regex: /^[a-zA-Z\s-]*$/ },
+  };
+
+  const validateDataType = (event, dataType) => {
+    let value = event.target.value;
+    if (dataType === "A") {
+      value = value.replace(/[^a-zA-Z0-9 \-]/g, ""); // allow hyphen
+    } else if (dataType === "N") {
+      value = value.replace(/[^0-9]/g, "");
+    } else if (dataType === "ANS") {
+      value = value.replace(/[^a-zA-Z0-9@\.\-]/g, "");
+    } else if (dataType === "L") {
+      value = value.replace(/[^0-9 \-]/g, "");// allow only digits
+    }
+    event.target.value = value;
   };
 
   const handleSubmit = async (e) => {
@@ -171,7 +185,7 @@ const EditProduct = () => {
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-1">
-                          Product Name <span style={{ color: "red" }}>*</span>
+                          Product Number <span style={{ color: "red" }}>*</span>
                         </label>
                         <div className="input-group w-100">
                           <input
@@ -257,7 +271,10 @@ const EditProduct = () => {
                               letterSpacing: "1px",
                             }}
                           >
-                            <i className="bi bi-arrow-up"></i> UP
+                            <span style={{ fontSize: "20px" }}>
+                                          ↑
+                                        </span>
+                            {/* <i className="bi bi-arrow-up"></i> UP */}
                           </button>
                           {/* <button
                             type="button"
@@ -291,7 +308,10 @@ const EditProduct = () => {
                               letterSpacing: "1px",
                             }}
                           >
-                            <i className="bi bi-arrow-down-up"></i> BOTH
+                            <span style={{ fontSize: "20px" }}>
+                                          ↑↓
+                                        </span>
+                            {/* <i className="bi bi-arrow-down-up"></i> BOTH */}
                           </button>
                         </div>
                       </div>
@@ -358,12 +378,11 @@ const EditProduct = () => {
                         >
                           <option value="">Select Alternate Product 1</option>
                           {partList.map((part, index) => (
-                            <option key={index} value={part.productNumber || part.partNo}>
-                              {part.productName || part.partNo}
+                            <option key={index} value={part.productName}>
+                              {part.productName} → {part.alternateQuantity2}
                             </option>
                           ))}
                         </select>
-
                       </div>
                     )}
 
@@ -428,8 +447,8 @@ const EditProduct = () => {
                         >
                           <option value="">Select Alternate Product 2</option>
                           {partList.map((part, index) => (
-                            <option key={index} value={part.productNumber || part.partNo}>
-                              {part.productName || part.partNo}
+                            <option key={index} value={part.productName}>
+                              {part.productName} → {part.alternateQuantity2}
                             </option>
                           ))}
                         </select>
@@ -517,11 +536,9 @@ const EditProduct = () => {
                         </label>
                         <input
                           className="form-control w-100"
-                          type="Number"
+                          type="text"
                           name="cmmReferenceNumber"
-                          onInput={(event) => {
-                            validateLen(event, 1, 12);
-                          }}
+                          onInput={(event) => validateDataType(event, "L")}
                           value={form.cmmReferenceNumber}
                           onChange={handleChange}
                         />

@@ -62,7 +62,7 @@ const EditMaterialNote = () => {
       const response = await updateMaterial(materialId, form);
       if (response.status === 200) {
         toast.success("Material updated successfully!");
-        navigate("/ViewMaterialNotePage");
+        navigate("/ViewMaterialNote");
       }
     } catch (error) {
       console.error("Error updating material:", error);
