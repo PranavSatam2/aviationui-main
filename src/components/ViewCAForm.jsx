@@ -155,29 +155,246 @@ const handleCheckboxChange = (report) => {
     }
     setSelectAll(!selectAll);
   };
-  const handlePrintClick = (report) => {
-    // Store the report data
-    console.log("Report",report)
-    setReportData(report);
+const handlePrintClick = (report) => {
+  console.log("Report", report);
 
-    // Short delay to ensure React has updated the state and rendered the component
-    setTimeout(() => {
-      // Cache original body styles
-      const originalBodyStyle = document.body.style.cssText;
+  // Create the HTML content with inline styles
+  const printContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>CA Form - ${report.formTrackingNumber || 'N/A'}</title>
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 12px;
+          padding: 20px;
+        }
+        .container {
+          max-width: 210mm;
+          margin: 0 auto;
+          background: white;
+        }
+        .print-container {
+          border: 2px solid black;
+          padding: 2px;
+        }
+        .section {
+          display: flex;
+          border: 1px solid black;
+          margin-bottom: 0;
+        }
+        .border-right {
+          border-right: 1px solid black;
+        }
+        .company-logo {
+          text-align: center;
+          margin: 10px 0;
+        }
+        .company-logo img {
+          height: 50px;
+          width: 50px;
+        }
+        .cross-section {
+          position: relative;
+          overflow: hidden;
+        }
+        .cross-mark {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+        .checkbox {
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          border: 1px solid black;
+          margin-right: 8px;
+          vertical-align: middle;
+          position: relative;
+        }
+        .checkbox.checked::before {
+          content: '✓';
+          position: absolute;
+          top: -2px;
+          left: 2px;
+          font-size: 14px;
+          font-weight: bold;
+        }
+        @media print {
+          body {
+            padding: 0;
+          }
+          @page {
+            margin: 10mm;
+            size: A4;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="print-container">
+          <!-- Header Section -->
+          <div class="section">
+            <div style="width: 30%; padding: 10px;" class="border-right">
+              <div style="font-weight: bold;">1. DGCA India</div>
+            </div>
+            <div style="width: 40%; text-align: center; padding: 10px; font-weight: bold; font-size: 16px;" class="border-right">
+              2. AUTHORISED RELEASE CERTIFICATE<br/>CA FORM 1
+            </div>
+            <div style="width: 30%; padding: 10px; font-weight: bold;">
+              3. Form Tracking Number<br/>
+              ${report.formTrackingNumber || 'N/A'}
+            </div>
+          </div>
 
-      // Apply print-friendly styles to the body
-      document.body.style.margin = "0";
-      document.body.style.padding = "0";
+          <!-- Company Info Section -->
+          <div class="section">
+            <div style="width: 30%; padding: 10px;">
+              <div>4. Approved Organization Name and Address:</div>
+              <br/>
+              <div class="company-logo">
+                <img src="data:image/png;base64,YOUR_LOGO_BASE64_HERE" alt="AMC Technology Logo" />
+              </div>
+            </div>
+            <div style="width: 40%; text-align: left; padding: 10px;" class="border-right">
+              <br/>
+              AMC TECHNOLOGY<br/>
+              105, HRIDAY INDUSTRIAL ESTATE,<br/>
+              HIRA INDUSTRIAL PARK, VASAI PHATA,<br/>
+              VASAI EAST, PALGHAR 401 203,<br/>
+              MAHARASHTRA, INDIA
+            </div>
+            <div style="width: 30%; padding: 10px;">
+              5. Work Order/Contract/Invoice:<br/>
+              ${report.workOrderNumber || 'N/A'}
+            </div>
+          </div>
 
-      // Print the document
-      window.print();
+          <!-- Table Header -->
+          <div class="section">
+            <div style="width: 10%; padding: 10px;" class="border-right">6. Item</div>
+            <div style="width: 17%; padding: 10px;" class="border-right">7. Description</div>
+            <div style="width: 17%; padding: 10px;" class="border-right">8. Part No.</div>
+            <div style="width: 11%; padding: 10px;" class="border-right">9. Qty</div>
+            <div style="width: 17%; padding: 10px;" class="border-right">10. Serial/Batch No.</div>
+            <div style="width: 31%; padding: 10px;">11. Status/Work</div>
+          </div>
 
-      // Restore original body styles after printing dialog is closed
+          <!-- Table Data -->
+          <div class="section">
+            <div style="width: 10%; padding: 10px;" class="border-right">${report.item || 'N/A'}</div>
+            <div style="width: 17%; padding: 10px;" class="border-right">${report.description || 'N/A'}</div>
+            <div style="width: 17%; padding: 10px;" class="border-right">${report.partNo || 'N/A'}</div>
+            <div style="width: 11%; padding: 10px;" class="border-right">${report.quantity || 'N/A'}</div>
+            <div style="width: 17%; padding: 10px;" class="border-right">${report.serialNo || 'N/A'}</div>
+            <div style="width: 31%; padding: 10px;">${report.status || 'N/A'}</div>
+          </div>
+
+          <!-- Remarks Section -->
+          <div class="section">
+            <div style="width: 100%; padding: 10px;">
+              12. Remarks:<br/>
+              <div style="padding-left: 60px; min-height: 40px;">
+                ${report.remarks || 'N/A'}
+              </div>
+            </div>
+          </div>
+
+          <!-- Certification Sections 13 & 14 -->
+          <div class="section">
+            <!-- Section 13 with X cross -->
+            <div style="flex: 1; padding: 10px; position: relative;" class="border-right cross-section">
+              <svg class="cross-mark" preserveAspectRatio="none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+                <line x1="0" y1="0" x2="100%" y2="100%" stroke="black" stroke-width="2" vector-effect="non-scaling-stroke"/>
+                <line x1="100%" y1="0" x2="0" y2="100%" stroke="black" stroke-width="2" vector-effect="non-scaling-stroke"/>
+              </svg>
+              <div style="position: relative; z-index: 2;">
+                <strong>13. Manufacturer / Conformity Certification</strong><br/>
+                Certifies that the items identified above were manufactured in conformity to:<br/><br/>
+                <div style="margin: 8px 0;">
+                  <span class="checkbox ${report.approveDesign13a ? 'checked' : ''}"></span>
+                  <span>Approved design data and are in condition for safe operation.</span>
+                </div>
+                <div style="margin: 8px 0;">
+                  <span class="checkbox ${report.nonApproveDesign13a ? 'checked' : ''}"></span>
+                  <span>Non-approved design data specified in block 12.</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 11px;">
+                  <div style="margin: 5px 0;">13 b. Authorised Signature: _______________</div>
+                  <div style="margin: 5px 0;">13 c. Approval / Authorisation Number: _______________</div>
+                  <div style="margin: 5px 0;">13 d. Name: _______________</div>
+                  <div style="margin: 5px 0;">13 e. Date (dd/mm/yyyy): _______________</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 14 -->
+            <div style="flex: 1; padding: 10px; position: relative;">
+              <div>
+                <strong>14 a. CAR 145.A.50 RELEASE TO SERVICE</strong><br/>
+                <div style="margin: 8px 0;">
+                  <span class="checkbox ${report.otherRegulation14a ? 'checked' : ''}"></span>
+                  <span>Other regulation specified in block 12.</span>
+                </div>
+                <br/>
+                Certifies that unless otherwise specified in block 12, the work identified in block 11 and described in block 12 was accomplished in accordance with CAR 145 and in respect to that work the items are considered ready for release to service.
+              </div>
+              <div style="margin-top: 15px; font-size: 11px;">
+                <div style="margin: 5px 0;">14 b. Authorised Signature: _______________</div>
+                <div style="margin: 5px 0;">14 c. Certificate / Approval Ref No.: _______________</div>
+                <div style="margin: 5px 0;">14 d. Name: _______________</div>
+                <div style="margin: 5px 0;">14 e. Date (dd/mm/yyyy): _______________</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Section -->
+          <div class="section">
+            <div style="padding: 10px; line-height: 1.6;">
+              <div style="font-weight: bold;">USER/INSTALLER RESPONSIBILITY:</div>
+              <p style="margin-top: 8px; text-align: justify;">
+                THIS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE AUTHORITY TO INSTALL THE ITEMS. WHERE THE USER/INSTALLER PERFORMS WORK IN ACCORDANCE WITH REGULATIONS OF AN AIRWORTHINESS AUTHORITY DIFFERENT THAN THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1, IT IS ESSENTIAL THAT THE USER/INSTALLER ENSURES THAT HIS/HER AIRWORTHINESS AUTHORITY ACCEPTS ITEMS FROM THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1. STATEMENTS IN BLOCKS 13A AND 14A DO NOT CONSTITUTE INSTALLATION CERTIFICATION. IN ALL CASES AIRCRAFT MAINTENANCE RECORDS MUST CONTAIN AN INSTALLATION CERTIFICATION ISSUED IN ACCORDANCE WITH THE NATIONAL REGULATIONS BY THE USER/INSTALLER BEFORE THE AIRCRAFT MAY BE FLOWN.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  // Open new window and print
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  
+  if (printWindow) {
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Wait for content to load, then print
+    printWindow.onload = function() {
       setTimeout(() => {
-        document.body.style.cssText = originalBodyStyle;
-      }, 100);
-    }, 500);
-  };
+        printWindow.focus();
+        printWindow.print();
+        
+        // Optional: Close window after printing
+        // Uncomment the line below if you want to auto-close after printing
+        // printWindow.close();
+      }, 250);
+    };
+  } else {
+    alert('Please allow pop-ups for this website to print the form.');
+  }
+};
 
 
   // Column definitions for the table

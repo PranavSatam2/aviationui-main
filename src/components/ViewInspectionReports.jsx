@@ -6,7 +6,6 @@ import { getViewReportList, getReportDetails } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import { PrintInspectionReport } from "./PrintInspectionReport";
 import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
 import { Modal, Button, Form } from "react-bootstrap";
 
@@ -29,13 +28,13 @@ const ViewInspectionReports = () => {
   const [showModal, setShowModal] = useState(false);
   const [actionType, setActionType] = useState(""); // "accept" or "reject"
   const [remark, setRemark] = useState("");
-  const [reportData, setReportData] = useState();
 
   // Date range states
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
   const navigate = useNavigate();
+  
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -58,6 +57,7 @@ const ViewInspectionReports = () => {
       setIsLoading(false);
     }
   };
+
   // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
@@ -104,17 +104,12 @@ const ViewInspectionReports = () => {
         let reportId = elementId;
         let reportData = await getReportDetails(elementId);
         reportData = reportData.data;
-        console.log("Fetched report data:", reportData); // Log the fetched data
+        console.log("Fetched report data:", reportData);
 
         setSelectedRow(reportData);
-        console.log("Selected Row Data: ", reportData); // Log to verify data
+        console.log("Selected Row Data: ", reportData);
 
         setShowModal1(true);
-        // if (reportId !== null) {
-        //   navigate("/ViewSupplier", {
-        //     state: { reportId, reportData },
-        //   });
-        // }
       } catch (error) {
         console.error("Error fetching report details: ", error);
         toast.error("Failed to fetch report details");
@@ -136,6 +131,281 @@ const ViewInspectionReports = () => {
     setShowModal(false);
     setRemark("");
   };
+
+  // Print functionality
+const handlePrintClick = (report) => {
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  
+  const printContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Inspection Report - ${report.reportNo || 'N/A'}</title>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            font-size: 12px;
+          }
+          .container {
+            max-width: 210mm;
+            margin: 0 auto;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+          }
+          th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+          }
+          .header-section {
+            display: flex;
+            border: 1px solid black;
+            margin-bottom: 15px;
+          }
+          .header-left {
+            width: 20%;
+            padding: 10px;
+            border-right: 1px solid black;
+            font-weight: bold;
+          }
+          .header-center {
+            width: 55%;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            border-right: 1px solid black;
+          }
+          .header-right {
+            width: 25%;
+            padding: 10px;
+          }
+          .info-section {
+            border: 1px solid black;
+            padding: 10px;
+            margin-bottom: 20px;
+          }
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+          }
+          .info-left {
+            width: 60%;
+          }
+          .info-right {
+            width: 40%;
+          }
+          .signature-section {
+            margin-top: 30px;
+            border-top: 1px solid black;
+            padding-top: 10px;
+          }
+          .signature-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+          }
+          .signature-col {
+            width: 33%;
+          }
+          hr {
+            border: 1px solid black;
+            margin: 10px 0;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <!-- Header Section -->
+          <div class="header-section">
+            <div class="header-left">amc</div>
+            <div class="header-center">Receiving Inspection Report</div>
+            <div class="header-right">
+              <div>Form: AMC-29</div>
+              <div>Rev.: 00</div>
+              <div>Date: Jan 2021</div>
+            </div>
+          </div>
+
+          <!-- Info Section -->
+          <div class="info-section">
+            <div class="info-row">
+              <div class="info-left">
+                <strong>Part Number:</strong> ${report.partNumber || 'N/A'}
+              </div>
+              <div class="info-right">
+                <strong>Report No:</strong> ${report.reportNo || 'N/A'}
+              </div>
+            </div>
+
+            <div class="info-row">
+              <div class="info-left">
+                <strong>Part Description:</strong> ${report.partDesc || 'N/A'}
+              </div>
+              <div class="info-right">
+                <strong>Date:</strong> ${report.date || new Date().toLocaleDateString()}
+              </div>
+            </div>
+
+            <div class="info-row">
+              <div class="info-left">
+                <strong>Purchase Order No:</strong> ${report.purchaseOrderNo || 'N/A'}
+              </div>
+              <div class="info-right">
+                <strong>Qty:</strong> ${report.qty || 'N/A'}
+              </div>
+            </div>
+
+            <div class="info-row">
+              <div class="info-left">
+                <strong>Supplier:</strong> ${report.supplierName || 'N/A'}
+              </div>
+              <div class="info-right">
+                <strong>Receive Qty:</strong> ${report.qtyReceive || 'N/A'}
+              </div>
+            </div>
+
+            <!-- Checklist Table -->
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 10%; text-align: left;">Sr.No.</th>
+                  <th style="width: 30%; text-align: center;">Check List</th>
+                  <th style="width: 30%; text-align: center;">Requirements</th>
+                  <th style="width: 30%; text-align: center;">Observation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td style="text-align: center;">Invoice</td>
+                  <td style="text-align: center;">Quantity and Unit Price must match with Purchase Order</td>
+                  <td style="text-align: center;">${report.invoiceObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td style="text-align: center;">Manufacturer Certificate</td>
+                  <td style="text-align: center;">COC must available</td>
+                  <td style="text-align: center;">${report.manufacturerCertObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td style="text-align: center;">Supplier Certificate(Distributor/Third Party)</td>
+                  <td style="text-align: center;">COC must available, in case "No" direct supply from Mfg.</td>
+                  <td style="text-align: center;">${report.supplierCertObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td style="text-align: center;">Certificate Full Traceability</td>
+                  <td style="text-align: center;">Must Available</td>
+                  <td style="text-align: center;">${report.fullTraceabilityObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td style="text-align: center;">Batch Number</td>
+                  <td style="text-align: center;">Must match(Physical Unit lable & all COC)</td>
+                  <td style="text-align: center;">${report.batchNumberObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td style="text-align: center;">Date of Manufacturing & Date of Expiry(If Applicable)</td>
+                  <td style="text-align: center;">Must match(Physical Unit lable & all COC)</td>
+                  <td style="text-align: center;">${report.dateOfManufacturingObservation || 'N/A'}<br/>${report.dateOfExpiryObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td style="text-align: center;">Shelf Life(If Applicable)</td>
+                  <td style="text-align: center;">80% and above</td>
+                  <td style="text-align: center;">${report.selfLifeObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td style="text-align: center;">Technical Data Sheet(TDS) & MSDS</td>
+                  <td style="text-align: center;">Must Available</td>
+                  <td style="text-align: center;">${report.tdsObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td style="text-align: center;">Material Condition</td>
+                  <td style="text-align: center;">No Damage / No Leakage</td>
+                  <td style="text-align: center;">${report.materialConditionObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td style="text-align: center;">Specification(If any)</td>
+                  <td style="text-align: center;">Must Match with Purchase Order Specification</td>
+                  <td style="text-align: center;">${report.specificationObservation || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td style="text-align: center;">Documents(If Import)</td>
+                  <td style="text-align: center;">Air Way Bill(AWB) & Bill Of Entry(If Available)</td>
+                  <td style="text-align: center;">${report.documentObservation || 'N/A'}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Lot Acceptance Section -->
+            <div style="margin-bottom: 10px;">
+              <strong>LOT Accepted(Yes/No/With Deviation):</strong> ${report.lotAccepted || 'N/A'}
+            </div>
+            <div style="margin-bottom: 10px;">
+              <strong>Remark(If Any):</strong> ${report.remark || 'N/A'}
+            </div>
+          </div>
+
+          <!-- Signature Section -->
+          <hr />
+          <div class="signature-section">
+            <div class="signature-row">
+              <div class="signature-col">${report.makerUserName || 'N/A'}</div>
+              <div class="signature-col">${report.makerDate || 'N/A'}</div>
+              <div class="signature-col"></div>
+            </div>
+            <div class="signature-row">
+              <div class="signature-col"><strong>Checked By Inspector</strong></div>
+              <div class="signature-col"><strong>Date</strong></div>
+              <div class="signature-col"><strong>Quality Manager Approval</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          // Auto print when window loads
+          window.onload = function() {
+            window.print();
+            // Optional: Close window after printing (uncomment if needed)
+            // window.onafterprint = function() {
+            //   window.close();
+            // };
+          };
+        </script>
+      </body>
+    </html>
+  `;
+
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+};
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -190,8 +460,8 @@ const ViewInspectionReports = () => {
 
     return pageNumbers;
   };
+
   const handleCheckboxChange = (report) => {
-    // If the same checkbox is clicked again, deselect it
     if (selectedItem === report.inspectionReportId) {
       setSelectedItem("");
     } else {
@@ -200,12 +470,10 @@ const ViewInspectionReports = () => {
     }
   };
 
-  // Modified: Handle select all - now it just clears selection
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedItem("");
     } else {
-      // Select the first item when clicking "select all"
       if (currentItems.length > 0) {
         const firstItemId = currentItems[0].formId;
         setSelectedItem(firstItemId);
@@ -213,20 +481,12 @@ const ViewInspectionReports = () => {
     }
     setSelectAll(!selectAll);
   };
-  const handlePrintClick = (report) => {
-    // Store the report data
-    console.log("Report", report);
-    setReportData(report);
 
-    // Longer delay to ensure React has updated the state and rendered the component
-    setTimeout(() => {
-      window.print();
-    }, 100); // Reduced from 500ms, the setTimeout is enough for React to update
-  };
   useEffect(() => {
     setSelectedItem("");
     setSelectAll(false);
   }, [currentPage, itemsPerPage]);
+
   // Column definitions for the table
   const columns = [
     {
@@ -301,8 +561,6 @@ const ViewInspectionReports = () => {
     { field: "remark", label: "Remark", width: "100px" },
     { field: "makerUserName", label: "Maker Name", width: "100px" },
     { field: "makerDate", label: "Maker Date", width: "100px" },
-    // { field: "checkerUserName", label: "Checker Name", width: "100px" },
-    // { field: "checkerDate", label: "Checker  Date", width: "100px" },
   ];
 
   return (
@@ -312,12 +570,6 @@ const ViewInspectionReports = () => {
         <Header />
         <div style={{ marginTop: "10px" }}>
           <CustomBreadcrumb breadcrumbsLabel="View Inspection Report" />
-          <div
-            className="printView"
-            style={{ position: "absolute", left: "-9999px", top: 0 }}
-          >
-            <PrintInspectionReport dataMap={reportData} />
-          </div>
 
           <div
             className={[
@@ -393,9 +645,7 @@ const ViewInspectionReports = () => {
 
               {isLoading ? (
                 <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
+                  <div className="spinner-border text-primary" role="status"></div>
                   <p className="mt-2 text-muted">Loading data...</p>
                 </div>
               ) : (

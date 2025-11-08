@@ -405,7 +405,7 @@ const AddWorkorder = () => {
       } else {
         console.log("Work order added successfully:", response);
         toast.success("Work Order Added Successfully!");
-        navigate("/ViewWorkOrder");
+        navigate("/ViewWorkOrder", { replace: true });
       }
       // Reset the form after successful submission
       // setForm(getInitialFormState());

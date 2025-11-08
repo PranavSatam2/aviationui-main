@@ -115,6 +115,237 @@ const ViewDispatchReport = () => {
     }
   };
 
+  // Print function to generate and print the dispatch report
+  const printReport = (report) => {
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Dispatch Report - ${report.reportNo}</title>
+          <style>
+            @media print {
+              @page {
+                margin: 20mm;
+              }
+            }
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+              margin: 0;
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #000;
+              padding-bottom: 10px;
+            }
+            .logo {
+              font-size: 36px;
+              font-weight: bold;
+              color: #2c5282;
+            }
+            .title {
+              font-size: 28px;
+              font-weight: bold;
+              text-align: center;
+              flex-grow: 1;
+            }
+            .form-info {
+              text-align: right;
+              font-size: 12px;
+            }
+            .form-row {
+              display: flex;
+              margin-bottom: 15px;
+              border: 1px solid #000;
+            }
+            .form-field {
+              padding: 8px;
+              border-right: 1px solid #000;
+              flex: 1;
+            }
+            .form-field:last-child {
+              border-right: none;
+            }
+            .form-label {
+              font-weight: bold;
+              display: inline-block;
+              margin-right: 10px;
+            }
+            .form-value {
+              display: inline-block;
+            }
+            .checklist {
+              margin-top: 30px;
+            }
+            .checklist-title {
+              font-weight: bold;
+              font-size: 16px;
+              margin-bottom: 10px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            th, td {
+              border: 1px solid #000;
+              padding: 10px;
+              text-align: left;
+            }
+            th {
+              background-color: #f0f0f0;
+              font-weight: bold;
+            }
+            .signature-section {
+              margin-top: 30px;
+              border: 1px solid #000;
+            }
+            .signature-row {
+              display: flex;
+              border-bottom: 1px solid #000;
+            }
+            .signature-row:last-child {
+              border-bottom: none;
+            }
+            .signature-label {
+              font-weight: bold;
+              padding: 15px;
+              border-right: 1px solid #000;
+              width: 200px;
+            }
+            .signature-value {
+              padding: 15px;
+              flex: 1;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">amc</div>
+            <div class="title">DISPATCH REPORT</div>
+            <div class="form-info">
+              Form AMC 02<br>
+              Rev. 00<br>
+              Date: Jan 2021
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field" style="flex: 2;">
+              <span class="form-label">Report No.:</span>
+              <span class="form-value">${report.reportNo || ''}</span>
+            </div>
+            <div class="form-field" style="flex: 1;">
+              <span class="form-label">Date:</span>
+              <span class="form-value">${report.reportDate || ''}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field" style="flex: 1;">
+              <span class="form-label">Part No.:</span>
+              <span class="form-value">${report.partNo || ''}</span>
+            </div>
+            <div class="form-field" style="flex: 1;">
+              <span class="form-label">Qty.:</span>
+              <span class="form-value">${report.quantity || ''}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field" style="flex: 2;">
+              <span class="form-label">Part Description:</span>
+              <span class="form-value">${report.partDescription || ''}</span>
+            </div>
+            <div class="form-field" style="flex: 1;">
+              <span class="form-label">Batch No.(If Any):</span>
+              <span class="form-value">${report.batchNo || ''}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <span class="form-label">Order No.:</span>
+              <span class="form-value">${report.orderNo || ''}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <span class="form-label">Customer Name:</span>
+              <span class="form-value">${report.customerName || ''}</span>
+            </div>
+          </div>
+
+          <div class="checklist">
+            <div class="checklist-title">CHECKLIST</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>PERTICULERS</th>
+                  <th>NUMBER</th>
+                  <th>DATE</th>
+                  <th>REMARK (If Any)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Challan No.</td>
+                  <td>${report.challanNo || ''}</td>
+                  <td>${report.challanDate || ''}</td>
+                  <td>${report.challanRemark || ''}</td>
+                </tr>
+                <tr>
+                  <td>Invoice No.</td>
+                  <td>${report.invoiceNo || ''}</td>
+                  <td>${report.invoiceDate || ''}</td>
+                  <td>${report.invoiceRemark || ''}</td>
+                </tr>
+                <tr>
+                  <td>CA Form 1</td>
+                  <td>${report.caFormNo || ''}</td>
+                  <td>${report.caFormDate || ''}</td>
+                  <td>${report.caFormRemark || ''}</td>
+                </tr>
+                <tr>
+                  <td>E-WAY Bill</td>
+                  <td>${report.ewayBill || ''}</td>
+                  <td>${report.ewayBillDate || ''}</td>
+                  <td>${report.ewayBillRemark || ''}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="signature-section">
+            <div class="signature-row">
+              <div class="signature-label">Stores In-Charge Name</div>
+              <div class="signature-value">${report.storesInChargeName || ''}</div>
+            </div>
+            <div class="signature-row">
+              <div class="signature-label">Stores In-Charge Sign</div>
+              <div class="signature-value">${report.storesInChargeSign || ''}</div>
+            </div>
+          </div>
+
+          <script>
+            window.onload = function() {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+  };
+
   return (
     <div className="wrapper">
       <Sidebar />
@@ -202,6 +433,13 @@ const ViewDispatchReport = () => {
                               title="Edit"
                             >
                               <i className="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-success me-2"
+                              onClick={() => printReport(report)}
+                              title="Print"
+                            >
+                              <i className="fa-solid fa-print"></i>
                             </button>
                             <button
                               className="btn btn-sm btn-outline-danger"

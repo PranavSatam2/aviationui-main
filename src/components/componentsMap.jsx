@@ -81,6 +81,7 @@ import ViewSupplierRegis from './ViewSupplierRegis.jsx';
 import ViewUser from './ViewUser.jsx';
 import AddWorkOrder from './Workorder/AddWorkOrder/AddWorkOrder.jsx';
 import editWorkOrder from './Workorder/editWorkOrder.jsx';
+import PrintWorkOrder  from './Workorder/PrintWorkOrder .jsx';
 import ViewWorkOrder from './Workorder/ViewWorkOrder.jsx';
 import ViewWorkOrderClosed from './Workorder/ViewWorkOrderClosed.jsx';
 import WorkorderTable from './Workorder/WorkorderTable.jsx';
@@ -168,6 +169,7 @@ const componentsMap = {
   "ViewUser": ViewUser,
   "AddWorkOrder": AddWorkOrder,
   "editWorkOrder": editWorkOrder,
+  "PrintWorkOrder ": PrintWorkOrder ,
   "ViewWorkOrder": ViewWorkOrder,
   "ViewWorkOrderClosed": ViewWorkOrderClosed,
   "WorkorderTable": WorkorderTable,
