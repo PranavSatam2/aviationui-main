@@ -116,7 +116,7 @@ const AddDispatchReport = () => {
       alert(response?.message || "Dispatch report saved successfully!");
       // resetForm();
       // window.location.reload(); // reload after saving
-      navigate("/ViewWorkOrderClosed"); // navigate to view page
+      navigate("/dispatchReport"); // navigate to view page
     } catch (error) {
       console.error("Error saving dispatch report", error);
       alert(error?.response?.data?.message || "Failed to save dispatch report.");
