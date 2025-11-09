@@ -19,7 +19,6 @@ const WorkorderTable = () => {
   const [sortField, setSortField] = useState("workOrderNo");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-  const [workOrderData, setWorkOrderData] = useState(null);
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -161,40 +160,7 @@ const WorkorderTable = () => {
       : text;
   };
 
-  // PRINT FUNCTIONALITY - FIXED to properly sync Material Requisition data
-  const handlePrintClick = (workOrder) => {
-    console.log("Printing work order:", workOrder);
-    
-    // Process the work order data similar to EditWorkorder
-    // Create material requisition from main part data if needed
-    const mainPartMaterialRequisition = {
-      srNo: 101,
-      description: workOrder.partDesc || workOrder.description || "",
-      partNo: workOrder.partNo || workOrder.partNumber || "",
-      snbn: workOrder.snBin || workOrder.snBn || "",
-      qty: workOrder.qty || "",
-      remarks: workOrder.remarks || workOrder.workshopManagerRemarks || "Main part from order",
-    };
-
-    // Handle material requisitions with proper fallbacks (like in EditWorkorder)
-    const processedWorkOrder = {
-      ...workOrder,
-      materialRequisitions: workOrder.materialRequisitions || 
-                           workOrder.partsUsed || 
-                           [mainPartMaterialRequisition],
-      // Ensure work order steps are properly formatted
-      workOrderSteps: workOrder.workOrderSteps || workOrder.workDetails || [],
-    };
-
-    console.log("Processed work order with material requisitions:", processedWorkOrder.materialRequisitions);
-    
-    setWorkOrderData(processedWorkOrder);
-    setTimeout(() => {
-      window.print();
-    }, 500);
-  };
-
-  // Default work steps - condensed version
+  // Default work steps
   const defaultWorkSteps = [
     { srNo: 1, detail: "INCOMING INSPECTION: Visual inspection, SB compliance" },
     { srNo: 2, detail: "Test unit as per CMM" },
@@ -209,246 +175,330 @@ const WorkorderTable = () => {
     { srNo: 11, detail: "Final Inspection" },
   ];
 
-  // Render Print Component - OPTIMIZED FOR SINGLE PAGE
-  const PrintWorkOrder = () => {
-    if (!workOrderData) return null;
-
-    const workSteps =
-      workOrderData.workOrderSteps?.length > 0
-        ? workOrderData.workOrderSteps
-        : defaultWorkSteps;
-
-    // Get material requisitions with proper handling
-    const materialRequisitions = workOrderData.materialRequisitions || [];
+  // PRINT FUNCTIONALITY - OPENS IN NEW WINDOW
+  const handlePrintClick = (workOrder) => {
+    console.log("Printing work order:", workOrder);
     
-    console.log("Rendering material requisitions in print:", materialRequisitions);
+    const mainPartMaterialRequisition = {
+      srNo: 101,
+      description: workOrder.partDesc || workOrder.description || "",
+      partNo: workOrder.partNo || workOrder.partNumber || "",
+      snbn: workOrder.snBin || workOrder.snBn || "",
+      qty: workOrder.qty || "",
+      remarks: workOrder.remarks || workOrder.workshopManagerRemarks || "Main part from order",
+    };
 
-    return (
-      <div
-        id="printWorkOrder"
-        style={{
-          fontFamily: "Arial, sans-serif",
-          fontSize: "7pt",
-          width: "100%",
-          maxWidth: "100%",
-          margin: 0,
-          padding: 0,
-          backgroundColor: "white",
-          color: "black",
-        }}
-      >
-        {/* Header - Compact */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            borderBottom: "1px solid black",
-            paddingBottom: "9px",
-            marginBottom: "5px",
-          }}
-        >
-          <div style={{ flex: 1, textAlign: "center" }}>
-            <h1
-              style={{
-                fontSize: "14pt",
-                fontWeight: "bold",
-                margin: 5,
-                letterSpacing: "1px",
-                color: "black",
-              }}
-            >
-              WORKORDER
-            </h1>
-          </div>
-          <div
-            style={{
-              textAlign: "right",
-              fontSize: "6pt",
-              lineHeight: 1.2,
-              color: "black",
-            }}
-          >
-            <div>Form: AMC 7A</div>
-            <div>Rev: 01</div>
-            <div>Date: {formatDate(new Date())}</div>
-          </div>
-        </div>
+    const processedWorkOrder = {
+      ...workOrder,
+      materialRequisitions: workOrder.materialRequisitions || 
+                           workOrder.partsUsed || 
+                           [mainPartMaterialRequisition],
+      workOrderSteps: workOrder.workOrderSteps || workOrder.workDetails || [],
+    };
 
-        {/* Work Order Details Table - Compact */}
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            fontSize: "6pt",
-            marginBottom: "10px",
-            border: "1px solid black",
-          }}
-        >
-          <tbody>
-            <tr>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>WO#:</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{workOrderData.workOrderNo || ""}</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>RO#:</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{workOrderData.repairOrderNo || ""}</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>Date:</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{formatDate(workOrderData.issueDate)}</td>
-            </tr>
-            <tr>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>Customer:</td>
-              <td colSpan="3" style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{workOrderData.customerName || ""}</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>Qty:</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{workOrderData.qty || ""}</td>
-            </tr>
-            <tr>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>Desc:</td>
-              <td colSpan="5" style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{workOrderData.description || ""}</td>
-            </tr>
-            <tr>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>S/N:</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{workOrderData.snBn || ""}</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>CMM:</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{workOrderData.cmmRefNo || ""}</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", fontWeight: "bold", backgroundColor: "#f0f0f0", color: "black" }}>Rev:</td>
-              <td style={{ border: "1px solid black", padding: "7px 9px", color: "black" }}>{workOrderData.revNo || ""}</td>
-            </tr>
-          </tbody>
-        </table>
+    // Generate print HTML
+    const printHTML = generatePrintHTML(processedWorkOrder);
+    
+    // Open print window
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    printWindow.document.write(printHTML);
+    printWindow.document.close();
+    
+    // Wait for content to load then print
+    printWindow.onload = function() {
+      printWindow.focus();
+      printWindow.print();
+      // Optional: close window after printing
+      // printWindow.close();
+    };
+  };
 
-        {/* Issued By - Compact */}
-        <div style={{ display: "flex", alignItems: "center", gap: "5px", marginBottom: "9px", padding: "7px", border: "1px solid black", fontSize: "6pt", backgroundColor: "white", color: "black" }}>
-          <span style={{ fontWeight: "bold" }}>Issued By:</span>
-          <span>{workOrderData.issuedBy || ""}</span>
-        </div>
+  // Generate HTML for printing
+  const generatePrintHTML = (workOrderData) => {
+    const workSteps = workOrderData.workOrderSteps?.length > 0
+      ? workOrderData.workOrderSteps
+      : defaultWorkSteps;
 
-        {/* Work Details Table - Very Compact */}
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "6pt", marginBottom: "9px", border: "1px solid black" }}>
-          <thead>
-            <tr>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "5%", color: "black" }}>No.</th>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "55%", color: "black" }}>Work Done</th>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "20%", color: "black" }}>Tech Sign</th>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "20%", color: "black" }}>Staff Sign</th>
-            </tr>
-          </thead>
-          <tbody>
-            {workSteps.map((step, index) => (
-              <tr key={index}>
-                <td style={{ border: "1px solid black", padding: "7px", textAlign: "center", backgroundColor: "white", color: "black" }}>
-                  {step.srNo || step.stepNo || index + 1}
-                </td>
-                <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}>
-                  {step.detail || step.detailOfWorkDone || ""}
-                </td>
-                <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}>
-                  {step.technicianSign || ""}
-                </td>
-                <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}>
-                  {step.certifyingStaffSign || ""}
-                </td>
-              </tr>
-            ))}
-            <tr>
-              <td colSpan="4" style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}>
-                <strong>Action:</strong> {workOrderData.actionTaken || ""}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    const materialRequisitions = workOrderData.materialRequisitions || [];
 
-        {/* Material Requisition - Compact - FIXED DATA SYNC */}
-        <div style={{ backgroundColor: "#e0e0e0", padding: "10px", border: "1px solid black", fontWeight: "bold", fontSize: "16px", marginBottom: 0, color: "black" }}>
-          Material Requisition
-        </div>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "6pt", marginBottom: "9px", border: "1px solid black" }}>
-          <thead>
-            <tr>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "8%", color: "black" }}>No.</th>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "35%", color: "black" }}>Description</th>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "20%", color: "black" }}>Part No.</th>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "15%", color: "black" }}>S/N</th>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "8%", color: "black" }}>Qty</th>
-              <th style={{ border: "1px solid black", padding: "7px", backgroundColor: "#e0e0e0", textAlign: "center", width: "14%", color: "black" }}>Remarks</th>
-            </tr>
-          </thead>
-          <tbody>
-            {materialRequisitions.length > 0 ? (
-              // If we have material requisitions, show them
-              materialRequisitions.map((item, idx) => (
-                <tr key={idx}>
-                  <td style={{ border: "1px solid black", padding: "7px", textAlign: "center", backgroundColor: "white", color: "black" }}>
-                    {item.srNo || idx + 1}
-                  </td>
-                  <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}>
-                    {item.description || ""}
-                  </td>
-                  <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}>
-                    {item.partNo || ""}
-                  </td>
-                  <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}>
-                    {item.snbn || ""}
-                  </td>
-                  <td style={{ border: "1px solid black", padding: "7px", textAlign: "center", backgroundColor: "white", color: "black" }}>
-                    {item.qty || ""}
-                  </td>
-                  <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}>
-                    {item.remarks || ""}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              // If no material requisitions, show 3 empty rows
-              Array.from({ length: 3 }, (_, idx) => (
-                <tr key={idx}>
-                  <td style={{ border: "1px solid black", padding: "7px", textAlign: "center", backgroundColor: "white", color: "black" }}>
-                    {idx + 1}
-                  </td>
-                  <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}></td>
-                  <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}></td>
-                  <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}></td>
-                  <td style={{ border: "1px solid black", padding: "7px", textAlign: "center", backgroundColor: "white", color: "black" }}></td>
-                  <td style={{ border: "1px solid black", padding: "7px", backgroundColor: "white", color: "black" }}></td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Work Order - ${workOrderData.workOrderNo}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 7pt;
+      padding: 20px;
+      background: white;
+      color: black;
+    }
+    
+    @media print {
+      body {
+        padding: 10px;
+      }
+      
+      @page {
+        size: A4;
+        margin: 10mm;
+      }
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    table td, table th {
+      border: 1px solid black;
+      padding: 8px;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid black;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .header h1 {
+      font-size: 16pt;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-align: center;
+      flex: 1;
+    }
+    
+    .header-info {
+      text-align: right;
+      font-size: 7pt;
+      line-height: 1.3;
+    }
+    
+    .section-title {
+      background-color: #e0e0e0;
+      padding: 8px;
+      border: 1px solid black;
+      font-weight: bold;
+      font-size: 9pt;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+    
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid black;
+      margin-bottom: 15px;
+    }
+    
+    .info-row strong {
+      font-weight: bold;
+    }
+    
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 15px;
+    }
+    
+    .signature-box {
+      flex: 1;
+      text-align: center;
+      border: 1px solid black;
+      padding: 10px;
+      min-height: 80px;
+    }
+    
+    .signature-box .title {
+      font-weight: bold;
+      font-size: 8pt;
+      margin-bottom: 30px;
+    }
+    
+    .signature-box .date {
+      font-size: 7pt;
+      margin-top: 10px;
+    }
+    
+    .certification {
+      padding: 10px;
+      border: 1px solid black;
+      font-size: 7pt;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+    
+    .certification p {
+      margin-bottom: 10px;
+    }
+    
+    .certification .highlight {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+      padding: 8px;
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>WORKORDER</h1>
+    <div class="header-info">
+      <div>Form: AMC 7A</div>
+      <div>Rev: 01</div>
+      <div>Date: ${formatDate(new Date())}</div>
+    </div>
+  </div>
 
-        {/* Tools Section - Compact */}
-        <div style={{ fontSize: "6pt", marginBottom: "9px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px", border: "1px solid black", backgroundColor: "white", color: "black" }}>
-            <span style={{ fontWeight: "bold" }}>Tools:</span>
-            <span style={{ flex: 1, borderBottom: "1px solid black" }}>{workOrderData.toolsUsed || ""}</span>
-            <span style={{ fontWeight: "bold" }}>Tech:</span>
-            <span style={{ flex: 1, borderBottom: "1px solid black" }}>{workOrderData.technician || ""}</span>
-            <span style={{ fontWeight: "bold" }}>Hours:</span>
-            <span style={{ borderBottom: "1px solid black", minWidth: "30px" }}>{workOrderData.totalManHour || ""}</span>
-          </div>
-        </div>
+  <!-- Work Order Details -->
+  <table style="margin-bottom: 15px; font-size: 7pt;">
+    <tbody>
+      <tr>
+        <td style="font-weight: bold; background-color: #f0f0f0; width: 12%;">WO#:</td>
+        <td style="width: 21%;">${workOrderData.workOrderNo || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0; width: 12%;">RO#:</td>
+        <td style="width: 21%;">${workOrderData.repairOrderNo || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0; width: 12%;">Date:</td>
+        <td style="width: 22%;">${formatDate(workOrderData.issueDate)}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background-color: #f0f0f0;">Customer:</td>
+        <td colspan="3">${workOrderData.customerName || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0;">Qty:</td>
+        <td>${workOrderData.qty || ""}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background-color: #f0f0f0;">Desc:</td>
+        <td colspan="5">${workOrderData.description || ""}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background-color: #f0f0f0;">S/N:</td>
+        <td>${workOrderData.snBn || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0;">CMM:</td>
+        <td>${workOrderData.cmmRefNo || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0;">Rev:</td>
+        <td>${workOrderData.revNo || ""}</td>
+      </tr>
+    </tbody>
+  </table>
 
-        {/* Certification - Compact */}
-        <div style={{ marginBottom: "9px", padding: "9px", border: "1px solid black", fontSize: "6pt", lineHeight: 1.3, backgroundColor: "white", color: "black" }}>
-          <p style={{ margin: 0 }}>
-            Certified: Task completed per CMM ref, meets DGCA requirements, ready for release per CAR 145.50
-          </p>
-          <div style={{ textAlign: "center", fontWeight: "bold", marginTop: "7px", padding: "7px", backgroundColor: "#f0f0f0", color: "black" }}>
-            All Documents Scrutinized & Verified
-          </div>
-        </div>
+  <!-- Issued By -->
+  <div class="info-row">
+    <strong>Issued By:</strong>
+    <span>${workOrderData.issuedBy || ""}</span>
+  </div>
 
-        {/* Signatures - Compact */}
-        <div style={{ display: "flex", justifyContent: "space-between", gap: "10px" }}>
-          <div style={{ flex: 1, textAlign: "center", border: "1px solid black", padding: "5px", backgroundColor: "white", color: "black" }}>
-            <div style={{ fontWeight: "bold", fontSize: "7pt", marginBottom: "10px" }}>Workshop Manager</div>
-            <div style={{ fontSize: "6pt", marginTop: "5px" }}>Date & Sign: {formatDate(workOrderData.workshopManagerSignDate)}</div>
-          </div>
-          <div style={{ flex: 1, textAlign: "center", border: "1px solid black", padding: "5px", backgroundColor: "white", color: "black" }}>
-            <div style={{ fontWeight: "bold", fontSize: "7pt", marginBottom: "10px" }}>Quality Manager</div>
-            <div style={{ fontSize: "6pt", marginTop: "5px" }}>Date & Sign: {formatDate(workOrderData.qualityManagerSignDate)}</div>
-          </div>
-        </div>
-      </div>
-    );
+  <!-- Work Details -->
+  <table style="margin-bottom: 15px; font-size: 7pt;">
+    <thead>
+      <tr>
+        <th style="background-color: #e0e0e0; width: 5%; text-align: center;">No.</th>
+        <th style="background-color: #e0e0e0; width: 55%; text-align: center;">Work Done</th>
+        <th style="background-color: #e0e0e0; width: 20%; text-align: center;">Tech Sign</th>
+        <th style="background-color: #e0e0e0; width: 20%; text-align: center;">Staff Sign</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${workSteps.map((step, index) => `
+        <tr>
+          <td style="text-align: center;">${step.srNo || step.stepNo || index + 1}</td>
+          <td>${step.detail || step.detailOfWorkDone || ""}</td>
+          <td>${step.technicianSign || ""}</td>
+          <td>${step.certifyingStaffSign || ""}</td>
+        </tr>
+      `).join('')}
+      <tr>
+        <td colspan="4"><strong>Action:</strong> ${workOrderData.actionTaken || ""}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Material Requisition -->
+  <div class="section-title">Material Requisition</div>
+  <table style="margin-bottom: 15px; font-size: 7pt;">
+    <thead>
+      <tr>
+        <th style="background-color: #e0e0e0; width: 8%; text-align: center;">No.</th>
+        <th style="background-color: #e0e0e0; width: 35%; text-align: center;">Description</th>
+        <th style="background-color: #e0e0e0; width: 20%; text-align: center;">Part No.</th>
+        <th style="background-color: #e0e0e0; width: 15%; text-align: center;">S/N</th>
+        <th style="background-color: #e0e0e0; width: 8%; text-align: center;">Qty</th>
+        <th style="background-color: #e0e0e0; width: 14%; text-align: center;">Remarks</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${materialRequisitions.length > 0 ? 
+        materialRequisitions.map((item, idx) => `
+          <tr>
+            <td style="text-align: center;">${item.srNo || idx + 1}</td>
+            <td>${item.description || ""}</td>
+            <td>${item.partNo || ""}</td>
+            <td>${item.snbn || ""}</td>
+            <td style="text-align: center;">${item.qty || ""}</td>
+            <td>${item.remarks || ""}</td>
+          </tr>
+        `).join('') :
+        Array.from({ length: 3 }, (_, idx) => `
+          <tr>
+            <td style="text-align: center;">${idx + 1}</td>
+            <td style="height: 25px;"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        `).join('')
+      }
+    </tbody>
+  </table>
+
+  <!-- Tools Section -->
+  <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid black; margin-bottom: 15px; font-size: 7pt;">
+    <strong>Tools:</strong>
+    <span style="flex: 1; border-bottom: 1px solid black; min-height: 20px;">${workOrderData.toolsUsed || ""}</span>
+    <strong>Tech:</strong>
+    <span style="flex: 1; border-bottom: 1px solid black; min-height: 20px;">${workOrderData.technician || ""}</span>
+    <strong>Hours:</strong>
+    <span style="border-bottom: 1px solid black; min-width: 50px;">${workOrderData.totalManHour || ""}</span>
+  </div>
+
+  <!-- Certification -->
+  <div class="certification">
+    <p>Certified: Task completed per CMM ref, meets DGCA requirements, ready for release per CAR 145.50</p>
+    <div class="highlight">All Documents Scrutinized & Verified</div>
+  </div>
+
+  <!-- Signatures -->
+  <div class="signature-section">
+    <div class="signature-box">
+      <div class="title">Workshop Manager</div>
+      <div class="date">Date & Sign: ${formatDate(workOrderData.workshopManagerSignDate)}</div>
+    </div>
+    <div class="signature-box">
+      <div class="title">Quality Manager</div>
+      <div class="date">Date & Sign: ${formatDate(workOrderData.qualityManagerSignDate)}</div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
   };
 
   return (
@@ -459,13 +509,8 @@ const WorkorderTable = () => {
         <div style={{ marginTop: "10px" }}>
           <CustomBreadcrumb breadcrumbsLabel="View All Work Orders" />
 
-          {/* Print View */}
-          <div className="printView">
-            <PrintWorkOrder />
-          </div>
-
           {/* Normal View */}
-          <div className="normalView card border-0 shadow-lg mx-4 my-4 rounded-3">
+          <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
             <div className="card-body">
               <div className="row align-items-center mb-4">
                 <div className="col-md-6">

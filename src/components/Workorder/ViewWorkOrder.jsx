@@ -32,7 +32,7 @@ const ViewWorkOrder = () => {
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching work orders", error);
-      toast.error("Failed to load work orders");
+      toast.error("No work orders found");
     } finally {
       setIsLoading(false);
     }

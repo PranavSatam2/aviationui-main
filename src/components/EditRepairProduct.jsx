@@ -67,9 +67,16 @@ const EditCustomer = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
 
+    // Validate numeric fields (phoneNo and mobileNumber)
+    if (name === "phoneNo" || name === "mobileNumber") {
+      // Only allow digits and limit to 10 characters
+      const numericValue = value.replace(/\D/g, "").slice(0, 10);
+      setForm({ ...form, [name]: numericValue });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  };
   // Validation rules
   const validateField = (fieldName, value) => {
     switch (fieldName) {
@@ -166,12 +173,17 @@ const EditCustomer = () => {
           <div className="my-2 p-2">
             <div className="container-fluid">
               <div className="row mx-1 card border border-dark shadow-lg py-2 p-4">
-                <div className="col-md-12" style={{ height: "72vh", overflowY: "scroll" }}>
+                <div
+                  className="col-md-12"
+                  style={{ height: "72vh", overflowY: "scroll" }}
+                >
                   <form onSubmit={handleSubmit}>
                     {/* Customer Name & Contact Person */}
                     <div className="row mb-3">
                       <div className="col-md-6">
-                        <label className="form-label fw-bold">Customer Name *</label>
+                        <label className="form-label fw-bold">
+                          Customer Name *
+                        </label>
                         <input
                           className="form-control"
                           type="text"
@@ -182,7 +194,9 @@ const EditCustomer = () => {
                         />
                       </div>
                       <div className="col-md-6">
-                        <label className="form-label fw-bold">Contact Person *</label>
+                        <label className="form-label fw-bold">
+                          Contact Person *
+                        </label>
                         <input
                           className="form-control"
                           type="text"
@@ -197,7 +211,9 @@ const EditCustomer = () => {
                     {/* Phone, Country Code & Mobile */}
                     <div className="row mb-3">
                       <div className="col-md-4">
-                        <label className="form-label fw-bold">Phone No * </label>
+                        <label className="form-label fw-bold">
+                          Phone No *{" "}
+                        </label>
                         <input
                           className="form-control"
                           type="text"
@@ -208,9 +224,17 @@ const EditCustomer = () => {
                           maxLength="10"
                           required
                         />
+                        {form.phoneNo && form.phoneNo.length < 10 && (
+                          <small className="text-danger">
+                            Phone number must be exactly 10 digits (
+                            {form.phoneNo.length}/10)
+                          </small>
+                        )}
                       </div>
                       <div className="col-md-2">
-                        <label className="form-label fw-bold">Country Code *</label>
+                        <label className="form-label fw-bold">
+                          Country Code *
+                        </label>
                         <select
                           className="form-select"
                           name="countryCode"
@@ -227,7 +251,9 @@ const EditCustomer = () => {
                         </select>
                       </div>
                       <div className="col-md-6">
-                        <label className="form-label fw-bold">Mobile Number * (10 digits)</label>
+                        <label className="form-label fw-bold">
+                          Mobile Number * (10 digits)
+                        </label>
                         <input
                           className="form-control"
                           type="text"
@@ -238,6 +264,12 @@ const EditCustomer = () => {
                           maxLength="10"
                           required
                         />
+                        {form.mobileNumber && form.mobileNumber.length < 10 && (
+                          <small className="text-danger">
+                            Mobile number must be exactly 10 digits (
+                            {form.mobileNumber.length}/10)
+                          </small>
+                        )}
                       </div>
                     </div>
 
@@ -255,7 +287,9 @@ const EditCustomer = () => {
                         />
                       </div>
                       <div className="col-md-6">
-                        <label className="form-label fw-bold">Customer Type *</label>
+                        <label className="form-label fw-bold">
+                          Customer Type *
+                        </label>
                         <select
                           className="form-select"
                           name="customerType"
@@ -274,7 +308,9 @@ const EditCustomer = () => {
                     {/* Addresses */}
                     <div className="row mb-3">
                       <div className="col-md-12">
-                        <label className="form-label fw-bold">Ship To Address 1 *</label>
+                        <label className="form-label fw-bold">
+                          Ship To Address 1 *
+                        </label>
                         <textarea
                           className="form-control"
                           name="shipToAddress1"
@@ -288,7 +324,9 @@ const EditCustomer = () => {
 
                     <div className="row mb-3">
                       <div className="col-md-12">
-                        <label className="form-label fw-bold">Ship To Address 2</label>
+                        <label className="form-label fw-bold">
+                          Ship To Address 2
+                        </label>
                         <textarea
                           className="form-control"
                           name="shipToAddress2"
@@ -301,7 +339,9 @@ const EditCustomer = () => {
 
                     <div className="row mb-3">
                       <div className="col-md-12">
-                        <label className="form-label fw-bold">Ship To Address 3</label>
+                        <label className="form-label fw-bold">
+                          Ship To Address 3
+                        </label>
                         <textarea
                           className="form-control"
                           name="shipToAddress3"
@@ -314,7 +354,9 @@ const EditCustomer = () => {
 
                     <div className="row mb-3">
                       <div className="col-md-12">
-                        <label className="form-label fw-bold">Bill To Address *</label>
+                        <label className="form-label fw-bold">
+                          Bill To Address *
+                        </label>
                         <textarea
                           className="form-control"
                           name="billToAddress"
@@ -329,7 +371,9 @@ const EditCustomer = () => {
                     {/* Payment Terms & GST */}
                     <div className="row mb-3">
                       <div className="col-md-6">
-                        <label className="form-label fw-bold">Payment Terms *</label>
+                        <label className="form-label fw-bold">
+                          Payment Terms *
+                        </label>
                         <select
                           className="form-select w-100"
                           name="paymentTerms"
@@ -341,11 +385,15 @@ const EditCustomer = () => {
                           <option value="30">30</option>
                           <option value="60">60</option>
                           <option value="90">90</option>
-                          <option value="advance payment">Advance Payment</option>
+                          <option value="advance payment">
+                            Advance Payment
+                          </option>
                         </select>
                       </div>
                       <div className="col-md-6">
-                        <label className="form-label fw-bold">GST Number * (15 alphanumeric characters)</label>
+                        <label className="form-label fw-bold">
+                          GST Number * (15 alphanumeric characters)
+                        </label>
                         <input
                           className="form-control"
                           type="text"
@@ -362,7 +410,10 @@ const EditCustomer = () => {
                     {/* Submit Button */}
                     <div className="row">
                       <div className="col-md-12 text-end">
-                        <button type="submit" className="btn btn-primary px-4 py-2">
+                        <button
+                          type="submit"
+                          className="btn btn-primary px-4 py-2"
+                        >
                           <i className="fa fa-save me-2"></i>Update Customer
                         </button>
                       </div>
@@ -373,7 +424,7 @@ const EditCustomer = () => {
             </div>
           </div>
         </div>
-      </div> 
+      </div>
       <Footer />
     </div>
   );
