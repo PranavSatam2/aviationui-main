@@ -6,6 +6,7 @@ import {
   deleteProduct,
   getProductDetail,
   listAllProduct,
+  fetchPartNumbersAndDescriptions,
 } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
@@ -22,6 +23,7 @@ const ProductList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [quantityMap, setQuantityMap] = useState({}); // Map to store product name -> quantity
   const userRole = sessionStorage.getItem("role");
 
   const navigate = useNavigate();
@@ -31,6 +33,31 @@ const ProductList = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
+        // Fetch part numbers and descriptions first to build quantity map
+        const partData = await fetchPartNumbersAndDescriptions();
+        console.log("Fetched part numbers:", partData);
+        
+        // Create a map of product names to their quantities
+        const qtyMap = {};
+        if (partData && Array.isArray(partData)) {
+          partData.forEach((item) => {
+            // Map main product name to its quantity
+            if (item.productName) {
+              qtyMap[item.productName] = item.quantity || 0;
+            }
+            // Map alternate product 1 to its quantity
+            if (item.alternateProduct1) {
+              qtyMap[item.alternateProduct1] = item.alternateQuantity1 || 0;
+            }
+            // Map alternate product 2 to its quantity
+            if (item.alternateProduct2) {
+              qtyMap[item.alternateProduct2] = item.alternateQuantity2 || 0;
+            }
+          });
+        }
+        setQuantityMap(qtyMap);
+
+        // Then fetch all products
         const response = await listAllProduct();
         if (response && response.data) {
           setTableData(response.data); // Update state with response data
@@ -335,7 +362,8 @@ const ProductList = () => {
 
                               // Add quantity next to product and alternate product names
                               if (["productName", "alternateProduct1", "alternateProduct2"].includes(column.field)) {
-                                const qty = product.quantityMap?.[displayValue] ?? 0; // if backend gives separate map
+                                // Get quantity from the quantityMap based on the product name
+                                const qty = displayValue ? (quantityMap[displayValue] ?? 0) : 0;
                                 displayValue = displayValue ? `${displayValue} → ${qty}` : "";
                               }
 
