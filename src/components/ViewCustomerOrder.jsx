@@ -183,6 +183,7 @@ const ViewCustomerOrder = () => {
     { field: "partDescription", label: "Part Desc", width: "100px" },
     // { field: "quantity", label: "Quantity", width: "100px" },
     { field: "batchNo", label: "Part Serial Number", width: "100px" },
+    { field: "backOrder", label: "Back Order", width: "100px" },
     { field: "status", label: "Status", width: "100px" },
     // { field: "makerUserName", label: "Maker UserName", width: "100px" },
     // { field: "makerDate", label: "Maker Date", width: "100px" },

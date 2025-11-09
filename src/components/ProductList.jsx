@@ -159,7 +159,7 @@ const ProductList = () => {
   // Column definitions for the table
   const columns = [
     { field: "productId", label: "ID", width: "60px" },
-    { field: "productName", label: "Product Number", width: "100px" },
+    { field: "productName", label: "Product Number", width: "180px" },
     { field: "alternateProduct1", label: "Alternate Product Number 1", width: "150px" },
     { field: "alternateProduct2", label: "Alternate Product Number 2", width: "150px" },
     { field: "mappingType", label: "Mapping Type", width: "120px" },
@@ -330,21 +330,31 @@ const ProductList = () => {
                                 : "bg-light bg-opacity-50"
                             }
                           >
-                            {columns.map((column) => (
-                              <td
-                                key={`${product.productId}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
-                                title={product[column.field]}
-                              >
-                                {product[column.field]}
-                              </td>
-                            ))}
+                            {columns.map((column) => {
+                              let displayValue = product[column.field];
+
+                              // Add quantity next to product and alternate product names
+                              if (["productName", "alternateProduct1", "alternateProduct2"].includes(column.field)) {
+                                const qty = product.quantityMap?.[displayValue] ?? 0; // if backend gives separate map
+                                displayValue = displayValue ? `${displayValue} → ${qty}` : "";
+                              }
+
+                              return (
+                                <td
+                                  key={`${product.productId}-${column.field}`}
+                                  className="text-nowrap py-3"
+                                  style={{
+                                    maxWidth: "150px",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                  title={displayValue}
+                                >
+                                  {displayValue}
+                                </td>
+                              );
+                            })}
                             <td>
                               <div className="d-flex justify-content-center gap-2">
                                 {userRole === "Admin" && (

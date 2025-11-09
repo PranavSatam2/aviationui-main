@@ -24,6 +24,7 @@ const AddProduct = () => {
     // Fetch part numbers from API
     fetchPartNumbersAndDescriptions()
       .then((data) => {
+        console.log("Fetched part numbers:", data);
         setPartList(data);
       })
       .catch((error) => {
@@ -373,7 +374,7 @@ const AddProduct = () => {
                           <option value="">Select Alternate Product 1</option>
                           {partList.map((part, index) => (
                             <option key={index} value={part.productName}>
-                              {part.productName} → {part.alternateQuantity1}
+                              {part.productName} → {part.quantity}
                             </option>
                           ))}
                         </select>
@@ -443,7 +444,7 @@ const AddProduct = () => {
                           <option value="">Select Alternate Product 2</option>
                           {partList.map((part, index) => (
                             <option key={index} value={part.productName}>
-                              {part.productName} → {part.alternateQuantity2}
+                              {part.productName} → {part.quantity}
                             </option>
                           ))}
                         </select>
