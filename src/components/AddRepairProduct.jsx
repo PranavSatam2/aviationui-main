@@ -154,13 +154,13 @@ const AddCustomerRepairProduct = () => {
                   <form onSubmit={handleSubmit}>
                     {/* Product Name */}
                     <div className="col-md-12 p-2 d-flex">
-                      <label className="col-md-2 mt-2">Product Name</label>
+                      <label className="col-md-2 mt-2">Product Name *</label>
                       <input
                         className="form-control w-100"
                         type="text"
                         name="productName"
                         value={form.productName}
-                        onInput={(event) => validateDataType(event, "A")}
+                        onInput={(event) => validateDataType(event, "ANH")}
                         onChange={handleChange}
                         required
                       />
@@ -168,7 +168,7 @@ const AddCustomerRepairProduct = () => {
 
                     {/* Serial Numbers */}
                     <div className="col-md-12 p-2">
-                      <label className="col-md-2 mt-2">Serial Numbers</label>
+                      <label className="col-md-2 mt-2">Serial Numbers *</label>
                       {form.productSerialNumbers.map((sn, index) => (
                         <div key={index} className="d-flex mb-2">
                           <input
@@ -204,7 +204,7 @@ const AddCustomerRepairProduct = () => {
                     {/* Product Description */}
                     <div className="col-md-12 p-2 d-flex">
                       <label className="col-md-2 mt-2">
-                        Product Description
+                        Product Description *
                       </label>
                       <textarea
                         className="form-control w-100"
@@ -220,7 +220,7 @@ const AddCustomerRepairProduct = () => {
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-2">
-                          Unit of Measurement
+                          Unit of Measurement *
                         </label>
                         <select
                           name="unitOfMeasurement"
@@ -243,7 +243,7 @@ const AddCustomerRepairProduct = () => {
                       </div>
 
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">OEM</label>
+                        <label className="col-md-4 mt-2">OEM *</label>
                         <input
                           type="text"
                           className="form-control w-100"
@@ -259,7 +259,7 @@ const AddCustomerRepairProduct = () => {
                     {/* CMM Ref No & Date */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">CMM Ref No</label>
+                        <label className="col-md-4 mt-2">CMM Ref No *</label>
                         <input
                           type="text"
                           className="form-control w-100"
@@ -272,7 +272,7 @@ const AddCustomerRepairProduct = () => {
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Date</label>
+                        <label className="col-md-4 mt-2">Date *</label>
                         <input
                           type="date"
                           className="form-control w-100"
@@ -287,7 +287,7 @@ const AddCustomerRepairProduct = () => {
                     {/* Registered By */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Registered By</label>
+                        <label className="col-md-4 mt-2">Registered By *</label>
                         <input
                           type="text"
                           className="form-control w-100"

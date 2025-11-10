@@ -13,19 +13,15 @@ import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import Footer from "./Footer";
 import { toast } from "react-toastify";
 import logo from "../static/img/logo.png";
-import { PrintCAForm } from "./PrintCAForm";
-import { useLocation , useNavigate } from "react-router-dom"; // <-- For navigation
+import { useLocation, useNavigate } from "react-router-dom";
 
 const CAForm = () => {
-  //const [workOrderNumber, setWorkOrderNumber] = useState([]);
   const [partLoading, setPartLoading] = useState(false);
   const [partError, setPartError] = useState(null);
   const [selectedWorkOrderNumber, setSelectedWorkOrderNumber] = useState("");
-  const [reportData, setReportData] = useState();
   const location = useLocation();
   const navigate = useNavigate();
   const { workOrderNo } = location.state || { workOrderNo: [] };
-
 
   const [workOrderDetails, setWorkOrderDetails] = useState({
     workOrderNumber: "",
@@ -35,16 +31,6 @@ const CAForm = () => {
     serialNo: "",
     status: "",
   });
-
-  // const generateCertificateNumber = () => {
-  //   const year = new Date().getFullYear();
-  //   const companyCode = "CA-N-";
-  //   const randomId = Math.floor(100 + Math.random() * 900); // Generates number like 231
-
-  //   return `${year}/${companyCode}/${randomId}`;
-  // };
-
-  //const certNumber = generateCertificateNumber();
 
   const [formData, setFormData] = useState({
     formTrackingNumber: "",
@@ -66,17 +52,16 @@ const CAForm = () => {
     name13d: "",
     date13e: "",
     name14d: sessionStorage.getItem("username") || "",
-    date14e: new Date().toLocaleDateString('en-GB').replace(/\//g, '-')
+    date14e: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
   });
 
   useEffect(() => {
     const getWorkOrderNumber = async () => {
-      console.log("WorkOrderNo : ",workOrderNo);
-      //setPartLoading(true);
+      console.log("WorkOrderNo : ", workOrderNo);
       try {
-      const res = await fetchWorkOrderDetails(workOrderNo);
-      console.log(res);
-      setWorkOrderDetails(res.data);
+        const res = await fetchWorkOrderDetails(workOrderNo);
+        console.log(res);
+        setWorkOrderDetails(res.data);
       } catch (err) {
         console.error("Error fetching WorkOrder numbers:", err);
         setPartError(
@@ -97,17 +82,6 @@ const CAForm = () => {
     }));
   };
 
-  // const handlePartNumberSelect = async (workOrder) => {
-  //   setSelectedWorkOrderNumber(workOrder);
-  //   if (!workOrder) return;
-
-  //   try {
-  //     const res = await fetchWorkOrderDetails(workOrder);
-  //     setWorkOrderDetails(res.data);
-  //   } catch (err) {
-  //     console.error("Failed to fetch workOrder details:", err);
-  //   }
-  // };
   const handleInputChange = (field, value) => {
     setFormData({
       ...formData,
@@ -158,7 +132,6 @@ const CAForm = () => {
       errors.push("Remark is required.");
     }
 
-
     return errors;
   };
 
@@ -166,14 +139,12 @@ const CAForm = () => {
     const errors = validateFormData();
 
     if (errors.length > 0) {
-      // Show all errors as toast messages
       errors.forEach((err) => toast.error(err));
-      return; // Stop save if validation fails
+      return;
     }
 
     try {
       const payload = {
-        // Required fields
         formTrackingNumber: formData.formTrackingNumber,
         workOrderNo: workOrderDetails.workOrderNumber,
         item: formData.item,
@@ -198,42 +169,16 @@ const CAForm = () => {
 
       console.log("Saving CA Form:", payload);
 
-      // Call the API to save the data
       const responce = await submitCAForm(payload);
       alert("CA Form saved successfully!");
-      // Fetch the saved CA Form data from backend
+      
       const savedDataRes = await getCAForm(responce.data.formTrackingNumber);
-
       const savedData = savedDataRes;
 
-      // Update state with latest data
-      setReportData(savedData);
-      // console.log("Save data ",savedDataRes);
-
-      setTimeout(() => handlePrintClick(savedData), 300);
-    } catch (error) {
-      toast.error("Error saving CA Form.");
-    }
-  };
-
-  const handlePrintClick = (report) => {
-    // Store the report data
-    console.log("Report",report)
-    setReportData(report.data);
-
-    // Short delay to ensure React has updated the state and rendered the component
-    setTimeout(() => {
-      // Cache original body styles
-      const originalBodyStyle = document.body.style.cssText;
-
-      // Apply print-friendly styles to the body
-      document.body.style.margin = "0";
-      document.body.style.padding = "0";
-
-      // Print the document
-      window.print();
+      setTimeout(() => handlePrintClick(savedData.data), 300);
+      
+      // Reset form after printing
       setTimeout(() => {
-        document.body.style.cssText = originalBodyStyle;
         setFormData({
           formTrackingNumber: "",
           workOrderNumber: "",
@@ -265,10 +210,289 @@ const CAForm = () => {
         });
 
         setSelectedWorkOrderNumber("");
-        setReportData(null);
-      }, 100);
-    }, 300);
+      }, 500);
+    } catch (error) {
+      toast.error("Error saving CA Form.");
+    }
   };
+
+ const handlePrintClick = (report) => {  
+  const logoBase64 = logo;
+  const printWindow = window.open("", "_blank", "width=800,height=600");
+  const printContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>CA Form 1 - ${report?.formTrackingNumber || "N/A"}</title>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            font-size: 12px;
+          }
+          .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            border: 1px solid black;
+          }
+          .section {
+            display: flex;
+            border-bottom: 1px solid black;
+          }
+          .section:last-child {
+            border-bottom: none;
+          }
+          .section-part {
+            padding: 10px;
+            border-right: 1px solid black;
+          }
+          .section-part:last-child {
+            border-right: none;
+          }
+          .checkbox-container {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid black;
+            margin-right: 8px;
+            position: relative;
+            vertical-align: middle;
+          }
+          .checkbox-tick::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: black;
+          }
+          .cross-section {
+            position: relative;
+          }
+          .cross-mark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+          }
+          .cross-mark line {
+            stroke: black;
+            stroke-width: 2;
+          }
+          .signature-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            gap: 10px;
+          }
+          .signature-item {
+            flex: 1 1 calc(50% - 10px);
+            font-size: 0.9rem;
+          }
+          .signature-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 3px;
+          }
+          .signature-value {
+            display: block;
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+            min-height: 25px;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <!-- Header Section -->
+          <div class="section">
+            <div class="section-part" style="width: 30%; font-weight: bold;">
+              1. DGCA India
+            </div>
+            <div class="section-part" style="width: 40%; text-align: center; font-weight: bold; font-size: 16px;">
+              2. AUTHORISED RELEASE CERTIFICATE<br/>CA FORM 1
+            </div>
+            <div class="section-part" style="width: 30%; font-weight: bold;">
+              3. Form Tracking Number<br/>
+              ${report?.formTrackingNumber || "N/A"}
+            </div>
+          </div>
+
+          <!-- Company Info Section -->
+          <div class="section">
+            <div class="section-part" style="width: 30%;">
+              4. Approved Organization Name and Address:<br/><br/>
+              <img src="${logoBase64}" alt="Logo" style="height: 50px; width: 50px;" />
+            </div>
+            <div class="section-part" style="width: 40%;">
+              <br/>
+              AMC TECHNOLOGY<br/>
+              105, HRIDAY INDUSTRIAL ESTATE,<br/>
+              HIRA INDUSTRIAL PARK, VASAI PHATA,<br/>
+              VASAI EAST, PALGHAR 401 203,<br/>
+              MAHARASHTRA, INDIA
+            </div>
+            <div class="section-part" style="width: 30%;">
+              5. Work Order/Contract/Invoice:<br/>
+              ${report?.workOrderNo || report?.workOrderNumber || "N/A"}
+            </div>
+          </div>
+
+          <!-- Column Headers -->
+          <div class="section">
+            <div class="section-part" style="width: 10%;">6. Item</div>
+            <div class="section-part" style="width: 17%;">7. Description</div>
+            <div class="section-part" style="width: 17%;">8. Part No.</div>
+            <div class="section-part" style="width: 11%;">9. Qty</div>
+            <div class="section-part" style="width: 17%;">10. Serial/Batch No.</div>
+            <div class="section-part" style="width: 31%;">11. Status/Work</div>
+          </div>
+
+          <!-- Data Row -->
+          <div class="section">
+            <div class="section-part" style="width: 10%;">${report?.item || "N/A"}</div>
+            <div class="section-part" style="width: 17%;">${report?.description || "N/A"}</div>
+            <div class="section-part" style="width: 17%;">${report?.partNo || "N/A"}</div>
+            <div class="section-part" style="width: 11%;">${report?.quantity || "N/A"}</div>
+            <div class="section-part" style="width: 17%;">${report?.serialNo || "N/A"}</div>
+            <div class="section-part" style="width: 31%;">${report?.status || "N/A"}</div>
+          </div>
+
+          <!-- Remarks Section -->
+          <div class="section">
+            <div class="section-part" style="width: 100%;">
+              12. Remarks:<br/>
+              <div style="padding-left: 60px; margin-top: 10px;">
+                ${report?.remarks || report?.remark || "N/A"}
+              </div>
+            </div>
+          </div>
+
+          <!-- Combined Section 13 & 14 -->
+          <div class="section" style="border-bottom: none;">
+            <!-- Section 13 with X cross -->
+            <div class="section-part cross-section" style="width: 50%; position: relative;">
+              <svg class="cross-mark" preserveAspectRatio="none">
+                <line x1="0" y1="0" x2="100%" y2="100%" />
+                <line x1="100%" y1="0" x2="0" y2="100%" />
+              </svg>
+              
+              <div style="position: relative; z-index: 2;">
+                <strong>13. Manufacturer / Conformity Certification</strong><br/>
+                <span style="font-size: 0.9rem;">13 a. Certifies that the items identified above were manufactured in conformity to:</span><br/><br/>
+                
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                  <span class="checkbox-container ${report?.approveDesign13a === "Y" ? "checkbox-tick" : ""}"></span>
+                  <span style="font-size: 0.9rem;">Approved design data and are in condition for safe operation.</span>
+                </div>
+                
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                  <span class="checkbox-container ${report?.nonApproveDesign13a === "Y" ? "checkbox-tick" : ""}"></span>
+                  <span style="font-size: 0.9rem;">Non-approved design data specified in block 12.</span>
+                </div>
+
+                <div class="signature-grid">
+                  <div class="signature-item">
+                    <span class="signature-label">13 b. Authorised Signature</span>
+                    <span class="signature-value">${report?.authorisedSign13b || ""}</span>
+                  </div>
+                  <div class="signature-item">
+                    <span class="signature-label">13 c. Approval / Authorisation Number</span>
+                    <span class="signature-value">${report?.authorisationNumber13c || ""}</span>
+                  </div>
+                  <div class="signature-item">
+                    <span class="signature-label">13 d. Name</span>
+                    <span class="signature-value">${report?.name13d || ""}</span>
+                  </div>
+                  <div class="signature-item">
+                    <span class="signature-label">13 e. Date (dd/mm/yyyy)</span>
+                    <span class="signature-value">${report?.date13e || ""}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 14 -->
+            <div class="section-part" style="width: 50%;">
+              <strong>14. Release to Service</strong><br/>
+              <span style="font-size: 0.9rem; font-weight: bold;">14 a. CAR 145.A.50 RELEASE TO SERVICE</span><br/><br/>
+              
+              <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span class="checkbox-container ${report?.otherRegulation14a === "Y" ? "checkbox-tick" : ""}"></span>
+                <span style="font-size: 0.9rem;">Other regulation specified in block 12.</span>
+              </div>
+              
+              <p style="margin-bottom: 15px; font-size: 0.9rem; text-align: justify;">
+                Certifies that unless otherwise specified in block 12, the work identified in block 11 
+                and described in block 12 was accomplished in accordance with CAR 145 and in respect 
+                to that work the items are considered ready for release to service.
+              </p>
+
+              <div class="signature-grid">
+                <div class="signature-item">
+                  <span class="signature-label">14 b. Authorised Signature</span>
+                  <span class="signature-value">${report?.authorisedSign14b || ""}</span>
+                </div>
+                <div class="signature-item">
+                  <span class="signature-label">14 c. Certificate / Approval Ref No.</span>
+                  <span class="signature-value">${report?.approvalRefNo14c || ""}</span>
+                </div>
+                <div class="signature-item">
+                  <span class="signature-label">14 d. Name</span>
+                  <span class="signature-value">${report?.name14d || ""}</span>
+                </div>
+                <div class="signature-item">
+                  <span class="signature-label">14 e. Date (dd/mm/yyyy)</span>
+                  <span class="signature-value">${report?.date14e || ""}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Section -->
+          <div class="section">
+            <div class="section-part" style="width: 100%; padding: 10px;">
+              <div style="font-weight: bold;">USER/INSTALLER RESPONSIBILITY:</div>
+              <p style="margin-top: 5px; text-align: justify; font-size: 0.85rem;">
+                THIS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE AUTHORITY TO INSTALL THE ITEMS. 
+                WHERE THE USER/INSTALLER PERFORMS WORK IN ACCORDANCE WITH REGULATIONS OF AN AIRWORTHINESS 
+                AUTHORITY DIFFERENT THAN THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1, IT IS ESSENTIAL 
+                THAT THE USER/INSTALLER ENSURES THAT HIS/HER AIRWORTHINESS AUTHORITY ACCEPTS ITEMS FROM 
+                THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1. STATEMENTS IN BLOCKS 13A AND 14A DO NOT 
+                CONSTITUTE INSTALLATION CERTIFICATION. IN ALL CASES AIRCRAFT MAINTENANCE RECORDS MUST CONTAIN 
+                AN INSTALLATION CERTIFICATION ISSUED IN ACCORDANCE WITH THE NATIONAL REGULATIONS BY THE 
+                USER/INSTALLER BEFORE THE AIRCRAFT MAY BE FLOWN.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+          };
+        </script>
+      </body>
+    </html>
+  `;
+
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+};
 
   return (
     <div className="wrapper">
@@ -276,13 +500,8 @@ const CAForm = () => {
       <div className="content">
         <Header />
         <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="CA Form"
-            // isBack={true}
-          />
-          <div className="printView">
-            <PrintCAForm dataMap={reportData} />
-          </div>
+          <CustomBreadcrumb breadcrumbsLabel="CA Form" />
+          
           <div className={styles.container}>
             <div className={`${styles.formContainer} p-4 pb-5`}>
               <div
@@ -307,13 +526,6 @@ const CAForm = () => {
                   <label htmlFor="formTrackingNumber" className="mr-2">
                     3. Form Tracking Number:
                   </label>
-                  {/* <input
-                    id="formTrackingNumber"
-                    type="text"
-                    className={styles.inputField}
-                    value={formData.formTrackingNumber}
-                    onChange={(e) => handleInputChange("poNo", e.target.value)}
-                  /> */}
                 </div>
               </div>
               <div className={`${styles.companySection} flex items-center `}>
@@ -351,40 +563,10 @@ const CAForm = () => {
                     type="text"
                     className={styles.inputField}
                     value={workOrderDetails.workOrderNumber}
-                    onChange={(e) => handleInputChange("workOrderNumbers", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("workOrderNumbers", e.target.value)
+                    }
                   />
-                  {/* {partLoading ? (
-                    <div className="d-flex align-items-center">
-                      <div
-                        className="spinner-border text-primary me-2"
-                        role="status"
-                      >
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
-                      <span>Loading WorkOrder numbers...</span>
-                    </div>
-                  ) : partError ? (
-                    <div className="alert alert-danger w-100">{partError}</div>
-                  ) : (
-                    <select
-                      className="form-select w-100"
-                      name="workOrderNumber"
-                      onChange={(e) => handlePartNumberSelect(e.target.value)}
-                      value={selectedWorkOrderNumber}
-                      required
-                    >
-                      <option value="">Select a WorkOrder number</option>
-                      {Array.isArray(workOrderNumber) &&
-                        workOrderNumber.map((workOrder) => (
-                          <option
-                            key={workOrder.workOrderNumber}
-                            value={workOrder.workOrderNumber}
-                          >
-                            {workOrder.workOrderNumber}
-                          </option>
-                        ))}
-                    </select>
-                  )} */}
                 </div>
               </div>
               <div className={`${styles.companySection} flex items-center `}>
@@ -480,9 +662,6 @@ const CAForm = () => {
                     type="text"
                     className={styles.inputField}
                     value={workOrderDetails.status}
-                    // onChange={(e) =>
-                    //   handleInputChange("status", e.target.value)
-                    // }
                     required
                   />
                 </div>
@@ -504,7 +683,7 @@ const CAForm = () => {
                   ></textarea>
                 </div>
               </div>
-              {/* Items Table */}
+              
               {/* Combined Section 13 & 14 */}
               <div className={`${styles.crossSectionWrapper}`}>
                 {/* Section 13 */}
@@ -681,15 +860,15 @@ const CAForm = () => {
                   <div className={styles.legalText}>
                     <div>USER/INSTALLER RESPONSIBILITY:</div>
                     <p>
-                      THiS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE
-                      AUTHORITY TO INSTAL THE ITEMS. WHERE THE USER/INSTALLER
-                      PERFORMS WoRK IN ACCORDANCE WITH REGULATIONS OF AN
-                      AIRWORTHINESS AUTHORITY DIFFERENT THAN TH AIRWORTHINESS
+                      THIS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE
+                      AUTHORITY TO INSTALL THE ITEMS. WHERE THE USER/INSTALLER
+                      PERFORMS WORK IN ACCORDANCE WITH REGULATIONS OF AN
+                      AIRWORTHINESS AUTHORITY DIFFERENT THAN THE AIRWORTHINESS
                       AUTHORITY SPECIFIED IN BLOCK 1, IT IS ESSENTIAL THAT THE
                       USER/INSTALLER ENSURES THAT HIS/HER AIRWORTHINESS
-                      AUTHORITY ACCEPTS ITEMS FROM THE AIRWORTHIINESS AUTHORITY
+                      AUTHORITY ACCEPTS ITEMS FROM THE AIRWORTHINESS AUTHORITY
                       SPECIFIED IN BLOCK 1. STATEMENTS IN BLOCKS 13A AND 14A DO
-                      NOT CONSTITUTE INSTALLATIOoN CERTIFICATON. IN ALL CASES
+                      NOT CONSTITUTE INSTALLATION CERTIFICATION. IN ALL CASES
                       AIRCRAFT MAINTENANCE RECORDS MUST CONTAIN AN INSTALLATION
                       CERTIFICATION ISSUED IN ACCORDANCE WITH THE NATIONAL
                       REGULATIONS BY THE USER/INSTALLER BEFORE THE AIRCRAFT MAY
@@ -698,6 +877,7 @@ const CAForm = () => {
                   </div>
                 </div>
               </div>
+              
               {/* Save Button */}
               <div>
                 <button onClick={handleSave} className={styles.saveButton}>

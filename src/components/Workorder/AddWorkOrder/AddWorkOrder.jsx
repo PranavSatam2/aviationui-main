@@ -21,7 +21,7 @@ const AddWorkorder = () => {
   // Define the initial form structure with default workDetails - Updated to match API
   const getInitialFormState = () => ({
     // Main fields mapped to API
-    cmm_rev_date: "",
+    cmmRevDate: "",
     issueDate: "",
     customerName: "",
     repairOrderNo: "",
@@ -263,7 +263,7 @@ const AddWorkorder = () => {
   const validationRules = {
     repairOrderNo: {
       length: 20,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9-]*$/,
     },
     customerName: {
       length: 200,
@@ -271,7 +271,7 @@ const AddWorkorder = () => {
     },
     partNumber: {
       length: 50,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9-]*$/,
     },
     description: {
       length: 200,
@@ -358,7 +358,7 @@ const AddWorkorder = () => {
 
     // Create the payload with proper structure
     const payload = {
-      cmm_rev_date: form.cmm_rev_date,
+      cmmRevDate: form.cmmRevDate,
       issueDate: form.issueDate,
       customerName: form.customerName,
       repairOrderNo: form.repairOrderNo,
@@ -406,6 +406,9 @@ const AddWorkorder = () => {
         console.log("Work order added successfully:", response);
         toast.success("Work Order Added Successfully!");
         navigate("/ViewWorkOrder");
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
       // Reset the form after successful submission
       // setForm(getInitialFormState());
@@ -588,8 +591,8 @@ const AddWorkorder = () => {
                         <input
                           className="form-control w-100"
                           type="date"
-                          name="cmm_rev_date"
-                          value={form.cmm_rev_date}
+                          name="cmmRevDate"
+                          value={form.cmmRevDate}
                           onChange={handleChange}
                           required
                         />

@@ -18,7 +18,7 @@ const EditWorkorder = () => {
   // Define the initial form structure
   const getInitialFormState = () => ({
     // Main fields mapped to API
-    cmm_rev_date: "", // Added field from AddWorkorder
+    cmmRevDate: "", // Added field from AddWorkorder
     issueDate: "",
     customerName: "",
     repairOrderNo: "",
@@ -175,7 +175,7 @@ const EditWorkorder = () => {
           qty: response.qty || "",
           issueDate: response.date || response.issueDate || "",
           cmmRefNo: response.cmmRefNo || "",
-          cmm_rev_date: response.cmm_rev_date || "", // Added field
+          cmmRevDate: response.cmmRevDate || "", // Added field
           snBn: response.snBin || response.snBn || "",
           revNo: response.revisionNo || response.revNo || "",
           workshopManagerRemarks: response.remarks || response.workshopManagerRemarks || "",
@@ -286,7 +286,7 @@ const EditWorkorder = () => {
   const validationRules = {
     repairOrderNo: {
       length: 20,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9-]*$/,
     },
     customerName: {
       length: 200,
@@ -294,7 +294,7 @@ const EditWorkorder = () => {
     },
     partNumber: {
       length: 50,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9-]*$/,
     },
     description: {
       length: 200,
@@ -378,7 +378,7 @@ const EditWorkorder = () => {
     // Create the payload for PUT request
     const payload = {
       workOrderNo: workOrderNo, // Include work order number for identification
-      cmm_rev_date: form.cmm_rev_date, // Added field
+      cmmRevDate: form.cmmRevDate, // Added field
       issueDate: form.issueDate,
       customerName: form.customerName,
       repairOrderNo: form.repairOrderNo,
@@ -643,8 +643,8 @@ const EditWorkorder = () => {
                         <input
                           className="form-control w-100"
                           type="date"
-                          name="cmm_rev_date"
-                          value={form.cmm_rev_date}
+                          name="cmmRevDate"
+                          value={form.cmmRevDate}
                           onChange={handleChange}
                           required
                         />
