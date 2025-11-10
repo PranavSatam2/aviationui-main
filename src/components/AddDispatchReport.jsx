@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { saveDispatchReport, fetchPartNumbersAndDescriptions } from "../services/db_manager";
+import { saveDispatchReport, fetchPartNumbersAndDescriptions, getCaFormNo } from "../services/db_manager";
 
 const AddDispatchReport = () => {
   const [form, setForm] = useState({
@@ -48,6 +48,27 @@ const AddDispatchReport = () => {
         setForm((prev) => ({ ...prev, storesInChargeName: loggedUser }));
       }
     }, []);
+
+  //  useEffect(() => {
+  //      if (workOrderData.workOrderNo){
+  //        const fetchCAData = async () => {
+  //          try {
+  //            const response = await getCaFormNo(workOrderData.workOrderNo);
+  //            if (response?.data) {
+  //              setForm((prevForm) => ({
+  //       ...prevForm,
+  //       caFormNo: response.formTrackingNumber || "",
+  //       caFormDate: response.date14e || "",
+  //     }));
+  //            }
+  //          } catch (error) {
+  //            console.error("Error fetching CA data:", error);
+  //            alert("Failed to load CA data");
+  //          } 
+  //        };
+  //        fetchCAData();
+  //      }
+  //    }, [workOrderData.workOrderNo]);
 
   useEffect(() => {
     if (workOrderData) {
@@ -360,10 +381,10 @@ const AddDispatchReport = () => {
                   <label style={labelStyle}>Stores In-Charge Name</label>
                   <input name="storesInChargeName" style={inputStyle} value={form.storesInChargeName} onChange={handleChange} disabled />
                 </div>
-                <div>
+                {/* <div>
                   <label style={labelStyle}>Stores In-Charge Sign</label>
                   <input name="storesInChargeSign" style={inputStyle} value={form.storesInChargeSign} onChange={handleChange} />
-                </div>
+                </div> */}
               </div>
 
               {/* Submit */}

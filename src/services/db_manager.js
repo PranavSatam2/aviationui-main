@@ -325,6 +325,9 @@ export const updateOrder = (orderId, ReportData) =>
 
 // Dispatch Report
 let DispatchReport = REST_API_BASE_URL + "/api/dispatch";
+let GetCaFormNo = REST_API_BASE_URL + "/api/caForm/getCAFormByWorkOrderNo"
+ 
+export const getCaFormNo =(workOrderNo) => axiosInstance.get(`${GetCaFormNo}/${workOrderNo}`);
 
 export const saveDispatchReport = (dispatchData) => {
   return axiosInstance.post(`${DispatchReport}/save`, dispatchData);
