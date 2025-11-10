@@ -394,7 +394,7 @@ export const updateCAForm = (formId, formData) =>
 //workorder
 let WORKORDERFROMCHECKER = REST_API_BASE_URL + "/api/customerOrder/all";
 let OPENWORKORDER = REST_API_BASE_URL + "/api/workorders/open";
-let WORKORDERLIST = REST_API_BASE_URL + "/api/workorders";
+let WORKORDERLIST = REST_API_BASE_URL + "/api/workorders/opened";
 let CLOSEDWORKORDER = REST_API_BASE_URL + "/api/workorders/closed";
 
 export const listAllOpenWorkorder = () => axiosInstance.get(`${OPENWORKORDER}`);
