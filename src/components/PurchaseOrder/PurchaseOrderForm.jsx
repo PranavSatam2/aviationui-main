@@ -735,18 +735,7 @@ export default function PurchaseOrderForm() {
                                 {item.requiredQty}
                               </td>
                               <td className={styles.tableCellCenter}>
-                                <input
-                                  type="text"
-                                  className={styles.inputField}
-                                  value={item.units}
-                                  onChange={(e) =>
-                                    handleItemChange(
-                                      index,
-                                      "units",
-                                      e.target.value
-                                    )
-                                  }
-                                />
+                                {item.units}
                               </td>
                               <td className={styles.tableCellCenter}>
                                 <input
