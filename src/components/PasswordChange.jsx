@@ -21,7 +21,7 @@ const PasswordChange = () => {
   // Handle form submission
 const handleSubmit = async (e) => {
   e.preventDefault();
-  setErrorMessage("");
+  //setErrorMessage("");
 
   if (!currentPassword || !newPassword || !confirmPassword) {
     alert('All fields are required');
