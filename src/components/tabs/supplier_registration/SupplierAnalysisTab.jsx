@@ -300,7 +300,10 @@ const SupplierAnalysisTab = ({
               className="form-control uniform-input"
               value={dataMap.turnOver}
               onChange={handleChange}
-              onInput={(e) => validateDataType(e, "N")}
+              onInput={(e) => {
+                  validateDataType(e, "N");
+                      validateLen(e,1,15);
+              }}
               disabled={disabledField}
               onWheel={(e) => e.target.blur()}
             />
