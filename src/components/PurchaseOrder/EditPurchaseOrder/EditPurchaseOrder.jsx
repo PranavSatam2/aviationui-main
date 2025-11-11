@@ -593,19 +593,7 @@ const EditPurchaseOrder = () => {
                             {item.requiredQty}
                           </td>
                           <td className={styles.tableCellCenter}>
-                            <input
-                              type="text"
-                              className={styles.inputField}
-                              value={item.units}
-                              onChange={(e) => {
-                                validateDataType(e, "A");
-                                handleItemChange(
-                                  index,
-                                  "units",
-                                  e.target.value
-                                );
-                              }}
-                            />
+                            {item.units}
                           </td>
                           <td className={styles.tableCellCenter}>
                             <input

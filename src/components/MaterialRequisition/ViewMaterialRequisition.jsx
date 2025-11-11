@@ -175,13 +175,190 @@ const ViewMaterialRequisitionPage = () => {
     { field: "curDate", label: "Created Date", width: "140px" },
   ];
 
-  const handlePrintClick = (requisition) => {
-    console.log(requisition, "requisition");
-    setRequisitionData(requisition);
-    setTimeout(() => {
-      window.print();
-    }, 500);
-  };
+const handlePrintClick = (data) => {
+  if (!data) return;
+
+  const printContent = `
+    <html>
+      <head>
+        <title>Material Requisition Print</title>
+        <style>
+          @media print {
+            @page {
+              margin: 20mm;
+              size: A4;
+            }
+          }
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            padding: 20px;
+          }
+          .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+          }
+          .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000;
+          }
+          .form-info {
+            text-align: right;
+            font-size: 11px;
+          }
+          .title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
+          .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          .info-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            font-size: 12px;
+          }
+          .info-label {
+            font-weight: bold;
+            width: 180px;
+            background-color: #f5f5f5;
+          }
+          .main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+          }
+          .main-table th,
+          .main-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+            font-size: 11px;
+          }
+          .main-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            text-transform: uppercase;
+          }
+          .main-table td {
+            height: 35px;
+          }
+          .sr-no-col { width: 50px; }
+          .part-no-col { width: 120px; }
+          .desc-col { width: 200px; }
+          .qty-col { width: 80px; }
+          .batch-col { width: 100px; }
+          .sign-col { width: 120px; }
+          .signature-section {
+            margin-top: 60px;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+            width: 300px;
+          }
+          .signature-section div {
+            font-weight: bold;
+            font-size: 12px;
+          }
+        </style>
+      </head>
+      <body>
+        <!-- Header Section -->
+        <div class="header-section">
+          <div class="logo">amc</div>
+          <div class="form-info">
+            <div>Form: AMF-1/</div>
+            <div>Rev.: 01</div>
+            <div>Date: Feb 2024</div>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div class="title">MATERIAL REQUISITION</div>
+
+        <!-- Info Table -->
+        <table class="info-table">
+          <tr>
+            <td class="info-label">Material Requisition No.:</td>
+            <td style="width: 35%;">${data.materialRequisitionNo || ""}</td>
+            <td class="info-label">Date :${data.date || ""}</td>
+          </tr>
+          <tr>
+            <td class="info-label">Workorder No.:</td>
+            <td colspan="3">${data.workOrderNo || ""}</td>
+          </tr>
+        </table>
+
+        <!-- Main Table -->
+        <table class="main-table">
+          <thead>
+            <tr>
+              <th class="sr-no-col">Sr.<br/>No.</th>
+              <th class="part-no-col">Part No.</th>
+              <th class="desc-col">Description</th>
+              <th class="qty-col">Requested<br/>Qty</th>
+              <th class="qty-col">Issued<br/>Qty</th>
+              <th class="batch-col">Batch /<br/>LOT#</th>
+              <th class="sign-col">Receiver Sign</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>${data.partNumber || ""}</td>
+              <td style="text-align: left;">${data.description || ""}</td>
+              <td>${data.requestedQty || ""}</td>
+              <td>${data.issuedQty || ""}</td>
+              <td>${data.batchLotNo || ""}</td>
+              <td></td>
+            </tr>
+            ${Array.from({ length: 15 }, (_, i) => `
+              <tr>
+                <td>${i + 2}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+          <div>Workshop Manager Sign</div>
+          <div style="margin-top: 5px;">_________________________________</div>
+        </div>
+
+      </body>
+    </html>
+  `;
+
+  const printWindow = window.open("", "_blank", "width=900,height=600");
+  printWindow.document.open();
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => {
+    printWindow.print();
+  }, 250);
+};
+
   // useEffect(() => {
   //   console.log(requisitionData?.batchLotNo, "requisitionDatsdsdsdsdsdsdsda");
   // }, [requisitionData]);
@@ -192,9 +369,7 @@ const ViewMaterialRequisitionPage = () => {
         <Header />
         <div style={{ marginTop: "10px" }}>
           <CustomBreadcrumb breadcrumbsLabel="View Material Requisitions" />
-          <div className="printView">
-            <MaterialRequisitionForm tableData={requisitionData} />
-          </div>
+          
           <div
             className={[
               "normalView",
