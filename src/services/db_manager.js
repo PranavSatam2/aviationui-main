@@ -395,6 +395,8 @@ export const updateCAForm = (formId, formData) =>
 let WORKORDERFROMCHECKER = REST_API_BASE_URL + "/api/customerOrder/all";
 let OPENWORKORDER = REST_API_BASE_URL + "/api/workorders/open";
 let WORKORDERLIST = REST_API_BASE_URL + "/api/workorders/opened";
+let WORKORDERLISTVIEW = REST_API_BASE_URL + "/api/workorders";
+
 let CLOSEDWORKORDER = REST_API_BASE_URL + "/api/workorders/closed";
 
 export const listAllOpenWorkorder = () => axiosInstance.get(`${OPENWORKORDER}`);
@@ -414,6 +416,8 @@ export const getWorkOrder = (ID) => {
 };
 export const listOfAllWorkorderTable = () =>
   axiosInstance.get(`${WORKORDERLIST}`);
+export const listOfAllWorkorderTableView = () =>
+   axiosInstance.get(`${WORKORDERLISTVIEW}`);
 export const listOfClosedWorkorders = () =>
   axiosInstance.get(`${CLOSEDWORKORDER}`);
 export const updateWorkOrder = (ID, order) =>
@@ -429,6 +433,21 @@ export const getWorkOrderDetails = (ID) => {
       throw error;
     });
 };
+export const updateWorkOrderEditViews = (ID, order) =>
+  axiosInstance.put(`${WORKORDERLISTVIEW}/${ID}`, order);
+export const getWorkOrderDetailsEditView = (ID) => {
+  return axiosInstance
+    .get(`${WORKORDERLISTVIEW}/${ID}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching list:", error);
+      throw error;
+    });
+};
+export const deleteWorkOrder = (Id) =>
+  axiosInstance.delete(`${WORKORDERLISTVIEW}/${Id}`);
 export const AddWorkOrder = (Workorder) => {
   return axiosInstance.post("/api/workorders", Workorder);
 };

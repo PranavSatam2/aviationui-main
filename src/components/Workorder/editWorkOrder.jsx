@@ -4,7 +4,7 @@ import Footer from "../Footer";
 import Sidebar from "../Sidebar";
 import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { getWorkOrderDetails, updateWorkOrder } from "../../services/db_manager";
+import { getWorkOrderDetailsEditView, updateWorkOrderEditViews } from "../../services/db_manager";
 import { toast } from "react-toastify";
 
 const EditWorkorder = () => {
@@ -146,8 +146,8 @@ const EditWorkorder = () => {
 
     try {
       setLoading(true);
-      const response = await getWorkOrderDetails(workOrderNo);
-      
+      const response = await getWorkOrderDetailsEditView(workOrderNo);
+
       if (response) {
         // Store original data for comparison
         setOriginalData(response);
@@ -187,13 +187,13 @@ const EditWorkorder = () => {
           toolsUsed: response.toolsUsed || "",
           qualityManagerSignDate: response.qualityManagerSignDate || "",
           workshopManagerSignDate: response.workshopManagerSignDate || "",
-          
+
           // Preserve work order steps from API or use defaults
           workOrderSteps: response.workOrderSteps || response.workDetails || initialState.workOrderSteps,
-          
+
           // Handle material requisitions
           materialRequisitions: response.materialRequisitions || response.partsUsed || [mainPartMaterialRequisition],
-          
+
           // Map tools fields
           toolsTextBox1: response.toolsUsed || "",
         };
@@ -417,7 +417,7 @@ const EditWorkorder = () => {
     console.log("PUT Payload being sent:", JSON.stringify(payload, null, 2));
 
     try {
-      const response = await updateWorkOrder(workOrderNo, payload);
+      const response = await updateWorkOrderEditViews(workOrderNo, payload);
       console.log("Work order updated successfully:", response.data);
       toast.success("Work Order Updated Successfully!");
       navigate(-1);

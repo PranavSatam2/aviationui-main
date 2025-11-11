@@ -3,8 +3,8 @@ import Footer from "../Footer";
 import Header from "../Header";
 import Sidebar from "../Sidebar";
 import {
-  deletePurchaseOrder,
-  listOfAllWorkorderTable,
+  deleteWorkOrder,
+  listOfAllWorkorderTableView,
 } from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -23,7 +23,7 @@ const WorkorderTable = () => {
 
   const fetchData = async () => {
     try {
-      const response = await listOfAllWorkorderTable();
+      const response = await listOfAllWorkorderTableView();
       setTableData(response.data || []);
       setIsLoading(false);
     } catch (error) {
@@ -41,7 +41,7 @@ const WorkorderTable = () => {
   const deleteSelectedElement = async (workOrderNo) => {
     if (window.confirm("Are you sure you want to delete this work order?")) {
       try {
-        await deletePurchaseOrder(workOrderNo);
+        await deleteWorkOrder(workOrderNo);
         setTableData((prevData) =>
           prevData.filter((workOrder) => workOrder.workOrderNo !== workOrderNo)
         );
