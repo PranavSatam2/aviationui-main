@@ -4,6 +4,7 @@ import axiosInstance from "../axiosConfig";
 import ViewCustomerOrder from "../components/ViewCustomerOrder";
 // ######################### ROUTE #########################
 let STORE_URL = REST_API_BASE_URL + "/storeAcceptance";
+let STORE_TAG_URL = REST_API_BASE_URL + "/storeAcceptance/allTag";
 let SUPPLIER_URL = REST_API_BASE_URL + "/api/supplier";
 let PRODUCT_URL = REST_API_BASE_URL + "/api/product";
 let MATERIAL_URL = REST_API_BASE_URL + "/api/mrn";
@@ -28,6 +29,18 @@ export const getStoreDetail = (StoreId) =>
 export const listAllStore = () => {
   return axiosInstance
     .get(`${STORE_URL}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching store:", error);
+      throw error;
+    });
+};
+
+export const AllStoreTag = () => {
+  return axiosInstance
+    .get(`${STORE_TAG_URL}`)
     .then((response) => {
       return response.data;
     })

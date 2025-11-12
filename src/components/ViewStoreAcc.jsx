@@ -5,7 +5,7 @@ import Sidebar from "./Sidebar";
 import {
   deleteStore,
   getStoreDetail,
-  listAllStore,
+  AllStoreTag,
 } from "../services/db_manager";
 import MyModalComponent from "./partials/MyModalComponent";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +32,7 @@ const ViewSupplierRegis = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-      const response = await listAllStore();
+      const response = await AllStoreTag();
       if (response && !response.every(item => item === null)) {
         setTableData(response);
       } else {
