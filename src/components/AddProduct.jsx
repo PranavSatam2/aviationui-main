@@ -242,7 +242,7 @@ const AddProduct = () => {
                     {(showAlternateName1 || showAlternateName2) && (
                       <div className="d-flex align-items-center mb-3">
                         <label className="col-md-2 ml-3 mt-2 p-2 fw-semibold">
-                          Mapping Type<span style={{ color: "red" }}>*</span>
+                          Interchangeability<span style={{ color: "red" }}>*</span>
                         </label>
                         <div
                           className="btn-group"
@@ -315,7 +315,7 @@ const AddProduct = () => {
                     {/* === Alternate Name radio === */}
                     <div className="col-md-12 d-flex p-2">
                       <label className="col-md-2 mt-2">
-                        Alternate Product Number 1?
+                        Alternate Part Number 1?
                       </label>
                       <div className="col-md-4 d-flex mt-2">
                         <div className="form-check me-3">
@@ -362,7 +362,7 @@ const AddProduct = () => {
                     {showAlternateName1 && (
                       <div className="col-md-12 d-flex p-2">
                         <label className="col-md-2 mt-2">
-                          Alternate Product Number 1 <span style={{ color: "red" }}>*</span>
+                          Alternate Part Number 1 <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
                           className="form-select w-100"
@@ -385,7 +385,7 @@ const AddProduct = () => {
                     {/* === Alternate Name 2 radio === */}
                     <div className="col-md-12 d-flex p-2">
                       <label className="col-md-2 mt-2">
-                        Alternate Product Number 2?
+                        Alternate Part Number 2?
                       </label>
                       <div className="col-md-4 d-flex mt-2">
                         <div className="form-check me-3">
@@ -432,7 +432,7 @@ const AddProduct = () => {
                     {showAlternateName2 && (
                       <div className="col-md-12 d-flex p-2">
                         <label className="col-md-2 mt-2">
-                          Alternate Product Number 2 <span style={{ color: "red" }}>*</span>
+                          Alternate Part Number 2 <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
                           className="form-select w-100"
@@ -455,7 +455,7 @@ const AddProduct = () => {
 
                     <div className="col-md-12 p-3 d-flex">
                       <label className="col-md-2 mt-2">
-                        Product Description{" "}
+                        Part Description{" "}
                         <span style={{ color: "red" }}>*</span>
                       </label>
                       <textarea

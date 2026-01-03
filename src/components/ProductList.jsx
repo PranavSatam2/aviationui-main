@@ -186,10 +186,10 @@ const ProductList = () => {
   // Column definitions for the table
   const columns = [
     { field: "productId", label: "ID", width: "60px" },
-    { field: "productName", label: "Product Number", width: "180px" },
-    { field: "alternateProduct1", label: "Alternate Product Number 1", width: "150px" },
-    { field: "alternateProduct2", label: "Alternate Product Number 2", width: "150px" },
-    { field: "mappingType", label: "Mapping Type", width: "120px" },
+    { field: "productName", label: "Part Number", width: "180px" },
+    { field: "alternateProduct1", label: "Alternate Part Number 1", width: "150px" },
+    { field: "alternateProduct2", label: "Alternate Part Number 2", width: "150px" },
+    { field: "mappingType", label: "Interchangeability", width: "190px" },
     {
       field: "materialClassification",
       label: "Material Classification",
@@ -364,7 +364,7 @@ const ProductList = () => {
                               if (["productName", "alternateProduct1", "alternateProduct2"].includes(column.field)) {
                                 // Get quantity from the quantityMap based on the product name
                                 const qty = displayValue ? (quantityMap[displayValue] ?? 0) : 0;
-                                displayValue = displayValue ? `${displayValue} → ${qty}` : "";
+                                displayValue = displayValue ? `${displayValue}` : "";// → ${qty}
                               }
 
                               return (

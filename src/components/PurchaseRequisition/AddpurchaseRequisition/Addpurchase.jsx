@@ -213,7 +213,7 @@ const AddPurchaseRequisition = () => {
   // Validation rules object
   const validationRules = {
     partNumber: {
-      length: 12,
+      length: 255,
     },
     description: {
       length: 255,

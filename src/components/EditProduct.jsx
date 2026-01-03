@@ -118,7 +118,7 @@ const EditProduct = () => {
     materialClassification: { required: true, length: 30, regex: /^[a-zA-Z0-9\s-]*$/ },
     oem: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
     nha: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
-    cmmReferenceNumber: { required: false, type: "number", length: 12 },
+    cmmReferenceNumber: { required: false, regex: /^[0-9\s-]*$/, length: 12 },
     registeredBy: { required: true, length: 255, regex: /^[a-zA-Z\s-]*$/ },
   };
 
@@ -185,7 +185,7 @@ const EditProduct = () => {
                     <div className="col-md-12 p-2 d-flex">
                       <div className="col-md-6 p-2 d-flex">
                         <label className="col-md-4 mt-1">
-                          Product Number <span style={{ color: "red" }}>*</span>
+                          Part Number <span style={{ color: "red" }}>*</span>
                         </label>
                         <div className="input-group w-100">
                           <input
@@ -247,7 +247,7 @@ const EditProduct = () => {
                     {(showAlternateName1 || showAlternateName2) && (
                       <div className="d-flex align-items-center mb-3">
                         <label className="col-md-2 ml-3 mt-2 p-2 fw-semibold">
-                          Mapping Type<span style={{ color: "red" }}>*</span>
+                          Interchangeability<span style={{ color: "red" }}>*</span>
                         </label>
                         <div
                           className="btn-group"
@@ -320,7 +320,7 @@ const EditProduct = () => {
                     {/* === Alternate Name radio === */}
                     <div className="col-md-12 d-flex p-2">
                       <label className="col-md-2 mt-2">
-                        Alternate Product Number 1?
+                        Alternate Part Number 1?
                       </label>
                       <div className="col-md-4 d-flex mt-2">
                         <div className="form-check me-3">
@@ -367,7 +367,7 @@ const EditProduct = () => {
                     {showAlternateName1 && (
                       <div className="col-md-12 d-flex p-2">
                         <label className="col-md-2 mt-2">
-                          Alternate Product Number 1 <span style={{ color: "red" }}>*</span>
+                          Alternate Part Number 1 <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
                           className="form-select w-100"
@@ -389,7 +389,7 @@ const EditProduct = () => {
                     {/* === Alternate Name 2 radio === */}
                     <div className="col-md-12 d-flex p-2">
                       <label className="col-md-2 mt-2">
-                        Alternate Product Number 2?
+                        Alternate Part Number 2?
                       </label>
                       <div className="col-md-4 d-flex mt-2">
                         <div className="form-check me-3">
@@ -436,7 +436,7 @@ const EditProduct = () => {
                     {showAlternateName2 && (
                       <div className="col-md-12 d-flex p-2">
                         <label className="col-md-2 mt-2">
-                          Alternate Product Number 2 <span style={{ color: "red" }}>*</span>
+                          Alternate Part Number 2 <span style={{ color: "red" }}>*</span>
                         </label>
                         <select
                           className="form-select w-100"
@@ -460,7 +460,7 @@ const EditProduct = () => {
 
                     <div className="col-md-12 p-3 d-flex">
                       <label className="col-md-2 mt-2">
-                        Product Description <span style={{ color: "red" }}>*</span>
+                        Part Description <span style={{ color: "red" }}>*</span>
                       </label>
                       <textarea
                         className="form-control w-100"
