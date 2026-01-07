@@ -12,7 +12,7 @@ import Header from "./Header";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import Footer from "./Footer";
 import { toast } from "react-toastify";
-import logo from "../static/img/logo.png";
+import logo from "../static/img/AMCLOGO.jpg";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const CAForm = () => {
@@ -216,282 +216,243 @@ const CAForm = () => {
     }
   };
 
- const handlePrintClick = (report) => {  
-  const logoBase64 = logo;
-  const printWindow = window.open("", "_blank", "width=800,height=600");
+const handlePrintClick = (report) => {
+  // Create the HTML content with inline styles for landscape
   const printContent = `
     <!DOCTYPE html>
     <html>
-      <head>
-        <title>CA Form 1 - ${report?.formTrackingNumber || "N/A"}</title>
-        <style>
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
+    <head>
+      <title>CA Form - ${report.formTrackingNumber || 'N/A'}</title>
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 11px;
+          padding: 15px;
+        }
+        .container {
+          max-width: 297mm;
+          margin: 0 auto;
+          background: white;
+        }
+        .print-container {
+          border: 2px solid black;
+          padding: 2px;
+        }
+        .section {
+          display: flex;
+          border: 1px solid black;
+          margin-bottom: 0;
+        }
+        .border-right {
+          border-right: 1px solid black;
+        }
+        .company-logo {
+          text-align: center;
+          margin: 10px 0;
+        }
+        .company-logo img {
+          height: 60px;
+          width: auto;
+          max-width: 100px;
+        }
+        .cross-section {
+          position: relative;
+          overflow: hidden;
+        }
+        .cross-mark {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+        .checkbox {
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          border: 1px solid black;
+          margin-right: 8px;
+          vertical-align: middle;
+          position: relative;
+        }
+        .checkbox.checked::before {
+          content: '✓';
+          position: absolute;
+          top: -2px;
+          left: 2px;
+          font-size: 14px;
+          font-weight: bold;
+        }
+        @media print {
           body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            font-size: 12px;
+            padding: 0;
           }
-          .container {
-            max-width: 210mm;
-            margin: 0 auto;
-            border: 1px solid black;
+          @page {
+            size: A4 landscape;
+            margin: 10mm;
           }
-          .section {
-            display: flex;
-            border-bottom: 1px solid black;
-          }
-          .section:last-child {
-            border-bottom: none;
-          }
-          .section-part {
-            padding: 10px;
-            border-right: 1px solid black;
-          }
-          .section-part:last-child {
-            border-right: none;
-          }
-          .checkbox-container {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid black;
-            margin-right: 8px;
-            position: relative;
-            vertical-align: middle;
-          }
-          .checkbox-tick::after {
-            content: "✓";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 14px;
-            font-weight: bold;
-            color: black;
-          }
-          .cross-section {
-            position: relative;
-          }
-          .cross-mark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-          }
-          .cross-mark line {
-            stroke: black;
-            stroke-width: 2;
-          }
-          .signature-grid {
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: 15px;
-            gap: 10px;
-          }
-          .signature-item {
-            flex: 1 1 calc(50% - 10px);
-            font-size: 0.9rem;
-          }
-          .signature-label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 3px;
-          }
-          .signature-value {
-            display: block;
-            padding: 5px;
-            border-bottom: 1px solid #ccc;
-            min-height: 25px;
-          }
-          @media print {
-            body {
-              padding: 0;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="print-container">
           <!-- Header Section -->
           <div class="section">
-            <div class="section-part" style="width: 30%; font-weight: bold;">
-              1. DGCA India
+            <div style="width: 20%; padding: 10px;" class="border-right">
+              <div style="font-weight: bold;">1. DGCA India</div>
             </div>
-            <div class="section-part" style="width: 40%; text-align: center; font-weight: bold; font-size: 16px;">
+            <div style="width: 50%; text-align: center; padding: 10px; font-weight: bold; font-size: 16px;" class="border-right">
               2. AUTHORISED RELEASE CERTIFICATE<br/>CA FORM 1
             </div>
-            <div class="section-part" style="width: 30%; font-weight: bold;">
+            <div style="width: 30%; padding: 10px; font-weight: bold;">
               3. Form Tracking Number<br/>
-              ${report?.formTrackingNumber || "N/A"}
+              ${report.formTrackingNumber || 'N/A'}
             </div>
           </div>
 
           <!-- Company Info Section -->
           <div class="section">
-            <div class="section-part" style="width: 30%;">
-              4. Approved Organization Name and Address:<br/><br/>
-              <img src="${logoBase64}" alt="Logo" style="height: 50px; width: 50px;" />
+            <div style="width: 50%; padding: 10px; display: flex;" class="border-right">
+              <div style="width: 35%;">
+                <div style="font-weight: bold;">4. Approved Organization Name and Address:</div>
+                <div class="company-logo">
+                  <img src="${logo}" alt="AMC Technology Logo" />
+                </div>
+              </div>
+              <div style="width: 65%; padding-left: 10px;">
+                <br/>
+                AMC TECHNOLOGY<br/>
+                105, HRIDAY INDUSTRIAL ESTATE,<br/>
+                HIRA INDUSTRIAL PARK, VASAI PHATA,<br/>
+                VASAI EAST, PALGHAR 401 203,<br/>
+                MAHARASHTRA, INDIA
+              </div>
             </div>
-            <div class="section-part" style="width: 40%;">
-              <br/>
-              AMC TECHNOLOGY<br/>
-              105, HRIDAY INDUSTRIAL ESTATE,<br/>
-              HIRA INDUSTRIAL PARK, VASAI PHATA,<br/>
-              VASAI EAST, PALGHAR 401 203,<br/>
-              MAHARASHTRA, INDIA
-            </div>
-            <div class="section-part" style="width: 30%;">
-              5. Work Order/Contract/Invoice:<br/>
-              ${report?.workOrderNo || report?.workOrderNumber || "N/A"}
+            <div style="width: 50%; padding: 10px;">
+              <div style="font-weight: bold;">5. Work Order/Contract/Invoice:</div>
+              ${report.workOrderNumber || report.workOrderNo || 'N/A'}
             </div>
           </div>
 
-          <!-- Column Headers -->
+          <!-- Table Header -->
           <div class="section">
-            <div class="section-part" style="width: 10%;">6. Item</div>
-            <div class="section-part" style="width: 17%;">7. Description</div>
-            <div class="section-part" style="width: 17%;">8. Part No.</div>
-            <div class="section-part" style="width: 11%;">9. Qty</div>
-            <div class="section-part" style="width: 17%;">10. Serial/Batch No.</div>
-            <div class="section-part" style="width: 31%;">11. Status/Work</div>
+            <div style="width: 8%; padding: 8px; font-weight: bold;" class="border-right">6. Item</div>
+            <div style="width: 15%; padding: 8px; font-weight: bold;" class="border-right">7. Description</div>
+            <div style="width: 15%; padding: 8px; font-weight: bold;" class="border-right">8. Part No.</div>
+            <div style="width: 8%; padding: 8px; font-weight: bold;" class="border-right">9. Qty</div>
+            <div style="width: 15%; padding: 8px; font-weight: bold;" class="border-right">10. Serial/Batch No.</div>
+            <div style="width: 39%; padding: 8px; font-weight: bold;">11. Status/Work</div>
           </div>
 
-          <!-- Data Row -->
+          <!-- Table Data -->
           <div class="section">
-            <div class="section-part" style="width: 10%;">${report?.item || "N/A"}</div>
-            <div class="section-part" style="width: 17%;">${report?.description || "N/A"}</div>
-            <div class="section-part" style="width: 17%;">${report?.partNo || "N/A"}</div>
-            <div class="section-part" style="width: 11%;">${report?.quantity || "N/A"}</div>
-            <div class="section-part" style="width: 17%;">${report?.serialNo || "N/A"}</div>
-            <div class="section-part" style="width: 31%;">${report?.status || "N/A"}</div>
+            <div style="width: 8%; padding: 8px;" class="border-right">${report.item || 'N/A'}</div>
+            <div style="width: 15%; padding: 8px;" class="border-right">${report.description || 'N/A'}</div>
+            <div style="width: 15%; padding: 8px;" class="border-right">${report.partNo || 'N/A'}</div>
+            <div style="width: 8%; padding: 8px;" class="border-right">${report.quantity || 'N/A'}</div>
+            <div style="width: 15%; padding: 8px;" class="border-right">${report.serialNo || 'N/A'}</div>
+            <div style="width: 39%; padding: 8px;">${report.status || 'N/A'}</div>
           </div>
 
           <!-- Remarks Section -->
           <div class="section">
-            <div class="section-part" style="width: 100%;">
-              12. Remarks:<br/>
-              <div style="padding-left: 60px; margin-top: 10px;">
-                ${report?.remarks || report?.remark || "N/A"}
+            <div style="width: 100%; padding: 10px;">
+              <strong>12. Remarks:</strong><br/>
+              <div style="padding-left: 20px; min-height: 40px; margin-top: 5px;">
+                ${report.remarks || report.remark || 'N/A'}
               </div>
             </div>
           </div>
 
-          <!-- Combined Section 13 & 14 -->
-          <div class="section" style="border-bottom: none;">
+          <!-- Certification Sections 13 & 14 -->
+          <div class="section">
             <!-- Section 13 with X cross -->
-            <div class="section-part cross-section" style="width: 50%; position: relative;">
-              <svg class="cross-mark" preserveAspectRatio="none">
-                <line x1="0" y1="0" x2="100%" y2="100%" />
-                <line x1="100%" y1="0" x2="0" y2="100%" />
+            <div style="flex: 1; padding: 10px; position: relative;" class="border-right cross-section">
+              <svg class="cross-mark" preserveAspectRatio="none" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+                <line x1="0" y1="0" x2="100%" y2="100%" stroke="black" stroke-width="2" vector-effect="non-scaling-stroke"/>
+                <line x1="100%" y1="0" x2="0" y2="100%" stroke="black" stroke-width="2" vector-effect="non-scaling-stroke"/>
               </svg>
-              
               <div style="position: relative; z-index: 2;">
                 <strong>13. Manufacturer / Conformity Certification</strong><br/>
-                <span style="font-size: 0.9rem;">13 a. Certifies that the items identified above were manufactured in conformity to:</span><br/><br/>
-                
-                <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                  <span class="checkbox-container ${report?.approveDesign13a === "Y" ? "checkbox-tick" : ""}"></span>
-                  <span style="font-size: 0.9rem;">Approved design data and are in condition for safe operation.</span>
+                <span style="font-size: 10px;">13 a. Certifies that the items identified above were manufactured in conformity to:</span><br/><br/>
+                <div style="margin: 8px 0;">
+                  <span class="checkbox ${report.approveDesign13a === 'Y' ? 'checked' : ''}"></span>
+                  <span style="font-size: 10px;">Approved design data and are in condition for safe operation.</span>
                 </div>
-                
-                <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                  <span class="checkbox-container ${report?.nonApproveDesign13a === "Y" ? "checkbox-tick" : ""}"></span>
-                  <span style="font-size: 0.9rem;">Non-approved design data specified in block 12.</span>
+                <div style="margin: 8px 0;">
+                  <span class="checkbox ${report.nonApproveDesign13a === 'Y' ? 'checked' : ''}"></span>
+                  <span style="font-size: 10px;">Non-approved design data specified in block 12.</span>
                 </div>
-
-                <div class="signature-grid">
-                  <div class="signature-item">
-                    <span class="signature-label">13 b. Authorised Signature</span>
-                    <span class="signature-value">${report?.authorisedSign13b || ""}</span>
-                  </div>
-                  <div class="signature-item">
-                    <span class="signature-label">13 c. Approval / Authorisation Number</span>
-                    <span class="signature-value">${report?.authorisationNumber13c || ""}</span>
-                  </div>
-                  <div class="signature-item">
-                    <span class="signature-label">13 d. Name</span>
-                    <span class="signature-value">${report?.name13d || ""}</span>
-                  </div>
-                  <div class="signature-item">
-                    <span class="signature-label">13 e. Date (dd/mm/yyyy)</span>
-                    <span class="signature-value">${report?.date13e || ""}</span>
-                  </div>
+                <div style="margin-top: 15px; font-size: 10px;">
+                  <div style="margin: 5px 0;">13 b. Authorised Signature: ${report.authorisedSign13b || '_______________'}</div>
+                  <div style="margin: 5px 0;">13 c. Approval / Authorisation Number: ${report.authorisationNumber13c || '_______________'}</div>
+                  <div style="margin: 5px 0;">13 d. Name: ${report.name13d || '_______________'}</div>
+                  <div style="margin: 5px 0;">13 e. Date (dd/mm/yyyy): ${report.date13e || '_______________'}</div>
                 </div>
               </div>
             </div>
 
             <!-- Section 14 -->
-            <div class="section-part" style="width: 50%;">
-              <strong>14. Release to Service</strong><br/>
-              <span style="font-size: 0.9rem; font-weight: bold;">14 a. CAR 145.A.50 RELEASE TO SERVICE</span><br/><br/>
-              
-              <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                <span class="checkbox-container ${report?.otherRegulation14a === "Y" ? "checkbox-tick" : ""}"></span>
-                <span style="font-size: 0.9rem;">Other regulation specified in block 12.</span>
+            <div style="flex: 1; padding: 10px; position: relative;">
+              <div>
+                <strong>14 a. CAR 145.A.50 RELEASE TO SERVICE</strong><br/>
+                <div style="margin: 8px 0;">
+                  <span class="checkbox ${report.otherRegulation14a === 'Y' ? 'checked' : ''}"></span>
+                  <span style="font-size: 10px;">Other regulation specified in block 12.</span>
+                </div>
+                <br/>
+                <p style="font-size: 10px; text-align: justify;">
+                  Certifies that unless otherwise specified in block 12, the work identified in block 11 and described in block 12 was accomplished in accordance with CAR 145 and in respect to that work the items are considered ready for release to service.
+                </p>
               </div>
-              
-              <p style="margin-bottom: 15px; font-size: 0.9rem; text-align: justify;">
-                Certifies that unless otherwise specified in block 12, the work identified in block 11 
-                and described in block 12 was accomplished in accordance with CAR 145 and in respect 
-                to that work the items are considered ready for release to service.
-              </p>
-
-              <div class="signature-grid">
-                <div class="signature-item">
-                  <span class="signature-label">14 b. Authorised Signature</span>
-                  <span class="signature-value">${report?.authorisedSign14b || ""}</span>
-                </div>
-                <div class="signature-item">
-                  <span class="signature-label">14 c. Certificate / Approval Ref No.</span>
-                  <span class="signature-value">${report?.approvalRefNo14c || ""}</span>
-                </div>
-                <div class="signature-item">
-                  <span class="signature-label">14 d. Name</span>
-                  <span class="signature-value">${report?.name14d || ""}</span>
-                </div>
-                <div class="signature-item">
-                  <span class="signature-label">14 e. Date (dd/mm/yyyy)</span>
-                  <span class="signature-value">${report?.date14e || ""}</span>
-                </div>
+              <div style="margin-top: 15px; font-size: 10px;">
+                <div style="margin: 5px 0;">14 b. Authorised Signature: ${report.authorisedSign14b || '_______________'}</div>
+                <div style="margin: 5px 0;">14 c. Certificate / Approval Ref No.: ${report.approvalRefNo14c || '_______________'}</div>
+                <div style="margin: 5px 0;">14 d. Name: ${report.name14d || '_______________'}</div>
+                <div style="margin: 5px 0;">14 e. Date (dd/mm/yyyy): ${report.date14e || '_______________'}</div>
               </div>
             </div>
           </div>
 
           <!-- Footer Section -->
           <div class="section">
-            <div class="section-part" style="width: 100%; padding: 10px;">
+            <div style="padding: 10px; line-height: 1.5;">
               <div style="font-weight: bold;">USER/INSTALLER RESPONSIBILITY:</div>
-              <p style="margin-top: 5px; text-align: justify; font-size: 0.85rem;">
-                THIS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE AUTHORITY TO INSTALL THE ITEMS. 
-                WHERE THE USER/INSTALLER PERFORMS WORK IN ACCORDANCE WITH REGULATIONS OF AN AIRWORTHINESS 
-                AUTHORITY DIFFERENT THAN THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1, IT IS ESSENTIAL 
-                THAT THE USER/INSTALLER ENSURES THAT HIS/HER AIRWORTHINESS AUTHORITY ACCEPTS ITEMS FROM 
-                THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1. STATEMENTS IN BLOCKS 13A AND 14A DO NOT 
-                CONSTITUTE INSTALLATION CERTIFICATION. IN ALL CASES AIRCRAFT MAINTENANCE RECORDS MUST CONTAIN 
-                AN INSTALLATION CERTIFICATION ISSUED IN ACCORDANCE WITH THE NATIONAL REGULATIONS BY THE 
-                USER/INSTALLER BEFORE THE AIRCRAFT MAY BE FLOWN.
+              <p style="margin-top: 8px; text-align: justify; font-size: 9px;">
+                THIS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE AUTHORITY TO INSTALL THE ITEMS. WHERE THE USER/INSTALLER PERFORMS WORK IN ACCORDANCE WITH REGULATIONS OF AN AIRWORTHINESS AUTHORITY DIFFERENT THAN THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1, IT IS ESSENTIAL THAT THE USER/INSTALLER ENSURES THAT HIS/HER AIRWORTHINESS AUTHORITY ACCEPTS ITEMS FROM THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1. STATEMENTS IN BLOCKS 13A AND 14A DO NOT CONSTITUTE INSTALLATION CERTIFICATION. IN ALL CASES AIRCRAFT MAINTENANCE RECORDS MUST CONTAIN AN INSTALLATION CERTIFICATION ISSUED IN ACCORDANCE WITH THE NATIONAL REGULATIONS BY THE USER/INSTALLER BEFORE THE AIRCRAFT MAY BE FLOWN.
               </p>
             </div>
           </div>
         </div>
-
-        <script>
-          window.onload = function() {
-            window.print();
-          };
-        </script>
-      </body>
+      </div>
+    </body>
     </html>
   `;
 
-  printWindow.document.write(printContent);
-  printWindow.document.close();
+  // Open new window and print
+  const printWindow = window.open('', '_blank', 'width=1200,height=800');
+  
+  if (printWindow) {
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Wait for content to load, then print
+    printWindow.onload = function() {
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 250);
+    };
+  } else {
+    alert('Please allow pop-ups for this website to print the form.');
+  }
 };
 
   return (

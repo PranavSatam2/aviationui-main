@@ -46,17 +46,18 @@ const GeneralTab = ({
   return (
     <div className="m-2 p-2 mt-2">
       {/* Supplier/Sub-Contractor Details */}
-      <div className="col-md-10 mb-1 d-flex">
-        <div className="col-md-6">
-          <div className="row">
-            <label className="col-md-8 pt-2" htmlFor="supplierName">
+      <div className="col-md-12 mb-3">
+        <div className="row">
+          {/* Supplier/Sub-Contractor Name */}
+          <div className="col-md-6 mb-2">
+            <label className="form-label" htmlFor="supplierName">
               Supplier/Sub-Contractor Name
-              <span className="text-danger mx-1 " style={{ fontSize: "17px" }}>
+              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
               </span>
             </label>
             <input
-              className="col-md-6 form-control uniform-input"
+              className="form-control uniform-input"
               type="text"
               name="supplierName"
               id="supplierName"
@@ -68,104 +69,155 @@ const GeneralTab = ({
               }}
               disabled={disabledField}
             />
+            {errors.supplierName && (
+              <div className="text-danger mt-1" style={{ fontSize: "12px" }}>
+                {errors.supplierName}
+              </div>
+            )}
           </div>
-          {errors.supplierName && (
-            <div className="col-6" style={{ color: "red", textAlign: "end" }}>
-              {errors.supplierName}
+
+          {/* Type of Vendor/Supplier Checkboxes */}
+          <div className="col-md-6 mb-2">
+            <label className="form-label">
+              Type of Vendor / Supplier
+              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
+                *
+              </span>
+            </label>
+            <div className="d-flex" style={{ gap: "30px", marginTop: "8px" }}>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="vendorTypeSupplier"
+                  name="vendorTypes"
+                  value="Supplier"
+                  checked={dataMap.vendorTypes === "Supplier"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="vendorTypeSupplier"
+                >
+                  Supplier
+                </label>
+              </div>
+
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="vendorTypeSubContractor"
+                  name="vendorTypes"
+                  value="Sub-contractor"
+                  checked={dataMap.vendorTypes === "Sub-contractor"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="vendorTypeSubContractor"
+                >
+                  Sub-contractor
+                </label>
+              </div>
             </div>
-          )}
+            {errors.vendorTypes && (
+              <div className="text-danger mt-1" style={{ fontSize: "12px" }}>
+                {errors.vendorTypes}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Payment Terms */}
-        <div className="col-md-10 d-flex mb-3">
-          <div
-            className="col-md-9 d-flex pt-2"
-            style={{ alignItems: "center", justifyContent: "center" }}
-          >
-            <label className="col-md-4 pt-2">
+        <div className="row mt-2">
+          <div className="col-md-12">
+            <label className="form-label">
               Select Payment Terms
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
               </span>
             </label>
-            {/* 30 Days */}
-            <div className="form-check mx-3 p-0">
-              <input
-                className="form-check-input"
-                type="radio"
-                id="paymentTerms30"
-                name="paymentTerms"
-                value="30"
-                checked={dataMap.paymentTerms === "30"}
-                onChange={handleChange}
-                disabled={disabledField}
-              />
-              <label className="form-check-label pt-1" htmlFor="paymentTerms30">
-                30 Days
-              </label>
-            </div>
+            <div
+              className="d-flex flex-wrap"
+              style={{ gap: "20px", marginTop: "8px" }}
+            >
+              {/* 30 Days */}
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="paymentTerms30"
+                  name="paymentTerms"
+                  value="30"
+                  checked={dataMap.paymentTerms === "30"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label" htmlFor="paymentTerms30">
+                  30 Days
+                </label>
+              </div>
 
-            {/* 60 Days */}
-            <div className="form-check mx-3 p-0">
-              <input
-                className="form-check-input"
-                type="radio"
-                id="paymentTerms60"
-                name="paymentTerms"
-                value="60"
-                checked={dataMap.paymentTerms === "60"}
-                onChange={handleChange}
-                disabled={disabledField}
-              />
-              <label className="form-check-label pt-1" htmlFor="paymentTerms60">
-                60 Days
-              </label>
-            </div>
+              {/* 60 Days */}
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="paymentTerms60"
+                  name="paymentTerms"
+                  value="60"
+                  checked={dataMap.paymentTerms === "60"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label" htmlFor="paymentTerms60">
+                  60 Days
+                </label>
+              </div>
 
-            {/* 90 Days */}
-            <div className="form-check mx-3 p-0">
-              <input
-                className="form-check-input"
-                type="radio"
-                id="paymentTerms90"
-                name="paymentTerms"
-                value="90"
-                checked={dataMap.paymentTerms === "90"}
-                onChange={handleChange}
-                disabled={disabledField}
-              />
-              <label className="form-check-label pt-1" htmlFor="paymentTerms90">
-                90 Days
-              </label>
-            </div>
+              {/* 90 Days */}
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="paymentTerms90"
+                  name="paymentTerms"
+                  value="90"
+                  checked={dataMap.paymentTerms === "90"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label" htmlFor="paymentTerms90">
+                  90 Days
+                </label>
+              </div>
 
-            {/* Advance Pay */}
-            <div className="form-check mx-3 p-0">
-              <input
-                className="form-check-input"
-                type="radio"
-                id="paymentTermsAdvance"
-                name="paymentTerms"
-                value="Advance Pay"
-                checked={dataMap.paymentTerms === "Advance Pay"}
-                onChange={handleChange}
-                disabled={disabledField}
-              />
-              <label
-                className="form-check-label pt-1"
-                htmlFor="paymentTermsAdvance"
-              >
-                Advance Pay
-              </label>
+              {/* Advance Pay */}
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="paymentTermsAdvance"
+                  name="paymentTerms"
+                  value="Advance Pay"
+                  checked={dataMap.paymentTerms === "Advance Pay"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="paymentTermsAdvance"
+                >
+                  Advance Pay
+                </label>
+              </div>
             </div>
             {errors.paymentTerms && (
-              <div className="col-md-4 mb-2">
-                <div
-                  className="col-md-6"
-                  style={{ color: "red", textAlign: "end" }}
-                >
-                  {errors.paymentTerms}
-                </div>
+              <div className="text-danger mt-1" style={{ fontSize: "12px" }}>
+                {errors.paymentTerms}
               </div>
             )}
           </div>
@@ -224,7 +276,7 @@ const GeneralTab = ({
             </div>
           </div>
           {(errors.phoneNumber || errors.countryCode) && (
-            <div className="col-6" style={{ color: "red", textAlign: "end" }}>
+            <div className="col-8" style={{ color: "red", textAlign: "end" }}>
               {errors.countryCode}
               {errors.phoneNumber}
             </div>

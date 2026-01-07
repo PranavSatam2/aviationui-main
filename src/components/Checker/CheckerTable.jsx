@@ -225,7 +225,7 @@ const Checker = () => {
     return pageNumbers;
   };
 
-  const handlePrintClick = (supplier) => {
+ const handlePrintClick = (supplier) => {
     // Create print window immediately with the supplier data
     const printWindow = window.open("", "_blank", "width=800,height=600");
 
@@ -337,6 +337,22 @@ const Checker = () => {
                 }
               </div>
             </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div style="width: 50%;">
+                <strong>Type of Vendor / Supplier:</strong> ${
+                  supplier.vendorTypes || "N/A"
+                }
+              </div>
+              <div style="width: 50%;">
+                <strong>Payment Terms:</strong> ${
+                  supplier.paymentTerms
+                    ? `${supplier.paymentTerms} ${
+                        supplier.paymentTerms !== "Advance Pay" ? "Days" : ""
+                      }`
+                    : "N/A"
+                }
+              </div>
+            </div>
             <div style="margin-bottom: 10px;">
               <strong>Address:</strong> ${supplier.address || "N/A"}
             </div>
@@ -352,15 +368,6 @@ const Checker = () => {
               <div style="width: 33%;">
                 <strong>Email:</strong> ${supplier.email || "N/A"}
               </div>
-            </div>
-            <div style="margin-bottom: 10px;">
-              <strong>Payment Terms:</strong> ${
-                supplier.paymentTerms
-                  ? `${supplier.paymentTerms} ${
-                      supplier.paymentTerms !== "Advance Pay" ? "Days" : ""
-                    }`
-                  : "N/A"
-              }
             </div>
             <div style="margin-bottom: 10px; border-top: 1px solid #ddd; padding-top: 10px;">
               <div style="font-weight: bold; margin-bottom: 5px;">Quality Manager Contact:</div>
@@ -1203,7 +1210,7 @@ const Checker = () => {
                   disabled={!selectedItem}
                 >
                   <i className="fa-solid fa-check me-2"></i>
-                  Approved
+                  Approve
                 </button>
                 <button
                   className="btn btn-outline-info"

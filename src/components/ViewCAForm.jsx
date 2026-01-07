@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import {
-    getCAFormList,
-    getCAForm,
-    deleteCAForm,
-} from "../services/db_manager";
+import { getCAFormList, getCAForm, deleteCAForm } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import {PrintCAForm} from "./PrintCAForm";
+import { PrintCAForm } from "./PrintCAForm";
 import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
+import logo from "../static/img/AMCLOGO.jpg"; 
+
 const ViewCAForm = () => {
   // State
   const [tableData, setTableData] = useState([]);
@@ -31,7 +29,6 @@ const ViewCAForm = () => {
   const [remark, setRemark] = useState("");
   const [reportData, setReportData] = useState();
 
-  
   const navigate = useNavigate();
   const fetchData = async () => {
     setIsLoading(true);
@@ -68,16 +65,14 @@ const ViewCAForm = () => {
 
   // Search functionality
   const filteredData = Array.isArray(tableData)
-  ? tableData.filter((report) =>
-      Object.values(report).some(
-        (value) =>
-          value &&
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    ? tableData.filter((report) =>
+        Object.values(report).some(
+          (value) =>
+            value &&
+            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        )
       )
-    )
-  : [];
-
-
+    : [];
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -132,7 +127,7 @@ const ViewCAForm = () => {
 
     return pageNumbers;
   };
-const handleCheckboxChange = (report) => {
+  const handleCheckboxChange = (report) => {
     // If the same checkbox is clicked again, deselect it
     if (selectedItem === report.id) {
       setSelectedItem("");
@@ -155,15 +150,13 @@ const handleCheckboxChange = (report) => {
     }
     setSelectAll(!selectAll);
   };
-const handlePrintClick = (report) => {
-  console.log("Report", report);
-
-  // Create the HTML content with inline styles
-  const printContent = `
+  const handlePrintClick = (report) => {
+    // Create the HTML content with inline styles
+    const printContent = `
     <!DOCTYPE html>
     <html>
     <head>
-      <title>CA Form - ${report.formTrackingNumber || 'N/A'}</title>
+      <title>CA Form - ${report.formTrackingNumber || "N/A"}</title>
       <style>
         * {
           margin: 0;
@@ -176,7 +169,7 @@ const handlePrintClick = (report) => {
           padding: 20px;
         }
         .container {
-          max-width: 210mm;
+          max-width: 297mm;
           margin: 0 auto;
           background: white;
         }
@@ -234,8 +227,8 @@ const handlePrintClick = (report) => {
             padding: 0;
           }
           @page {
+            size: A4 landscape;
             margin: 10mm;
-            size: A4;
           }
         }
       </style>
@@ -245,67 +238,80 @@ const handlePrintClick = (report) => {
         <div class="print-container">
           <!-- Header Section -->
           <div class="section">
-            <div style="width: 30%; padding: 10px;" class="border-right">
+            <div style="width: 20%; padding: 10px;" class="border-right">
               <div style="font-weight: bold;">1. DGCA India</div>
             </div>
-            <div style="width: 40%; text-align: center; padding: 10px; font-weight: bold; font-size: 16px;" class="border-right">
+            <div style="width: 50%; text-align: center; padding: 10px; font-weight: bold; font-size: 16px;" class="border-right">
               2. AUTHORISED RELEASE CERTIFICATE<br/>CA FORM 1
             </div>
             <div style="width: 30%; padding: 10px; font-weight: bold;">
               3. Form Tracking Number<br/>
-              ${report.formTrackingNumber || 'N/A'}
+              ${report.formTrackingNumber || "N/A"}
             </div>
           </div>
 
           <!-- Company Info Section -->
           <div class="section">
-            <div style="width: 30%; padding: 10px;">
-              <div>4. Approved Organization Name and Address:</div>
-              <br/>
-              <div class="company-logo">
-                <img src="data:image/png;base64,YOUR_LOGO_BASE64_HERE" alt="AMC Technology Logo" />
+            <div style="width: 50%; padding: 10px; display: flex;" class="border-right">
+              <div style="width: 30%;">
+                <div style="font-weight: bold;">4. Approved Organization Name and Address:</div>
+                <div class="company-logo">
+                  <img src="${logo}" alt="AMC Technology Logo" />
+                </div>
+              </div>
+              <div style="width: 70%; padding-left: 10px;">
+                <br/>
+                AMC TECHNOLOGY<br/>
+                105, HRIDAY INDUSTRIAL ESTATE,<br/>
+                HIRA INDUSTRIAL PARK, VASAI PHATA,<br/>
+                VASAI EAST, PALGHAR 401 203,<br/>
+                MAHARASHTRA, INDIA
               </div>
             </div>
-            <div style="width: 40%; text-align: left; padding: 10px;" class="border-right">
-              <br/>
-              AMC TECHNOLOGY<br/>
-              105, HRIDAY INDUSTRIAL ESTATE,<br/>
-              HIRA INDUSTRIAL PARK, VASAI PHATA,<br/>
-              VASAI EAST, PALGHAR 401 203,<br/>
-              MAHARASHTRA, INDIA
-            </div>
-            <div style="width: 30%; padding: 10px;">
-              5. Work Order/Contract/Invoice:<br/>
-              ${report.workOrderNumber || 'N/A'}
+            <div style="width: 50%; padding: 10px;">
+              <div style="font-weight: bold;">5. Work Order/Contract/Invoice:</div>
+              ${report.workOrderNumber || "N/A"}
             </div>
           </div>
 
           <!-- Table Header -->
           <div class="section">
-            <div style="width: 10%; padding: 10px;" class="border-right">6. Item</div>
-            <div style="width: 17%; padding: 10px;" class="border-right">7. Description</div>
-            <div style="width: 17%; padding: 10px;" class="border-right">8. Part No.</div>
-            <div style="width: 11%; padding: 10px;" class="border-right">9. Qty</div>
-            <div style="width: 17%; padding: 10px;" class="border-right">10. Serial/Batch No.</div>
-            <div style="width: 31%; padding: 10px;">11. Status/Work</div>
+            <div style="width: 8%; padding: 10px;" class="border-right">6. Item</div>
+            <div style="width: 15%; padding: 10px;" class="border-right">7. Description</div>
+            <div style="width: 15%; padding: 10px;" class="border-right">8. Part No.</div>
+            <div style="width: 8%; padding: 10px;" class="border-right">9. Qty</div>
+            <div style="width: 15%; padding: 10px;" class="border-right">10. Serial/Batch No.</div>
+            <div style="width: 39%; padding: 10px;">11. Status/Work</div>
           </div>
 
           <!-- Table Data -->
           <div class="section">
-            <div style="width: 10%; padding: 10px;" class="border-right">${report.item || 'N/A'}</div>
-            <div style="width: 17%; padding: 10px;" class="border-right">${report.description || 'N/A'}</div>
-            <div style="width: 17%; padding: 10px;" class="border-right">${report.partNo || 'N/A'}</div>
-            <div style="width: 11%; padding: 10px;" class="border-right">${report.quantity || 'N/A'}</div>
-            <div style="width: 17%; padding: 10px;" class="border-right">${report.serialNo || 'N/A'}</div>
-            <div style="width: 31%; padding: 10px;">${report.status || 'N/A'}</div>
+            <div style="width: 8%; padding: 10px;" class="border-right">${
+              report.item || "N/A"
+            }</div>
+            <div style="width: 15%; padding: 10px;" class="border-right">${
+              report.description || "N/A"
+            }</div>
+            <div style="width: 15%; padding: 10px;" class="border-right">${
+              report.partNo || "N/A"
+            }</div>
+            <div style="width: 8%; padding: 10px;" class="border-right">${
+              report.quantity || "N/A"
+            }</div>
+            <div style="width: 15%; padding: 10px;" class="border-right">${
+              report.serialNo || "N/A"
+            }</div>
+            <div style="width: 39%; padding: 10px;">${
+              report.status || "N/A"
+            }</div>
           </div>
 
           <!-- Remarks Section -->
           <div class="section">
             <div style="width: 100%; padding: 10px;">
-              12. Remarks:<br/>
-              <div style="padding-left: 60px; min-height: 40px;">
-                ${report.remarks || 'N/A'}
+              <strong>12. Remarks:</strong><br/>
+              <div style="padding-left: 20px; min-height: 40px; margin-top: 5px;">
+                ${report.remarks || "N/A"}
               </div>
             </div>
           </div>
@@ -322,11 +328,15 @@ const handlePrintClick = (report) => {
                 <strong>13. Manufacturer / Conformity Certification</strong><br/>
                 Certifies that the items identified above were manufactured in conformity to:<br/><br/>
                 <div style="margin: 8px 0;">
-                  <span class="checkbox ${report.approveDesign13a ? 'checked' : ''}"></span>
+                  <span class="checkbox ${
+                    report.approveDesign13a ? "checked" : ""
+                  }"></span>
                   <span>Approved design data and are in condition for safe operation.</span>
                 </div>
                 <div style="margin: 8px 0;">
-                  <span class="checkbox ${report.nonApproveDesign13a ? 'checked' : ''}"></span>
+                  <span class="checkbox ${
+                    report.nonApproveDesign13a ? "checked" : ""
+                  }"></span>
                   <span>Non-approved design data specified in block 12.</span>
                 </div>
                 <div style="margin-top: 15px; font-size: 11px;">
@@ -343,7 +353,9 @@ const handlePrintClick = (report) => {
               <div>
                 <strong>14 a. CAR 145.A.50 RELEASE TO SERVICE</strong><br/>
                 <div style="margin: 8px 0;">
-                  <span class="checkbox ${report.otherRegulation14a ? 'checked' : ''}"></span>
+                  <span class="checkbox ${
+                    report.otherRegulation14a ? "checked" : ""
+                  }"></span>
                   <span>Other regulation specified in block 12.</span>
                 </div>
                 <br/>
@@ -362,7 +374,7 @@ const handlePrintClick = (report) => {
           <div class="section">
             <div style="padding: 10px; line-height: 1.6;">
               <div style="font-weight: bold;">USER/INSTALLER RESPONSIBILITY:</div>
-              <p style="margin-top: 8px; text-align: justify;">
+              <p style="margin-top: 8px; text-align: justify; font-size: 10px;">
                 THIS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE AUTHORITY TO INSTALL THE ITEMS. WHERE THE USER/INSTALLER PERFORMS WORK IN ACCORDANCE WITH REGULATIONS OF AN AIRWORTHINESS AUTHORITY DIFFERENT THAN THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1, IT IS ESSENTIAL THAT THE USER/INSTALLER ENSURES THAT HIS/HER AIRWORTHINESS AUTHORITY ACCEPTS ITEMS FROM THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1. STATEMENTS IN BLOCKS 13A AND 14A DO NOT CONSTITUTE INSTALLATION CERTIFICATION. IN ALL CASES AIRCRAFT MAINTENANCE RECORDS MUST CONTAIN AN INSTALLATION CERTIFICATION ISSUED IN ACCORDANCE WITH THE NATIONAL REGULATIONS BY THE USER/INSTALLER BEFORE THE AIRCRAFT MAY BE FLOWN.
               </p>
             </div>
@@ -373,43 +385,37 @@ const handlePrintClick = (report) => {
     </html>
   `;
 
-  // Open new window and print
-  const printWindow = window.open('', '_blank', 'width=800,height=600');
-  
-  if (printWindow) {
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    
-    // Wait for content to load, then print
-    printWindow.onload = function() {
-      setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-        
-        // Optional: Close window after printing
-        // Uncomment the line below if you want to auto-close after printing
-        // printWindow.close();
-      }, 250);
-    };
-  } else {
-    alert('Please allow pop-ups for this website to print the form.');
-  }
-};
+    // Open new window and print
+    const printWindow = window.open("", "_blank", "width=1200,height=800");
 
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+
+      // Wait for content to load, then print
+      printWindow.onload = function () {
+        setTimeout(() => {
+          printWindow.focus();
+          printWindow.print();
+        }, 250);
+      };
+    } else {
+      alert("Please allow pop-ups for this website to print the form.");
+    }
+  };
 
   // Column definitions for the table
-const columns = [
-  { field: "formTrackingNumber", label: "CA Form No.", width: "220px" },
-  { field: "workOrderNumber", label: "Work Order No.", width: "180px" },
-  { field: "item", label: "Item", width: "80px" },
-  { field: "partNo", label: "Part No.", width: "120px" },
-  { field: "description", label: "Description", width: "200px" },
-  { field: "quantity", label: "Quantity", width: "80px" },
-  { field: "serialNo", label: "Serial No.", width: "150px" },
-  { field: "status", label: "Status", width: "100px" },
-  { field: "remarks", label: "Remarks", width: "100px" },
-];
-
+  const columns = [
+    { field: "formTrackingNumber", label: "CA Form No.", width: "220px" },
+    { field: "workOrderNumber", label: "Work Order No.", width: "180px" },
+    { field: "item", label: "Item", width: "80px" },
+    { field: "partNo", label: "Part No.", width: "120px" },
+    { field: "description", label: "Description", width: "200px" },
+    { field: "quantity", label: "Quantity", width: "80px" },
+    { field: "serialNo", label: "Serial No.", width: "150px" },
+    { field: "status", label: "Status", width: "100px" },
+    { field: "remarks", label: "Remarks", width: "100px" },
+  ];
 
   return (
     <div className="wrapper">
@@ -549,7 +555,7 @@ const columns = [
                       {currentItems.length > 0 ? (
                         currentItems.map((report, index) => (
                           <tr
-                           key={report.id}
+                            key={report.id}
                             className={
                               index % 2 === 0
                                 ? "bg-white"
@@ -571,7 +577,7 @@ const columns = [
                             </td> */}
                             {columns.map((column) => (
                               <td
-                               key={`${report.id}-${column.field}`}
+                                key={`${report.id}-${column.field}`}
                                 className="text-nowrap py-3"
                                 style={{
                                   maxWidth: "150px",
@@ -584,7 +590,7 @@ const columns = [
                                 {report[column.field]}
                               </td>
                             ))}
-                             <td>
+                            <td>
                               <div className="d-flex justify-content-center gap-2">
                                 {/* <button
                                 className="btn btn-sm btn-outline-primary"
@@ -725,7 +731,6 @@ const columns = [
         </div>
         <Footer />
       </div>
-     
     </div>
   );
 };

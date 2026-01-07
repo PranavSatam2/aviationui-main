@@ -27,7 +27,7 @@ const EditWorkorder = () => {
     description: "",
     cmmRefNo: "",
     revNo: "",
-    workshopManagerRemarks: "",
+    // workshopManagerRemarks: "",
     issuedBy: "",
     certifyingStaffhours: "",
     technician: "",
@@ -178,7 +178,7 @@ const EditWorkorder = () => {
           cmmRevDate: response.cmmRevDate || "", // Added field
           snBn: response.snBin || response.snBn || "",
           revNo: response.revisionNo || response.revNo || "",
-          workshopManagerRemarks: response.remarks || response.workshopManagerRemarks || "",
+          // workshopManagerRemarks: response.remarks || response.workshopManagerRemarks || "",
           issuedBy: response.issuedByWorkshopManagerName || response.issuedBy || "",
           certifyingStaffhours: response.workshopManager || response.certifyingStaffhours || "",
           technician: response.technician || "",
@@ -318,10 +318,10 @@ const EditWorkorder = () => {
       length: 50,
       // No regex as per AddWorkorder
     },
-    workshopManagerRemarks: {
-      length: 500,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
+    // workshopManagerRemarks: {
+    //   length: 500,
+    //   regex: /^[a-zA-Z0-9\s]*$/,
+    // },
     issuedBy: {
       length: 50,
       regex: /^[a-zA-Z\s]*$/,
@@ -387,7 +387,7 @@ const EditWorkorder = () => {
       description: form.description,
       cmmRefNo: form.cmmRefNo,
       revNo: form.revNo,
-      workshopManagerRemarks: form.workshopManagerRemarks,
+      // workshopManagerRemarks: form.workshopManagerRemarks,
       issuedBy: form.issuedBy,
       certifyingStaffhours: form.certifyingStaffhours,
       technician: form.technician,
@@ -584,7 +584,7 @@ const EditWorkorder = () => {
                         />
                       </div>
                       <div className="col-md-6 d-flex">
-                        <label className="col-md-4 mt-2">CMM Ref No</label>
+                        <label className="col-md-4 mt-2">CMM Ref No *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -604,7 +604,7 @@ const EditWorkorder = () => {
                     {/* Fourth Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Serial Number</label>
+                        <label className="col-md-4 mt-2">Serial Number *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -620,7 +620,7 @@ const EditWorkorder = () => {
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Revision No</label>
+                        <label className="col-md-4 mt-2">Revision No *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -639,7 +639,7 @@ const EditWorkorder = () => {
                     {/* CMM Rev Date Row - Added from AddWorkorder */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">CMM Rev Date</label>
+                        <label className="col-md-4 mt-2">CMM Rev Date *</label>
                         <input
                           className="form-control w-100"
                           type="date"
@@ -654,7 +654,7 @@ const EditWorkorder = () => {
                     {/* Fifth Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Issue Date</label>
+                        <label className="col-md-4 mt-2">Issue Date *</label>
                         <input
                           className="form-control w-100"
                           type="date"
@@ -688,7 +688,7 @@ const EditWorkorder = () => {
                     {/* Additional Fields Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Technician</label>
+                        <label className="col-md-4 mt-2">Technician *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -703,7 +703,7 @@ const EditWorkorder = () => {
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Total Man Hour</label>
+                        <label className="col-md-4 mt-2">Total Man Hour *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -720,7 +720,7 @@ const EditWorkorder = () => {
                     </div>
 
                     {/* Remarks Row */}
-                    <div className="col-md-12 p-3 d-flex">
+                    {/* <div className="col-md-12 p-3 d-flex">
                       <label className="col-md-2 mt-2">
                         Workshop Manager Remarks
                       </label>
@@ -736,12 +736,12 @@ const EditWorkorder = () => {
                         style={{ height: "60px" }}
                         required
                       ></textarea>
-                    </div>
+                    </div> */}
 
                     {/* Last Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Issued By</label>
+                        <label className="col-md-4 mt-2">Issued By *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -756,7 +756,7 @@ const EditWorkorder = () => {
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Action Taken</label>
+                        <label className="col-md-4 mt-2">Action Taken *</label>
                         <input
                           className="form-control w-100"
                           type="text"
