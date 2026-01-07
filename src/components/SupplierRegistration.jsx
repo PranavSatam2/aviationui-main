@@ -19,6 +19,7 @@ const SupplierRegistration = () => {
   const navigate = useNavigate();
   let formVariavles = {
     supplierName: "",
+    vendorTypes: "",
     // formId               : '',
     countryCode: "",
     qualityManagerCountryCode: "", // Add this
@@ -149,7 +150,7 @@ const SupplierRegistration = () => {
     }
     const missingFields = getMissingFields();
     if (Object.keys(missingFields).length > 0) {
-      console.log(missingFields), "vvvv";
+      console.log(missingFields), "missingFields";
 
       setErrors(missingFields);
       setInvalidFeedback("text-danger col-md-4");
@@ -201,6 +202,7 @@ const SupplierRegistration = () => {
           "qualityManagerPhoneNumber",
           "qualityManagerCountryCode",
           "isoRegistrationPlans",
+          // "vendorTypes"
         ].includes(key)
       ) {
         errorMessages[key] = "This field is required.";
@@ -247,6 +249,7 @@ const SupplierRegistration = () => {
           "qualityManagerEmailId",
           "qualityManagerPhoneNumber",
           "qualityManagerCountryCode",
+          "vendorTypes"
         ].includes(name)
           ? "This field is required."
           : "",

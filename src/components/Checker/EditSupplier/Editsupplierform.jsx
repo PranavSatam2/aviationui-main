@@ -565,6 +565,7 @@ const EditSupplierfrom = () => {
   let formVariavles = {
     supplierName: "",
     countryCode: "",
+    vendorTypes: "",
     qualityManagerCountryCode: "", // Added
     saleRepresentativeCountryCode: "", // Added
     phoneNumber: "",
@@ -740,7 +741,7 @@ const EditSupplierfrom = () => {
           "qualityManagerPhoneNumber",
           "qualityManagerCountryCode",
           "isoRegistrationPlans",
-          "paymentTerms",
+          // "paymentTerms",
         ].includes(key)
       ) {
         errorMessages[key] = "This field is required.";
@@ -788,6 +789,7 @@ const EditSupplierfrom = () => {
           "qualityManagerPhoneNumber",
           "qualityManagerCountryCode",
           "paymentTerms",
+          "vendorTypes"
         ].includes(name)
           ? "This field is required."
           : "",

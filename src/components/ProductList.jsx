@@ -28,6 +28,37 @@ const ProductList = () => {
 
   const navigate = useNavigate();
 
+  // Function to render mapping type with arrows
+  const renderMappingType = (mappingType) => {
+    if (!mappingType) return "";
+    
+    const upperType = mappingType.toUpperCase();
+    
+    switch (upperType) {
+      case "BOTH":
+        return (
+          <span style={{ fontSize: "1.2rem" }}>
+            <i className="fa fa-arrow-down text-danger me-1" title="Down"></i>
+            <i className="fa fa-arrow-up text-success" title="Up"></i>
+          </span>
+        );
+      case "UP":
+        return (
+          <span style={{ fontSize: "1.2rem" }}>
+            <i className="fa fa-arrow-up text-success" title="Up"></i>
+          </span>
+        );
+      case "DOWN":
+        return (
+          <span style={{ fontSize: "1.2rem" }}>
+            <i className="fa fa-arrow-down text-danger" title="Down"></i>
+          </span>
+        );
+      default:
+        return mappingType;
+    }
+  };
+
   // Fetching data when the component is mounted
   useEffect(() => {
     const fetchData = async () => {
@@ -365,6 +396,21 @@ const ProductList = () => {
                                 // Get quantity from the quantityMap based on the product name
                                 const qty = displayValue ? (quantityMap[displayValue] ?? 0) : 0;
                                 displayValue = displayValue ? `${displayValue}` : "";// → ${qty}
+                              }
+
+                              // Render mapping type with arrows
+                              if (column.field === "mappingType") {
+                                return (
+                                  <td
+                                    key={`${product.productId}-${column.field}`}
+                                    className="text-center py-3"
+                                    style={{
+                                      maxWidth: "150px",
+                                    }}
+                                  >
+                                    {renderMappingType(displayValue)}
+                                  </td>
+                                );
                               }
 
                               return (

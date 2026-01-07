@@ -30,7 +30,7 @@ const AddWorkorder = () => {
     description: "",
     cmmRefNo: "",
     revNo: "",
-    workshopManagerRemarks: "",
+    // workshopManagerRemarks: "",
     issuedBy: "",
     certifyingStaffhours: sessionStorage.getItem("username"),
     technician: "",
@@ -178,7 +178,7 @@ const AddWorkorder = () => {
           cmmRefNo: response.data?.cmmRefNo || "",
           // snBn: response.data?.batchNo || "",
           revNo: response.data?.revisionNo || response.data?.revNo || "",
-          workshopManagerRemarks: response.data?.remark || "",
+          // workshopManagerRemarks: response.data?.remark || "",
           // issuedBy: response.data?.makerUserName || "",
           certifyingStaffhours: sessionStorage.getItem("username") || "",
           technician: response.data?.technician || "",
@@ -299,10 +299,10 @@ const AddWorkorder = () => {
       length: 50,
       // regex: /^[a-zA-Z\s]*$/,
     },
-    workshopManagerRemarks: {
-      length: 500,
-      regex: /^[a-zA-Z0-9\s]*$/,
-    },
+    // workshopManagerRemarks: {
+    //   length: 500,
+    //   regex: /^[a-zA-Z0-9\s]*$/,
+    // },
     issuedBy: {
       length: 50,
       regex: /^[a-zA-Z\s]*$/,
@@ -367,7 +367,7 @@ const AddWorkorder = () => {
       description: form.description,
       cmmRefNo: form.cmmRefNo,
       revNo: form.revNo,
-      workshopManagerRemarks: form.workshopManagerRemarks,
+      // workshopManagerRemarks: form.workshopManagerRemarks,
       issuedBy: form.issuedBy,
       certifyingStaffhours: form.certifyingStaffhours,
       technician: form.technician,
@@ -570,7 +570,7 @@ const AddWorkorder = () => {
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Revision No</label>
+                        <label className="col-md-4 mt-2">Revision No *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -587,7 +587,7 @@ const AddWorkorder = () => {
                     </div>
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">CMM Rev Date</label>
+                        <label className="col-md-4 mt-2">CMM Rev Date *</label>
                         <input
                           className="form-control w-100"
                           type="date"
@@ -635,7 +635,7 @@ const AddWorkorder = () => {
                     {/* Additional Fields Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Technician</label>
+                        <label className="col-md-4 mt-2">Technician *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -650,7 +650,7 @@ const AddWorkorder = () => {
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Total Man Hour</label>
+                        <label className="col-md-4 mt-2">Total Man Hour *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -667,7 +667,7 @@ const AddWorkorder = () => {
                     </div>
 
                     {/* Remarks Row */}
-                    <div className="col-md-12 p-3 d-flex">
+                    {/* <div className="col-md-12 p-3 d-flex">
                       <label className="col-md-2 mt-2">
                         Workshop Manager Remarks
                       </label>
@@ -683,12 +683,12 @@ const AddWorkorder = () => {
                         style={{ height: "60px" }}
                         required
                       ></textarea>
-                    </div>
+                    </div> */}
 
                     {/* Last Row */}
                     <div className="col-md-12 d-flex">
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Issued By</label>
+                        <label className="col-md-4 mt-2">Issued By *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -703,7 +703,7 @@ const AddWorkorder = () => {
                         />
                       </div>
                       <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Action Taken</label>
+                        <label className="col-md-4 mt-2">Action Taken *</label>
                         <input
                           className="form-control w-100"
                           type="text"
@@ -799,7 +799,7 @@ const AddWorkorder = () => {
                       <div className="row">
                         <div className="col-md-6">
                           <label className="form-label">
-                            Quality Manager Sign Date
+                            Quality Manager Sign Date *
                           </label>
                           <input
                             type="date"
@@ -811,7 +811,7 @@ const AddWorkorder = () => {
                         </div>
                         <div className="col-md-6">
                           <label className="form-label">
-                            Workshop Manager Sign Date
+                            Workshop Manager Sign Date *
                           </label>
                           <input
                             type="date"

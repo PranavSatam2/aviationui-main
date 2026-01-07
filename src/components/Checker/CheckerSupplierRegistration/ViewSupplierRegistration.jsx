@@ -13,6 +13,7 @@ import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import { Modal, Button, Form } from "react-bootstrap";
 import { ApproveSupplier } from "../../../services/db_manager";
 import { toast } from "react-toastify";
+import {  useNavigate } from "react-router-dom";
 
 const ViewSupplierRegistration = () => {
   // Variables
@@ -79,6 +80,7 @@ const ViewSupplierRegistration = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const { supplierId, supplierData } = location.state || {};
 
   useEffect(() => {
@@ -148,7 +150,8 @@ const ViewSupplierRegistration = () => {
     };
     try {
       const response = await ApproveSupplier(updatedSupplierData);
-      toast.success(`Supplier ${action} successfully, ${response}`);
+      toast.success(`Supplier action successfully`);
+      navigate(-1)
       // fetchData();
     } catch (error) {
       console.error("Error fetching supplier details: ", error);
@@ -395,7 +398,7 @@ const ViewSupplierRegistration = () => {
                     onClick={() => handleShowModal("accept")}
                   >
                     <i className="fa-solid fa-check me-2"></i>
-                    Approved
+                    Approve
                   </button>
                   <button
                     className="btn btn-outline-info mx-2"

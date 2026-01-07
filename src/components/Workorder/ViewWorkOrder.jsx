@@ -23,6 +23,7 @@ const ViewWorkOrder = () => {
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
   const [workOrderData, setWorkOrderData] = useState();
+  const [selectedRow, setSelectedRow] = useState(null); // State to track selected row (single selection)
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -61,10 +62,21 @@ const ViewWorkOrder = () => {
   };
 
   // Edit the selected work order
-  const editSelectedElement = async (srNo,SerialNumber) => {
+  const editSelectedElement = async (srNo, SerialNumber) => {
     navigate("/Addworkorder", {
-      state: { srNo ,SerialNumber},
+      state: { srNo, SerialNumber },
     });
+  };
+
+  // Handle checkbox selection (single selection only, cannot uncheck)
+  const handleCheckboxChange = (orderNo) => {
+    // Only select the new row, don't allow unchecking by clicking same radio
+    setSelectedRow(orderNo);
+  };
+
+  // Check if a row is selected
+  const isRowSelected = (orderNo) => {
+    return selectedRow === orderNo;
   };
 
   // Search functionality
@@ -259,6 +271,19 @@ const ViewWorkOrder = () => {
                   <table className="table table-hover table-striped align-middle">
                     <thead>
                       <tr className="bg-light">
+                        {/* Checkbox column header without Select All */}
+                        <th
+                          className="position-sticky top-0 bg-light py-3 text-center"
+                          style={{
+                            width: "50px",
+                            fontSize: "0.9rem",
+                            fontWeight: "600",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                          }}
+                        >
+                          SELECT
+                        </th>
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -317,6 +342,19 @@ const ViewWorkOrder = () => {
                                 : "bg-light bg-opacity-50"
                             }
                           >
+                            {/* Checkbox column */}
+                            <td className="text-center py-3">
+                              <input
+                                type="radio"
+                                name="workOrderSelection"
+                                className="form-check-input"
+                                checked={isRowSelected(workOrder.orderNo)}
+                                onChange={() =>
+                                  handleCheckboxChange(workOrder.orderNo)
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                            </td>
                             {columns.map((column) => (
                               <td
                                 key={`${workOrder.orderNo || index}-${
@@ -357,9 +395,25 @@ const ViewWorkOrder = () => {
                                 <button
                                   className="btn btn-sm btn-primary"
                                   onClick={() =>
-                                    editSelectedElement(workOrder.srNo,workOrder.batchNo)
+                                    editSelectedElement(
+                                      workOrder.srNo,
+                                      workOrder.batchNo
+                                    )
                                   }
-                                  title="Generate Work Order"
+                                  disabled={!isRowSelected(workOrder.orderNo)}
+                                  title={
+                                    isRowSelected(workOrder.orderNo)
+                                      ? "Generate Work Order"
+                                      : "Select checkbox to enable"
+                                  }
+                                  style={{
+                                    opacity: isRowSelected(workOrder.orderNo)
+                                      ? 1
+                                      : 0.5,
+                                    cursor: isRowSelected(workOrder.orderNo)
+                                      ? "pointer"
+                                      : "not-allowed",
+                                  }}
                                 >
                                   <i className="fa-solid fa-file-lines me-1"></i>
                                   Generate Work Order
@@ -371,7 +425,7 @@ const ViewWorkOrder = () => {
                       ) : (
                         <tr>
                           <td
-                            colSpan={columns.length + 1}
+                            colSpan={columns.length + 2}
                             className="text-center py-5"
                           >
                             {searchTerm ? (
@@ -413,6 +467,11 @@ const ViewWorkOrder = () => {
                     entries
                     {searchTerm &&
                       ` (filtered from ${tableData.length} total entries)`}
+                    {selectedRow && (
+                      <span className="ms-2 badge bg-primary">
+                        1 selected
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div className="col-md-6">

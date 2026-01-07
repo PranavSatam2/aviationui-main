@@ -255,6 +255,22 @@ const ViewSupplierRegis = () => {
                 }
               </div>
             </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div style="width: 50%;">
+                <strong>Type of Vendor / Supplier:</strong> ${
+                  supplier.vendorTypes || "N/A"
+                }
+              </div>
+              <div style="width: 50%;">
+                <strong>Payment Terms:</strong> ${
+                  supplier.paymentTerms
+                    ? `${supplier.paymentTerms} ${
+                        supplier.paymentTerms !== "Advance Pay" ? "Days" : ""
+                      }`
+                    : "N/A"
+                }
+              </div>
+            </div>
             <div style="margin-bottom: 10px;">
               <strong>Address:</strong> ${supplier.address || "N/A"}
             </div>
