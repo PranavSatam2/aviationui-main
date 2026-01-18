@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";
-import axiosInstance from "../axiosConfig";
 import styles from "./HomePage.module.css";
 
 // Import the uploaded images
@@ -14,8 +13,9 @@ import image4 from "../static/img/img4.jpg";
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fadeIn, setFadeIn] = useState(false);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
 
-  // Aviation Parts themed images - Using uploaded images
+  // Aviation Parts themed images
   const slides = [
     {
       image: image1,
@@ -32,7 +32,7 @@ const HomePage = () => {
       title: "Modern Cabin Entertainment Systems",
       description: "State-of-the-art in-flight entertainment and passenger comfort solutions"
     },
-     {
+    {
       image: image4,
       title: "Advanced Cockpit Instrumentation",
       description: "Precision engineered cockpit controls and navigation systems"
@@ -41,34 +41,46 @@ const HomePage = () => {
 
   useEffect(() => {
     setFadeIn(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isAutoPlay) return;
+    
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000); // Auto-slide every 4 seconds
+    }, 5000); // Auto-slide every 5 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isAutoPlay, slides.length]);
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
+    setIsAutoPlay(false);
+    setTimeout(() => setIsAutoPlay(true), 10000); // Resume autoplay after 10s
   };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
+    setIsAutoPlay(false);
+    setTimeout(() => setIsAutoPlay(true), 10000);
   };
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    setIsAutoPlay(false);
+    setTimeout(() => setIsAutoPlay(true), 10000);
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
         
         {/* Full Screen Hero Slider */}
         <div className={`${styles.heroSection} ${fadeIn ? styles.fadeIn : ''}`}>
           <div className={styles.sliderContainer}>
+            {/* Slides */}
             {slides.map((slide, index) => (
               <div
                 key={index}
@@ -79,18 +91,28 @@ const HomePage = () => {
                 <img src={slide.image} alt={slide.title} />
                 <div className={styles.slideOverlay}></div>
                 <div className={styles.slideContent}>
-                  <h1 className={styles.slideTitle}>{slide.title}</h1>
-                  <p className={styles.slideDescription}>{slide.description}</p>
+                  <div className={styles.contentWrapper}>
+                    <h1 className={styles.slideTitle}>{slide.title}</h1>
+                    <p className={styles.slideDescription}>{slide.description}</p>
+                  </div>
                 </div>
               </div>
             ))}
 
-            Navigation Arrows
-            <button className={styles.navButton} onClick={prevSlide} style={{ left: '20px' }}>
-              ❮
+            {/* Navigation Arrows */}
+            <button 
+              className={`${styles.navButton} ${styles.navButtonLeft}`} 
+              onClick={prevSlide}
+              aria-label="Previous slide"
+            >
+              <i className="fa fa-chevron-left"></i>
             </button>
-            <button className={styles.navButton} onClick={nextSlide} style={{ right: '20px' }}>
-              ❯
+            <button 
+              className={`${styles.navButton} ${styles.navButtonRight}`} 
+              onClick={nextSlide}
+              aria-label="Next slide"
+            >
+              <i className="fa fa-chevron-right"></i>
             </button>
 
             {/* Dots Navigation */}
@@ -102,13 +124,36 @@ const HomePage = () => {
                     index === currentSlide ? styles.activeDot : ''
                   }`}
                   onClick={() => goToSlide(index)}
-                ></button>
+                  aria-label={`Go to slide ${index + 1}`}
+                >
+                  <span className={styles.dotNumber}>{index + 1}</span>
+                </button>
               ))}
+            </div>
+
+            {/* Progress Bar */}
+            <div className={styles.progressBarContainer}>
+              <div 
+                className={styles.progressBar} 
+                style={{ 
+                  animation: isAutoPlay ? 'progress 5s linear' : 'none',
+                  animationPlayState: isAutoPlay ? 'running' : 'paused'
+                }}
+                key={currentSlide}
+              ></div>
+            </div>
+
+            {/* Slide Counter */}
+            <div className={styles.slideCounter}>
+              <span className={styles.currentSlide}>{String(currentSlide + 1).padStart(2, '0')}</span>
+              <span className={styles.separator}>/</span>
+              <span className={styles.totalSlides}>{String(slides.length).padStart(2, '0')}</span>
             </div>
           </div>
         </div>
+        
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 };

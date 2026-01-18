@@ -3,9 +3,11 @@ import axiosInstance from "../axiosConfig";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import { useNavigate } from "react-router-dom";
+import styles from "./RoleMenuMapping.module.css";
 
 const RoleMenuMapping = () => {
+  const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
   const [menus, setMenus] = useState([]);
   const [selectedRole, setSelectedRole] = useState('');
@@ -138,43 +140,42 @@ const RoleMenuMapping = () => {
       const isParentChecked = roleMenuMapping[selectedRole]?.[menu.id] === true;
 
       return (
-        <div key={menu.id} className="mb-3">
+        <div key={menu.id} className={styles.menuItem}>
           {/* Parent Menu */}
-          <div className="form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id={`menu-${menu.id}`}
-              checked={!!roleMenuMapping[selectedRole]?.[menu.id]}
-              onChange={(e) =>
-                handleParentCheck(menu.id, e.target.checked, subMenus)
-              }
-            />
-            <label
-              className="form-check-label fw-bold"
-              htmlFor={`menu-${menu.id}`}
-            >
-              {menu.name}
+          <div className={styles.parentMenu}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                className={styles.checkbox}
+                id={`menu-${menu.id}`}
+                checked={!!roleMenuMapping[selectedRole]?.[menu.id]}
+                onChange={(e) =>
+                  handleParentCheck(menu.id, e.target.checked, subMenus)
+                }
+              />
+              <span className={styles.checkmark}></span>
+              <span className={styles.menuName}>{menu.name}</span>
             </label>
           </div>
 
           {/* Sub Menus */}
           {subMenus.length > 0 && (
-            <div className="ms-4 mt-2">
+            <div className={styles.subMenuContainer}>
               {subMenus.map((sub) => (
-                <div key={sub.id} className="form-check mb-1">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id={`sub-${sub.id}`}
-                    checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
-                    disabled={!isParentChecked} // disable if parent unchecked
-                    onChange={(e) =>
-                      handleCheckboxChange(sub.id, e.target.checked, [], menu.id)
-                    }
-                  />
-                  <label className="form-check-label" htmlFor={`sub-${sub.id}`}>
-                    {sub.name}
+                <div key={sub.id} className={styles.subMenuItem}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      className={styles.checkbox}
+                      id={`sub-${sub.id}`}
+                      checked={roleMenuMapping[selectedRole]?.[sub.id] || false}
+                      disabled={!isParentChecked}
+                      onChange={(e) =>
+                        handleCheckboxChange(sub.id, e.target.checked, [], menu.id)
+                      }
+                    />
+                    <span className={styles.checkmark}></span>
+                    <span className={styles.subMenuName}>{sub.name}</span>
                   </label>
                 </div>
               ))}
@@ -185,60 +186,90 @@ const RoleMenuMapping = () => {
     });
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px", marginBottom: "4rem" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Role Menu Mapping" isBack={true} />
-          <div
-            className="card border border-dark shadow mx-4 my-4 p-2"
-            style={{
-               overflowY: "auto" }}
-          >
-            <form style={{ height: "100%" }}>
-              {/* Role Dropdown */}
-              <div className="col-md-6 p-2 d-flex">
-                <label htmlFor="roleDropdown" className="col-md-4 mt-2">
-                  Select Role
-                </label>
-                <select
-                  id="roleDropdown"
-                  className="form-control w-100"
-                  value={selectedRole}
-                  onChange={handleRoleChange}
-                >
-                  <option value="">-- Choose Role --</option>
-                  {roles.map(({ id, roleName }) => (
-                    <option key={id} value={id}>{roleName}</option>
-                  ))}
-                </select>
-              </div>
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button
+              className={styles.backButton}
+              onClick={() => navigate(-1)}
+            >
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Role Menu Mapping</span>
+            </div>
+          </div>
 
-              {/* Menu List */}
-              <div className="mb-3">
-                <label className="form-label fw-bold d-block mb-2">Menu List</label>
-                <div>
-                  {menus.length === 0 ? (
-                    <div className="alert alert-info m-0">Loading menu data...</div>
-                  ) : (
-                    renderMenus(menus)
-                  )}
-                </div>
-              </div>
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form>
+                  {/* Role Selection Section */}
+                  <div className={styles.sectionTitle}>
+                    <i className="fa fa-user-shield"></i>
+                    <span>Role Selection</span>
+                  </div>
 
-              {/* Save Button (after all menus) */}
-              <div className="mt-3">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleSaveMappings}
-                  disabled={!selectedRole}
-                >
-                  Save Mapping
-                </button>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="roleDropdown" className={styles.label}>
+                      Select Role <span className={styles.required}>*</span>
+                    </label>
+                    <select
+                      id="roleDropdown"
+                      className={styles.select}
+                      value={selectedRole}
+                      onChange={handleRoleChange}
+                    >
+                      <option value="">-- Choose Role --</option>
+                      {roles.map(({ id, roleName }) => (
+                        <option key={id} value={id}>{roleName}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Menu Permissions Section */}
+                  <div className={styles.sectionTitle}>
+                    <i className="fa fa-list-ul"></i>
+                    <span>Menu Permissions</span>
+                  </div>
+
+                  <div className={styles.menuListContainer}>
+                    {menus.length === 0 ? (
+                      <div className={styles.loadingBox}>
+                        <div className={styles.spinner}></div>
+                        <span>Loading menu data...</span>
+                      </div>
+                    ) : !selectedRole ? (
+                      <div className={styles.infoBox}>
+                        <i className="fa fa-info-circle"></i>
+                        <span>Please select a role to configure menu permissions</span>
+                      </div>
+                    ) : (
+                      renderMenus(menus)
+                    )}
+                  </div>
+
+                  {/* Save Button */}
+                  <div className={styles.formActions}>
+                    <button
+                      type="button"
+                      className={styles.btnSubmit}
+                      onClick={handleSaveMappings}
+                      disabled={!selectedRole}
+                    >
+                      <i className="fa fa-save"></i>
+                      <span>Save Mapping</span>
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </div>
         <Footer />

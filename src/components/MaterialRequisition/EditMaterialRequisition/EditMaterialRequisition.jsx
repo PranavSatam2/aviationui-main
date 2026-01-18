@@ -3,13 +3,13 @@ import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
-import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import {
   getMaterialRequisitionDetail,
   updateMaterialRequisition,
   fetchSupplierName,
 } from "../../../services/db_manager";
 import { toast } from "react-toastify";
+import styles from "../MaterialRequisition.module.css";
 
 const EditMaterialRequisition = () => {
   const location = useLocation();
@@ -32,7 +32,6 @@ const EditMaterialRequisition = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch supplier names once
   useEffect(() => {
     const getSupplierNames = async () => {
       try {
@@ -46,7 +45,6 @@ const EditMaterialRequisition = () => {
     getSupplierNames();
   }, []);
 
-  // Fetch material requisition details
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -126,11 +124,12 @@ const EditMaterialRequisition = () => {
 
   if (loading) {
     return (
-      <div className="wrapper">
+      <div className={styles.wrapper}>
         <Sidebar />
-        <div className="content">
+        <div className={styles.content}>
           <Header />
-          <div className="text-center mt-5">
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
             <h5>Loading requisition details...</h5>
           </div>
           <Footer />
@@ -140,150 +139,179 @@ const EditMaterialRequisition = () => {
   }
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Edit Material Requisition" isBack={true} />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Edit Material Requisition</span>
+            </div>
+          </div>
 
-          <div className="my-2 p-2">
-            <div className="container-fluid">
-              <div
-                className="row mx-1 card border border-dark shadow-lg py-2"
-                style={{ height: "397px" }}
-              >
-                <div className="col-md-12">
-                  <form onSubmit={handleSubmit} style={{ height: "100%" }}>
-                    <div className="col-md-12 p-2 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-1">Workorder No</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="workOrderNo"
-                          value={form.workOrderNo}
-                          onChange={handleChange}
-                          onInput={(e) => validateDataType(e, "A")}
-                          required
-                          disabled
-                        />
-                      </div>
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form onSubmit={handleSubmit}>
+                  {/* Work Order Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-file-alt"></i>
+                    <span>Work Order Information</span>
+                    <span className={styles.readOnlyBadge}>Read Only</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Work Order No.</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="workOrderNo"
+                        value={form.workOrderNo}
+                        onChange={handleChange}
+                        onInput={(e) => validateDataType(e, "A")}
+                        disabled
+                      />
                     </div>
-
-                    <hr className="mx-0 my-2 p-0 border" />
-
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Date</label>
-                        <input
-                          className="form-control w-100"
-                          type="date"
-                          name="date"
-                          value={form.date}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Part Number</label>
-                        <input
-                          className="form-control w-100"
-                          name="partNumber"
-                          value={form.partNumber}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Date</label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="date"
+                        value={form.date}
+                        onChange={handleChange}
+                        disabled
+                      />
                     </div>
+                  </div>
 
-                    <div className="col-md-12 p-3 d-flex">
-                      <label className="col-md-2 mt-2">Description</label>
-                      <select
-                        className="form-select w-100"
+                  {/* Part Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-box"></i>
+                    <span>Part Information</span>
+                    <span className={styles.readOnlyBadge}>Read Only</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Part Number</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="partNumber"
+                        value={form.partNumber}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Description</label>
+                      <input
+                        type="text"
+                        className={styles.input}
                         name="description"
                         value={form.description}
                         onChange={handleChange}
                         disabled
+                      />
+                    </div>
+                  </div>
+
+                  {/* Quantity Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-edit"></i>
+                    <span>Editable Information</span>
+                    <span className={styles.editableBadge}>Editable</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Requested QTY</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="requestedQty"
+                        onInput={(e) => validateDataType(e, "N")}
+                        value={form.requestedQty}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Issued QTY <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="issuedQty"
+                        onInput={(e) => validateDataType(e, "N")}
+                        value={form.issuedQty}
+                        onChange={handleChange}
+                        placeholder="Enter issued quantity"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Supplier Section */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Supplier Name <span className={styles.required}>*</span>
+                      </label>
+                      <select
+                        className={styles.select}
+                        name="supplierName"
+                        value={form.supplierName}
+                        onChange={handleChange}
+                        required
                       >
-                        <option value="">{form.description}</option>
+                        <option value="">Select Supplier</option>
+                        {suppliers.map((name, index) => (
+                          <option key={index} value={name}>
+                            {name}
+                          </option>
+                        ))}
                       </select>
                     </div>
-
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Requested QTY</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="requestedQty"
-                          onInput={(e) => validateDataType(e, "N")}
-                          value={form.requestedQty}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Issued QTY</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="issuedQty"
-                          onInput={(e) => validateDataType(e, "N")}
-                          value={form.issuedQty}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Current Date</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="curDate"
+                        value={form.curDate}
+                        onChange={handleChange}
+                        disabled
+                      />
                     </div>
+                  </div>
 
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Supplier Name</label>
-                        <select
-                          className="form-select w-100"
-                          name="supplierName"
-                          value={form.supplierName}
-                          onChange={handleChange}
-                          required
-                        >
-                          <option value="">Select Supplier</option>
-                          {suppliers.map((name, index) => (
-                            <option key={index} value={name}>
-                              {name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Date</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="curDate"
-                          onInput={(e) => validateDataType(e, "N")}
-                          value={form.curDate}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-md-6 p-2 d-flex">
-                      <div className="col-md-4 mt-2 d-flex">
-                        <button type="submit" className="btn btn-primary">
-                          Update Requisition
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
+                  {/* Action Buttons */}
+                  <div className={styles.formActions}>
+                    <button
+                      type="button"
+                      className={styles.btnCancel}
+                      onClick={() => navigate(-1)}
+                    >
+                      <i className="fa fa-times"></i>
+                      <span>Cancel</span>
+                    </button>
+                    <button type="submit" className={styles.btnUpdate}>
+                      <i className="fa fa-save"></i>
+                      <span>Update Requisition</span>
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

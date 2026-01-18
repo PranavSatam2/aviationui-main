@@ -3,12 +3,13 @@ import axiosInstance from "../axiosConfig";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import {
   listAllCustomerNames,
   listAllPartNo,
   GetpartDetailsFromProductSelect,
 } from "../services/db_manager";
+import { toast } from "react-toastify";
+import styles from "./CustomerOrder.module.css";
 
 const CustomerOrder = () => {
   const [roNo, setRoNo] = useState("");
@@ -29,7 +30,8 @@ const CustomerOrder = () => {
   const [filteredPartNos, setFilteredPartNos] = useState([]);
   const [isLoadingPartDetails, setIsLoadingPartDetails] = useState(false);
   const [serialOptions, setSerialOptions] = useState([]);
-  const [cmmRefNo, setCmmRefNo] = useState(""); // Add this line
+  const [cmmRefNo, setCmmRefNo] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add loader state
 
   const handleInputChange = (e, setter) => setter(e.target.value);
 
@@ -56,7 +58,7 @@ const CustomerOrder = () => {
         setPartDescription("");
         setPartSerialNumber("");
         setSerialOptions([]);
-        setCmmRefNo(""); // Add this line
+        setCmmRefNo("");
         return;
       }
       setIsLoadingPartDetails(true);
@@ -72,7 +74,7 @@ const CustomerOrder = () => {
 
           setSerialOptions(serialArray);
           setPartSerialNumber("");
-          setCmmRefNo(partDetails.cmmRefNo || ""); // Add this line
+          setCmmRefNo(partDetails.cmmRefNo || "");
         } else {
           setPartDescription("");
           setSerialOptions([]);
@@ -91,12 +93,13 @@ const CustomerOrder = () => {
     };
     fetchPartDetails();
   }, [partNo]);
+
   const handleRoNoChange = (e) => {
     const value = e.target.value;
-    // Allow only alphanumeric characters and hyphens
     const filteredValue = value.replace(/[^a-zA-Z0-9-]/g, "");
     setRoNo(filteredValue);
   };
+
   const validateForm = () => {
     const newErrors = {};
     if (!roNo.trim()) {
@@ -162,24 +165,30 @@ const CustomerOrder = () => {
     };
 
     setPurchaseRequisitions([...purchaseRequisitions, newReq]);
-
-    // Reset form for next entry
     resetForm();
-
-    alert("Customer Order added to the list! You can add more orders.");
+    toast.success("Customer Order added to the list!");
   };
 
-  const handleRemoveRequisition = (id) =>
+  const handleRemoveRequisition = (id) => {
     setPurchaseRequisitions(purchaseRequisitions.filter((r) => r.id !== id));
+    toast.info("Order removed from list");
+  };
 
   const handleSubmitAll = async () => {
-    if (!document) return alert("Please upload the document.");
-    if (purchaseRequisitions.length === 0)
-      return alert("No Customer Order to submit!");
+    if (!document) {
+      toast.error("Please upload the document.");
+      return;
+    }
+    if (purchaseRequisitions.length === 0) {
+      toast.warning("No Customer Order to submit!");
+      return;
+    }
+
+    setIsSubmitting(true); // Start loader
+
     try {
       const ordersPayload = purchaseRequisitions.map((req) => ({
         roNo: req.roNo,
-
         roDate: req.roDate,
         roReceiveDate: req.roReceiveDate,
         customerName: req.customerName,
@@ -198,7 +207,7 @@ const CustomerOrder = () => {
       formData.append("document", document);
       formData.append("orders", JSON.stringify(ordersPayload));
 
-     const response = await axiosInstance.post(
+      const response = await axiosInstance.post(
         "/api/customerOrder/uploadWithOrders",
         formData,
         {
@@ -206,73 +215,95 @@ const CustomerOrder = () => {
         }
       );
 
-      alert("All orders submitted successfully.");
+      toast.success("All orders submitted successfully!");
       setPurchaseRequisitions([]);
       setDocument(null);
       resetForm();
+
       if (response) {
-        console.error("Server error:", response);
+        console.log("Server response:", response);
       }
     } catch (err) {
-      console.error("Submit failed:", err.response.data);
-      alert(err.response.data);
+      console.error("Submit failed:", err.response?.data);
+      toast.error(err.response?.data || "Failed to submit orders");
+    } finally {
+      setIsSubmitting(false); // Stop loader
     }
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <CustomBreadcrumb breadcrumbsLabel="Add Customer Order" isBack={true} />
-        <div className="container-fluid my-2 p-2">
-          {/* Form Card */}
-          <div className="row mx-1 card border border-dark shadow-lg py-2">
-            <div className="col-md-12">
-              <h5 className="mb-3">Add New Customer Order</h5>
-              <form onSubmit={handleSubmit}>
-                {/* RO No */}
-                <div className="col-md-12 p-2 d-flex">
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">Repair Order No *</label>
-                    <div className="w-100">
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => window.history.back()}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Add Customer Order</span>
+            </div>
+          </div>
+
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form onSubmit={handleSubmit}>
+                  {/* Order Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-file-alt"></i>
+                    <span>Order Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Repair Order No <span className={styles.required}>*</span>
+                      </label>
                       <input
-                        className="form-control w-100"
                         type="text"
+                        className={styles.input}
                         value={roNo}
                         onChange={handleRoNoChange}
                         placeholder="Enter RO No"
                       />
                       {error.roNo && (
-                        <span className="text-danger small">{error.roNo}</span>
+                        <span className={styles.errorText}>{error.roNo}</span>
                       )}
                     </div>
-                  </div>
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">RO Received Date *</label>
-                    <div className="w-100">
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        RO Received Date <span className={styles.required}>*</span>
+                      </label>
                       <input
-                        className="form-control w-100"
                         type="date"
+                        className={styles.input}
                         value={roReceiveDate}
                         onChange={(e) => handleInputChange(e, setRoReceiveDate)}
                       />
                       {error.roReceiveDate && (
-                        <span className="text-danger small">
-                          {error.roReceiveDate}
-                        </span>
+                        <span className={styles.errorText}>{error.roReceiveDate}</span>
                       )}
                     </div>
                   </div>
-                </div>
 
-                {/* Part Number & Serial */}
-                <div className="col-md-12 p-2 d-flex">
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">Part Number *</label>
-                    <div className="w-100">
+                  {/* Part Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-box"></i>
+                    <span>Part Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Number <span className={styles.required}>*</span>
+                      </label>
                       <select
-                        className="form-select"
+                        className={styles.select}
                         value={partNo}
                         onChange={(e) => setPartNo(e.target.value)}
                         disabled={isLoadingPartDetails}
@@ -285,23 +316,17 @@ const CustomerOrder = () => {
                         ))}
                       </select>
                       {error.partNo && (
-                        <span className="text-danger small">
-                          {error.partNo}
-                        </span>
+                        <span className={styles.errorText}>{error.partNo}</span>
                       )}
                     </div>
-                  </div>
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">
-                      Part Serial Number *
-                    </label>
-                    <div className="w-100">
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Serial Number <span className={styles.required}>*</span>
+                      </label>
                       <select
-                        className="form-select w-100"
+                        className={styles.select}
                         value={partSerialNumber}
-                        onChange={(e) =>
-                          handleInputChange(e, setPartSerialNumber)
-                        }
+                        onChange={(e) => handleInputChange(e, setPartSerialNumber)}
                         disabled={serialOptions.length === 0}
                       >
                         <option value="">Select Serial Number</option>
@@ -312,21 +337,24 @@ const CustomerOrder = () => {
                         ))}
                       </select>
                       {error.partSerialNumber && (
-                        <span className="text-danger small">
-                          {error.partSerialNumber}
-                        </span>
+                        <span className={styles.errorText}>{error.partSerialNumber}</span>
                       )}
                     </div>
                   </div>
-                </div>
 
-                {/* Customer & RO Receive Date */}
-                <div className="col-md-12 p-2 d-flex">
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">Customer Name *</label>
-                    <div className="w-100">
+                  {/* Customer Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-user"></i>
+                    <span>Customer Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Customer Name <span className={styles.required}>*</span>
+                      </label>
                       <select
-                        className="form-select"
+                        className={styles.select}
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                       >
@@ -338,147 +366,165 @@ const CustomerOrder = () => {
                         ))}
                       </select>
                       {error.customerName && (
-                        <span className="text-danger small">
-                          {error.customerName}
-                        </span>
+                        <span className={styles.errorText}>{error.customerName}</span>
                       )}
                     </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Unit Receive Date <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        value={roDate}
+                        disabled
+                      />
+                    </div>
                   </div>
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">Unit Receive date *</label>
-                    <input
-                      className="form-control w-100"
-                      type="date"
-                      value={roDate}
-                      disabled
-                    />
-                  </div>
-                </div>
 
-                {/* Part Description & RO Date */}
-                <div className="col-md-12 p-2 d-flex">
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">Part Description *</label>
-                    <div className="w-100">
+                  {/* Additional Details Section */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Description <span className={styles.required}>*</span>
+                      </label>
                       <textarea
-                        className="form-control w-100"
+                        className={styles.textarea}
                         value={partDescription}
-                        onChange={(e) =>
-                          handleInputChange(e, setPartDescription)
-                        }
-                        style={{ height: "70px" }}
+                        onChange={(e) => handleInputChange(e, setPartDescription)}
+                        rows="3"
                         placeholder="Auto-filled when part number is selected"
                         disabled
-                      ></textarea>
+                      />
                       {error.partDescription && (
-                        <span className="text-danger small">
-                          {error.partDescription}
-                        </span>
+                        <span className={styles.errorText}>{error.partDescription}</span>
                       )}
                     </div>
-                  </div>
-                  <div className="col-md-6 p-1 d-flex">
-                    <label className="col-md-4 mt-2">Quantity *</label>
-                    <div className="w-100">
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Quantity <span className={styles.required}>*</span>
+                      </label>
                       <input
-                        className="form-control w-100"
                         type="text"
+                        className={styles.input}
                         value={quantity}
                         onChange={(e) => handleInputChange(e, setQuantity)}
+                        placeholder="Enter quantity"
                       />
                       {error.quantity && (
-                        <span className="text-danger small">
-                          {error.quantity}
-                        </span>
+                        <span className={styles.errorText}>{error.quantity}</span>
                       )}
                     </div>
                   </div>
-                </div>
-                {/* Add to list */}
-                <div className="col-md-12 text-end mt-3">
-                  <button type="submit" className="btn btn-primary">
-                    Add to List
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
 
-          {/* Display Table */}
-          {purchaseRequisitions.length > 0 && (
-            <div className="row mx-1 card border border-dark shadow-lg py-4 mt-4">
-              <div className="col-md-12">
-                <h4>
-                  Customer Order List ({purchaseRequisitions.length}{" "}
-                  {purchaseRequisitions.length === 1 ? "order" : "orders"})
-                </h4>
-                <div className="table-responsive">
-                  <table className="table table-striped table-bordered">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>RO No</th>
-                        <th>Unit Submit Date</th>
-                        <th>RO Received Date</th>
-                        <th>Customer Name</th>
-                        <th>Part No</th>
-                        <th>Part Serial Number</th>
-                        <th>Part Description</th>
-                        <th>Quantity</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {purchaseRequisitions.map((req, index) => (
-                        <tr key={req.id}>
-                          <td>{index + 1}</td>
-                          <td>{req.roNo}</td>
-                          <td>{req.roDate}</td>
-                          <td>{req.roReceiveDate}</td>
-                          <td>{req.customerName}</td>
-                          <td>{req.partNo}</td>
-                          <td>{req.partSerialNumber}</td>
-                          <td>{req.partDescription}</td>
-                          <td>{req.quantity}</td>
-                          <td>
-                            <button
-                              className="btn btn-danger btn-sm"
-                              onClick={() => handleRemoveRequisition(req.id)}
-                            >
-                              Remove
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Upload & Submit */}
-                <div className="col-md-6 p-1 d-flex mb-3">
-                  <label className="col-md-4 mt-2">Upload Document *</label>
-                  <div className="w-100">
-                    <input
-                      className="form-control w-100"
-                      type="file"
-                      onChange={(e) => setDocument(e.target.files[0])}
-                    />
-                    {document && (
-                      <small className="text-success mt-1 d-block">
-                        ✓ Uploaded: {document.name}
-                      </small>
-                    )}
+                  {/* Add Button */}
+                  <div className={styles.formActions}>
+                    <button type="submit" className={styles.btnAdd}>
+                      <i className="fa fa-plus"></i>
+                      <span>Add to List</span>
+                    </button>
                   </div>
-                </div>
-                <button
-                  className="btn btn-success btn-lg"
-                  onClick={handleSubmitAll}
-                >
-                  Submit All {purchaseRequisitions.length} Orders
-                </button>
+                </form>
               </div>
             </div>
-          )}
+
+            {/* Display Table */}
+            {purchaseRequisitions.length > 0 && (
+              <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <i className="fa fa-list"></i>
+                  <span>
+                    Customer Order List ({purchaseRequisitions.length}{" "}
+                    {purchaseRequisitions.length === 1 ? "order" : "orders"})
+                  </span>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.tableContainer}>
+                    <table className={styles.table}>
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>RO No</th>
+                          <th>Unit Submit Date</th>
+                          <th>RO Received Date</th>
+                          <th>Customer Name</th>
+                          <th>Part No</th>
+                          <th>Part Serial Number</th>
+                          <th>Part Description</th>
+                          <th>Quantity</th>
+                          <th className={styles.actionsHeader}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {purchaseRequisitions.map((req, index) => (
+                          <tr key={req.id} style={{ animationDelay: `${index * 0.05}s` }}>
+                            <td>{index + 1}</td>
+                            <td>{req.roNo}</td>
+                            <td>{req.roDate}</td>
+                            <td>{req.roReceiveDate}</td>
+                            <td>{req.customerName}</td>
+                            <td>{req.partNo}</td>
+                            <td>{req.partSerialNumber}</td>
+                            <td>{req.partDescription}</td>
+                            <td>{req.quantity}</td>
+                            <td className={styles.actionsCell}>
+                              <button
+                                className={styles.btnRemove}
+                                onClick={() => handleRemoveRequisition(req.id)}
+                                title="Remove"
+                              >
+                                <i className="fa-solid fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Upload & Submit Section */}
+                  <div className={styles.uploadSection}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Upload Document <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="file"
+                        className={styles.fileInput}
+                        onChange={(e) => setDocument(e.target.files[0])}
+                      />
+                      {document && (
+                        <div className={styles.uploadedFile}>
+                          <i className="fa fa-check-circle"></i>
+                          <span>Uploaded: {document.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className={styles.submitActions}>
+                    <button
+                      className={styles.btnSubmitAll}
+                      onClick={handleSubmitAll}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className={styles.buttonSpinner}></div>
+                          <span>Submitting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa fa-paper-plane"></i>
+                          <span>Submit All {purchaseRequisitions.length} Orders</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <Footer />

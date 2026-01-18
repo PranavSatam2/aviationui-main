@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
-// import axiosInstance from "../axiosConfig";
-// import { createWorkorder } from "../services/db_manager";
-import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   AddWorkOrder,
@@ -12,15 +9,15 @@ import {
   getWorkOrderById,
 } from "../../../services/db_manager";
 import { toast } from "react-toastify";
+import styles from "./AddWorkorder.module.css";
 
 const AddWorkorder = () => {
   const location = useLocation();
   const { srNo, SerialNumber } = location.state || "";
   const navigate = useNavigate();
   console.log(srNo, "srnoooo");
-  // Define the initial form structure with default workDetails - Updated to match API
+
   const getInitialFormState = () => ({
-    // Main fields mapped to API
     cmmRevDate: "",
     issueDate: "",
     customerName: "",
@@ -30,7 +27,6 @@ const AddWorkorder = () => {
     description: "",
     cmmRefNo: "",
     revNo: "",
-    // workshopManagerRemarks: "",
     issuedBy: "",
     certifyingStaffhours: sessionStorage.getItem("username"),
     technician: "",
@@ -41,7 +37,7 @@ const AddWorkorder = () => {
     workshopManagerSignDate: "",
     snBn: "",
     srNumber: "",
-    // Work Order Steps Section (mapped from workDetails)
+
     workOrderSteps: [
       {
         stepNo: 1,
@@ -118,7 +114,6 @@ const AddWorkorder = () => {
       },
     ],
 
-    // Material Requisitions Section (mapped from partsUsed)
     materialRequisitions: [
       {
         srNo: 101,
@@ -130,56 +125,47 @@ const AddWorkorder = () => {
       },
     ],
 
-    // Additional fields for UI compatibility
     toolsTextBox1: "",
     toolsTextBox2: "",
   });
 
   const [form, setForm] = useState(getInitialFormState());
+  const [loading, setLoading] = useState(true);
 
   const fetchPurchaseOrder = async () => {
     try {
+      setLoading(true);
       const response = await getWorkOrderById(srNo);
       if (response) {
-        console.log("API Response:", response); // Debug log
+        console.log("API Response:", response);
 
-        // Create material requisition from main part data
         const mainPartMaterialRequisition = {
           srNo: 101,
           description: response.data?.partDescription || "",
           partNo: response.data?.partNo || "",
-          // snbn: response.data?.batchNo || "",
           qty: response.data?.quantity || "",
           remarks: response.data?.remark || "",
         };
 
-        // Get fresh initial state to avoid stale closure
         const initialState = getInitialFormState();
 
-        // Map response data to match the new field names
         const formattedData = {
-          ...initialState, // Use fresh initial state instead of stale 'form'
+          ...initialState,
           customerName: response.data?.customerName || "",
           repairOrderNo: String(response.orderNo || response.data?.roNo || ""),
           description: response.data?.partDescription || "",
           partNumber: response.data?.partNo || "",
           qty: response.data.quantity || "",
-          // Ensure workOrderSteps are preserved from initial state
           workOrderSteps:
             response.data?.workOrderSteps ||
             response.data?.workDetails ||
             initialState.workOrderSteps,
-          // Sync main part data to materialRequisitions
           materialRequisitions: response.data?.materialRequisitions ||
             response.data?.partsUsed || [mainPartMaterialRequisition],
-          // Map other fields with proper fallbacks
           issueDate:
             response.data?.roDate || response.data?.roReceiveDate || "",
           cmmRefNo: response.data?.cmmRefNo || "",
-          // snBn: response.data?.batchNo || "",
           revNo: response.data?.revisionNo || response.data?.revNo || "",
-          // workshopManagerRemarks: response.data?.remark || "",
-          // issuedBy: response.data?.makerUserName || "",
           certifyingStaffhours: sessionStorage.getItem("username") || "",
           technician: response.data?.technician || "",
           totalManHour: response.data?.totalManHour || "",
@@ -189,18 +175,23 @@ const AddWorkorder = () => {
           workshopManagerSignDate: response.data?.workshopManagerSignDate || "",
         };
 
-        console.log("Formatted Data:", formattedData); // Debug log
+        console.log("Formatted Data:", formattedData);
         setForm(formattedData);
+        toast.success("Work Order data loaded successfully!");
       }
     } catch (error) {
       console.error("Error fetching Purchase order details:", error);
-      alert("Error fetching Purchase order details.");
+      toast.error("Error fetching Purchase order details.");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (srNo) {
       fetchPurchaseOrder();
+    } else {
+      setLoading(false);
     }
   }, [srNo]);
 
@@ -240,7 +231,6 @@ const AddWorkorder = () => {
     });
   };
 
-  // Helper function to validate each field
   const validateField = (fieldName, value, rules) => {
     if (!value) return `${fieldName} is required.`;
 
@@ -256,10 +246,9 @@ const AddWorkorder = () => {
       return `${fieldName} has invalid characters.`;
     }
 
-    return null; // No error
+    return null;
   };
 
-  // Updated validation rules to match new field names
   const validationRules = {
     repairOrderNo: {
       length: 20,
@@ -283,12 +272,8 @@ const AddWorkorder = () => {
     },
     cmmRefNo: {
       length: 50,
-      regex: /^[a-zA-Z0-9\s\-/._]*$/, // Added hyphen, slash, dot, underscore
+      regex: /^[a-zA-Z0-9\s\-/._]*$/,
     },
-    // snBn: {
-    //   length: 50,
-    //   regex: /^[a-zA-Z0-9\s]*$/,
-    // },
     revNo: {
       type: "text",
       length: 50,
@@ -297,12 +282,7 @@ const AddWorkorder = () => {
     certifyingStaffhours: {
       type: "text",
       length: 50,
-      // regex: /^[a-zA-Z\s]*$/,
     },
-    // workshopManagerRemarks: {
-    //   length: 500,
-    //   regex: /^[a-zA-Z0-9\s]*$/,
-    // },
     issuedBy: {
       length: 50,
       regex: /^[a-zA-Z\s]*$/,
@@ -312,18 +292,13 @@ const AddWorkorder = () => {
   const validateDataType = (event, dataType) => {
     let value = event.target.value;
     if (dataType === "A") {
-      value = value.replace(/[^a-zA-Z0-9 \-\/._]/g, ""); // Allow hyphen, slash, dot, underscore
-      event.target.classList.add("is-valid");
+      value = value.replace(/[^a-zA-Z0-9 \-\/._]/g, "");
     } else if (dataType === "N") {
       value = value.replace(/[^0-9]/g, "");
-      event.target.classList.add("is-valid");
     } else if (dataType === "ANS") {
       value = value.replace(/[^a-zA-Z0-9@.]/g, "");
-      event.target.classList.add("is-valid");
     } else if (dataType === "REF") {
-      // New type for reference numbers
-      value = value.replace(/[^a-zA-Z0-9 \-/._]/g, ""); // Removed unnecessary escape from /
-      event.target.classList.add("is-valid");
+      value = value.replace(/[^a-zA-Z0-9 \-/._]/g, "");
     }
     event.target.value = value;
   };
@@ -331,49 +306,35 @@ const AddWorkorder = () => {
   function validateLen(event, minLen, maxLen) {
     let value = event.target.value.substring(0, maxLen);
     event.target.value = value;
-    let elementLen = value.length;
-    if (elementLen > maxLen) {
-      event.target.classList.remove("is-valid");
-      event.target.classList.add("is-invalid");
-    } else if (elementLen < minLen) {
-      event.target.classList.remove("is-valid");
-      event.target.classList.add("is-invalid");
-    } else {
-      event.target.classList.add("is-valid");
-      event.target.classList.remove("is-invalid");
-    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Iterate through each field and validate
     for (const [field, rules] of Object.entries(validationRules)) {
       const error = validateField(field, form[field], rules);
       if (error) {
-        alert(error);
+        toast.error(error);
         return;
       }
     }
 
-    // Create the payload with proper structure
     const payload = {
       cmmRevDate: form.cmmRevDate,
       issueDate: form.issueDate,
       customerName: form.customerName,
       repairOrderNo: form.repairOrderNo,
       partNumber: form.partNumber,
-      qty: parseInt(form.qty) || 0, // Ensure it's a number
+      qty: parseInt(form.qty) || 0,
       description: form.description,
       cmmRefNo: form.cmmRefNo,
       revNo: form.revNo,
-      // workshopManagerRemarks: form.workshopManagerRemarks,
       issuedBy: form.issuedBy,
       certifyingStaffhours: form.certifyingStaffhours,
       technician: form.technician,
       totalManHour: form.totalManHour,
       actionTaken: form.actionTaken,
-      toolsUsed: form.toolsTextBox1 || "", // Map toolsTextBox1 to toolsUsed
+      toolsUsed: form.toolsTextBox1 || "",
       qualityManagerSignDate: form.qualityManagerSignDate,
       workshopManagerSignDate: form.workshopManagerSignDate,
       snBn: SerialNumber,
@@ -389,19 +350,17 @@ const AddWorkorder = () => {
         description: material.description,
         partNo: material.partNo,
         snbn: SerialNumber,
-        qty: parseInt(material.qty) || 0, // Ensure it's a number
+        qty: parseInt(material.qty) || 0,
         remarks: material.remarks,
       })),
     };
 
-    // Log the payload for debugging
     console.log("Payload being sent:", JSON.stringify(payload, null, 2));
 
-    // If all validation passes, proceed with submitting
     try {
       const response = AddWorkOrder(payload);
       if (!response) {
-        alert("Failed to add work order.");
+        toast.error("Failed to add work order.");
       } else {
         console.log("Work order added successfully:", response);
         toast.success("Work Order Added Successfully!");
@@ -410,572 +369,522 @@ const AddWorkorder = () => {
           window.location.reload();
         }, 2000);
       }
-      // Reset the form after successful submission
-      // setForm(getInitialFormState());
     } catch (error) {
       console.error("Error adding work order:", error);
-      alert("Failed to add work order.");
+      toast.error("Failed to add work order.");
     }
   };
 
-  // Add safety check for rendering
+  if (loading) {
+    return (
+      <div className={styles.wrapper}>
+        <Sidebar />
+        <div className={styles.content}>
+          <Header />
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <h5>Loading Work Order Data...</h5>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!form.workOrderSteps || !Array.isArray(form.workOrderSteps)) {
-    return <div>Loading...</div>;
+    return (
+      <div className={styles.wrapper}>
+        <Sidebar />
+        <div className={styles.content}>
+          <Header />
+          <div className={styles.mainContent}>
+            <div className={styles.errorAlert}>
+              <i className="fa fa-exclamation-triangle"></i>
+              <span>Error loading work order data. Please try again.</span>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Add Work Order" isBack={true} />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Add Work Order</span>
+            </div>
+          </div>
 
-          <div className="my-2 p-2">
-            <div className="container-fluid">
-              <div
-                className="row mx-1 card border border-dark shadow-lg py-2"
-                style={{ minHeight: "800px" }}
-              >
-                <div className="col-md-12">
-                  <form onSubmit={handleSubmit} style={{ height: "100%" }}>
-                    {/* First Row */}
-                    <div className="col-md-12 p-2 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Repair Order</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="repairOrderNo"
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                            validateLen(event, 1, 50);
-                          }}
-                          value={form.repairOrderNo}
-                          onChange={handleChange}
-                          placeholder="Auto Generated"
-                          required
-                          disabled
-                        />
-                      </div>
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form onSubmit={handleSubmit}>
+                  {/* Basic Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-info-circle"></i>
+                    <span>Basic Information</span>
+                    <span className={styles.readOnlyBadge}>Read Only</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Repair Order <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="repairOrderNo"
+                        onInput={(event) => {
+                          validateDataType(event, "A");
+                          validateLen(event, 1, 50);
+                        }}
+                        value={form.repairOrderNo}
+                        onChange={handleChange}
+                        placeholder="Auto Generated"
+                        disabled
+                      />
                     </div>
-
-                    {/* Second Row */}
-                    <div className="col-md-12 p-2 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-1">Customer Name</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="customerName"
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                            validateLen(event, 1, 200);
-                          }}
-                          value={form.customerName}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Part Number</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="partNumber"
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                            validateLen(event, 1, 50);
-                          }}
-                          value={form.partNumber}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                    </div>
-
-                    <hr className="mx-0 my-2 p-0 border" />
-
-                    {/* Description Row */}
-                    <div className="col-md-12 p-3 d-flex">
-                      <label className="col-md-2 mt-2">Description</label>
-                      <textarea
-                        className="form-control w-100"
-                        name="description"
-                        value={form.description}
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Customer Name <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="customerName"
                         onInput={(event) => {
                           validateDataType(event, "A");
                           validateLen(event, 1, 200);
                         }}
+                        value={form.customerName}
                         onChange={handleChange}
-                        style={{ height: "70px" }}
-                        required
                         disabled
-                      ></textarea>
+                      />
                     </div>
+                  </div>
 
-                    {/* Third Row */}
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-1 d-flex">
-                        <label className="col-md-4 mt-2">Quantity</label>
-                        <input
-                          className="form-control w-100"
-                          type="number"
-                          name="qty"
-                          onInput={(event) => {
-                            validateLen(event, 1, 20);
-                          }}
-                          value={form.qty}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 d-flex">
-                        <label className="col-md-4 mt-2">CMM Ref No</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="cmmRefNo"
-                          onInput={(event) => {
-                            validateDataType(event, "REF"); // Use new REF type
-                            validateLen(event, 1, 50);
-                          }}
-                          value={form.cmmRefNo}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                    </div>
-
-                    {/* Fourth Row */}
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Serial Number</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="snBn"
-                          value={SerialNumber}
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                            validateLen(event, 1, 50);
-                          }}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Revision No *</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="revNo"
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                            validateLen(event, 1, 50);
-                          }}
-                          value={form.revNo}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">CMM Rev Date *</label>
-                        <input
-                          className="form-control w-100"
-                          type="date"
-                          name="cmmRevDate"
-                          value={form.cmmRevDate}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                    {/* Fifth Row */}
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Issue Date</label>
-                        <input
-                          className="form-control w-100"
-                          type="date"
-                          name="issueDate"
-                          value={form.issueDate}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">
-                          Certifying Staff
-                        </label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="certifyingStaffhours"
-                          value={form.certifyingStaffhours}
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                            validateLen(event, 1, 50);
-                          }}
-                          disabled
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    {/* Additional Fields Row */}
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Technician *</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="technician"
-                          value={form.technician}
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                            validateLen(event, 1, 50);
-                          }}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Total Man Hour *</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="totalManHour"
-                          value={form.totalManHour}
-                          onChange={handleChange}
-                          onInput={(event) => {
-                            validateDataType(event, "A"); // 👈 allow only alphanumeric
-                            validateLen(event, 1, 10); // 👈 optional: set min/max length
-                          }}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    {/* Remarks Row */}
-                    {/* <div className="col-md-12 p-3 d-flex">
-                      <label className="col-md-2 mt-2">
-                        Workshop Manager Remarks
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Number <span className={styles.required}>*</span>
                       </label>
-                      <textarea
-                        className="form-control w-100"
-                        name="workshopManagerRemarks"
-                        value={form.workshopManagerRemarks}
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="partNumber"
                         onInput={(event) => {
                           validateDataType(event, "A");
-                          validateLen(event, 1, 500);
+                          validateLen(event, 1, 50);
+                        }}
+                        value={form.partNumber}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Quantity <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        className={styles.input}
+                        name="qty"
+                        onInput={(event) => validateLen(event, 1, 20)}
+                        value={form.qty}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      Description <span className={styles.required}>*</span>
+                    </label>
+                    <textarea
+                      className={styles.textarea}
+                      name="description"
+                      value={form.description}
+                      onInput={(event) => {
+                        validateDataType(event, "A");
+                        validateLen(event, 1, 200);
+                      }}
+                      onChange={handleChange}
+                      rows="3"
+                      disabled
+                    />
+                  </div>
+
+                  {/* Technical Details Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-cogs"></i>
+                    <span>Technical Details</span>
+                    <span className={styles.mixedBadge}>Mixed</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        CMM Ref No <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="cmmRefNo"
+                        onInput={(event) => {
+                          validateDataType(event, "REF");
+                          validateLen(event, 1, 50);
+                        }}
+                        value={form.cmmRefNo}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Serial Number <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="snBn"
+                        value={SerialNumber}
+                        onInput={(event) => {
+                          validateDataType(event, "A");
+                          validateLen(event, 1, 50);
                         }}
                         onChange={handleChange}
-                        style={{ height: "60px" }}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Revision No <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="revNo"
+                        onInput={(event) => {
+                          validateDataType(event, "A");
+                          validateLen(event, 1, 50);
+                        }}
+                        value={form.revNo}
+                        onChange={handleChange}
+                        placeholder="Enter revision number"
                         required
-                      ></textarea>
-                    </div> */}
-
-                    {/* Last Row */}
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Issued By *</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="issuedBy"
-                          value={form.issuedBy}
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                            validateLen(event, 1, 50);
-                          }}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Action Taken *</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="actionTaken"
-                          value={form.actionTaken}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
+                      />
                     </div>
-
-                    {/* Work Order Steps Section */}
-                    {/* <hr className="mx-0 my-2 p-0 border" /> */}
-                    {/* <div className="col-md-12 p-2">
-                      <h6 className="mb-3">Work Order Steps</h6>
-                      <div className="table-responsive">
-                        <table className="table table-bordered table-sm">
-                          <thead className="table-light">
-                            <tr>
-                              <th style={{ width: "5%" }}>Step No</th>
-                              <th style={{ width: "50%" }}>
-                                Detail of work done
-                              </th>
-                              <th style={{ width: "15%" }}>Technician Sign</th>
-                              <th style={{ width: "15%" }}>
-                                Certifying Staff Sign
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {form.workOrderSteps.map((step, index) => (
-                              <tr key={index}>
-                                <td className="text-center">{step.stepNo}</td>
-                                <td>
-                                  <textarea
-                                    className="form-control form-control-sm"
-                                    style={{
-                                      height:
-                                        step.stepNo === 1 ? "120px" : "60px",
-                                      fontSize: "12px",
-                                    }}
-                                    value={step.detailOfWorkDone}
-                                    onChange={(e) =>
-                                      handleWorkOrderStepChange(
-                                        index,
-                                        "detailOfWorkDone",
-                                        e.target.value
-                                      )
-                                    }
-                                    readOnly={step.stepNo !== 12}
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    type="text"
-                                    className="form-control form-control-sm"
-                                    placeholder="Text box"
-                                    value={step.technicianSign}
-                                    onChange={(e) =>
-                                      handleWorkOrderStepChange(
-                                        index,
-                                        "technicianSign",
-                                        e.target.value
-                                      )
-                                    }
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    type="text"
-                                    className="form-control form-control-sm"
-                                    placeholder="Text box"
-                                    value={step.certifyingStaffSign}
-                                    onChange={(e) =>
-                                      handleWorkOrderStepChange(
-                                        index,
-                                        "certifyingStaffSign",
-                                        e.target.value
-                                      )
-                                    }
-                                  />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div> */}
-
-                    {/* Signature Dates Section */}
-                    <hr className="mx-0 my-2 p-0 border" />
-                    <div className="col-md-12 p-2">
-                      <div className="row">
-                        <div className="col-md-6">
-                          <label className="form-label">
-                            Quality Manager Sign Date *
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            name="qualityManagerSignDate"
-                            value={form.qualityManagerSignDate}
-                            onChange={handleChange}
-                          />
-                        </div>
-                        <div className="col-md-6">
-                          <label className="form-label">
-                            Workshop Manager Sign Date *
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            name="workshopManagerSignDate"
-                            value={form.workshopManagerSignDate}
-                            onChange={handleChange}
-                          />
-                        </div>
-                      </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        CMM Rev Date <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="cmmRevDate"
+                        value={form.cmmRevDate}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
+                  </div>
 
-                    {/* Material Requisitions Section */}
-                    <hr className="mx-0 my-2 p-0 border" />
-                    <div className="col-md-12 p-2">
-                      {/* <div className="d-flex justify-content-between align-items-center mb-2">
-                        <h6>Material Requisitions</h6>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-success"
-                          onClick={addMaterialRequisitionRow}
-                        >
-                          Add Row
-                        </button>
-                      </div> */}
-                      <div className="table-responsive">
-                        <table className="table table-bordered table-sm">
-                          <thead className="table-light">
-                            <tr>
-                              <th style={{ width: "5%" }}>Sr.No</th>
-                              <th style={{ width: "30%" }}>Description</th>
-                              <th style={{ width: "20%" }}>Part No</th>
-                              <th style={{ width: "15%" }}>Serial Number</th>
-                              <th style={{ width: "10%" }}>Qty</th>
-                              <th style={{ width: "15%" }}>Remarks</th>
-                              {/* <th style={{ width: "5%" }}>Action</th> */}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {form.materialRequisitions.map(
-                              (material, index) => (
-                                <tr key={index}>
-                                  <td className="text-center">
-                                    {material.srNo}
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      className="form-control form-control-sm"
-                                      value={material.description}
-                                      disabled
-                                      onChange={(e) =>
-                                        handleMaterialRequisitionChange(
-                                          index,
-                                          "description",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      className="form-control form-control-sm"
-                                      value={material.partNo}
-                                      disabled
-                                      onChange={(e) =>
-                                        handleMaterialRequisitionChange(
-                                          index,
-                                          "partNo",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      className="form-control form-control-sm"
-                                      value={SerialNumber}
-                                      disabled
-                                      onChange={(e) =>
-                                        handleMaterialRequisitionChange(
-                                          index,
-                                          "snbn",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      className="form-control form-control-sm"
-                                      value={material.qty}
-                                      disabled
-                                      onChange={(e) =>
-                                        handleMaterialRequisitionChange(
-                                          index,
-                                          "qty",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="text"
-                                      className="form-control form-control-sm"
-                                      value={material.remarks}
-                                      onChange={(e) =>
-                                        handleMaterialRequisitionChange(
-                                          index,
-                                          "remarks",
-                                          e.target.value
-                                        )
-                                      }
-                                    />
-                                  </td>
-                                  {/* <td>
-                                    {form.materialRequisitions.length > 1 && (
-                                      <button
-                                        type="button"
-                                        className="btn btn-sm btn-danger"
-                                        onClick={() =>
-                                          removeMaterialRequisitionRow(index)
-                                        }
-                                      >
-                                        ×
-                                      </button>
-                                    )}
-                                  </td> */}
-                                </tr>
-                              )
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                  {/* Personnel & Scheduling Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-users"></i>
+                    <span>Personnel & Scheduling</span>
+                    <span className={styles.editableBadge}>Editable</span>
+                  </div>
 
-                    {/* Tools Section */}
-                    <hr className="mx-0 my-2 p-0 border" />
-                    <div className="col-md-12 p-2">
-                      <div className="row">
-                        <div className="col-md-4">
-                          <label className="form-label">Tools Used</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            name="toolsTextBox1"
-                            value={form.toolsTextBox1}
-                            onChange={handleChange}
-                          />
-                        </div>
-                      </div>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Issue Date <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="issueDate"
+                        value={form.issueDate}
+                        onChange={handleChange}
+                        disabled
+                      />
                     </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Certifying Staff <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="certifyingStaffhours"
+                        value={form.certifyingStaffhours}
+                        onInput={(event) => {
+                          validateDataType(event, "A");
+                          validateLen(event, 1, 50);
+                        }}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                  </div>
 
-                    <div className="col-md-12 text-end m-1 p-4 text-right">
-                      <button type="submit" className="btn btn-primary">
-                        Add Work Order
-                      </button>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Technician <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="technician"
+                        value={form.technician}
+                        onInput={(event) => {
+                          validateDataType(event, "A");
+                          validateLen(event, 1, 50);
+                        }}
+                        onChange={handleChange}
+                        placeholder="Enter technician name"
+                        required
+                      />
                     </div>
-                  </form>
-                </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Total Man Hour <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="totalManHour"
+                        value={form.totalManHour}
+                        onChange={handleChange}
+                        onInput={(event) => {
+                          validateDataType(event, "A");
+                          validateLen(event, 1, 10);
+                        }}
+                        placeholder="Enter total hours"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Issued By <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="issuedBy"
+                        value={form.issuedBy}
+                        onInput={(event) => {
+                          validateDataType(event, "A");
+                          validateLen(event, 1, 50);
+                        }}
+                        onChange={handleChange}
+                        placeholder="Enter issuer name"
+                        required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Action Taken <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="actionTaken"
+                        value={form.actionTaken}
+                        onChange={handleChange}
+                        placeholder="Enter action taken"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Signature Dates Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-pen"></i>
+                    <span>Signatures</span>
+                    <span className={styles.editableBadge}>Editable</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Quality Manager Sign Date <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="qualityManagerSignDate"
+                        value={form.qualityManagerSignDate}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Workshop Manager Sign Date <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="workshopManagerSignDate"
+                        value={form.workshopManagerSignDate}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Material Requisitions Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-boxes"></i>
+                    <span>Material Requisitions</span>
+                    <span className={styles.mixedBadge}>Mixed</span>
+                  </div>
+
+                  <div className={styles.tableContainer}>
+                    <table className={styles.table}>
+                      <thead>
+                        <tr>
+                          <th>Sr.No</th>
+                          <th>Description</th>
+                          <th>Part No</th>
+                          <th>Serial Number</th>
+                          <th>Qty</th>
+                          <th>Remarks</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {form.materialRequisitions.map((material, index) => (
+                          <tr key={index}>
+                            <td className={styles.centerText}>{material.srNo}</td>
+                            <td>
+                              <input
+                                type="text"
+                                className={styles.tableInput}
+                                value={material.description}
+                                disabled
+                                onChange={(e) =>
+                                  handleMaterialRequisitionChange(
+                                    index,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className={styles.tableInput}
+                                value={material.partNo}
+                                disabled
+                                onChange={(e) =>
+                                  handleMaterialRequisitionChange(
+                                    index,
+                                    "partNo",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className={styles.tableInput}
+                                value={SerialNumber}
+                                disabled
+                                onChange={(e) =>
+                                  handleMaterialRequisitionChange(
+                                    index,
+                                    "snbn",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                className={styles.tableInput}
+                                value={material.qty}
+                                disabled
+                                onChange={(e) =>
+                                  handleMaterialRequisitionChange(
+                                    index,
+                                    "qty",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className={styles.tableInput}
+                                value={material.remarks}
+                                onChange={(e) =>
+                                  handleMaterialRequisitionChange(
+                                    index,
+                                    "remarks",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="Enter remarks"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Tools Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-wrench"></i>
+                    <span>Tools Used</span>
+                    <span className={styles.editableBadge}>Editable</span>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>Tools Used</label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      name="toolsTextBox1"
+                      value={form.toolsTextBox1}
+                      onChange={handleChange}
+                      placeholder="Enter tools used"
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className={styles.formActions}>
+                    <button type="submit" className={styles.btnSubmit}>
+                      <i className="fa fa-plus-circle"></i>
+                      <span>Add Work Order</span>
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

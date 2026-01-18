@@ -11,10 +11,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { toast } from "react-toastify";
+import styles from "./ProductList.module.css";
 
 const ProductList = () => {
   // State
-  const [tableData, setTableData] = useState([]); // Product data
+  const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -23,7 +24,7 @@ const ProductList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [quantityMap, setQuantityMap] = useState({}); // Map to store product name -> quantity
+  const [quantityMap, setQuantityMap] = useState({});
   const userRole = sessionStorage.getItem("role");
 
   const navigate = useNavigate();
@@ -37,21 +38,21 @@ const ProductList = () => {
     switch (upperType) {
       case "BOTH":
         return (
-          <span style={{ fontSize: "1.2rem" }}>
-            <i className="fa fa-arrow-down text-danger me-1" title="Down"></i>
-            <i className="fa fa-arrow-up text-success" title="Up"></i>
+          <span className={styles.mappingBoth}>
+            <i className="fa fa-arrow-down" title="Down"></i>
+            <i className="fa fa-arrow-up" title="Up"></i>
           </span>
         );
       case "UP":
         return (
-          <span style={{ fontSize: "1.2rem" }}>
-            <i className="fa fa-arrow-up text-success" title="Up"></i>
+          <span className={styles.mappingUp}>
+            <i className="fa fa-arrow-up" title="Up"></i>
           </span>
         );
       case "DOWN":
         return (
-          <span style={{ fontSize: "1.2rem" }}>
-            <i className="fa fa-arrow-down text-danger" title="Down"></i>
+          <span className={styles.mappingDown}>
+            <i className="fa fa-arrow-down" title="Down"></i>
           </span>
         );
       default:
@@ -64,23 +65,17 @@ const ProductList = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch part numbers and descriptions first to build quantity map
         const partData = await fetchPartNumbersAndDescriptions();
-        console.log("Fetched part numbers:", partData);
         
-        // Create a map of product names to their quantities
         const qtyMap = {};
         if (partData && Array.isArray(partData)) {
           partData.forEach((item) => {
-            // Map main product name to its quantity
             if (item.productName) {
               qtyMap[item.productName] = item.quantity || 0;
             }
-            // Map alternate product 1 to its quantity
             if (item.alternateProduct1) {
               qtyMap[item.alternateProduct1] = item.alternateQuantity1 || 0;
             }
-            // Map alternate product 2 to its quantity
             if (item.alternateProduct2) {
               qtyMap[item.alternateProduct2] = item.alternateQuantity2 || 0;
             }
@@ -88,10 +83,9 @@ const ProductList = () => {
         }
         setQuantityMap(qtyMap);
 
-        // Then fetch all products
         const response = await listAllProduct();
         if (response && response.data) {
-          setTableData(response.data); // Update state with response data
+          setTableData(response.data);
         }
       } catch (error) {
         console.error("Error fetching products", error);
@@ -137,13 +131,12 @@ const ProductList = () => {
 
   // Search and Date Range Filter
   const filteredData = tableData.filter((product) => {
-    // Search filter
     const matchesSearch = Object.values(product).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
-    // Date filter
+    
     let matchesDate = true;
     if (startDate) {
       matchesDate =
@@ -202,9 +195,9 @@ const ProductList = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${currentPage === i ? styles.active : ''}`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -218,196 +211,149 @@ const ProductList = () => {
   const columns = [
     { field: "productId", label: "ID", width: "60px" },
     { field: "productName", label: "Part Number", width: "180px" },
-    { field: "alternateProduct1", label: "Alternate Part Number 1", width: "150px" },
-    { field: "alternateProduct2", label: "Alternate Part Number 2", width: "150px" },
+    { field: "alternateProduct1", label: "Alternate Part 1", width: "150px" },
+    { field: "alternateProduct2", label: "Alternate Part 2", width: "150px" },
     { field: "mappingType", label: "Interchangeability", width: "190px" },
-    {
-      field: "materialClassification",
-      label: "Material Classification",
-      width: "150px",
-    },
+    { field: "materialClassification", label: "Material Classification", width: "150px" },
     { field: "productDescription", label: "Description", width: "150px" },
     { field: "unitOfMeasurement", label: "UOM", width: "80px" },
     { field: "oem", label: "OEM", width: "100px" },
     { field: "nha", label: "NHA", width: "100px" },
-    {
-      field: "cmmReferenceNumber",
-      label: "CMM Reference Number",
-      width: "150px",
-    },
+    { field: "cmmReferenceNumber", label: "CMM Ref Number", width: "150px" },
     { field: "registrationDate", label: "Date", width: "100px" },
     { field: "registeredBy", label: "Registered By", width: "120px" },
   ];
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Product" />
+        <div className={styles.mainContent}>
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-list"></i>
+              <span className={styles.breadcrumbLabel}>View Products</span>
+            </div>
+            {/* <button 
+              className={styles.addButton}
+              onClick={() => navigate("/addProduct")}
+            >
+              <i className="fa fa-plus"></i>
+              <span>Add New Product</span>
+            </button> */}
+          </div>
 
-          <div className="card border-0 shadow-lg mx-4 my-4 rounded-3">
-            <div className="card-body">
-              {/* Date Range Filter */}
-              <div className="row mb-3">
-                <div className="col-md-3">
-                  <label className="form-label fw-light">Start Date</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={startDate}
-                    onChange={(e) => {
-                      setStartDate(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div>
-                <div className="col-md-3">
-                  <label className="form-label fw-light">End Date</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={endDate}
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Filters Section */}
+              <div className={styles.filtersRow}>
+                <div className={styles.dateFilters}>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Start Date</label>
                     <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search products..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      type="date"
+                      className={styles.dateInput}
+                      value={startDate}
+                      onChange={(e) => {
+                        setStartDate(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                    />
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>End Date</label>
+                    <input
+                      type="date"
+                      className={styles.dateInput}
+                      value={endDate}
+                      onChange={(e) => {
+                        setEndDate(e.target.value);
+                        setCurrentPage(1);
+                      }}
                     />
                   </div>
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+              </div>
+
+              {/* Search and Entries */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-light">
+                      <tr>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${sortDirection === "asc" ? "up" : "down"
-                                    } text-primary`}
+                                  className={`fa fa-sort-${sortDirection === "asc" ? "up" : "down"} ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
-                                <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
-                                ></i>
+                                <i className={`fa fa-sort ${styles.sortIcon}`}></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
+                        <th className={styles.actionsHeader}>
+                          <div className={styles.thContent}>
+                            <span>ACTIONS</span>
+                          </div>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
                         currentItems.map((product, index) => (
-                          <tr
-                            key={product.productId}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
-                          >
+                          <tr key={product.productId} style={{ animationDelay: `${index * 0.02}s` }}>
                             {columns.map((column) => {
                               let displayValue = product[column.field];
 
-                              // Add quantity next to product and alternate product names
-                              if (["productName", "alternateProduct1", "alternateProduct2"].includes(column.field)) {
-                                // Get quantity from the quantityMap based on the product name
-                                const qty = displayValue ? (quantityMap[displayValue] ?? 0) : 0;
-                                displayValue = displayValue ? `${displayValue}` : "";// → ${qty}
-                              }
-
-                              // Render mapping type with arrows
                               if (column.field === "mappingType") {
                                 return (
-                                  <td
-                                    key={`${product.productId}-${column.field}`}
-                                    className="text-center py-3"
-                                    style={{
-                                      maxWidth: "150px",
-                                    }}
-                                  >
+                                  <td key={`${product.productId}-${column.field}`} className={styles.mappingCell}>
                                     {renderMappingType(displayValue)}
                                   </td>
                                 );
@@ -416,24 +362,17 @@ const ProductList = () => {
                               return (
                                 <td
                                   key={`${product.productId}-${column.field}`}
-                                  className="text-nowrap py-3"
-                                  style={{
-                                    maxWidth: "150px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                  }}
                                   title={displayValue}
                                 >
                                   {displayValue}
                                 </td>
                               );
                             })}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
                                 {userRole === "Admin" && (
                                   <button
-                                    className="btn btn-sm btn-outline-primary"
+                                    className={styles.btnEdit}
                                     onClick={() => handleEdit(product.productId)}
                                     title="Edit"
                                   >
@@ -441,10 +380,8 @@ const ProductList = () => {
                                   </button>
                                 )}
                                 <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() =>
-                                    handleDelete(product.productId)
-                                  }
+                                  className={styles.btnDelete}
+                                  onClick={() => handleDelete(product.productId)}
                                   title="Delete"
                                 >
                                   <i className="fa-solid fa-trash"></i>
@@ -455,21 +392,16 @@ const ProductList = () => {
                         ))
                       ) : (
                         <tr>
-                          <td
-                            colSpan={columns.length + 1}
-                            className="text-center py-5"
-                          >
+                          <td colSpan={columns.length + 1} className={styles.noData}>
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No data available</p>
                               </div>
                             )}
                           </td>
@@ -480,83 +412,57 @@ const ProductList = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>{Math.min(indexOfLastItem, sortedData.length)}</strong> of{" "}
+                  <strong>{sortedData.length}</strong> entries
+                  {searchTerm && ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${currentPage === 1 ? "disabled" : ""
-                          }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${currentPage === 1 ? "disabled" : ""
-                          }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
-                          }`}
+                    <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
-                          }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>

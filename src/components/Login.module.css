@@ -1,4 +1,4 @@
-/* Login.module.css - Optimized Version for Better Fit */
+/* Login.module.css - Optimized Version with Fainter Backgrounds */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 .loginPage {
@@ -9,6 +9,7 @@
   font-family: 'Poppins', sans-serif;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(135deg, #8ec0f5 0%, #404f5c 100%)
 }
 
 /* Background Slider */
@@ -30,14 +31,13 @@
   object-fit: cover;
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
-  filter: brightness(0.8);
 }
 
 .slideImage.active {
-  opacity: 1;
+  opacity: 0.15;
 }
 
-/* Animated Gradient Overlay - More Interactive */
+/* Animated Gradient Overlay - Fainter Colors */
 .overlay {
   position: fixed;
   top: 0;
@@ -46,11 +46,11 @@
   height: 100%;
   background: linear-gradient(
     45deg,
-    rgba(67, 97, 238, 0.6) 0%,
-    rgba(76, 201, 240, 0.5) 25%,
-    rgba(139, 92, 246, 0.5) 50%,
-    rgba(236, 72, 153, 0.5) 75%,
-    rgba(67, 97, 238, 0.6) 100%
+    rgba(67, 97, 238, 0.08) 0%,
+    rgba(76, 201, 240, 0.06) 25%,
+    rgba(139, 92, 246, 0.07) 50%,
+    rgba(236, 72, 153, 0.06) 75%,
+    rgba(67, 97, 238, 0.08) 100%
   );
   background-size: 400% 400%;
   z-index: 1;
@@ -69,7 +69,7 @@
   }
 }
 
-/* Animated Grid Pattern */
+/* Animated Grid Pattern - Lighter */
 .overlay::before {
   content: '';
   position: absolute;
@@ -78,8 +78,8 @@
   width: 100%;
   height: 100%;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(67, 97, 238, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(67, 97, 238, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: gridMove 20s linear infinite;
 }
@@ -93,7 +93,7 @@
   }
 }
 
-/* Light particles effect */
+/* Light particles effect - Softer */
 .particles {
   position: fixed;
   top: 0;
@@ -107,9 +107,9 @@
 
 .particle {
   position: absolute;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(67, 97, 238, 0.2);
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(67, 97, 238, 0.15);
   animation: float 20s infinite ease-in-out;
 }
 
@@ -119,10 +119,10 @@
     opacity: 0;
   }
   10% {
-    opacity: 1;
+    opacity: 0.4;
   }
   90% {
-    opacity: 1;
+    opacity: 0.4;
   }
   100% {
     transform: translateY(-100vh) translateX(50px);
@@ -150,19 +150,19 @@
   opacity: 1;
 }
 
-/* Login Card - Optimized Size */
+/* Login Card - Lighter Glass Effect */
 .loginCard {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   width: 100%;
   max-width: 420px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(67, 97, 238, 0.15);
   transition: all 0.3s ease;
   position: relative;
   margin: auto;
@@ -178,7 +178,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.1),
+    rgba(67, 97, 238, 0.05),
     transparent
   );
   transition: left 0.5s ease;
@@ -190,25 +190,25 @@
 
 .loginCard:hover {
   box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
   transform: translateY(-5px);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(67, 97, 238, 0.25);
 }
 
-/* Header - Reduced Padding */
+/* Header - Softer Background */
 .header {
   background: linear-gradient(
     135deg,
-    rgba(67, 97, 238, 0.3) 0%,
-    rgba(76, 201, 240, 0.2) 100%
+    rgba(67, 97, 238, 0.08) 0%,
+    rgba(76, 201, 240, 0.06) 100%
   );
   backdrop-filter: blur(10px);
   padding: 1.5rem 1.5rem;
   text-align: center;
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(67, 97, 238, 0.12);
 }
 
 /* Animated background circles */
@@ -221,7 +221,7 @@
   height: 200%;
   background: radial-gradient(
     circle,
-    rgba(255, 255, 255, 0.08) 0%,
+    rgba(67, 97, 238, 0.04) 0%,
     transparent 70%
   );
   animation: rotate 25s linear infinite;
@@ -237,7 +237,7 @@
   background: linear-gradient(
     45deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.05) 50%,
+    rgba(67, 97, 238, 0.03) 50%,
     transparent 70%
   );
   background-size: 200% 200%;
@@ -278,22 +278,22 @@
   text-transform: uppercase;
 }
 
-/* Gradient Text Effect */
+/* Gradient Text Effect - Darker for Better Readability */
 .title span {
   background: linear-gradient(
     135deg,
-    #ffffff 0%,
-    #4cc9f0 25%,
-    #ffffff 50%,
-    #4361ee 75%,
-    #ffffff 100%
+    #2d3748 0%,
+    #4361ee 25%,
+    #2d3748 50%,
+    #4cc9f0 75%,
+    #2d3748 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: gradientText 3s ease infinite;
-  filter: drop-shadow(0 0 20px rgba(76, 201, 240, 0.5));
+  filter: drop-shadow(0 2px 4px rgba(67, 97, 238, 0.2));
 }
 
 @keyframes gradientText {
@@ -320,8 +320,8 @@
   height: 55px;
   background: radial-gradient(
     circle,
-    rgba(76, 201, 240, 0.4) 0%,
-    rgba(67, 97, 238, 0.2) 50%,
+    rgba(76, 201, 240, 0.15) 0%,
+    rgba(67, 97, 238, 0.1) 50%,
     transparent 70%
   );
   border-radius: 50%;
@@ -342,9 +342,9 @@
 .title img {
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8))
-          drop-shadow(0 0 30px rgba(76, 201, 240, 0.6));
+  filter: drop-shadow(0 2px 8px rgba(67, 97, 238, 0.25));
   animation: logoFloat 3s ease-in-out infinite;
+  border-radius: 8px;
 }
 
 @keyframes logoFloat {
@@ -352,17 +352,17 @@
     transform: translateY(0px) rotate(0deg);
   }
   25% {
-    transform: translateY(-5px) rotate(5deg);
+    transform: translateY(-5px) rotate(2deg);
   }
   75% {
-    transform: translateY(-5px) rotate(-5deg);
+    transform: translateY(-5px) rotate(-2deg);
   }
 }
 
-/* Body - Reduced Padding */
+/* Body - Lighter Background */
 .body {
   padding: 1.5rem 1.5rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 /* Form Group - Compact Spacing */
@@ -373,10 +373,10 @@
 .label {
   display: block;
   margin-bottom: 0.4rem;
-  color: #ffffff;
-  font-weight: 500;
+  color: #2d3748;
+  font-weight: 600;
   font-size: 0.9rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 /* Input Group */
@@ -389,7 +389,7 @@
 .inputIcon {
   position: absolute;
   left: 0.875rem;
-  color: rgba(9, 9, 9, 0.7);
+  color: #4a5568;
   display: flex;
   align-items: center;
   z-index: 1;
@@ -399,30 +399,30 @@
 .formInput {
   width: 100%;
   padding: 0.75rem 0.875rem 0.75rem 2.75rem;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(67, 97, 238, 0.2);
   border-radius: 10px;
   font-size: 0.95rem;
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.8);
+  color: #2d3748;
   font-family: 'Poppins', sans-serif;
 }
 
 .formInput::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(45, 55, 72, 0.5);
 }
 
 .formInput:focus {
   outline: none;
-  border-color: rgba(76, 201, 240, 0.6);
-  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(67, 97, 238, 0.5);
+  background: rgba(255, 255, 255, 0.95);
   box-shadow: 
-    0 0 0 3px rgba(76, 201, 240, 0.2),
-    0 0 20px rgba(76, 201, 240, 0.3);
+    0 0 0 3px rgba(67, 97, 238, 0.1),
+    0 0 20px rgba(67, 97, 238, 0.15);
 }
 
 .formInput:focus ~ .inputIcon {
-  color: #4cc9f0;
+  color: #4361ee;
   transform: scale(1.1);
 }
 
@@ -430,22 +430,23 @@ select.formInput {
   padding: 0.75rem 0.875rem;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232d3748' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.875rem center;
   padding-right: 2.5rem;
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 select.formInput option {
-  background: rgba(67, 97, 238, 0.95);
-  color: white;
+  background: #ffffff;
+  color: #2d3748;
 }
 
 /* Password Toggle */
 .passwordToggle {
   position: absolute;
   right: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #4a5568;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -454,7 +455,7 @@ select.formInput option {
 }
 
 .passwordToggle:hover {
-  color: #4cc9f0;
+  color: #4361ee;
   transform: scale(1.15);
 }
 
@@ -477,21 +478,28 @@ select.formInput option {
   width: 1rem;
   height: 1rem;
   cursor: pointer;
-  accent-color: #4cc9f0;
+  accent-color: #4361ee;
 }
 
 .rememberMe label {
-  color: rgba(255, 255, 255, 0.9);
+  color: #2d3748;
   font-size: 0.85rem;
   cursor: pointer;
   user-select: none;
+  font-weight: 500;
+}
+
+.forgotPassword {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .link {
-  color: #4cc9f0;
+  color: #4361ee;
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.3s ease;
   position: relative;
   white-space: nowrap;
@@ -504,8 +512,8 @@ select.formInput option {
   left: 0;
   width: 0;
   height: 2px;
-  background: #4cc9f0;
-  box-shadow: 0 0 10px #4cc9f0;
+  background: #4361ee;
+  box-shadow: 0 0 10px rgba(67, 97, 238, 0.3);
   transition: width 0.3s ease;
 }
 
@@ -514,8 +522,8 @@ select.formInput option {
 }
 
 .link:hover {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(76, 201, 240, 0.8);
+  color: #4cc9f0;
+  text-shadow: 0 0 10px rgba(76, 201, 240, 0.3);
 }
 
 /* Compact Login Button */
@@ -535,11 +543,11 @@ select.formInput option {
   justify-content: center;
   gap: 0.5rem;
   box-shadow: 
-    0 4px 15px rgba(67, 97, 238, 0.4),
-    0 0 20px rgba(76, 201, 240, 0.2);
+    0 4px 15px rgba(67, 97, 238, 0.25),
+    0 0 20px rgba(76, 201, 240, 0.1);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -567,8 +575,8 @@ select.formInput option {
 .loginButton:hover {
   transform: translateY(-2px);
   box-shadow: 
-    0 6px 20px rgba(67, 97, 238, 0.6),
-    0 0 30px rgba(76, 201, 240, 0.4);
+    0 6px 20px rgba(67, 97, 238, 0.35),
+    0 0 30px rgba(76, 201, 240, 0.2);
 }
 
 .loginButton:active {
@@ -602,14 +610,15 @@ select.formInput option {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 0.875rem;
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.1);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 10px;
-  color: #ffffff;
+  color: #dc2626;
   font-size: 0.85rem;
   margin-top: 0.875rem;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.1);
+  font-weight: 500;
 }
 
 .errorIcon {
@@ -625,16 +634,17 @@ select.formInput option {
 }
 
 .signupOption p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #4a5568;
   font-size: 0.85rem;
+  font-weight: 500;
 }
 
 /* Disabled Link with Coming Soon Badge */
 .linkDisabled {
-  color: rgba(76, 201, 240, 0.6);
+  color: rgba(67, 97, 238, 0.6);
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   position: relative;
   cursor: not-allowed;
   display: inline-flex;
@@ -644,7 +654,7 @@ select.formInput option {
 
 .comingSoonBadge {
   display: inline-block;
-  /* background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); */
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
   color: white;
   font-size: 0.65rem;
   font-weight: 600;
@@ -652,18 +662,18 @@ select.formInput option {
   border-radius: 12px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
   animation: pulse-badge 2s ease-in-out infinite;
 }
 
 @keyframes pulse-badge {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
   }
 }
 
@@ -685,18 +695,19 @@ select.formInput option {
   left: 0;
   right: 0;
   height: 1px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(67, 97, 238, 0.15);
 }
 
 .divider span {
   position: relative;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.8);
   padding: 0 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #4a5568;
   font-size: 0.8rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  font-weight: 500;
 }
 
 .comingSoonLabel {
@@ -709,7 +720,7 @@ select.formInput option {
   border-radius: 10px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
   animation: pulse-badge 2s ease-in-out infinite;
 }
 
@@ -723,8 +734,8 @@ select.formInput option {
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(67, 97, 238, 0.2);
+  background: rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -741,7 +752,7 @@ select.formInput option {
   height: 100%;
   background: radial-gradient(
     circle,
-    rgba(76, 201, 240, 0.3) 0%,
+    rgba(67, 97, 238, 0.15) 0%,
     transparent 70%
   );
   opacity: 0;
@@ -753,23 +764,23 @@ select.formInput option {
 }
 
 .socialButton:hover {
-  border-color: rgba(76, 201, 240, 0.5);
-  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(67, 97, 238, 0.4);
+  background: rgba(255, 255, 255, 0.9);
   transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(76, 201, 240, 0.3);
+  box-shadow: 0 4px 15px rgba(67, 97, 238, 0.2);
 }
 
 .socialIcon {
   width: 18px;
   height: 18px;
-  color: rgba(255, 255, 255, 0.8);
+  color: #4a5568;
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
 }
 
 .socialButton:hover .socialIcon {
-  color: #ffffff;
+  color: #4361ee;
   transform: scale(1.1);
 }
 
@@ -782,8 +793,8 @@ select.formInput option {
 
 .socialButton.disabled:hover {
   transform: none;
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(67, 97, 238, 0.2);
+  background: rgba(255, 255, 255, 0.6);
   box-shadow: none;
 }
 

@@ -5,9 +5,9 @@ import Sidebar from "./Sidebar";
 import { getViewCustomerOrderList } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { PrintInspectionReport } from "./PrintInspectionReport";
-import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
+import styles from "./ViewMaterialNote.module.css";
+
 const ViewCustomerOrder = () => {
   // State
   const [tableData, setTableData] = useState([]);
@@ -23,11 +23,12 @@ const ViewCustomerOrder = () => {
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
-  const [actionType, setActionType] = useState(""); // "accept" or "reject"
+  const [actionType, setActionType] = useState("");
   const [remark, setRemark] = useState("");
   const [reportData, setReportData] = useState();
 
   const navigate = useNavigate();
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -50,6 +51,7 @@ const ViewCustomerOrder = () => {
       setIsLoading(false);
     }
   };
+
   // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
@@ -114,9 +116,11 @@ const ViewCustomerOrder = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${
+            currentPage === i ? styles.active : ""
+          }`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -125,52 +129,6 @@ const ViewCustomerOrder = () => {
 
     return pageNumbers;
   };
-  // const handleCheckboxChange = (report) => {
-  //     // If the same checkbox is clicked again, deselect it
-  //     if (selectedItem === report.inspectionReportId) {
-  //       setSelectedItem("");
-  //     } else {
-  //       setSelectedItem(report.inspectionReportId);
-  //       setSelecteReportData(report);
-  //     }
-  //   };
-
-  // Modified: Handle select all - now it just clears selection
-  //   const handleSelectAll = () => {
-  //     if (selectAll) {
-  //       setSelectedItem("");
-  //     } else {
-  //       // Select the first item when clicking "select all"
-  //       if (currentItems.length > 0) {
-  //         const firstItemId = currentItems[0].formId;
-  //         setSelectedItem(firstItemId);
-  //       }
-  //     }
-  //     setSelectAll(!selectAll);
-  //   };
-  //   const handlePrintClick = (report) => {
-  //     // Store the report data
-  //     console.log("Report",report)
-  //     setReportData(report);
-
-  //     // Short delay to ensure React has updated the state and rendered the component
-  //     setTimeout(() => {
-  //       // Cache original body styles
-  //       const originalBodyStyle = document.body.style.cssText;
-
-  //       // Apply print-friendly styles to the body
-  //       document.body.style.margin = "0";
-  //       document.body.style.padding = "0";
-
-  //       // Print the document
-  //       window.print();
-
-  //       // Restore original body styles after printing dialog is closed
-  //       setTimeout(() => {
-  //         document.body.style.cssText = originalBodyStyle;
-  //       }, 100);
-  //     }, 500);
-  //   };
 
   // Column definitions for the table
   const columns = [
@@ -181,116 +139,95 @@ const ViewCustomerOrder = () => {
     { field: "customerName", label: "Customer Name", width: "100px" },
     { field: "partNo", label: "Part No.", width: "100px" },
     { field: "partDescription", label: "Part Desc", width: "100px" },
-    // { field: "quantity", label: "Quantity", width: "100px" },
     { field: "batchNo", label: "Part Serial Number", width: "100px" },
     { field: "backOrder", label: "Back Order", width: "100px" },
     { field: "status", label: "Status", width: "100px" },
-    // { field: "makerUserName", label: "Maker UserName", width: "100px" },
-    // { field: "makerDate", label: "Maker Date", width: "100px" },
-    // { field: "userRole", label: "Maker Role", width: "100px" },
   ];
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Customer Order" />
+        <div className={styles.mainContent}>
+          {/* Print View (Hidden) */}
           <div className="printView">
             <PrintInspectionReport dataMap={reportData} />
           </div>
 
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              styles.normalViewStyle,
-            ].join(" ")}
-          >
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search reports..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-shopping-cart"></i>
+              <span className={styles.breadcrumbLabel}>
+                View Customer Orders
+              </span>
+            </div>
+          </div>
+
+          {/* Card Container */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Search and Entries Control */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search orders..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-blue">
+                      <tr>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
+                                  className={`fa fa-sort-${
                                     sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  } ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
+                                  className={`fa fa-sort ${styles.sortIcon}`}
                                 ></i>
                               )}
                             </div>
@@ -303,22 +240,11 @@ const ViewCustomerOrder = () => {
                         currentItems.map((report, index) => (
                           <tr
                             key={report.formId}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
+                            style={{ animationDelay: `${index * 0.02}s` }}
                           >
                             {columns.map((column) => (
                               <td
                                 key={`${report.formId}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={report[column.field]}
                               >
                                 {report[column.field]}
@@ -329,20 +255,18 @@ const ViewCustomerOrder = () => {
                       ) : (
                         <tr>
                           <td
-                            colSpan={columns.length + 2}
-                            className="text-center py-5"
+                            colSpan={columns.length}
+                            className={styles.noData}
                           >
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No data available</p>
                               </div>
                             )}
                           </td>
@@ -353,87 +277,76 @@ const ViewCustomerOrder = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>
+                    {Math.min(indexOfLastItem, sortedData.length)}
+                  </strong>{" "}
+                  of <strong>{sortedData.length}</strong> entries
+                  {searchTerm &&
+                    ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>

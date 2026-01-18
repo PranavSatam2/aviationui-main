@@ -38,7 +38,18 @@ export const listAllStore = () => {
     });
 };
 
-export const AllStoreTag = () => {
+export const AllStoreTag = (inspectionReportId) => {
+  return axiosInstance
+    .get(`${STORE_URL}/tag/by-inspection/${inspectionReportId}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching store:", error);
+      throw error;
+    });
+};
+export const AllStoreTagList = () => {
   return axiosInstance
     .get(`${STORE_TAG_URL}`)
     .then((response) => {
@@ -49,7 +60,6 @@ export const AllStoreTag = () => {
       throw error;
     });
 };
-
 //Material Requisition
 export const createMaterialRequisition = (Requisition) =>
   axiosInstance.post(MATERIAL_REQUISITION, Requisition);

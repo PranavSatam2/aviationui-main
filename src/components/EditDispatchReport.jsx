@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 import { updateDispatchReport } from "../services/db_manager";
 import { toast } from "react-toastify";
+import styles from "./EditDispatchReport.module.css";
 
 const EditDispatchReport = () => {
   const { state } = useLocation();
@@ -86,256 +87,331 @@ const EditDispatchReport = () => {
   const handleCancel = () => navigate("/viewDispatchReport");
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-
-        <div className="container mt-4">
-          <button onClick={handleCancel} className="btn btn-light mb-2">
-            ← Back
-          </button>
-          <h4 className="mb-4">Edit Dispatch Report</h4>
-
-          <form onSubmit={handleSubmit}>
-            {/* Part Info */}
-            <div className="row mb-3">
-              <div className="col-md-6">
-                <label>Part No.</label>
-                <input
-                  type="text"
-                  name="partNo"
-                  className="form-control"
-                  value={formData.partNo || ""}
-                  readOnly
-                />
-              </div>
-              <div className="col-md-6">
-                <label>Part Description</label>
-                <input
-                  type="text"
-                  name="partDescription"
-                  className="form-control"
-                  value={formData.partDescription || ""}
-                  readOnly
-                />
-              </div>
-            </div>
-
-            {/* Order Info */}
-            <div className="row mb-3">
-              <div className="col-md-6">
-                <label>Order No.</label>
-                <input
-                  type="text"
-                  name="orderNo"
-                  className="form-control"
-                  value={formData.orderNo || ""}
-                  readOnly
-                />
-              </div>
-              <div className="col-md-6">
-                <label>Customer Name</label>
-                <input
-                  type="text"
-                  name="customerName"
-                  className="form-control"
-                  value={formData.customerName || ""}
-                  readOnly
-                />
-              </div>
-            </div>
-
-            {/* Quantity & Batch */}
-            <div className="row mb-3">
-              <div className="col-md-6">
-                <label>Quantity</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  className="form-control"
-                  value={formData.quantity || ""}
-                  readOnly
-                />
-              </div>
-              <div className="col-md-6">
-                <label>Serial No.</label>
-                <input
-                  type="text"
-                  name="reportNo"
-                  className="form-control"
-                  value={formData.batchNo || ""}
-                  onChange={handleChange}
-                  readOnly
-                />
-              </div>
-            </div>
-
-            {/* Report Info */}
-            <div className="row mb-3">
-              <div className="col-md-6">
-                <label>Date</label>
-                <input
-                  type="date"
-                  name="reportDate"
-                  className="form-control"
-                  value={formData.reportDate || ""}
-                  readOnly
-                />
-              </div>
-            </div>
-
-            {/* Challan Section */}
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <label>Challan No.</label>
-                <input
-                  type="text"
-                  name="challanNo"
-                  className="form-control"
-                  value={formData.challanNo || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Challan Date</label>
-                <input
-                  type="date"
-                  name="challanDate"
-                  className="form-control"
-                  value={formData.challanDate || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Remark</label>
-                <input
-                  type="text"
-                  name="challanRemark"
-                  className="form-control"
-                  value={formData.challanRemark || ""}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Invoice Section */}
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <label>Invoice No.</label>
-                <input
-                  type="text"
-                  name="invoiceNo"
-                  className="form-control"
-                  value={formData.invoiceNo || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Invoice Date</label>
-                <input
-                  type="date"
-                  name="invoiceDate"
-                  className="form-control"
-                  value={formData.invoiceDate || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Remark</label>
-                <input
-                  type="text"
-                  name="invoiceRemark"
-                  className="form-control"
-                  value={formData.invoiceRemark || ""}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* CA Form Section */}
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <label>CA Form No.</label>
-                <input
-                  type="text"
-                  name="caFormNo"
-                  className="form-control"
-                  value={formData.caFormNo || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>CA Form Date</label>
-                <input
-                  type="date"
-                  name="caFormDate"
-                  className="form-control"
-                  value={formData.caFormDate || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Remark</label>
-                <input
-                  type="text"
-                  name="caFormRemark"
-                  className="form-control"
-                  value={formData.caFormRemark || ""}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* E-Way Bill Section */}
-            <div className="row mb-3">
-              <div className="col-md-4">
-                <label>E-Way Bill</label>
-                <input
-                  type="text"
-                  name="ewayBill"
-                  className="form-control"
-                  value={formData.ewayBill || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>E-Way Bill Date</label>
-                <input
-                  type="date"
-                  name="ewayBillDate"
-                  className="form-control"
-                  value={formData.ewayBillDate || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Remark</label>
-                <input
-                  type="text"
-                  name="ewayBillRemark"
-                  className="form-control"
-                  value={formData.ewayBillRemark || ""}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <button type="submit" className="btn btn-primary me-3">
-              Update Report
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={handleCancel}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
             </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-          </form>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Edit Dispatch Report</span>
+            </div>
+          </div>
+
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form onSubmit={handleSubmit}>
+                  {/* Part Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-box"></i>
+                    <span>Part Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Part Number</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="partNo"
+                        value={formData.partNo || ""}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Part Description</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="partDescription"
+                        value={formData.partDescription || ""}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  {/* Order Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-file-alt"></i>
+                    <span>Order Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Work Order No.</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="orderNo"
+                        value={formData.orderNo || ""}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Customer Name</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="customerName"
+                        value={formData.customerName || ""}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Quantity</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="quantity"
+                        value={formData.quantity || ""}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Serial No.</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="batchNo"
+                        value={formData.batchNo || ""}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Report Date</label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="reportDate"
+                        value={formData.reportDate || ""}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  {/* Editable Checklist Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-edit"></i>
+                    <span>Editable Checklist</span>
+                    <span className={styles.editableBadge}>Editable</span>
+                  </div>
+
+                  {/* Challan */}
+                  <div className={styles.checklistGroup}>
+                    <div className={styles.checklistTitle}>
+                      <i className="fa fa-pencil-alt"></i>
+                      Challan Details
+                    </div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Challan No. <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="challanNo"
+                          value={formData.challanNo || ""}
+                          onChange={handleChange}
+                          placeholder="Enter challan number"
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Date <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="date"
+                          className={styles.input}
+                          name="challanDate"
+                          value={formData.challanDate || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Remark</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="challanRemark"
+                          value={formData.challanRemark || ""}
+                          onChange={handleChange}
+                          placeholder="Optional remarks"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Invoice */}
+                  <div className={styles.checklistGroup}>
+                    <div className={styles.checklistTitle}>
+                      <i className="fa fa-pencil-alt"></i>
+                      Invoice Details
+                    </div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Invoice No. <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="invoiceNo"
+                          value={formData.invoiceNo || ""}
+                          onChange={handleChange}
+                          placeholder="Enter invoice number"
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Date <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="date"
+                          className={styles.input}
+                          name="invoiceDate"
+                          value={formData.invoiceDate || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Remark</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="invoiceRemark"
+                          value={formData.invoiceRemark || ""}
+                          onChange={handleChange}
+                          placeholder="Optional remarks"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CA Form */}
+                  <div className={styles.checklistGroup}>
+                    <div className={styles.checklistTitle}>
+                      <i className="fa fa-pencil-alt"></i>
+                      CA Form Details
+                    </div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          CA Form No. <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="caFormNo"
+                          value={formData.caFormNo || ""}
+                          onChange={handleChange}
+                          placeholder="Enter CA form number"
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Date <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="date"
+                          className={styles.input}
+                          name="caFormDate"
+                          value={formData.caFormDate || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Remark</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="caFormRemark"
+                          value={formData.caFormRemark || ""}
+                          onChange={handleChange}
+                          placeholder="Optional remarks"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* E-WAY Bill */}
+                  <div className={styles.checklistGroup}>
+                    <div className={styles.checklistTitle}>
+                      <i className="fa fa-pencil-alt"></i>
+                      E-WAY Bill Details
+                    </div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          E-WAY Bill <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="ewayBill"
+                          value={formData.ewayBill || ""}
+                          onChange={handleChange}
+                          placeholder="Enter E-WAY bill number"
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Date <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="date"
+                          className={styles.input}
+                          name="ewayBillDate"
+                          value={formData.ewayBillDate || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Remark</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="ewayBillRemark"
+                          value={formData.ewayBillRemark || ""}
+                          onChange={handleChange}
+                          placeholder="Optional remarks"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className={styles.formActions}>
+                    <button
+                      type="button"
+                      className={styles.btnCancel}
+                      onClick={handleCancel}
+                    >
+                      <i className="fa fa-times"></i>
+                      <span>Cancel</span>
+                    </button>
+                    <button type="submit" className={styles.btnUpdate}>
+                      <i className="fa fa-save"></i>
+                      <span>Update Report</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };

@@ -8,10 +8,8 @@ import {
 } from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
-// import PurchaseOrderReport from "../PurchaseOrderReport/PurchaseOrderReport";
-// import styles from "../ViewPurchaseOrder/ViewPurchaseOrder.module.css";
 import PurchaseOrderForm from "../PurchaseOrder/PurchaseOrderReport/PurchaseOrderReport";
+import styles from "../ViewMaterialNote.module.css";
 
 const ViewWorkOrder = () => {
   // State
@@ -23,14 +21,15 @@ const ViewWorkOrder = () => {
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
   const [workOrderData, setWorkOrderData] = useState();
-  const [selectedRow, setSelectedRow] = useState(null); // State to track selected row (single selection)
+  const [selectedRow, setSelectedRow] = useState(null);
+  
   const navigate = useNavigate();
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
       const response = await listAllOpenWorkorder();
       setTableData(response.data || []);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching work orders", error);
       toast.error("No work orders found");
@@ -39,16 +38,19 @@ const ViewWorkOrder = () => {
     }
   };
 
-  // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Delete the selected work order
+  // Reset selection when page changes
+  useEffect(() => {
+    setSelectedRow(null);
+  }, [currentPage, itemsPerPage]);
+
   const deleteSelectedElement = async (orderNo) => {
     if (window.confirm("Are you sure you want to delete this work order?")) {
       try {
-        await deletePurchaseOrder(orderNo); // You might need to update this service call
+        await deletePurchaseOrder(orderNo);
         setTableData((prevData) =>
           prevData.filter((workOrder) => workOrder.orderNo !== orderNo)
         );
@@ -61,20 +63,16 @@ const ViewWorkOrder = () => {
     }
   };
 
-  // Edit the selected work order
   const editSelectedElement = async (srNo, SerialNumber) => {
     navigate("/Addworkorder", {
       state: { srNo, SerialNumber },
     });
   };
 
-  // Handle checkbox selection (single selection only, cannot uncheck)
   const handleCheckboxChange = (orderNo) => {
-    // Only select the new row, don't allow unchecking by clicking same radio
-    setSelectedRow(orderNo);
+    setSelectedRow(selectedRow === orderNo ? null : orderNo);
   };
 
-  // Check if a row is selected
   const isRowSelected = (orderNo) => {
     return selectedRow === orderNo;
   };
@@ -84,7 +82,7 @@ const ViewWorkOrder = () => {
     return Object.entries(workOrder)
       .filter(
         ([key]) => !["documentPath", "makerDate", "checkerDate"].includes(key)
-      ) // Exclude certain fields from search
+      )
       .some(
         ([_, value]) =>
           value &&
@@ -134,9 +132,11 @@ const ViewWorkOrder = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${
+            currentPage === i ? styles.active : ""
+          }`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -146,189 +146,161 @@ const ViewWorkOrder = () => {
     return pageNumbers;
   };
 
-  // Column definitions for the table - updated for work order data
   const columns = [
-    { field: "orderNo", label: "Sales Order Number", width: "100px" },
-    { field: "roNo", label: "Repair Order No", width: "100px" },
-    { field: "roReceiveDate", label: "Received Date", width: "100px" },
-    { field: "customerName", label: "Customer Name", width: "100px" },
+    { field: "orderNo", label: "Sales Order Number", width: "120px" },
+    { field: "roNo", label: "Repair Order No", width: "120px" },
+    { field: "roReceiveDate", label: "Received Date", width: "120px" },
+    { field: "customerName", label: "Customer Name", width: "150px" },
     { field: "partNo", label: "Part No.", width: "100px" },
-    { field: "partDescription", label: "Part Desc", width: "100px" },
-    { field: "quantity", label: "Quantity", width: "100px" },
-    { field: "batchNo", label: "Part Serial Number", width: "100px" },
-    { field: "srNo", label: "Sr. No.", width: "100px" },
+    { field: "partDescription", label: "Part Desc", width: "150px" },
+    { field: "quantity", label: "Quantity", width: "80px" },
+    { field: "batchNo", label: "Part Serial Number", width: "120px" },
+    { field: "srNo", label: "Sr. No.", width: "80px" },
     { field: "status", label: "Status", width: "100px" },
-    // { field: "workOrder", label: "Work Order", width: "120px" },
-    // { field: "makerUserName", label: "Maker", width: "120px" },
-    // { field: "makerDate", label: "Maker Date", width: "140px" },
-    // { field: "checkerUserName", label: "Checker", width: "120px" },
-    // { field: "checkerDate", label: "Checker Date", width: "140px" },
-    // { field: "userRole", label: "User Role", width: "100px" },
-    // { field: "userAction", label: "User Action", width: "110px" },
-    // { field: "remark", label: "Remark", width: "120px" },
   ];
 
   const handlePrintClick = (workOrder) => {
     setWorkOrderData(workOrder);
     setTimeout(() => {
+      const originalBodyStyle = document.body.style.cssText;
+      document.body.style.margin = "0";
+      document.body.style.padding = "0";
       window.print();
+      setTimeout(() => {
+        document.body.style.cssText = originalBodyStyle;
+      }, 100);
     }, 500);
   };
 
-  // Format date values
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-  };
-
-  // Format boolean values
-  const formatBoolean = (value) => {
-    return value ? "Yes" : "No";
-  };
-
-  // Format status with badge
   const formatStatus = (status) => {
-    const statusClass =
-      status === "open" ? "badge bg-success" : "badge bg-secondary";
-    return <span className={statusClass}>{status}</span>;
+    const statusStyles = {
+      open: {
+        background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+        color: "white",
+      },
+      closed: {
+        background: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)",
+        color: "white",
+      },
+      pending: {
+        background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+        color: "white",
+      },
+    };
+
+    const style = statusStyles[status?.toLowerCase()] || statusStyles.closed;
+
+    return (
+      <span
+        style={{
+          ...style,
+          padding: "0.35rem 0.75rem",
+          borderRadius: "8px",
+          fontSize: "0.85rem",
+          fontWeight: "600",
+          display: "inline-block",
+          minWidth: "70px",
+          textAlign: "center",
+        }}
+      >
+        {status}
+      </span>
+    );
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Work Orders" />
+        <div className={styles.mainContent}>
+          {/* Print View (Hidden) */}
           <div className="printView">
             <PurchaseOrderForm tableData={workOrderData} />
           </div>
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              //   styles.normalViewStyle,
-            ].join(" ")}
-          >
-            <div className="card-body">
-              <div className="row align-items-center mb-4">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search work orders..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-clipboard-list"></i>
+              <span className={styles.breadcrumbLabel}>View Work Orders</span>
+            </div>
+          </div>
+
+          {/* Card Container */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Search and Entries Control */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search work orders..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div
-                    className="spinner-border text-primary"
-                    role="status"
-                  ></div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading work orders...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowX: "auto",
-                    overflowY: "auto",
-                    maxHeight: "65vh",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-light">
-                        {/* Checkbox column header without Select All */}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "50px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          SELECT
+                      <tr>
+                        <th className={styles.checkboxHeader}>
+                          <div className={styles.checkboxWrapper}>
+                            <span style={{ fontSize: "0.75rem" }}>SELECT</span>
+                          </div>
                         </th>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                              whiteSpace: "nowrap",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
+                                  className={`fa fa-sort-${
                                     sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  } ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
+                                  className={`fa fa-sort ${styles.sortIcon}`}
                                 ></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "150px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          ACTIONS
-                        </th>
+                        <th className={styles.actionsHeader}>ACTIONS</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -336,64 +308,42 @@ const ViewWorkOrder = () => {
                         currentItems.map((workOrder, index) => (
                           <tr
                             key={workOrder.orderNo || index}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
+                            style={{ animationDelay: `${index * 0.02}s` }}
                           >
-                            {/* Checkbox column */}
-                            <td className="text-center py-3">
-                              <input
-                                type="radio"
-                                name="workOrderSelection"
-                                className="form-check-input"
-                                checked={isRowSelected(workOrder.orderNo)}
-                                onChange={() =>
-                                  handleCheckboxChange(workOrder.orderNo)
-                                }
-                                style={{ cursor: "pointer" }}
-                              />
+                            <td className={styles.checkboxCell}>
+                              <div className={styles.checkboxWrapper}>
+                                <input
+                                  type="radio"
+                                  name="workOrderSelection"
+                                  className={styles.checkbox}
+                                  checked={isRowSelected(workOrder.orderNo)}
+                                  onChange={() =>
+                                    handleCheckboxChange(workOrder.orderNo)
+                                  }
+                                  style={{ cursor: "pointer" }}
+                                />
+                              </div>
                             </td>
                             {columns.map((column) => (
                               <td
                                 key={`${workOrder.orderNo || index}-${
                                   column.field
                                 }`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={workOrder[column.field]}
                               >
                                 {column.field === "status"
                                   ? formatStatus(workOrder[column.field])
-                                  : column.field === "workOrder"
-                                  ? formatBoolean(workOrder[column.field])
-                                  : ["makerDate", "checkerDate"].includes(
-                                      column.field
-                                    )
-                                  ? formatDate(workOrder[column.field])
-                                  : column.field === "partDesc"
-                                  ? workOrder[column.field]?.substring(0, 20) +
-                                    (workOrder[column.field]?.length > 20
-                                      ? "..."
-                                      : "")
-                                  : column.field === "remark"
-                                  ? workOrder[column.field]?.substring(0, 15) +
-                                    (workOrder[column.field]?.length > 15
-                                      ? "..."
-                                      : "")
                                   : workOrder[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
                                 <button
-                                  className="btn btn-sm btn-primary"
+                                  className={
+                                    isRowSelected(workOrder.orderNo)
+                                      ? styles.btnView
+                                      : styles.btnEdit
+                                  }
                                   onClick={() =>
                                     editSelectedElement(
                                       workOrder.srNo,
@@ -404,7 +354,7 @@ const ViewWorkOrder = () => {
                                   title={
                                     isRowSelected(workOrder.orderNo)
                                       ? "Generate Work Order"
-                                      : "Select checkbox to enable"
+                                      : "Select row to enable"
                                   }
                                   style={{
                                     opacity: isRowSelected(workOrder.orderNo)
@@ -413,10 +363,16 @@ const ViewWorkOrder = () => {
                                     cursor: isRowSelected(workOrder.orderNo)
                                       ? "pointer"
                                       : "not-allowed",
+                                    minWidth: "auto",
+                                    padding: "0.6rem 1rem",
+                                    fontSize: "0.85rem",
+                                    whiteSpace: "nowrap",
                                   }}
                                 >
-                                  <i className="fa-solid fa-file-lines me-1"></i>
-                                  Generate Work Order
+                                  <i className="fa-solid fa-file-lines"></i>
+                                  <span style={{ marginLeft: "0.5rem" }}>
+                                    Generate
+                                  </span>
                                 </button>
                               </div>
                             </td>
@@ -426,19 +382,17 @@ const ViewWorkOrder = () => {
                         <tr>
                           <td
                             colSpan={columns.length + 2}
-                            className="text-center py-5"
+                            className={styles.noData}
                           >
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No work orders available</p>
                               </div>
                             )}
                           </td>
@@ -449,92 +403,92 @@ const ViewWorkOrder = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                    {selectedRow && (
-                      <span className="ms-2 badge bg-primary">
-                        1 selected
-                      </span>
-                    )}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>
+                    {Math.min(indexOfLastItem, sortedData.length)}
+                  </strong>{" "}
+                  of <strong>{sortedData.length}</strong> entries
+                  {searchTerm &&
+                    ` (filtered from ${tableData.length} total entries)`}
+                  {selectedRow && (
+                    <span
+                      style={{
+                        marginLeft: "1rem",
+                        padding: "0.35rem 0.75rem",
+                        background:
+                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        color: "white",
+                        borderRadius: "8px",
+                        fontSize: "0.85rem",
+                        fontWeight: "600",
+                      }}
+                    >
+                      1 selected
+                    </span>
+                  )}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>
