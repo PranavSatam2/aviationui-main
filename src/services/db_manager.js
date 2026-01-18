@@ -40,7 +40,7 @@ export const listAllStore = () => {
 
 export const AllStoreTag = (inspectionReportId) => {
   return axiosInstance
-    .get(`${STORE_URL}/tag/by-inspection/${inspectionReportId}`)
+    .get(`${STORE_URL}/storeAcceptance/tag/by-inspection/${inspectionReportId}`)
     .then((response) => {
       return response.data;
     })
@@ -49,6 +49,7 @@ export const AllStoreTag = (inspectionReportId) => {
       throw error;
     });
 };
+
 export const AllStoreTagList = () => {
   return axiosInstance
     .get(`${STORE_TAG_URL}`)
@@ -575,3 +576,74 @@ let WORKORDERBYID = REST_API_BASE_URL + "/api/customerOrder/bySrNo";
 
 export const getWorkOrderById = (id) =>
   axiosInstance.get(`${WORKORDERBYID}/${id}`);
+
+
+///////////////////////// Reports /////////////////////////
+let REPORT_API = REST_API_BASE_URL + "/api/reports";
+
+export const getReportEntities = () => {
+  return axiosInstance
+    .get(`${REPORT_API}/entities`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error fetching report entities:", error);
+      throw error;
+    });
+};
+
+export const getReportColumns = (entityName) => {
+  return axiosInstance
+    .get(`${REPORT_API}/entities/${entityName}/columns`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error fetching report columns:", error);
+      throw error;
+    });
+};
+
+export const getReportEntityInfo = (entityName) => {
+  return axiosInstance
+    .get(`${REPORT_API}/entities/${entityName}/info`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error fetching entity info:", error);
+      throw error;
+    });
+};
+
+export const generateReportPreview = (payload) => {
+  return axiosInstance
+    .post(`${REPORT_API}/generate`, payload)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error generating report preview:", error);
+      throw error;
+    });
+};
+
+export const downloadReportCSV = (payload) => {
+  return axiosInstance.post(
+    `${REPORT_API}/download/csv`,
+    payload,
+    { responseType: "blob" }
+  );
+};
+
+export const downloadReportExcel = (payload) => {
+  return axiosInstance.post(
+    `${REPORT_API}/download/excel`,
+    payload,
+    { responseType: "blob" }
+  );
+};
+
+export const getReportPreviewData = (entityName) => {
+  return axiosInstance
+    .get(`${REPORT_API}/entities/${entityName}/preview`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error fetching preview data:", error);
+      throw error;
+    });
+};
+

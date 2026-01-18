@@ -42,6 +42,7 @@ import GenerateInspectionReportTable from "./components/GenerateInspectionReport
 import AddRequisition from "./components/MaterialRequisition/AddMaterialRequisition/AddMaterialRequisition.jsx";  
 import AddDispatchReport from "./components/AddDispatchReport.jsx";
 import CAForm from "./components/CAForm.jsx";
+import Reports from "./components/Reports.jsx";
 
 
 const App = () => {
@@ -103,6 +104,7 @@ const App = () => {
             <Route path = "/AddMaterialRequisition" element={<AddRequisition/>}/>
             <Route path = "/AddDispatchReport" element={<AddDispatchReport/>}/>
             <Route path = "/generateCAForm" element={<CAForm/>}/>
+            <Route path = "/Reports" element={<Reports/>}/>
 
     {menuItems.flatMap((menu) =>
                 menu.subMenus.map((sub) => {
