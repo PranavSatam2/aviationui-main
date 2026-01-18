@@ -18,75 +18,71 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const username = sessionStorage.getItem('username');
-  const role =sessionStorage.getItem('role');
+  const role = sessionStorage.getItem('role');
+  
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+  
   const handlelogout = () => {
-    sessionStorage.clear(); //clear token and other session data
+    sessionStorage.clear();
     navigate("/");
     toast.success("Log out Successful");
   };
+  
   return (
     <div className={styles.headerContainer}>
       <div className={styles.headerContent}>
-        {/* Logo & App Name */}
+        {/* Company Branding */}
+        <div className={styles.brandSection}>
+          <div className={styles.brandGlow}></div>
+          <h3 className={styles.companyName}>AMC Technology</h3>
+        </div>
 
-        {/* Right Side Actions */}
+        {/* Right Section */}
         <div className={styles.rightSection}>
-          {/* Notification Icon */}
-          <button className={styles.iconButton}>
-            <Bell size={20} />
-            <span className={styles.badge}>4</span>
-          </button>
-
-          {/* Messages Icon */}
-          <button className={styles.iconButton}>
-            <MessageSquare size={20} />
-            <span className={styles.badge}>2</span>
-          </button>
-
-          {/* Help Icon */}
-          <button className={styles.iconButton}>
-            <HelpCircle size={20} />
-          </button>
-
           {/* Divider */}
-          <div className={styles.divider}></div>
+          <div className={styles.verticalDivider}></div>
 
           {/* User Profile */}
           <div className={styles.profileContainer}>
             <button className={styles.profileButton} onClick={toggleDropdown}>
               <div className={styles.avatarContainer}>
-                <img src={ProfileLogo} alt="" className={styles.avatar} />
+                <img src={ProfileLogo} alt="Profile" className={styles.avatar} />
+                <div className={styles.statusIndicator}></div>
               </div>
               <div className={styles.userInfo}>
-                <div className={styles.userName}>{username}</div>
-                <div className={styles.userRole}>{role}</div>
+                <div className={styles.userName}>{username || 'User'}</div>
+                <div className={styles.userRole}>{role || 'Guest'}</div>
               </div>
-              <ChevronDown size={16} className={styles.dropdownIcon} />
+              <ChevronDown 
+                size={16} 
+                className={`${styles.dropdownIcon} ${isDropdownOpen ? styles.rotated : ''}`} 
+              />
             </button>
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className={styles.dropdownMenu}>
-                <div className={styles.dropdownHeader}>
-                  <p className={styles.dropdownName}>{username}</p>
-                  <p className={styles.dropdownEmail}>Admin@example.com</p>
+              <>
+                <div className={styles.dropdownBackdrop} onClick={toggleDropdown}></div>
+                <div className={styles.dropdownMenu}>
+                  <div className={styles.dropdownHeader}>
+                    <div className={styles.dropdownAvatar}>
+                      <img src={ProfileLogo} alt="Profile" />
+                    </div>
+                    <div>
+                      <p className={styles.dropdownName}>{username || 'User'}</p>
+                      <p className={styles.dropdownRole}>{role || 'Guest'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.dropdownDivider}></div>
+                  <button className={styles.dropdownItemDanger} onClick={handlelogout}>
+                    <LogOut size={16} />
+                    <span>Log out</span>
+                  </button>
                 </div>
-                <a href="#" className={styles.dropdownItem}>
-                  <User size={16} className={styles.dropdownItemIcon} />
-                  Your Profile
-                </a>
-                <div className={styles.dropdownDivider}></div>
-                <a
-                  // href="/"
-                  className={styles.dropdownItemDanger}
-                  onClick={handlelogout}
-                >
-                  Log out
-                </a>
-              </div>
+              </>
             )}
           </div>
         </div>

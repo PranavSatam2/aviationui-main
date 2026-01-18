@@ -3,18 +3,16 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import {
-    getCustomerOrder,
-    deleteReport,
-    getEditOrderList,
-    ApproveReport,
+  getCustomerOrder,
+  deleteReport,
+  getEditOrderList,
+  ApproveReport,
 } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import { Modal, Button, Form } from "react-bootstrap";
-import {PrintInspectionReport} from "./PrintInspectionReport";
-import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
-//import { ApproveReport, deleteReport } from "../services/db_manager";
+import { PrintInspectionReport } from "./PrintInspectionReport";
+import styles from "./ViewMaterialNote.module.css";
+
 const EditCustomerOrderTable = () => {
   // State
   const [tableData, setTableData] = useState([]);
@@ -24,18 +22,18 @@ const EditCustomerOrderTable = () => {
   const [sortField, setSortField] = useState("formId");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-  // Modified: Changed selectedItems from array to single string ID
   const [selectedItem, setSelectedItem] = useState("");
   const [selectAll, setSelectAll] = useState(false);
   const [selecteReportData, setSelecteReportData] = useState();
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
-  const [actionType, setActionType] = useState(""); // "accept" or "reject"
+  const [actionType, setActionType] = useState("");
   const [remark, setRemark] = useState("");
   const [reportData, setReportData] = useState();
 
   const navigate = useNavigate();
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -58,14 +56,12 @@ const EditCustomerOrderTable = () => {
       setIsLoading(false);
     }
   };
-  // Fetching data when the component is mounted
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Modified: Handle checkbox selection for single selection only
   const handleCheckboxChange = (report) => {
-    // If the same checkbox is clicked again, deselect it
     if (selectedItem === report.srNo) {
       setSelectedItem("");
       console.log("Selected ID: none");
@@ -76,23 +72,21 @@ const EditCustomerOrderTable = () => {
     }
   };
 
-  // Modified: Handle select all - now it just clears selection
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedItem("");
       console.log("Selected ID: none");
     } else {
-      // Select the first item when clicking "select all"
       if (currentItems.length > 0) {
-        const firstItemId = currentItems[0].formId;
+        const firstItemId = currentItems[0].srNo;
         setSelectedItem(firstItemId);
+        setSelecteReportData(currentItems[0]);
         console.log("Selected ID:", firstItemId);
       }
     }
     setSelectAll(!selectAll);
   };
 
-  // Reset selection when page changes
   useEffect(() => {
     setSelectedItem("");
     setSelectAll(false);
@@ -133,7 +127,6 @@ const EditCustomerOrderTable = () => {
     }
   };
 
-  // Modal handlers
   const handleOpenModal = (type) => {
     if (!selectedItem) {
       toast.warning("Please select a report");
@@ -150,40 +143,50 @@ const EditCustomerOrderTable = () => {
 
   const handleSubmitAction = async () => {
     const action = actionType === "accept" ? "accepted" : "rejected";
-    // Add 'remark' to each object in selecteReportData
     const updatedReportData = {
       ...selecteReportData,
       remark: remark,
-      userRole:sessionStorage.getItem('roleId'),
+      userRole: sessionStorage.getItem("roleId"),
       userAction: action === "rejected" ? "3" : "2",
     };
     try {
       const response = await ApproveReport(updatedReportData);
-      toast.success(`Report ${action} successfully, ${response}`);
+      toast.success(`Report ${action} successfully`);
       fetchData();
     } catch (error) {
-      console.error("Error fetching report details: ", error);
-      toast.error("Failed to fetch report details");
+      console.error("Error processing report: ", error);
+      toast.error("Failed to process report");
     }
-  
-    // Reset states
+
     setSelectedItem("");
     setSelectAll(false);
     setRemark("");
     handleCloseModal();
   };
-  
+
+  const handlePrintClick = (report) => {
+    setReportData(report);
+    setTimeout(() => {
+      const originalBodyStyle = document.body.style.cssText;
+      document.body.style.margin = "0";
+      document.body.style.padding = "0";
+      window.print();
+      setTimeout(() => {
+        document.body.style.cssText = originalBodyStyle;
+      }, 100);
+    }, 500);
+  };
 
   // Search functionality
   const filteredData = Array.isArray(tableData)
-  ? tableData.filter((report) =>
-      Object.values(report).some(
-        (value) =>
-          value &&
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    ? tableData.filter((report) =>
+        Object.values(report).some(
+          (value) =>
+            value &&
+            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        )
       )
-    )
-  : [];
+    : [];
 
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
@@ -227,9 +230,11 @@ const EditCustomerOrderTable = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${
+            currentPage === i ? styles.active : ""
+          }`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -239,131 +244,95 @@ const EditCustomerOrderTable = () => {
     return pageNumbers;
   };
 
-  const handlePrintClick = (report) => {
-    // Store the supplier data
-    setReportData(report);
-
-    // Short delay to ensure React has updated the state and rendered the component
-    setTimeout(() => {
-      // Cache original body styles
-      const originalBodyStyle = document.body.style.cssText;
-
-      // Apply print-friendly styles to the body
-      document.body.style.margin = "0";
-      document.body.style.padding = "0";
-
-      // Print the document
-      window.print();
-
-      // Restore original body styles after printing dialog is closed
-      setTimeout(() => {
-        document.body.style.cssText = originalBodyStyle;
-      }, 100);
-    }, 500);
-  };
-
-  // Column definitions for the table
+  // Column definitions
   const columns = [
     { field: "orderNo", label: "Order No", width: "100px" },
     { field: "roNo", label: "RO No.", width: "100px" },
-    { field: "roReceiveDate", label: "RO Received Date", width: "100px" },
-    { field: "customerName", label: "Customer Name", width: "100px" },
+    { field: "roReceiveDate", label: "RO Received Date", width: "120px" },
+    { field: "customerName", label: "Customer Name", width: "150px" },
     { field: "partNo", label: "Part No.", width: "100px" },
-    { field: "partDescription", label: "Part Desc", width: "100px" },
-    { field: "quantity", label: "Quantity", width: "100px" },
+    { field: "partDescription", label: "Part Desc", width: "150px" },
+    { field: "quantity", label: "Quantity", width: "80px" },
     { field: "batchNo", label: "Batch No.", width: "100px" },
-    { field: "srNo", label: "Sr. No.", width: "100px" },
+    { field: "srNo", label: "Sr. No.", width: "80px" },
     { field: "status", label: "Status", width: "100px" },
-    { field: "makerUserName", label: "Maker UserName", width: "100px" },
-    { field: "makerDate", label: "Maker Date", width: "100px" },
+    { field: "makerUserName", label: "Maker Name", width: "120px" },
+    { field: "makerDate", label: "Maker Date", width: "120px" },
     { field: "userRole", label: "Maker Role", width: "100px" },
-
-];
+  ];
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Edit CustomerOrder" />
+        <div className={styles.mainContent}>
+          {/* Print View (Hidden) */}
           <div className="printView">
             <PrintInspectionReport dataMap={reportData} />
           </div>
 
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              styles.normalViewStyle,
-            ].join(" ")}
-          >
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search reports..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-edit"></i>
+              <span className={styles.breadcrumbLabel}>
+                Edit Customer Orders
+              </span>
+            </div>
+          </div>
+
+          {/* Card Container */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Search and Entries Control */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search orders..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-blue">
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{ width: "40px" }}
-                        >
-                          <div className="form-check d-flex justify-content-center">
+                      <tr>
+                        <th className={styles.checkboxHeader}>
+                          <div className={styles.checkboxWrapper}>
                             <input
-                              className="form-check-input"
                               type="checkbox"
-                              id="selectAll"
+                              className={styles.checkbox}
                               checked={selectAll}
                               onChange={handleSelectAll}
                             />
@@ -372,46 +341,26 @@ const EditCustomerOrderTable = () => {
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
+                                  className={`fa fa-sort-${
                                     sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  } ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
+                                  className={`fa fa-sort ${styles.sortIcon}`}
                                 ></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
-                        </th>
+                        <th className={styles.actionsHeader}>ACTIONS</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -419,44 +368,30 @@ const EditCustomerOrderTable = () => {
                         currentItems.map((report, index) => (
                           <tr
                             key={report.formId}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
+                            style={{ animationDelay: `${index * 0.02}s` }}
                           >
-                            <td className="text-center">
-                              <div className="form-check d-flex justify-content-center">
+                            <td className={styles.checkboxCell}>
+                              <div className={styles.checkboxWrapper}>
                                 <input
-                                  className="form-check-input"
                                   type="checkbox"
-                                  id={`check-${report.srNo}`}
+                                  className={styles.checkbox}
                                   checked={selectedItem === report.srNo}
-                                  onChange={() =>
-                                    handleCheckboxChange(report)
-                                  }
+                                  onChange={() => handleCheckboxChange(report)}
                                 />
                               </div>
                             </td>
                             {columns.map((column) => (
                               <td
                                 key={`${report.formId}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={report[column.field]}
                               >
                                 {report[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
-                              <button
-                                  className="btn btn-sm btn-outline-primary"
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
+                                <button
+                                  className={styles.btnEdit}
                                   onClick={() =>
                                     editSelectedElement(report.srNo)
                                   }
@@ -464,22 +399,6 @@ const EditCustomerOrderTable = () => {
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
                                 </button>
-                                {/* <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() =>
-                                    editSelectedElement(supplier.supplierId)
-                                  }
-                                  title="View Doc"
-                                >
-                                  <i className="fa-solid fa-eye"></i>
-                                </button> */}
-                                {/* <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handlePrintClick(supplier)}
-                                  title="Print Doc"
-                                >
-                                  <i className="fa-solid fa-print"></i>
-                                </button> */}
                               </div>
                             </td>
                           </tr>
@@ -488,19 +407,17 @@ const EditCustomerOrderTable = () => {
                         <tr>
                           <td
                             colSpan={columns.length + 2}
-                            className="text-center py-5"
+                            className={styles.noData}
                           >
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No data available</p>
                               </div>
                             )}
                           </td>
@@ -511,165 +428,163 @@ const EditCustomerOrderTable = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>
+                    {Math.min(indexOfLastItem, sortedData.length)}
+                  </strong>{" "}
+                  of <strong>{sortedData.length}</strong> entries
+                  {searchTerm &&
+                    ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
 
-              {/* Accept/Reject Buttons */}
-              {/* <div className="d-flex justify-content-end mt-3 gap-3">
+              {/* Action Buttons */}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end', 
+                marginTop: '2rem', 
+                gap: '1rem',
+                flexWrap: 'wrap'
+              }}>
                 <button
-                  className="btn btn-outline-success"
+                  className={styles.btnSuccess}
                   onClick={() => handleOpenModal("accept")}
                   disabled={!selectedItem}
                 >
-                  <i className="fa-solid fa-check me-2"></i>
-                  Approved
+                  <i className="fa-solid fa-check"></i>
+                  Approve
                 </button>
                 <button
-                  className="btn btn-outline-info"
-                  onClick={() => handleOpenModal("Send To Edit")}
-                  disabled={!selectedItem}
-                >
-                  <i className="fa-solid fa-paper-plane me-2"></i>
-                  Send To Edit
-                </button>
-                <button
-                  className="btn btn-outline-danger"
+                  className={styles.btnDanger}
                   onClick={() => handleOpenModal("reject")}
                   disabled={!selectedItem}
                 >
-                  <i className="fa-solid fa-xmark me-2"></i>
+                  <i className="fa-solid fa-xmark"></i>
                   Reject
                 </button>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
         <Footer />
       </div>
 
-      {/* Accept/Reject Modal */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {actionType === "accept"
-              ? "Accept"
-              : actionType === "Edit"
-              ? "Send To Edit"
-              : "Reject"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Are you sure you want to {actionType} the selected order?</p>
-          <Form.Group className="mb-3">
-            <Form.Label>Remark</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={4}
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-              placeholder="Enter your remarks here..."
-              required
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancel
-          </Button>
-          <Button
-            variant={actionType === "accept" ? "success" : "danger"}
-            onClick={handleSubmitAction}
-            disabled={!remark.trim()}
+      {/* Modal */}
+      {showModal && (
+        <div className={styles.modalOverlay} onClick={handleCloseModal}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
           >
-            Confirm{" "}
-            {actionType === "accept"
-              ? "Accept"
-              : actionType === "Edit"
-              ? "Send"
-              : "Reject"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            <div className={styles.modalHeader}>
+              <h5 className={styles.modalTitle}>
+                {actionType === "accept" ? "Approve Order" : "Reject Order"}
+              </h5>
+              <button className={styles.modalClose} onClick={handleCloseModal}>
+                ×
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <p className={styles.modalText}>
+                Are you sure you want to {actionType === "accept" ? "approve" : "reject"} the
+                selected order?
+              </p>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Remark</label>
+                <textarea
+                  className={styles.textarea}
+                  value={remark}
+                  onChange={(e) => setRemark(e.target.value)}
+                  placeholder="Enter your remarks here..."
+                  required
+                />
+              </div>
+            </div>
+            <div className={styles.modalFooter}>
+              <button
+                className={styles.btnDanger}
+                onClick={handleCloseModal}
+                style={{
+                  background: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className={
+                  actionType === "accept" ? styles.btnSuccess : styles.btnDanger
+                }
+                onClick={handleSubmitAction}
+                disabled={!remark.trim()}
+              >
+                Confirm {actionType === "accept" ? "Approve" : "Reject"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

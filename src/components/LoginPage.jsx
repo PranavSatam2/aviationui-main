@@ -1,14 +1,14 @@
-// LoginPage.jsx - Enhanced Version with Coming Soon Labels
+// LoginPage.jsx - Enhanced Version with AMC Logo and Fainter Backgrounds
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../axiosConfig";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, User, Lock, AlertCircle } from "lucide-react";
 import Footer from "./Footer";
-import AviationLogo from "../static/img/AviationLogo.png";
 import styles from "./Login.module.css";
 import { useRoleMenus } from "../context/RoleMenuContext";
+import AMCLOGO from "../static/img/AMCLOGO.jpg";
 
-// Background images - Aviation themed
+// Background images - Aviation themed (with reduced opacity in CSS)
 const backgroundImages = [
   "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1920",
   "https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?q=80&w=1920",
@@ -113,8 +113,8 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         if (response && response.data && response.data.token) {
-          const { token, passwordExpired, username, role } = response.data;
-
+          const { token, passwordExpired, username, role, id } = response.data;
+          sessionStorage.setItem("userId", id);
           sessionStorage.setItem("username", username);
           sessionStorage.setItem("jwt_token", token);
           sessionStorage.setItem("role", role);
@@ -193,11 +193,11 @@ const LoginPage = () => {
               <div className={styles.logoContainer}>
                 <img
                   style={{ height: "50px", width: "50px" }}
-                  src={AviationLogo}
-                  alt="Logo"
+                  src={AMCLOGO}
+                  alt="AMC Logo"
                 />
               </div>
-              <span>Welcome To Aviation</span>
+              <span>Welcome To AMC Technology</span>
             </h2>
           </div>
 
@@ -331,7 +331,7 @@ const LoginPage = () => {
               <div className={styles.divider}>
                 <span>
                   Or continue with
-                  <span className={styles.comingSoonBadge}>Coming Soon..</span>
+                  <span className={styles.comingSoonLabel}>Coming Soon..</span>
                 </span>
               </div>
 

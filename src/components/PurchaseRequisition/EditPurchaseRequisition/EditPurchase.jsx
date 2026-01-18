@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
-import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import {
   updatePurchaseRequisition,
   getPurchaseRequisitionDetail,
@@ -10,13 +9,14 @@ import {
 } from "../../../services/db_manager";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import styles from "../AddpurchaseRequisition/AddPurchaseRequisition.module.css";
 
 const EditPurchaseRequisition = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const { RequisitionID } = location.state || "";
-  // State for the current form being filled
+  
   const [form, setForm] = useState({
     partNumber: "",
     description: "",
@@ -27,28 +27,19 @@ const EditPurchaseRequisition = () => {
     unitOfMeasurement: "",
   });
 
-  // State to track original data for comparison
   const [originalData, setOriginalData] = useState(null);
-
-  // State to store dropdown options from API
   const [descriptions, setDescriptions] = useState([]);
   const [partNumbers, setPartNumbers] = useState([]);
-
-  // State to track loading status
   const [descLoading, setDescLoading] = useState(false);
   const [partLoading, setPartLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  // State to track any error in API calls
   const [descError, setDescError] = useState(null);
   const [partError, setPartError] = useState(null);
   const [error, setError] = useState(null);
-
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedDescription, setSelectedDescription] = useState("");
   const [data, setData] = useState([]);
 
-  // Fetch the specific purchase requisition data when component mounts
   useEffect(() => {
     if (RequisitionID) {
       fetchRequisitionData();
@@ -61,8 +52,8 @@ const EditPurchaseRequisition = () => {
       const requisitionData = await getPurchaseRequisitionDetail(RequisitionID);
 
       setForm(requisitionData.data);
-      setSelectedProduct(requisitionData.data.partNumber || ""); // Set part number for dropdown
-      setSelectedDescription(requisitionData.data.description || ""); // Set description dropdown
+      setSelectedProduct(requisitionData.data.partNumber || "");
+      setSelectedDescription(requisitionData.data.description || "");
 
       setError(null);
       setIsLoading(false);
@@ -73,10 +64,6 @@ const EditPurchaseRequisition = () => {
   };
 
   useEffect(() => {
-    console.log(form, "form");
-  }, [form]);
-  // Fetch descriptions from API when component mounts
-  useEffect(() => {
     const getDescriptions = async () => {
       setDescLoading(true);
       try {
@@ -86,14 +73,6 @@ const EditPurchaseRequisition = () => {
       } catch (err) {
         console.error("Error fetching descriptions:", err);
         setDescError("Failed to load descriptions. Please try again later.");
-        // Fallback data in case the API fails
-        // setDescriptions([
-        //   { id: 1, description: "Raw Material" },
-        //   { id: 2, description: "Finished Goods" },
-        //   { id: 3, description: "Spare Parts" },
-        //   { id: 4, description: "Consumables" },
-        //   { id: 5, description: "Office Supplies" }
-        // ]);
       } finally {
         setDescLoading(false);
       }
@@ -102,14 +81,13 @@ const EditPurchaseRequisition = () => {
     getDescriptions();
   }, []);
 
-  // Fetch part numbers from API when component mounts
   useEffect(() => {
     const getPartNumbers = async () => {
       setPartLoading(true);
       try {
         const data = await fetchPartNumbersAndDescriptions();
-        setData(data); // This is used in dropdown
-        setPartNumbers(data); // Optional if used elsewhere
+        setData(data);
+        setPartNumbers(data);
         setPartError(null);
       } catch (err) {
         console.error("Error fetching part numbers:", err);
@@ -132,20 +110,6 @@ const EditPurchaseRequisition = () => {
     }
   }, [form, data]);
 
-  // Update current stock when part number changes
-  //   useEffect(() => {
-  //     if (form.partNumber && !originalData) { // Only auto-update if not editing an existing record
-  //       const selectedPart = partNumbers.find(part => part.partNo === form.partNumber);
-  //       if (selectedPart && selectedPart.currentStock) {
-  //         setForm(prevForm => ({
-  //           ...prevForm,
-  //           currentStock: selectedPart.currentStock.toString()
-  //         }));
-  //       }
-  //     }
-  //   }, [form.partNumber, partNumbers, originalData]);
-
-  // Handle part number (productName) change
   const handleProductChange = (e) => {
     const selected = e.target.value;
     setSelectedProduct(selected);
@@ -167,7 +131,6 @@ const EditPurchaseRequisition = () => {
     setForm({ ...form, [name]: value });
   };
 
-  // Helper function to validate each field
   const validateField = (fieldName, value, rules) => {
     if (!value) return `${fieldName} is required.`;
 
@@ -183,10 +146,9 @@ const EditPurchaseRequisition = () => {
       return `${fieldName} has invalid characters.`;
     }
 
-    return null; // No error
+    return null;
   };
 
-  // Validation rules object
   const validationRules = {
     partNumber: {
       length: 12,
@@ -195,42 +157,33 @@ const EditPurchaseRequisition = () => {
       length: 255,
       regex: /^[a-zA-Z0-9\s]*$/,
     },
-    // currentStock: {
-    //   type: "number",
-    //   length: 10,
-    // },
     requiredQty: {
       type: "number",
       length: 10,
     },
-    // remark: {
-    //   length: 255,
-    //   regex: /^[a-zA-Z0-9\s]*$/,
-    // },
   };
 
-const validateDataType = (event, dataType) => {
-  let value = event.target.value;
+  const validateDataType = (event, dataType) => {
+    let value = event.target.value;
 
-  if (dataType === "A") {
-    value = value.replace(/[^a-zA-Z0-9 ]/g, "");
-  } else if (dataType === "N") {
-    value = value.replace(/[^0-9]/g, "");
-  } else if (dataType === "ANS") {
-    value = value.replace(/[^a-zA-Z0-9@.]/g, "");
-  }
+    if (dataType === "A") {
+      value = value.replace(/[^a-zA-Z0-9 ]/g, "");
+    } else if (dataType === "N") {
+      value = value.replace(/[^0-9]/g, "");
+    } else if (dataType === "ANS") {
+      value = value.replace(/[^a-zA-Z0-9@.]/g, "");
+    }
 
-  event.target.value = value;
+    event.target.value = value;
 
-  // ✅ Only mark as valid if value is not empty
-  if (value.trim().length > 0) {
-    event.target.classList.add("is-valid");
-    event.target.classList.remove("is-invalid");
-  } else {
-    event.target.classList.remove("is-valid");
-    event.target.classList.add("is-invalid");
-  }
-};
+    if (value.trim().length > 0) {
+      event.target.classList.add("is-valid");
+      event.target.classList.remove("is-invalid");
+    } else {
+      event.target.classList.remove("is-valid");
+      event.target.classList.add("is-invalid");
+    }
+  };
 
   function validateLen(event, minLen, maxLen) {
     let value = event.target.value.substring(0, maxLen);
@@ -247,22 +200,22 @@ const validateDataType = (event, dataType) => {
       event.target.classList.remove("is-invalid");
     }
   }
- const clearValidationClasses = () => {
+
+  const clearValidationClasses = () => {
     const form = document.querySelector("form");
     const inputs = form.querySelectorAll(".form-control, .form-select");
     inputs.forEach((input) => {
       input.classList.remove("is-valid", "is-invalid");
     });
   };
-  // Handle form submission to update the requisition
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Iterate through each field and validate
     for (const [field, rules] of Object.entries(validationRules)) {
       const error = validateField(field, form[field], rules);
       if (error) {
-        alert(error);
+        toast.error(error);
         return;
       }
     }
@@ -270,7 +223,6 @@ const validateDataType = (event, dataType) => {
     try {
       await updatePurchaseRequisition(RequisitionID, form);
       toast.success("Purchase Requisition updated successfully!");
-      // Navigate back to the list view after successful update
       navigate(-1);
     } catch (error) {
       console.error("Error updating purchase requisition:", error);
@@ -278,25 +230,19 @@ const validateDataType = (event, dataType) => {
     }
   };
 
-  // Cancel editing and navigate back
   const handleCancel = () => {
     navigate(-1);
   };
 
   if (isLoading) {
     return (
-      <div className="wrapper">
+      <div className={styles.wrapper}>
         <Sidebar />
-        <div className="content">
+        <div className={styles.content}>
           <Header />
-          <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ height: "70vh" }}
-          >
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <span className="ms-2">Loading requisition data...</span>
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <span className={styles.loadingText}>Loading requisition data...</span>
           </div>
         </div>
         <Footer />
@@ -306,13 +252,13 @@ const validateDataType = (event, dataType) => {
 
   if (error) {
     return (
-      <div className="wrapper">
+      <div className={styles.wrapper}>
         <Sidebar />
-        <div className="content">
+        <div className={styles.content}>
           <Header />
-          <div className="alert alert-danger m-4">
-            {error}
-            <button className="btn btn-primary ms-3" onClick={handleCancel}>
+          <div className={styles.errorContainer}>
+            <div className={styles.errorBox}>{error}</div>
+            <button className={styles.btnCancel} onClick={handleCancel}>
               Back to List
             </button>
           </div>
@@ -323,160 +269,166 @@ const validateDataType = (event, dataType) => {
   }
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="Edit Purchase Requisition"
-            isBack={true}
-          />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button
+              className={styles.backButton}
+              onClick={() => navigate(-1)}
+            >
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>
+                Edit Purchase Requisition
+              </span>
+            </div>
+          </div>
 
-          <div className="my-2 p-2">
-            <div className="container-fluid">
-              <div
-                className="row mx-1 card border border-dark shadow-lg py-2"
-                style={{ minHeight: "397px" }}
-              >
-                <div className="col-md-12">
-                  <form onSubmit={handleSubmit} style={{ height: "100%" }}>
-                    <div className="col-md-12 p-2 d-flex">
-                      {/* <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-1">
-                          Sr No
-                        </label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="srNo"
-                          onInput={(event) => {
-                            validateDataType(event, "N");
-                          }}
-                          value={form.srNo}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div> */}
-                    
-                    <div className="col-md-6 p-2 d-flex">
-                      <label className="col-md-4 mt-2">Part Number</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="partNumber"
-                          value={form.partNumber}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
+          {/* Form Card */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form onSubmit={handleSubmit}>
+                  {/* Part Number & Description */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Number <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="partNumber"
+                        value={form.partNumber}
+                        onChange={handleChange}
+                        required
+                        disabled
+                      />
                     </div>
-              
-                    <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Description</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="description"
-                          value={form.description}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Description <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="description"
+                        value={form.description}
+                        onChange={handleChange}
+                        required
+                        disabled
+                      />
                     </div>
-</div>
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Current Stock</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="currentStock"
-                          value={form.currentStock}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Required Qty</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="requiredQty"
-                          onInput={(event) => {
-                            validateDataType(event, "N");
-                          }}
-                          value={form.requiredQty}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-1 d-flex">
-                        <label className="col-md-4 mt-2">
-                          Unit of Measurement
-                        </label>
-                        <select
-                          className="form-select w-100"
-                          name="unitOfMeasurement"
-                          value={form.unitOfMeasurement}
-                          onChange={handleChange}
-                          required
-                        >
-                          <option value="">Select Unit</option>
-                          <option value="EA">EA</option>
-                          <option value="RL">RL</option>
-                          <option value="QT">QT</option>
-                          <option value="GAL">GAL</option>
-                          <option value="KIT">KIT</option>
-                          <option value="LTR">LTR</option>
-                          <option value="SHT">SHT</option>
-                          <option value="Sq.ft">Sq.ft</option>
-                          <option value="Sq.mtr">Sq.mtr</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Required Date</label>
-                        <input
-                          className="form-control w-100"
-                          type="date"
-                          name="requiredDate"
-                          value={form.requiredDate}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Remark</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="remark"
-                          value={form.remark}
-                          onChange={handleChange}
-                          
-                        />
-                      </div>
-                    </div>
+                  </div>
 
-                    <div className="col-md-12 text-end m-1 p-4 text-right">
-                      <button
-                        type="button"
-                        className="btn btn-secondary me-2"
-                        onClick={handleCancel}
+                  {/* Current Stock & Required Qty */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Current Stock <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="currentStock"
+                        value={form.currentStock}
+                        onChange={handleChange}
+                        required
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Required Qty <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="requiredQty"
+                        onInput={(event) => validateDataType(event, "N")}
+                        value={form.requiredQty}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Unit of Measurement */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Unit of Measurement <span className={styles.required}>*</span>
+                      </label>
+                      <select
+                        className={styles.select}
+                        name="unitOfMeasurement"
+                        value={form.unitOfMeasurement}
+                        onChange={handleChange}
+                        required
                       >
-                        Cancel
-                      </button>
-                      <button type="submit" className="btn btn-primary">
-                        Update Requisition
-                      </button>
+                        <option value="">Select Unit</option>
+                        <option value="EA">EA</option>
+                        <option value="RL">RL</option>
+                        <option value="QT">QT</option>
+                        <option value="GAL">GAL</option>
+                        <option value="KIT">KIT</option>
+                        <option value="LTR">LTR</option>
+                        <option value="SHT">SHT</option>
+                        <option value="Sq.ft">Sq.ft</option>
+                        <option value="Sq.mtr">Sq.mtr</option>
+                      </select>
                     </div>
-                  </form>
-                </div>
+                  </div>
+
+                  {/* Required Date & Remark */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Required Date <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="requiredDate"
+                        value={form.requiredDate}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Remark</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="remark"
+                        value={form.remark}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className={styles.formActions}>
+                    <button
+                      type="button"
+                      className={styles.btnCancel}
+                      onClick={handleCancel}
+                    >
+                      <i className="fa fa-times"></i>
+                      <span>Cancel</span>
+                    </button>
+                    <button type="submit" className={styles.btnUpdate}>
+                      <i className="fa fa-check"></i>
+                      <span>Update Requisition</span>
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

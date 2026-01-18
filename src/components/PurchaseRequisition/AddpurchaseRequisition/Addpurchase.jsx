@@ -2,17 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
-import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import {
   createPurchaseRequisition,
   fetchCurrentQuantityFromStore,
+  fetchPartNumbersAndDescriptions,
 } from "../../../services/db_manager";
-// Import functions to fetch data from your API
-// Assuming you have these functions in your services
-import { fetchPartNumbersAndDescriptions } from "../../../services/db_manager";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import styles from "./AddPurchaseRequisition.module.css";
 
 const AddPurchaseRequisition = () => {
-  // State for the current form being filled
+  const navigate = useNavigate();
+  
   const [form, setForm] = useState({
     partNumber: "",
     description: "",
@@ -23,21 +24,15 @@ const AddPurchaseRequisition = () => {
     unitOfMeasurement: "",
   });
 
-  // State to store all the purchase requisitions added
   const [purchaseRequisitions, setPurchaseRequisitions] = useState([]);
-
-  // State to store dropdown options from API
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // State for searchable dropdown
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const dropdownRef = useRef(null);
 
-  // Set default system date on component mount
   useEffect(() => {
     const today = new Date();
     const year = today.getFullYear();
@@ -51,48 +46,17 @@ const AddPurchaseRequisition = () => {
     }));
   }, []);
 
-  // Fetch data once on component mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetchPartNumbersAndDescriptions(); // replace with actual API call
+        const response = await fetchPartNumbersAndDescriptions();
         setData(response);
         setFilteredData(response);
         setError(null);
       } catch (err) {
         console.error("API Error:", err);
         setError("Failed to load product data. Please try again.");
-        // fallback data with alternateProduct field
-        // const fallbackData = [
-        //   {
-        //     productName: "PART001",
-        //     alternateProduct: "Aircraft Engine Component",
-        //     unitOfMeasurement: "EA",
-        //   },
-        //   {
-        //     productName: "PART002",
-        //     alternateProduct: "Hydraulic Pump Assembly",
-        //     unitOfMeasurement: "KIT",
-        //   },
-        //   {
-        //     productName: "PART003",
-        //     alternateProduct: "Electrical Wiring Harness",
-        //     unitOfMeasurement: "RL",
-        //   },
-        //   {
-        //     productName: "PART004",
-        //     alternateProduct: "Landing Gear Strut",
-        //     unitOfMeasurement: "EA",
-        //   },
-        //   {
-        //     productName: "PART005",
-        //     alternateProduct: "Navigation System Module",
-        //     unitOfMeasurement: "KIT",
-        //   },
-        // ];
-        // setData(fallbackData);
-        // setFilteredData(fallbackData);
       } finally {
         setLoading(false);
       }
@@ -101,7 +65,6 @@ const AddPurchaseRequisition = () => {
     fetchData();
   }, []);
 
-  // Filter data based on search term
   useEffect(() => {
     if (searchTerm) {
       const filtered = data.filter(
@@ -118,7 +81,6 @@ const AddPurchaseRequisition = () => {
     }
   }, [searchTerm, data]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -132,7 +94,6 @@ const AddPurchaseRequisition = () => {
     };
   }, []);
 
-  // Handle part number selection from searchable dropdown
   const handlePartSelection = (selectedItem) => {
     setForm((prevForm) => ({
       ...prevForm,
@@ -153,12 +114,12 @@ const AddPurchaseRequisition = () => {
           if (result && result.data !== null && result.data !== undefined) {
             setForm((prev) => ({
               ...prev,
-              currentStock: result.data, // directly use the integer
+              currentStock: result.data,
             }));
           } else {
             setForm((prev) => ({
               ...prev,
-              currentStock: 0, // directly use the integer
+              currentStock: 0,
             }));
           }
         } catch (err) {
@@ -169,13 +130,11 @@ const AddPurchaseRequisition = () => {
     }
   }, [form.partNumber]);
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
     setIsDropdownOpen(true);
 
-    // If user clears the search, clear the form
     if (!value) {
       setForm((prevForm) => ({
         ...prevForm,
@@ -191,7 +150,6 @@ const AddPurchaseRequisition = () => {
     setForm({ ...form, [name]: value });
   };
 
-  // Helper function to validate each field
   const validateField = (fieldName, value, rules) => {
     if (!value) return `${fieldName} is required.`;
 
@@ -207,10 +165,9 @@ const AddPurchaseRequisition = () => {
       return `${fieldName} has invalid characters.`;
     }
 
-    return null; // No error
+    return null;
   };
 
-  // Validation rules object
   const validationRules = {
     partNumber: {
       length: 255,
@@ -219,18 +176,10 @@ const AddPurchaseRequisition = () => {
       length: 255,
       regex: /^[a-zA-Z0-9\s\-_.,/]*$/,
     },
-    // currentStock: {
-    //   type: "number",
-    //   length: 10,
-    // },
     requiredQty: {
       type: "number",
       length: 10,
     },
-    // remark: {
-    //   length: 255,
-    //   regex: /^[a-zA-Z0-9\s]*$/,
-    // },
   };
 
   const validateDataType = (event, dataType) => {
@@ -246,7 +195,6 @@ const AddPurchaseRequisition = () => {
 
     event.target.value = value;
 
-    // ✅ Only mark as valid if value is not empty
     if (value.trim().length > 0) {
       event.target.classList.add("is-valid");
       event.target.classList.remove("is-invalid");
@@ -256,7 +204,6 @@ const AddPurchaseRequisition = () => {
     }
   };
 
-  // Function to clear all validation classes from form inputs
   const clearValidationClasses = () => {
     const form = document.querySelector("form");
     const inputs = form.querySelectorAll(".form-control, .form-select");
@@ -265,11 +212,9 @@ const AddPurchaseRequisition = () => {
     });
   };
 
-  // Add a new purchase requisition to the list
   const handleAddRequisition = (e) => {
     e.preventDefault();
 
-    // Log all form field values to console
     console.log("Form values:", {
       partNumber: form.partNumber,
       description: form.description,
@@ -280,44 +225,39 @@ const AddPurchaseRequisition = () => {
       unitOfMeasurement: form.unitOfMeasurement,
     });
 
-    // Iterate through each field and validate
     for (const [field, rules] of Object.entries(validationRules)) {
       const error = validateField(field, form[field], rules);
       if (error) {
         console.log(`Validation error for ${field}:`, error);
-        alert(error);
+        toast.error(error);
         return;
       }
     }
 
     const alreadyExists = purchaseRequisitions.some(
-    (req) => req.partNumber === form.partNumber
-  );
+      (req) => req.partNumber === form.partNumber
+    );
 
-  if (alreadyExists) {
-    alert(`Part Number "${form.partNumber}" is already in the list!`);
-    return;
-  }
-  
-    // Add the current form to the purchaseRequisitions array with a unique ID
+    if (alreadyExists) {
+      toast.warning(`Part Number "${form.partNumber}" is already in the list!`);
+      return;
+    }
+
     const newRequisition = {
       ...form,
-      id: Date.now(), // Using timestamp as a simple unique ID
+      id: Date.now(),
     };
 
     setPurchaseRequisitions([...purchaseRequisitions, newRequisition]);
 
-    // Clear validation classes before resetting form
     clearValidationClasses();
 
-    // Get current system date for reset
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
 
-    // Reset the form after adding to the list
     setForm({
       partNumber: "",
       description: "",
@@ -328,34 +268,26 @@ const AddPurchaseRequisition = () => {
       unitOfMeasurement: "",
     });
 
-    // Reset search term and close dropdown
     setSearchTerm("");
     setIsDropdownOpen(false);
 
-    alert("Purchase Requisition added to the list!");
+    toast.success("Purchase Requisition added to the list!");
   };
 
-  // Remove a purchase requisition from the list
   const handleRemoveRequisition = (id) => {
     setPurchaseRequisitions(
       purchaseRequisitions.filter((req) => req.id !== id)
     );
+    toast.info("Item removed from list");
   };
 
-  // Submit all purchase requisitions
   const handleSubmitAll = async () => {
     if (purchaseRequisitions.length === 0) {
-      alert("No purchase requisitions to submit!");
+      toast.warning("No purchase requisitions to submit!");
       return;
     }
 
     try {
-      // You can modify this to submit all requisitions at once if your API supports it
-      // For now, we'll just show a success message
-      alert(
-        `${purchaseRequisitions.length} Purchase Requisitions ready to be submitted!`
-      );
-      // let newData=[...purchaseRequisitions]
       const requisitionsToSubmit = purchaseRequisitions.map((req) => ({
         partNumber: req.partNumber,
         description: req.description,
@@ -365,345 +297,272 @@ const AddPurchaseRequisition = () => {
         unitOfMeasurement: req.unitOfMeasurement,
         remark: req.remark,
       }));
-      // Uncomment below to actually submit each requisition to the API
-      // for (const requisition of purchaseRequisitions) {
+
       await createPurchaseRequisition(requisitionsToSubmit);
-      // }
       setPurchaseRequisitions([]);
-      alert("All Purchase Requisitions submitted successfully!");
+      toast.success("All Purchase Requisitions submitted successfully!");
     } catch (error) {
       console.error("Error submitting purchase requisitions:", error);
-      alert("Failed to submit purchase requisitions.");
+      toast.error("Failed to submit purchase requisitions.");
     }
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="Add Purchase Requisition"
-            isBack={true}
-          />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button
+              className={styles.backButton}
+              onClick={() => navigate(-1)}
+            >
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>
+                Add Purchase Requisition
+              </span>
+            </div>
+          </div>
 
-          <div className="my-2 p-2">
-            <div className="container-fluid">
-              <div
-                className="row mx-1 card border border-dark shadow-lg py-2"
-                style={{ minHeight: "397px" }}
-              >
-                <div className="col-md-12">
-                  <form
-                    onSubmit={handleAddRequisition}
-                    style={{ height: "100%" }}
-                  >
-                    <div className="col-md-12 p-2 d-flex">
-                      {/* <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-1">Sr No</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="srNo"
-                          onInput={(event) => {
-                            validateDataType(event, "N");
-                          }}
-                          value={form.srNo}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div> */}
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Part Number *</label>
-                        {loading ? (
-                          <div className="d-flex align-items-center">
-                            <div
-                              className="spinner-border text-primary me-2"
-                              role="status"
-                            >
-                              <span className="visually-hidden">
-                                Loading...
-                              </span>
-                            </div>
-                            <span>Loading part numbers...</span>
-                          </div>
-                        ) : error ? (
-                          <div className="alert alert-danger w-100">
-                            {error}
-                          </div>
-                        ) : (
-                          <div
-                            className="w-100 position-relative"
-                            ref={dropdownRef}
-                          >
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Search part number..."
-                              value={searchTerm}
-                              onChange={handleSearchChange}
-                              onFocus={() => setIsDropdownOpen(true)}
-                              required
-                            />
-                            {isDropdownOpen && filteredData.length > 0 && (
-                              <div
-                                className="position-absolute w-100 bg-white border border-top-0 rounded-bottom shadow-lg"
-                                style={{
-                                  zIndex: 1000,
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
-                                }}
-                              >
-                                {filteredData.map((item, index) => (
-                                  <div
-                                    key={index}
-                                    className="p-2 border-bottom cursor-pointer hover-bg-light"
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => handlePartSelection(item)}
-                                    onMouseEnter={(e) =>
-                                      (e.target.style.backgroundColor =
-                                        "#f8f9fa")
-                                    }
-                                    onMouseLeave={(e) =>
-                                      (e.target.style.backgroundColor = "white")
-                                    }
-                                  >
-                                    <div className="fw-bold">
-                                      {item.productName}
-                                      {item.mappingType === "DOWN" ? (
-                                        <span style={{ fontSize: "20px" }}>
-                                          ↓
-                                        </span>
-                                      ) : item.mappingType === "UP" ? (
-                                        <span style={{ fontSize: "20px" }}>
-                                          ↑
-                                        </span>
-                                      ) : item.mappingType === "BOTH" ? (
-                                        <span style={{ fontSize: "20px" }}>
-                                          ↑↓
-                                        </span>
-                                      ) : (
-                                        ""
-                                      )}
-                                    </div>
-                                    <div className="text-muted small">
-                                      {`Alternate-Product 1: ${
-                                        item?.alternateProduct1 || "N/A"
-                                      }`}
-                                    </div>
-                                    <div className="text-muted small">
-                                      {`Alternate-Product 2: ${
-                                        item?.alternateProduct2 || "N/A"
-                                      }`}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <hr className="mx-0 my-2 p-0 border" />
-
-                    {/* Description Dropdown (Disabled and auto-selected) */}
-                    <div className="col-md-12 p-3 d-flex">
-                      <label className="col-md-2 mt-2">Description *</label>
+          {/* Form Card */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form onSubmit={handleAddRequisition}>
+                  {/* Part Number */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Number <span className={styles.required}>*</span>
+                      </label>
                       {loading ? (
-                        <div className="d-flex align-items-center">
-                          <div
-                            className="spinner-border text-primary me-2"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                          <span>Loading descriptions...</span>
+                        <div className={styles.loadingBox}>
+                          <div className={styles.spinner}></div>
+                          <span>Loading part numbers...</span>
                         </div>
                       ) : error ? (
-                        <div className="alert alert-danger w-100">{error}</div>
+                        <div className={styles.errorBox}>{error}</div>
                       ) : (
-                        <select
-                          className="form-select w-100"
-                          name="description"
-                          value={form.description}
-                          disabled
-                        >
-                          <option value="">
-                            {form.description || "Auto-selected"}
-                          </option>
-                        </select>
+                        <div className={styles.searchableDropdown} ref={dropdownRef}>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            placeholder="Search part number..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            onFocus={() => setIsDropdownOpen(true)}
+                            required
+                          />
+                          {isDropdownOpen && filteredData.length > 0 && (
+                            <div className={styles.dropdownMenu}>
+                              {filteredData.map((item, index) => (
+                                <div
+                                  key={index}
+                                  className={styles.dropdownItem}
+                                  onClick={() => handlePartSelection(item)}
+                                >
+                                  <div className={styles.itemTitle}>
+                                    {item.productName}
+                                    {item.mappingType === "DOWN" && (
+                                      <span className={styles.arrow}>↓</span>
+                                    )}
+                                    {item.mappingType === "UP" && (
+                                      <span className={styles.arrow}>↑</span>
+                                    )}
+                                    {item.mappingType === "BOTH" && (
+                                      <span className={styles.arrow}>↑↓</span>
+                                    )}
+                                  </div>
+                                  <div className={styles.itemSubtitle}>
+                                    Alternate-Product 1: {item?.alternateProduct1 || "N/A"}
+                                  </div>
+                                  <div className={styles.itemSubtitle}>
+                                    Alternate-Product 2: {item?.alternateProduct2 || "N/A"}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Current Stock *</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="currentStock"
-                          value={form.currentStock}
-                          onChange={handleChange}
-                          required
-                          disabled
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Required Qty *</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="requiredQty"
-                          onInput={(event) => {
-                            validateDataType(event, "N");
-                          }}
-                          value={form.requiredQty}
-                          onChange={handleChange}
-                          required
-                          placeholder="Enter required quantity"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-1 d-flex">
-                        <label className="col-md-4 mt-2">
-                          Unit of Measurement *
-                        </label>
-                        {loading ? (
-                          <div className="d-flex align-items-center">
-                            <div
-                              className="spinner-border text-primary me-2"
-                              role="status"
-                            >
-                              <span className="visually-hidden">
-                                Loading...
-                              </span>
-                            </div>
-                            <span>Loading descriptions...</span>
-                          </div>
-                        ) : error ? (
-                          <div className="alert alert-danger w-100">
-                            {error}
-                          </div>
-                        ) : (
-                          <select
-                            className="form-select w-100"
-                            name="unitOfMeasurement"
-                            value={form.unitOfMeasurement}
-                            onChange={handleChange}
-                            required
-                            disabled
-                          >
-                            <option value="">Auto-selected from part</option>
-                            <option value="EA">EA</option>
-                            <option value="RL">RL</option>
-                            <option value="QT">QT</option>
-                            <option value="GAL">GAL</option>
-                            <option value="KIT">KIT</option>
-                            <option value="LTR">LTR</option>
-                            <option value="SHT">SHT</option>
-                            <option value="Sq.ft">Sq.ft</option>
-                            <option value="Sq.mtr">Sq.mtr</option>
-                          </select>
-                        )}
-                      </div>
-                    </div>
-                    <div className="col-md-12 d-flex">
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Required Date *</label>
-                        <input
-                          className="form-control w-100"
-                          type="date"
-                          name="requiredDate"
-                          value={form.requiredDate}
-                          disabled
-                          style={{
-                            backgroundColor: "#f8f9fa",
-                            cursor: "not-allowed",
-                          }}
-                        />
-                      </div>
-                      <div className="col-md-6 p-2 d-flex">
-                        <label className="col-md-4 mt-2">Remark</label>
-                        <input
-                          className="form-control w-100"
-                          type="text"
-                          name="remark"
-                          onInput={(event) => {
-                            validateDataType(event, "A");
-                          }}
-                          value={form.remark}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </div>
+                  </div>
 
-                    <div className="col-md-12 text-end m-1 p-4 text-right">
-                      <button type="submit" className="btn btn-primary">
-                        Add to List
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-
-              {/* Display the list of purchase requisitions */}
-              {purchaseRequisitions.length > 0 && (
-                <div className="row mx-1 card border border-dark shadow-lg py-2 mt-4">
-                  <div className="col-md-12">
-                    <h4 className="mt-3 mb-3">Purchase Requisitions List</h4>
-                    <div className="table-responsive">
-                      <table className="table table-striped table-bordered">
-                        <thead>
-                          <tr>
-                            <th>Part Number</th>
-                            <th>Description</th>
-                            <th>Current Stock</th>
-                            <th>Required Qty</th>
-                            <th>Unit of Measurement</th>
-                            <th>Required Date</th>
-                            <th>Remark</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {purchaseRequisitions.map((req) => (
-                            <tr key={req.id}>
-                              <td>{req.partNumber}</td>
-                              <td>{req.description}</td>
-                              <td>{req.currentStock}</td>
-                              <td>{req.requiredQty}</td>
-                              <td>{req.unitOfMeasurement}</td>
-                              <td>{req.requiredDate}</td>
-                              <td>{req.remark}</td>
-                              <td>
-                                <button
-                                  className="btn btn-danger btn-sm"
-                                  onClick={() =>
-                                    handleRemoveRequisition(req.id)
-                                  }
-                                >
-                                  Remove
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <div className="text-end mb-3">
-                      <button
-                        className="btn btn-success"
-                        onClick={handleSubmitAll}
-                      >
-                        Submit All Requisitions
-                      </button>
+                  {/* Description */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Description <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        value={form.description || "Auto-selected"}
+                        disabled
+                      />
                     </div>
                   </div>
-                </div>
-              )}
+
+                  {/* Current Stock & Required Qty */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Current Stock <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="currentStock"
+                        value={form.currentStock}
+                        onChange={handleChange}
+                        required
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Required Qty <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="requiredQty"
+                        onInput={(event) => validateDataType(event, "N")}
+                        value={form.requiredQty}
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter required quantity"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Unit of Measurement */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Unit of Measurement <span className={styles.required}>*</span>
+                      </label>
+                      <select
+                        className={styles.select}
+                        name="unitOfMeasurement"
+                        value={form.unitOfMeasurement}
+                        onChange={handleChange}
+                        required
+                        disabled
+                      >
+                        <option value="">Auto-selected from part</option>
+                        <option value="EA">EA</option>
+                        <option value="RL">RL</option>
+                        <option value="QT">QT</option>
+                        <option value="GAL">GAL</option>
+                        <option value="KIT">KIT</option>
+                        <option value="LTR">LTR</option>
+                        <option value="SHT">SHT</option>
+                        <option value="Sq.ft">Sq.ft</option>
+                        <option value="Sq.mtr">Sq.mtr</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Required Date & Remark */}
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Required Date <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="requiredDate"
+                        value={form.requiredDate}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Remark</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="remark"
+                        onInput={(event) => validateDataType(event, "A")}
+                        value={form.remark}
+                        onChange={handleChange}
+                        placeholder="Optional remarks"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className={styles.formActions}>
+                    <button type="submit" className={styles.btnAdd}>
+                      <i className="fa fa-plus"></i>
+                      <span>Add to List</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
+
+            {/* Requisitions List */}
+            {purchaseRequisitions.length > 0 && (
+              <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <i className="fa fa-list"></i>
+                  <span>Purchase Requisitions List ({purchaseRequisitions.length})</span>
+                </div>
+                <div className={styles.cardBody}>
+                  <div className={styles.tableContainer}>
+                    <table className={styles.table}>
+                      <thead>
+                        <tr>
+                          <th>Part Number</th>
+                          <th>Description</th>
+                          <th>Current Stock</th>
+                          <th>Required Qty</th>
+                          <th>Unit</th>
+                          <th>Required Date</th>
+                          <th>Remark</th>
+                          <th className={styles.actionsHeader}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {purchaseRequisitions.map((req, index) => (
+                          <tr key={req.id} style={{ animationDelay: `${index * 0.05}s` }}>
+                            <td>{req.partNumber}</td>
+                            <td>{req.description}</td>
+                            <td>{req.currentStock}</td>
+                            <td>{req.requiredQty}</td>
+                            <td>{req.unitOfMeasurement}</td>
+                            <td>{req.requiredDate}</td>
+                            <td>{req.remark || "-"}</td>
+                            <td className={styles.actionsCell}>
+                              <button
+                                className={styles.btnRemove}
+                                onClick={() => handleRemoveRequisition(req.id)}
+                                title="Remove"
+                              >
+                                <i className="fa-solid fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className={styles.submitActions}>
+                    <button className={styles.btnSubmitAll} onClick={handleSubmitAll}>
+                      <i className="fa fa-check-circle"></i>
+                      <span>Submit All Requisitions</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

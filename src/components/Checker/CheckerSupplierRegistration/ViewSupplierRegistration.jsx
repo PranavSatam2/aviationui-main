@@ -2,18 +2,16 @@ import React, { useEffect, useState } from "react";
 import Header from "../../Header";
 import Footer from "../../Footer";
 import Sidebar from "../../Sidebar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import GeneralTab from "../../tabs/supplier_registration/GeneralTab";
 import SupplierAnalysisTab from "../../tabs/supplier_registration/SupplierAnalysisTab";
 import QualityProcessTab from "../../tabs/supplier_registration/QualityProcessTab";
 import IncomingInspectionTab from "../../tabs/supplier_registration/IncomingInspectionTab";
 import DocAndProcControl from "../../tabs/supplier_registration/DocAndProcControl";
 import MaterialAndOther from "../../tabs/supplier_registration/MaterialAndOther";
-import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
-import { Modal, Button, Form } from "react-bootstrap";
 import { ApproveSupplier } from "../../../services/db_manager";
 import { toast } from "react-toastify";
-import {  useNavigate } from "react-router-dom";
+import styles from "./ViewSupplierRegistration.module.css";
 
 const ViewSupplierRegistration = () => {
   // Variables
@@ -68,10 +66,23 @@ const ViewSupplierRegistration = () => {
     houseKeeping: "",
   };
 
+  const tabs = [
+    { id: 0, name: "General", icon: "fa-building" },
+    { id: 1, name: "Quality Analysis", icon: "fa-chart-line" },
+    { id: 2, name: "Quality Process", icon: "fa-cogs" },
+    { id: 3, name: "Incoming Inspection", icon: "fa-clipboard-check" },
+    {
+      id: 4,
+      name: "Process / Document / Procurement Control",
+      icon: "fa-file-alt",
+    },
+    { id: 5, name: "Measuring Equipment & Other", icon: "fa-tools" },
+  ];
+
   // ######################################### HOOKS #######################################
 
   const [dataMap, setDataMap] = useState(formVariables);
-  const [isActiveTab, setIsActiveTab] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
   const [disabledField, setDisabledField] = useState(false);
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -83,21 +94,6 @@ const ViewSupplierRegistration = () => {
   const navigate = useNavigate();
   const { supplierId, supplierData } = location.state || {};
 
-  useEffect(() => {
-    const checkActiveTab = () => {
-      const activeTab = document.getElementById("Proc&Other");
-      setIsActiveTab(
-        activeTab?.classList.contains("show") &&
-          activeTab?.classList.contains("active")
-      );
-    };
-
-    checkActiveTab();
-    const interval = setInterval(checkActiveTab, 100);
-
-    return () => clearInterval(interval);
-  }, []);
-
   // Set selectedItems when supplierId is available
   useEffect(() => {
     if (supplierId) {
@@ -105,25 +101,17 @@ const ViewSupplierRegistration = () => {
     }
   }, [supplierId]);
 
-  function handleNextTab() {
-    const activeTab = document.querySelector(".nav-link.active");
-    const nextTab =
-      activeTab.parentElement.nextElementSibling?.querySelector("a");
-
-    if (nextTab) {
-      nextTab.click();
+  const handleNextTab = () => {
+    if (activeTab < tabs.length - 1) {
+      setActiveTab(activeTab + 1);
     }
-  }
+  };
 
-  function handlePrevTab() {
-    const activeTab = document.querySelector(".nav-link.active");
-    const prevTab =
-      activeTab.parentElement.previousElementSibling?.querySelector("a");
-
-    if (prevTab) {
-      prevTab.click();
+  const handlePrevTab = () => {
+    if (activeTab > 0) {
+      setActiveTab(activeTab - 1);
     }
-  }
+  };
 
   // Modal handlers
   const handleShowModal = (action) => {
@@ -138,355 +126,237 @@ const ViewSupplierRegistration = () => {
     setRemark("");
   };
 
- const handleSubmitAction = async () => {
+  const handleSubmitAction = async () => {
     const action = actionType === "accept" ? "accepted" : "rejected";
-    // Add 'remark' to each object in selecteSupplierData
     const updatedSupplierData = {
       ...supplierData,
       remark: remark,
-      // supplierId: selectedItem,
-      userRole:'QM',
-      userAction: action === "rejected" ? "3" : "2", 
+      userRole: "QM",
+      userAction: action === "rejected" ? "3" : "2",
     };
     try {
       const response = await ApproveSupplier(updatedSupplierData);
       toast.success(`Supplier action successfully`);
-      navigate(-1)
-      // fetchData();
+      navigate(-1);
     } catch (error) {
       console.error("Error fetching supplier details: ", error);
       toast.error("Failed to fetch supplier details");
     }
-  
-    // Reset states
+
     setRemark("");
     handleCloseModal();
   };
-  
+
   // ################################### FUNCTIONS ###############################
 
   useEffect(() => {
-    // Check if supplierData and supplierId are available
     if (supplierData && supplierId) {
       setDisabledField(true);
       setDataMap((prevData) => ({
         ...prevData,
-        ...supplierData, // Merge supplierData into dataMap
+        ...supplierData,
       }));
     }
   }, [supplierData, supplierId]);
 
-  // These are empty function implementations to pass to child components
-  // They won't do anything since we're in view-only mode
   const handleChange = () => {};
   const validateDataType = () => {};
   const validateLen = () => {};
   const errors = {};
 
+  const renderTabContent = () => {
+    const tabProps = {
+      dataMap,
+      handleChange,
+      validateDataType,
+      validateLen,
+      errors,
+      isViewOnly: true,
+      disabledField,
+    };
+
+    switch (activeTab) {
+      case 0:
+        return <GeneralTab {...tabProps} />;
+      case 1:
+        return <SupplierAnalysisTab {...tabProps} />;
+      case 2:
+        return <QualityProcessTab {...tabProps} />;
+      case 3:
+        return <IncomingInspectionTab {...tabProps} />;
+      case 4:
+        return <DocAndProcControl {...tabProps} />;
+      case 5:
+        return <MaterialAndOther {...tabProps} />;
+      default:
+        return null;
+    }
+  };
+
   // ############################### RETURN-COMPONENT #############################
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
 
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        {/* content Begin*/}
-        <div style={{ marginTop: "10px", marginBottom: "4rem" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="View Supplier Registration"
-            isBack={true}
-          />
+        
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>
+                View Supplier Registration
+              </span>
+            </div>
+          </div>
 
-          {/* Content Body */}
-          <div
-            className="card border border-dark shadow mx-4 my-2 p-2"
-            style={{ minHeight: "60vh" }}
-          >
-            <div className="col-md-12">
-              <ul className="nav nav-tabs" id="myTabs" role="tablist">
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link active"
-                    id="home-tab"
-                    data-bs-toggle="tab"
-                    href="#home"
-                    role="tab"
-                    aria-controls="home"
-                    aria-selected="true"
-                  >
-                    General
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="profile-tab"
-                    data-bs-toggle="tab"
-                    href="#profile"
-                    role="tab"
-                    aria-controls="profile"
-                    aria-selected="false"
-                  >
-                    Quality Analysis
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="contact-tab"
-                    data-bs-toggle="tab"
-                    href="#contact"
-                    role="tab"
-                    aria-controls="contact"
-                    aria-selected="false"
-                  >
-                    Quality Process
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="inspection-tab"
-                    data-bs-toggle="tab"
-                    href="#inspection"
-                    role="tab"
-                    aria-controls="inspection"
-                    aria-selected="true"
-                  >
-                    Incoming Inspection
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="Doc&Proc-tab"
-                    data-bs-toggle="tab"
-                    href="#Doc&Proc"
-                    role="tab"
-                    aria-controls="Doc&Proc"
-                    aria-selected="false"
-                  >
-                    Process / Document / Procurement Control
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="Proc&Other-tab"
-                    data-bs-toggle="tab"
-                    href="#Proc&Other"
-                    role="tab"
-                    aria-controls="Proc&Other"
-                    aria-selected="false"
-                  >
-                    Measuring Equipment & Other
-                  </a>
-                </li>
-              </ul>
-              <div
-                className="tab-content mt-0 border"
-                id="myTabsContent"
-                style={{ minHeight: "60vh" }}
-              >
-                <div
-                  className="tab-pane fade show active"
-                  id="home"
-                  role="tabpanel"
-                  aria-labelledby="home-tab"
-                >
-                  {" "}
-                  <GeneralTab
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                    isViewOnly={true}
-                    disabledField={disabledField}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="profile"
-                  role="tabpanel"
-                  aria-labelledby="profile-tab"
-                >
-                  {" "}
-                  <SupplierAnalysisTab
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                    isViewOnly={true}
-                    disabledField={disabledField}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="contact"
-                  role="tabpanel"
-                  aria-labelledby="contact-tab"
-                >
-                  {" "}
-                  <QualityProcessTab
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                    isViewOnly={true}
-                    disabledField={disabledField}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="inspection"
-                  role="tabpanel"
-                  aria-labelledby="inspection-tab"
-                >
-                  {" "}
-                  <IncomingInspectionTab
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                    isViewOnly={true}
-                    disabledField={disabledField}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="Doc&Proc"
-                  role="tabpanel"
-                  aria-labelledby="Doc&Proc-tab"
-                >
-                  {" "}
-                  <DocAndProcControl
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                    isViewOnly={true}
-                    disabledField={disabledField}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="Proc&Other"
-                  role="tabpanel"
-                  aria-labelledby="Proc&Other-tab"
-                >
-                  {" "}
-                  <MaterialAndOther
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                    isViewOnly={true}
-                    disabledField={disabledField}
-                  />
-                </div>
-              </div>
-              <div className="mt-3 col-md-12 d-flex justify-content-between">
-                <div>
+          {/* Main Card */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              {/* Tab Navigation */}
+              <div className={styles.tabNavigation}>
+                {tabs.map((tab, index) => (
                   <button
-                    className="btn btn-outline-success mx-2"
+                    key={tab.id}
+                    className={`${styles.tabButton} ${
+                      activeTab === index ? styles.activeTab : ""
+                    }`}
+                    onClick={() => setActiveTab(index)}
+                  >
+                    <i className={`fa ${tab.icon}`}></i>
+                    <span className={styles.tabName}>{tab.name}</span>
+                    {activeTab === index && (
+                      <div className={styles.activeIndicator}></div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab Content */}
+              <div className={styles.tabContent}>{renderTabContent()}</div>
+
+              {/* Action Buttons */}
+              <div className={styles.actionSection}>
+                <div className={styles.actionButtons}>
+                  <button
+                    className={styles.btnApprove}
                     onClick={() => handleShowModal("accept")}
                   >
-                    <i className="fa-solid fa-check me-2"></i>
-                    Approve
+                    <i className="fa fa-check"></i>
+                    <span>Approve</span>
                   </button>
                   <button
-                    className="btn btn-outline-info mx-2"
+                    className={styles.btnSendToEdit}
                     onClick={() => handleShowModal("Send To Edit")}
                   >
-                    <i className="fa-solid fa-paper-plane me-2"></i>
-                    Send To Edit
+                    <i className="fa fa-paper-plane"></i>
+                    <span>Send To Edit</span>
                   </button>
                   <button
-                    className="btn btn-outline-danger mx-2"
+                    className={styles.btnReject}
                     onClick={() => handleShowModal("reject")}
                   >
-                    <i className="fa-solid fa-xmark me-2"></i>
-                    Reject
+                    <i className="fa fa-times"></i>
+                    <span>Reject</span>
                   </button>
                 </div>
 
                 {/* Navigation Buttons */}
-                <div>
+                <div className={styles.navigationButtons}>
                   <button
-                    type="button"
-                    className="btn btn-secondary mx-2"
+                    className={styles.btnSecondary}
                     onClick={handlePrevTab}
+                    disabled={activeTab === 0}
                   >
-                    Previous
+                    <i className="fa fa-chevron-left"></i>
+                    <span>Previous</span>
                   </button>
                   <button
-                    type="button"
-                    className="btn btn-primary"
+                    className={styles.btnPrimary}
                     onClick={handleNextTab}
+                    disabled={activeTab === tabs.length - 1}
                   >
-                    Next
+                    <span>Next</span>
+                    <i className="fa fa-chevron-right"></i>
                   </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        {/* Content End */}
+
         <Footer />
       </div>
 
-      {/* Accept/Reject Modal */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {actionType === "accept"
-              ? "Accept Suppliers"
-              : actionType === "Send To Edit"
-              ? "Send To Edit"
-              : "Reject Suppliers"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            Are you sure you want to {actionType} {selectedItems.length}{" "}
-            selected supplier{selectedItems.length !== 1 ? "s" : ""}?
-          </p>
-          <Form.Group className="mb-3">
-            <Form.Label>Remark</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={4}
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-              placeholder="Enter your remarks here..."
-              required
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancel
-          </Button>
-          <Button
-            variant={actionType === "accept" ? "success" : "danger"}
-            onClick={handleSubmitAction}
-            disabled={!remark.trim()}
+      {/* Custom Modal */}
+      {showModal && (
+        <div className={styles.modalOverlay} onClick={handleCloseModal}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
           >
-            Confirm{" "}
-            {actionType === "accept"
-              ? "Accept"
-              : actionType === "Send To Edit"
-              ? "Send"
-              : "Reject"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            <div className={styles.modalHeader}>
+              <h5 className={styles.modalTitle}>
+                {actionType === "accept"
+                  ? "Accept Supplier"
+                  : actionType === "Send To Edit"
+                  ? "Send To Edit"
+                  : "Reject Supplier"}
+              </h5>
+              <button
+                className={styles.modalCloseButton}
+                onClick={handleCloseModal}
+              >
+                ×
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <p className={styles.modalText}>
+                Are you sure you want to {actionType} {selectedItems.length}{" "}
+                selected supplier{selectedItems.length !== 1 ? "s" : ""}?
+              </p>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Remark</label>
+                <textarea
+                  className={styles.formTextarea}
+                  rows={4}
+                  value={remark}
+                  onChange={(e) => setRemark(e.target.value)}
+                  placeholder="Enter your remarks here..."
+                  required
+                />
+              </div>
+            </div>
+            <div className={styles.modalFooter}>
+              <button
+                className={styles.btnModalSecondary}
+                onClick={handleCloseModal}
+              >
+                Cancel
+              </button>
+              <button
+                className={`${styles.btnModalConfirm} ${
+                  actionType === "reject" ? styles.btnModalDanger : ""
+                }`}
+                onClick={handleSubmitAction}
+                disabled={!remark.trim()}
+              >
+                Confirm{" "}
+                {actionType === "accept"
+                  ? "Accept"
+                  : actionType === "Send To Edit"
+                  ? "Send"
+                  : "Reject"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

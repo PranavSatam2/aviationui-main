@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Footer from "./Footer";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { saveDispatchReport, fetchPartNumbersAndDescriptions, getCaFormNo } from "../services/db_manager";
+import { toast } from "react-toastify";
+import styles from "./AddDispatchReport.module.css";
 
 const AddDispatchReport = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const workOrderData = location.state?.workOrder || null;
+
   const [form, setForm] = useState({
     reportNo: "",
     reportDate: new Date().toISOString().split("T")[0],
@@ -33,42 +37,16 @@ const AddDispatchReport = () => {
     storesInChargeSign: ""
   });
 
-  // State to store dropdown options from API
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // 🔹 Get work order data from navigation state
-  const location = useLocation();
-  const workOrderData = location.state?.workOrder || null;
-  const navigate = useNavigate();
 
   useEffect(() => {
-      const loggedUser = sessionStorage.getItem("username"); // username stored at login
-      if (loggedUser) {
-        setForm((prev) => ({ ...prev, storesInChargeName: loggedUser }));
-      }
-    }, []);
-
-  //  useEffect(() => {
-  //      if (workOrderData.workOrderNo){
-  //        const fetchCAData = async () => {
-  //          try {
-  //            const response = await getCaFormNo(workOrderData.workOrderNo);
-  //            if (response?.data) {
-  //              setForm((prevForm) => ({
-  //       ...prevForm,
-  //       caFormNo: response.formTrackingNumber || "",
-  //       caFormDate: response.date14e || "",
-  //     }));
-  //            }
-  //          } catch (error) {
-  //            console.error("Error fetching CA data:", error);
-  //            alert("Failed to load CA data");
-  //          } 
-  //        };
-  //        fetchCAData();
-  //      }
-  //    }, [workOrderData.workOrderNo]);
+    const loggedUser = sessionStorage.getItem("username");
+    if (loggedUser) {
+      setForm((prev) => ({ ...prev, storesInChargeName: loggedUser }));
+    }
+  }, []);
 
   useEffect(() => {
     if (workOrderData) {
@@ -83,19 +61,16 @@ const AddDispatchReport = () => {
     }
   }, [workOrderData]);
 
-
-  // Fetch data once on component mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetchPartNumbersAndDescriptions(); // replace with actual API call
+        const response = await fetchPartNumbersAndDescriptions();
         setData(response);
         setError(null);
       } catch (err) {
         console.error("API Error:", err);
         setError("Failed to load product data. Please try again.");
-        // fallback data
         setData([
           { productName: "Sample A", productDescription: "Desc A" },
           { productName: "Sample B", productDescription: "Desc B" },
@@ -108,7 +83,6 @@ const AddDispatchReport = () => {
     fetchData();
   }, []);
 
-  // Handle part number (productName) change
   const handleProductChange = (e) => {
     const selected = e.target.value;
     const match = data.find((item) => item.productName === selected);
@@ -119,7 +93,6 @@ const AddDispatchReport = () => {
       partDescription: match ? match.productDescription : ""
     }));
   };
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -133,282 +106,369 @@ const AddDispatchReport = () => {
     e.preventDefault();
     try {
       const response = await saveDispatchReport(form);
-      // response could be response.data if you are using axios
-      alert(response?.message || "Dispatch report saved successfully!");
-      // resetForm();
-      // window.location.reload(); // reload after saving
-      navigate("/dispatchReport"); // navigate to view page
+      toast.success(response?.message || "Dispatch report saved successfully!");
+      navigate("/dispatchReport");
     } catch (error) {
       console.error("Error saving dispatch report", error);
-      alert(error?.response?.data?.message || "Failed to save dispatch report.");
+      toast.error(error?.response?.data?.message || "Failed to save dispatch report.");
     }
   };
 
-
-  const resetForm = () => {
-    setForm({
-      reportNo: "",
-      reportDate: "",
-      partNo: "",
-      partDescription: "",
-      orderNo: "",
-      customerName: "",
-      quantity: "",
-      batchNo: "",
-      challanNo: "",
-      challanDate: "",
-      challanRemark: "",
-      invoiceNo: "",
-      invoiceDate: "",
-      invoiceRemark: "",
-      caFormNo: "",
-      caFormDate: "",
-      caFormRemark: "",
-      ewayBill: "",
-      storesInchargeName: form.storesInChargeName,
-      storesInchargeSign: "",
-      ewayBillDate: "",
-      ewayBillRemark: ""
-    });
-    setError({});
-  };
-
-
-  const labelStyle = {
-    fontWeight: "bold",
-    display: "block",
-    marginBottom: "5px"
-  };
-
-  const inputStyle = {
-    width: "100%",
-    padding: "6px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    fontSize: "14px",
-    marginBottom: "10px"
-  };
-
-  const sectionStyle = {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "20px",
-    marginBottom: "20px"
-  };
-
-  const threeColStyle = {
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr 2fr",
-    gap: "20px",
-    marginBottom: "20px"
-  };
-
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="Add Dispatch Report"
-            isBack={true}
-          />
-          <div
-            className="card border border-dark shadow mx-4 my-4 p-3"
-            style={{ minHeight: "80vh" }}
-          >
-            <form onSubmit={handleSubmit} style={{ maxWidth: "100%", marginLeft: "3%", marginRight: "3%" }}>
-              {/* Part Info */}
-              {/* Part No. & Quantity */}
-              <div style={sectionStyle}>
-                {/* <div>
-                  <label style={labelStyle}>Part No.</label>
-                  {loading ? (
-                    <div>Loading part numbers...</div>
-                  ) : error ? (
-                    <div style={{ color: "red" }}>{error}</div>
-                  ) : (
-                    <select
-                      name="partNo"
-                      style={inputStyle}
-                      value={form.partNo}
-                      onChange={handleProductChange}
-                    >
-                      <option value="">Select a part number</option>
-                      {data.map((part, index) => (
-                        <option key={index} value={part.productName}>
-                          {part.productName}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div> */}
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Add Dispatch Report</span>
+            </div>
+          </div>
 
-                <div>
-                  <label style={labelStyle}>Part Number</label>
-                  <input
-                    name="partNo"
-                    style={inputStyle}
-                    value={form.partNo}
-                    disabled
-                  />
-                </div>
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form onSubmit={handleSubmit}>
+                  {/* Part Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-box"></i>
+                    <span>Part Information</span>
+                  </div>
 
-                <div>
-                  <label style={labelStyle}>Qty.</label>
-                  <input
-                    name="quantity"
-                    style={inputStyle}
-                    value={form.quantity}
-                    onChange={handleChange}
-                    disabled
-                  />
-                </div>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Number <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="partNo"
+                        value={form.partNo}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Quantity <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="quantity"
+                        value={form.quantity}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Description <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="partDescription"
+                        value={form.partDescription}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Report Date <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="reportDate"
+                        value={form.reportDate}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  {/* Order Information Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-file-alt"></i>
+                    <span>Order Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Work Order No. <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="orderNo"
+                        value={form.orderNo}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Customer Name <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="customerName"
+                        value={form.customerName}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Serial No. <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="batchNo"
+                        value={form.batchNo}
+                        onChange={handleChange}
+                        placeholder="Enter serial number"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Checklist Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-check-circle"></i>
+                    <span>Checklist</span>
+                  </div>
+
+                  {/* Challan */}
+                  <div className={styles.checklistGroup}>
+                    <div className={styles.checklistTitle}>Challan Details</div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Challan No. <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="challanNo"
+                          value={form.challanNo}
+                          onChange={handleChange}
+                          placeholder="Enter challan number"
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Date <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="date"
+                          className={styles.input}
+                          name="challanDate"
+                          value={form.challanDate}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Remark</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="challanRemark"
+                          value={form.challanRemark}
+                          onChange={handleChange}
+                          placeholder="Optional remarks"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Invoice */}
+                  <div className={styles.checklistGroup}>
+                    <div className={styles.checklistTitle}>Invoice Details</div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Invoice No. <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="invoiceNo"
+                          value={form.invoiceNo}
+                          onChange={handleChange}
+                          placeholder="Enter invoice number"
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Date <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="date"
+                          className={styles.input}
+                          name="invoiceDate"
+                          value={form.invoiceDate}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Remark</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="invoiceRemark"
+                          value={form.invoiceRemark}
+                          onChange={handleChange}
+                          placeholder="Optional remarks"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CA Form */}
+                  <div className={styles.checklistGroup}>
+                    <div className={styles.checklistTitle}>CA Form Details</div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          CA Form No. <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="caFormNo"
+                          value={form.caFormNo}
+                          onChange={handleChange}
+                          placeholder="Enter CA form number"
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Date <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="date"
+                          className={styles.input}
+                          name="caFormDate"
+                          value={form.caFormDate}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Remark</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="caFormRemark"
+                          value={form.caFormRemark}
+                          onChange={handleChange}
+                          placeholder="Optional remarks"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* E-WAY Bill */}
+                  <div className={styles.checklistGroup}>
+                    <div className={styles.checklistTitle}>E-WAY Bill Details</div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          E-WAY Bill <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="ewayBill"
+                          value={form.ewayBill}
+                          onChange={handleChange}
+                          placeholder="Enter E-WAY bill number"
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>
+                          Date <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                          type="date"
+                          className={styles.input}
+                          name="ewayBillDate"
+                          value={form.ewayBillDate}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Remark</label>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          name="ewayBillRemark"
+                          value={form.ewayBillRemark}
+                          onChange={handleChange}
+                          placeholder="Optional remarks"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Store In-Charge Section */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-user"></i>
+                    <span>Store In-Charge Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Stores In-Charge Name
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="storesInChargeName"
+                        value={form.storesInChargeName}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className={styles.formActions}>
+                    <button type="submit" className={styles.btnSubmit}>
+                      <i className="fa fa-check-circle"></i>
+                      <span>Submit Report</span>
+                    </button>
+                  </div>
+                </form>
               </div>
-
-              {/* Part Description */}
-              <div style={sectionStyle}>
-                <div>
-                  <label style={labelStyle}>Part Description</label>
-                  <input
-                    name="partDescription"
-                    style={inputStyle}
-                    value={form.partDescription}
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Report Date</label>
-                  <input type="date" name="reportDate" style={inputStyle} value={form.reportDate} onChange={handleChange} disabled/>
-                </div>
-              </div>
-
-
-              {/* Order & Customer */}
-              <div style={sectionStyle}>
-                <div>
-                  <label style={labelStyle}>Work Order No.</label>
-                  <input name="orderNo" style={inputStyle} value={form.orderNo} onChange={handleChange} disabled/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Customer Name</label>
-                  <input name="customerName" style={inputStyle} value={form.customerName} onChange={handleChange} disabled/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Serial No.<span style={{ color: "red" }}>*</span></label>
-                  <input
-                    name="batchNo"
-                    style={inputStyle}
-                    value={form.batchNo}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Checklist Header */}
-              <div style={{ fontWeight: "bold", borderTop: "1px solid #ccc", paddingTop: "15px", marginBottom: "10px" }}>
-                Checklist
-              </div>
-
-              {/* Challan */}
-              <div style={threeColStyle}>
-                <div>
-                  <label style={labelStyle}>Challan No.<span style={{ color: "red" }}>*</span></label>
-                  <input name="challanNo" style={inputStyle} value={form.challanNo} onChange={handleChange} required/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Date<span style={{ color: "red" }}>*</span></label>
-                  <input type="date" name="challanDate" style={inputStyle} value={form.challanDate} onChange={handleChange} required/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Remark</label>
-                  <input name="challanRemark" style={inputStyle} value={form.challanRemark} onChange={handleChange} />
-                </div>
-              </div>
-
-              {/* Invoice */}
-              <div style={threeColStyle}>
-                <div>
-                  <label style={labelStyle}>Invoice No.<span style={{ color: "red" }}>*</span></label>
-                  <input name="invoiceNo" style={inputStyle} value={form.invoiceNo} onChange={handleChange} required/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Date<span style={{ color: "red" }}>*</span></label>
-                  <input type="date" name="invoiceDate" style={inputStyle} value={form.invoiceDate} onChange={handleChange} required/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Remark</label>
-                  <input name="invoiceRemark" style={inputStyle} value={form.invoiceRemark} onChange={handleChange} />
-                </div>
-              </div>
-
-              {/* CA Form */}
-              <div style={threeColStyle}>
-                <div>
-                  <label style={labelStyle}>CA Form No.<span style={{ color: "red" }}>*</span></label>
-                  <input name="caFormNo" style={inputStyle} value={form.c} onChange={handleChange} required/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Date<span style={{ color: "red" }}>*</span></label>
-                  <input type="date" name="caFormDate" style={inputStyle} value={form.caFormDate} onChange={handleChange} required/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Remark</label>
-                  <input name="caFormRemark" style={inputStyle} value={form.caFormRemark} onChange={handleChange} />
-                </div>
-              </div>
-
-              {/* E-WAY Bill */}
-              <div style={threeColStyle}>
-                <div>
-                  <label style={labelStyle}>E-WAY Bill<span style={{ color: "red" }}>*</span></label>
-                  <input name="ewayBill" style={inputStyle} value={form.ewayBill} onChange={handleChange} required/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Date<span style={{ color: "red" }}>*</span></label>
-                  <input type="date" name="ewayBillDate" style={inputStyle} value={form.ewayBillDate} onChange={handleChange} required/>
-                </div>
-                <div>
-                  <label style={labelStyle}>Remark</label>
-                  <input name="ewayBillRemark" style={inputStyle} value={form.ewayBillRemark} onChange={handleChange} />
-                </div>
-              </div>
-
-              {/* Store In-Charge Info */}
-              <div style={sectionStyle}>
-                <div>
-                  <label style={labelStyle}>Stores In-Charge Name</label>
-                  <input name="storesInChargeName" style={inputStyle} value={form.storesInChargeName} onChange={handleChange} disabled />
-                </div>
-                {/* <div>
-                  <label style={labelStyle}>Stores In-Charge Sign</label>
-                  <input name="storesInChargeSign" style={inputStyle} value={form.storesInChargeSign} onChange={handleChange} />
-                </div> */}
-              </div>
-
-              {/* Submit */}
-              <div style={{ textAlign: "center", marginTop: "30px" }}>
-                <button
-                  type="submit"
-                  style={{
-                    padding: "10px 30px",
-                    fontSize: "16px",
-                    backgroundColor: "#0052cc",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer"
-                  }}
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
         </div>
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };

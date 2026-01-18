@@ -4,7 +4,8 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { addCustomer, getCustomerById } from "../services/db_manager";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import { toast } from "react-toastify";
+import styles from "./AddCustomer.module.css";
 
 const AddCustomer = () => {
   const { id } = useParams();
@@ -12,7 +13,6 @@ const AddCustomer = () => {
   const isViewMode = window.location.pathname.includes('/viewCustomer/');
   const isEditMode = window.location.pathname.includes('/editCustomer/');
   
-  // Country codes list
   const countryCodes = [
     { code: "+1", country: "USA/Canada" },
     { code: "+44", country: "UK" },
@@ -53,7 +53,6 @@ const AddCustomer = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load customer data for view/edit mode
   useEffect(() => {
     if (id && (isViewMode || isEditMode)) {
       const fetchCustomerData = async () => {
@@ -65,7 +64,7 @@ const AddCustomer = () => {
           }
         } catch (error) {
           console.error("Error fetching customer data:", error);
-          alert("Failed to load customer data");
+          toast.error("Failed to load customer data");
         } finally {
           setIsLoading(false);
         }
@@ -78,9 +77,7 @@ const AddCustomer = () => {
     if (!isViewMode) {
       const { name, value } = e.target;
       
-      // Validate numeric fields (phoneNo and mobileNumber)
       if (name === "phoneNo" || name === "mobileNumber") {
-        // Only allow digits and limit to 10 characters
         const numericValue = value.replace(/\D/g, "").slice(0, 10);
         setForm({ ...form, [name]: numericValue });
       } else {
@@ -122,23 +119,22 @@ const AddCustomer = () => {
       return;
     }
 
-    // Validate fields
     for (const [field, rules] of Object.entries(validationRules)) {
       const error = validateField(field, form[field], rules);
       if (error) {
-        alert(error);
+        toast.error(error);
         return;
       }
     }
 
     try {
       if (isEditMode) {
-        alert("Edit functionality needs to be implemented in the service");
+        toast.info("Edit functionality needs to be implemented in the service");
         return;
       } else {
         const response = await addCustomer(form);
         console.log("Customer added successfully:", response.data);
-        alert("Customer Added Successfully!");
+        toast.success("Customer Added Successfully!");
 
         setForm({
           customerName: "",
@@ -158,248 +154,341 @@ const AddCustomer = () => {
       }
     } catch (error) {
       console.error("Error processing customer:", error);
-      alert("Failed to process customer data.");
+      toast.error("Failed to process customer data");
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className={styles.wrapper}>
+        <Sidebar />
+        <div className={styles.content}>
+          <Header />
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <p className={styles.loadingText}>Loading customer data...</p>
+          </div>
+          <Footer />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb 
-            breadcrumbsLabel={
-              isViewMode ? "View Customer" : 
-              isEditMode ? "Edit Customer" : 
-              "Add Customer"
-            } 
-            isBack={true} 
-          />
-          <div className="my-2 p-2">
-            <div className="container-fluid">
-              <div className="row mx-1 card border border-dark shadow-lg py-2 p-4" >
-                <div className="col-md-12" style={{ height: "72vh",overflowY: "scroll" }}>
-                  {isLoading ? (
-                    <div className="text-center py-5">
-                      <div className="spinner-border text-primary" role="status"></div>
-                      <p className="mt-2 text-muted">Loading customer data...</p>
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <button
+              className={styles.backButton}
+              onClick={() => navigate(-1)}
+            >
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>
+                {isViewMode ? "View Customer" : isEditMode ? "Edit Customer" : "Add Customer"}
+              </span>
+            </div>
+          </div>
+
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={`${styles.cardBody} ${isViewMode ? styles.viewMode : ''}`}>
+                <form onSubmit={handleSubmit}>
+                  {/* Basic Information */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-user"></i>
+                    <span>Basic Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Customer Name <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="customerName"
+                        className={styles.input}
+                        value={form.customerName}
+                        onChange={handleChange}
+                        readOnly={isViewMode}
+                        placeholder="Enter customer name"
+                        required
+                      />
                     </div>
-                  ) : (
-                    <form onSubmit={handleSubmit}>
-                    <div className="row">
-                      <div className="col-md-6 p-2">
-                        <label>Customer Name *</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="customerName"
-                          value={form.customerName}
-                          onChange={handleChange}
-                          readOnly={isViewMode}
-                          required
-                        />
-                      </div>
-                      <div className="col-md-6 p-2">
-                        <label>Contact Person Name *</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="contactPersonName"
-                          value={form.contactPersonName}
-                          onChange={handleChange}
-                          readOnly={isViewMode}
-                          required
-                        />
-                      </div>
-
-                      <div className="col-md-4">
-                        <label>Phone No * (10 digits)</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="phoneNo"
-                          value={form.phoneNo}
-                          onChange={handleChange}
-                          placeholder="Enter 10 digit phone number"
-                          maxLength="10"
-                          readOnly={isViewMode}
-                          required
-                        />
-                        {form.phoneNo && form.phoneNo.length < 10 && (
-                          <small className="text-danger">
-                            Phone number must be exactly 10 digits ({form.phoneNo.length}/10)
-                          </small>
-                        )}
-                      </div>
-                      <div className="col-md-2">
-                        <label>Country Code *</label>
-                        <select
-                          className="form-select"
-                          name="countryCode"
-                          value={form.countryCode}
-                          onChange={handleChange}
-                          disabled={isViewMode}
-                          required
-                        >
-                          <option value="">Select</option>
-                          {countryCodes.map((item) => (
-                            <option key={item.code} value={item.code}>
-                              {`${item.code} - ${item.country}`}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="col-md-6">
-                        <label>Mobile Number * (10 digits)</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="mobileNumber"
-                          value={form.mobileNumber}
-                          onChange={handleChange}
-                          placeholder="Enter 10 digit mobile number"
-                          maxLength="10"
-                          readOnly={isViewMode}
-                          required
-                        />
-                        {form.mobileNumber && form.mobileNumber.length < 10 && (
-                          <small className="text-danger">
-                            Mobile number must be exactly 10 digits ({form.mobileNumber.length}/10)
-                          </small>
-                        )}
-                      </div>
-
-                      <div className="col-md-6 p-2">
-                        <label>Email ID *</label>
-                        <input
-                          className="form-control"
-                          type="email"
-                          name="emailId"
-                          value={form.emailId}
-                          onChange={handleChange}
-                          readOnly={isViewMode}
-                          required
-                        />
-                      </div>
-                      <div className="col-md-6 p-2">
-                        <label>Customer Type *</label>
-                        <select
-                          className="form-select"
-                          name="customerType"
-                          value={form.customerType}
-                          onChange={handleChange}
-                          disabled={isViewMode}
-                          required
-                        >
-                          <option value="">Select Customer Type *</option>
-                          <option value="Airline">Airline</option>
-                          <option value="MRO">MRO</option>
-                          <option value="NSOP">NSOP</option>
-                        </select>
-                      </div>
-
-                      <div className="col-md-12 p-2">
-                        <label>Ship To Address 1 *</label>
-                        <textarea
-                          className="form-control"
-                          name="shipToAddress1"
-                          value={form.shipToAddress1}
-                          onChange={handleChange}
-                          readOnly={isViewMode}
-                          required
-                        />
-                      </div>
-                      <div className="col-md-12 p-2">
-                        <label>Ship To Address 2</label>
-                        <textarea
-                          className="form-control"
-                          name="shipToAddress2"
-                          value={form.shipToAddress2}
-                          onChange={handleChange}
-                          readOnly={isViewMode}
-                        />
-                      </div>
-                      <div className="col-md-12 p-2">
-                        <label>Ship To Address 3</label>
-                        <textarea
-                          className="form-control"
-                          name="shipToAddress3"
-                          value={form.shipToAddress3}
-                          onChange={handleChange}
-                          readOnly={isViewMode}
-                        />
-                      </div>
-                      <div className="col-md-12 p-2">
-                        <label>Bill To Address *</label>
-                        <textarea
-                          className="form-control"
-                          name="billToAddress"
-                          value={form.billToAddress}
-                          onChange={handleChange}
-                          readOnly={isViewMode}
-                          required
-                        />
-                      </div>
-
-                      <div className="col-md-6 p-2">
-                        <label>Payment Terms *</label>
-                        <select
-                          className="form-select w-100"
-                          name="paymentTerms"
-                          value={form.paymentTerms}
-                          onChange={handleChange}
-                          disabled={isViewMode}
-                          required
-                        >
-                          <option value="">Select Payment Terms *</option>
-                          <option value="30">30</option>
-                          <option value="60">60</option>
-                          <option value="90">90</option>
-                          <option value="advance payment">Advance Payment</option>
-                        </select>
-                      </div>
-
-                      <div className="col-md-6 p-2">
-                        <label>GST Number * (15 alphanumeric characters)</label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="gstNo"
-                          value={form.gstNo}
-                          onChange={handleChange}
-                          placeholder="Enter 15 character GST number"
-                          maxLength="15"
-                          readOnly={isViewMode}
-                          required
-                        />
-                      </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Contact Person Name <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="contactPersonName"
+                        className={styles.input}
+                        value={form.contactPersonName}
+                        onChange={handleChange}
+                        readOnly={isViewMode}
+                        placeholder="Enter contact person name"
+                        required
+                      />
                     </div>
+                  </div>
 
-                    <div className="col-md-12 text-end mt-3">
-                      {isViewMode ? (
-                        <button 
-                          type="button" 
-                          className="btn btn-secondary"
-                          onClick={() => navigate(-1)}
-                        >
-                          Back
-                        </button>
-                      ) : (
-                        <button type="submit" className="btn btn-primary">
-                          {isEditMode ? "Update Customer" : "Add Customer"}
-                        </button>
+                  {/* Contact Information */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-phone"></i>
+                    <span>Contact Information</span>
+                  </div>
+
+                  <div className={styles.formRowTriple}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Phone No <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="phoneNo"
+                        className={styles.input}
+                        value={form.phoneNo}
+                        onChange={handleChange}
+                        placeholder="Enter 10 digit phone"
+                        maxLength="10"
+                        readOnly={isViewMode}
+                        required
+                      />
+                      {!isViewMode && form.phoneNo && form.phoneNo.length < 10 && (
+                        <span className={styles.validationMessage}>
+                          <i className="fa fa-exclamation-circle"></i>
+                          Phone must be 10 digits ({form.phoneNo.length}/10)
+                        </span>
                       )}
                     </div>
-                  </form>
-                  )}
-                </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Country Code <span className={styles.required}>*</span>
+                      </label>
+                      <select
+                        name="countryCode"
+                        className={styles.select}
+                        value={form.countryCode}
+                        onChange={handleChange}
+                        disabled={isViewMode}
+                        required
+                      >
+                        <option value="">Select</option>
+                        {countryCodes.map((item) => (
+                          <option key={item.code} value={item.code}>
+                            {`${item.code} - ${item.country}`}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Mobile Number <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="mobileNumber"
+                        className={styles.input}
+                        value={form.mobileNumber}
+                        onChange={handleChange}
+                        placeholder="Enter 10 digit mobile"
+                        maxLength="10"
+                        readOnly={isViewMode}
+                        required
+                      />
+                      {!isViewMode && form.mobileNumber && form.mobileNumber.length < 10 && (
+                        <span className={styles.validationMessage}>
+                          <i className="fa fa-exclamation-circle"></i>
+                          Mobile must be 10 digits ({form.mobileNumber.length}/10)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Email ID <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="email"
+                        name="emailId"
+                        className={styles.input}
+                        value={form.emailId}
+                        onChange={handleChange}
+                        readOnly={isViewMode}
+                        placeholder="customer@example.com"
+                        required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Customer Type <span className={styles.required}>*</span>
+                      </label>
+                      <select
+                        name="customerType"
+                        className={styles.select}
+                        value={form.customerType}
+                        onChange={handleChange}
+                        disabled={isViewMode}
+                        required
+                      >
+                        <option value="">Select Customer Type</option>
+                        <option value="Airline">Airline</option>
+                        <option value="MRO">MRO</option>
+                        <option value="NSOP">NSOP</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Address Information */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-map-marker"></i>
+                    <span>Address Information</span>
+                  </div>
+
+                  <div className={styles.formGroupFull}>
+                    <label className={styles.label}>
+                      Ship To Address 1 <span className={styles.required}>*</span>
+                    </label>
+                    <textarea
+                      name="shipToAddress1"
+                      className={styles.textarea}
+                      value={form.shipToAddress1}
+                      onChange={handleChange}
+                      readOnly={isViewMode}
+                      placeholder="Enter primary shipping address"
+                      required
+                    />
+                  </div>
+
+                  <div className={styles.formGroupFull}>
+                    <label className={styles.label}>Ship To Address 2</label>
+                    <textarea
+                      name="shipToAddress2"
+                      className={styles.textarea}
+                      value={form.shipToAddress2}
+                      onChange={handleChange}
+                      readOnly={isViewMode}
+                      placeholder="Enter secondary shipping address (optional)"
+                    />
+                  </div>
+
+                  <div className={styles.formGroupFull}>
+                    <label className={styles.label}>Ship To Address 3</label>
+                    <textarea
+                      name="shipToAddress3"
+                      className={styles.textarea}
+                      value={form.shipToAddress3}
+                      onChange={handleChange}
+                      readOnly={isViewMode}
+                      placeholder="Enter tertiary shipping address (optional)"
+                    />
+                  </div>
+
+                  <div className={styles.formGroupFull}>
+                    <label className={styles.label}>
+                      Bill To Address <span className={styles.required}>*</span>
+                    </label>
+                    <textarea
+                      name="billToAddress"
+                      className={styles.textarea}
+                      value={form.billToAddress}
+                      onChange={handleChange}
+                      readOnly={isViewMode}
+                      placeholder="Enter billing address"
+                      required
+                    />
+                  </div>
+
+                  {/* Payment & Tax Information */}
+                  <div className={styles.sectionHeader}>
+                    <i className="fa fa-credit-card"></i>
+                    <span>Payment & Tax Information</span>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Payment Terms <span className={styles.required}>*</span>
+                      </label>
+                      <select
+                        name="paymentTerms"
+                        className={styles.select}
+                        value={form.paymentTerms}
+                        onChange={handleChange}
+                        disabled={isViewMode}
+                        required
+                      >
+                        <option value="">Select Payment Terms</option>
+                        <option value="30">30 Days</option>
+                        <option value="60">60 Days</option>
+                        <option value="90">90 Days</option>
+                        <option value="advance payment">Advance Payment</option>
+                      </select>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        GST Number <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="gstNo"
+                        className={styles.input}
+                        value={form.gstNo}
+                        onChange={handleChange}
+                        placeholder="15 character GST number"
+                        maxLength="15"
+                        readOnly={isViewMode}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Form Actions */}
+                  <div className={styles.formActions}>
+                    {isViewMode ? (
+                      <button 
+                        type="button" 
+                        className={styles.btnBack}
+                        onClick={() => navigate(-1)}
+                      >
+                        <i className="fa fa-arrow-left"></i>
+                        <span>Back</span>
+                      </button>
+                    ) : (
+                      <>
+                        <button 
+                          type="button" 
+                          className={styles.btnCancel}
+                          onClick={() => navigate(-1)}
+                        >
+                          <i className="fa fa-times"></i>
+                          <span>Cancel</span>
+                        </button>
+                        <button type="submit" className={styles.btnSubmit}>
+                          <i className={`fa ${isEditMode ? 'fa-save' : 'fa-plus-circle'}`}></i>
+                          <span>{isEditMode ? "Update Customer" : "Add Customer"}</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </form>
               </div>
             </div>
           </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 };

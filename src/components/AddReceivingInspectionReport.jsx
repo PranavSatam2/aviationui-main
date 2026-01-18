@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Search, Save } from "lucide-react";
-import styles from "./PurchaseOrder/Purchase.module.css";
+import styles from "./ViewMaterialNote.module.css";
 import Footer from "./Footer";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import {
-   GetAllDataUsingBatchNo,
+  GetAllDataUsingBatchNo,
   fetchMrnNos,
 } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
-
 
 export default function AddReceivingInspectionReport() {
-  //const [batchNo, setBatchNo] = useState("");
   const [orderForm, setOrderForm] = useState(false);
 
   // State for table data
@@ -29,14 +26,14 @@ export default function AddReceivingInspectionReport() {
 
   const navigate = useNavigate();
   const [form, setForm] = useState({
-      partNumber: "",
-      partDesc: "",
-      purchaseOrderNo: "",
-      supplierName: "",
-      reportNo: "",
-      date: new Date().toISOString().split('T')[0] || "",
-      qty: "",
-      qtyReceive: "",
+    partNumber: "",
+    partDesc: "",
+    purchaseOrderNo: "",
+    supplierName: "",
+    reportNo: "",
+    date: new Date().toISOString().split('T')[0] || "",
+    qty: "",
+    qtyReceive: "",
   });
 
   // Fetch data for table
@@ -58,7 +55,6 @@ export default function AddReceivingInspectionReport() {
   useEffect(() => {
     fetchData();
   }, []);
- 
 
   // Search functionality
   const filteredData = tableData.filter((requisition) => {
@@ -70,17 +66,17 @@ export default function AddReceivingInspectionReport() {
   });
 
   const sortedData = [...filteredData].sort((a, b) => {
-  const aValue = a[sortField];
-  const bValue = b[sortField];
+    const aValue = a[sortField];
+    const bValue = b[sortField];
 
-  if (aValue === undefined || bValue === undefined) return 0;
+    if (aValue === undefined || bValue === undefined) return 0;
 
-  if (sortDirection === "asc") {
-    return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-  } else {
-    return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-  }
-});
+    if (sortDirection === "asc") {
+      return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+    } else {
+      return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+    }
+  });
 
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -93,10 +89,10 @@ export default function AddReceivingInspectionReport() {
 
   //Handle Po Number click to open order form
   const handleBatchClick = async (mrnNo) => {
-        if (!mrnNo) return;
-       console.log(mrnNo, "response for MRN");
+    if (!mrnNo) return;
+    console.log(mrnNo, "response for MRN");
 
-      navigate("/generateInspectionReport", { state: {mrnNo} });
+    navigate("/generateInspectionReport", { state: { mrnNo } });
   };
 
   const handleSort = (field) => {
@@ -123,9 +119,9 @@ export default function AddReceivingInspectionReport() {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${currentPage === i ? styles.active : ''}`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -144,289 +140,213 @@ export default function AddReceivingInspectionReport() {
     { field: "purchaseOrderNo", label: "PO Number", width: "140px" },
     { field: "qty", label: "Quantity", width: "140px" },
     { field: "qtyReceive", label: "Received Quantity", width: "140px" },
-  ]
+  ];
 
   return (
-    <>
-      <div className="wrapper">
-        <Sidebar />
-        <div className="content">
-          <Header />
-          <div style={{ marginTop: "10px" }}>
-            <CustomBreadcrumb
-              breadcrumbsLabel="Generate Inspection Report"
-              // isBack={true}
-            />
-            <div className={styles.container}>
+    <div className={styles.wrapper}>
+      <Sidebar />
+      <div className={styles.content}>
+        <Header />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-file-medical"></i>
+              <span className={styles.breadcrumbLabel}>Generate Inspection Report</span>
+            </div>
+          </div>
 
-             <div
-                className={[
-                  "normalView",
-                  "card border-0 shadow-lg  rounded-3",
-                ].join(" ")}
-              >
-                <div className="card-body">
-                  <div className="row align-items-center">
-                    <div className="col-md-4">
-                      <div className="input-group">
-                        <span className="input-group-text bg-primary text-white border-0">
-                          <i className="fa fa-search"></i>
-                        </span>
-                        <input
-                          type="text"
-                          className="form-control border-start-0 ps-0"
-                          placeholder="Search requisitions..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-md-3 ms-auto">
-                      <div className="d-flex align-items-center justify-content-end">
-                        <label className="me-2 text-muted fw-light">Show</label>
-                        <select
-                          className="form-select form-select-sm w-auto"
-                          value={itemsPerPage}
-                          onChange={(e) => {
-                            setItemsPerPage(Number(e.target.value));
-                            setCurrentPage(1);
-                          }}
-                        >
-                          <option value={5}>5</option>
-                          <option value={10}>10</option>
-                          <option value={25}>25</option>
-                          <option value={50}>50</option>
-                          <option value={100}>100</option>
-                        </select>
-                        <label className="ms-2 text-muted fw-light">
-                          entries
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  {isLoading ? (
-                    <div className="text-center py-5">
-                      <div
-                        className="spinner-border text-primary"
-                        role="status"
-                      ></div>
-                      <p className="mt-2 text-muted">Loading data...</p>
-                    </div>
-                  ) : (
-                    <div
-                      className="table-responsive"
-                      style={{
-                        overflowY: "auto",
-                        scrollbarWidth: "thin",
-                        scrollbarColor: "#ccc transparent",
-                        maxHeight: "45vh",
-                      }}
-                    >
-                      <table className="table table-hover table-striped align-middle">
-                        <thead>
-                          <tr className="bg-light">
-                            {columns.map((column) => (
-                              <th
-                                key={column.field}
-                                className="position-sticky top-0 bg-light py-3"
-                                onClick={() => handleSort(column.field)}
-                                style={{
-                                  cursor: "pointer",
-                                  width: column.width || "auto",
-                                  fontSize: "0.9rem",
-                                  fontWeight: "600",
-                                  textTransform: "uppercase",
-                                  letterSpacing: "0.5px",
-                                }}
-                              >
-                                <div className="d-flex align-items-center">
-                                  <span>{column.label}</span>
-                                  {sortField === column.field ? (
-                                    <i
-                                      className={`ms-1 fa fa-sort-${
-                                        sortDirection === "desc" ? "up" : "down"
-                                      } text-primary`}
-                                    ></i>
-                                  ) : (
-                                    <i
-                                      className="ms-1 fa fa-sort text-muted opacity-50"
-                                      style={{ fontSize: "0.8rem" }}
-                                    ></i>
-                                  )}
-                                </div>
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                  
-                          <tbody>
-                                {currentItems.length > 0 ? (
-                                   currentItems.map((requisition, index) => (
-                                  <tr
-                                    key={requisition.reportNo || index}
-                                    className={index % 2 === 0 ? "bg-white" : "bg-light bg-opacity-50"}
-                                    >
-                                      {columns.map((column) => (
-                                      <td
-                                        key={`${requisition.reportNo}-${column.field}`}
-                                        className="text-nowrap py-3"
-                                        style={{
-                                        maxWidth: "150px",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
-                                      }}
-                                    title={requisition[column.field]}
-                                  >
-                                   {column.field === "reportNo" ? (
-                                <button
-                                 className="btn btn-link p-0 text-primary fw-bold"
-                                onClick={() => handleBatchClick(requisition.reportNo)}
-                                style={{
-                                 textDecoration: "underline",
-                                cursor: "pointer",
-                                }}
-                              >
-                                {requisition[column.field]}
-                            </button>
-                                ) : (
-                              requisition[column.field]
-                              )}
-                          </td>
-                            ))}
-                      </tr>
-                      ))
-                      ) : (
-                      <tr>
-                        <td colSpan={columns.length} className="text-center py-5">
-                      {searchTerm ? (
-                      <div>
-                            <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                            <p className="mb-0">No matching records found</p>
-                    </div>
-                       ) : (
-                    <div>
-                            <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                            <p className="mb-0">No data available</p>
-                    </div>
-                          )}
-                        </td>
-                      </tr>
-                      )}
-                      </tbody>
-
-                      </table>
-                    </div>
-                  )}
-
-                  <div className="row mt-4 align-items-center">
-                    <div className="col-md-6">
-                      <p
-                        className="text-muted mb-0"
-                        style={{ fontSize: "0.9rem" }}
-                      >
-                        Showing{" "}
-                        <span className="fw-bold text-dark">
-                          {indexOfFirstItem + 1}
-                        </span>{" "}
-                        to{" "}
-                        <span className="fw-bold text-dark">
-                          {Math.min(indexOfLastItem, sortedData.length)}
-                        </span>{" "}
-                        of{" "}
-                        <span className="fw-bold text-dark">
-                          {sortedData.length}
-                        </span>{" "}
-                        batch groups
-                        {searchTerm &&
-                          ` (filtered from ${
-                            Object.keys(tableData).length
-                          } total batch groups)`}
-                      </p>
-                    </div>
-                    <div className="col-md-6">
-                      <nav aria-label="Page navigation">
-                        <ul className="pagination justify-content-end mb-0">
-                          <li
-                            className={`page-item ${
-                              currentPage === 1 ? "disabled" : ""
-                            }`}
-                          >
-                            <button
-                              className="page-link border-0"
-                              onClick={() => setCurrentPage(1)}
-                              aria-label="First page"
-                            >
-                              <i className="fa-solid fa-angles-left"></i>
-                            </button>
-                          </li>
-                          <li
-                            className={`page-item ${
-                              currentPage === 1 ? "disabled" : ""
-                            }`}
-                          >
-                            <button
-                              className="page-link border-0"
-                              onClick={() => setCurrentPage(currentPage - 1)}
-                              aria-label="Previous page"
-                            >
-                              <i className="fa-solid fa-angle-left"></i>
-                            </button>
-                          </li>
-
-                          {renderPageNumbers()}
-
-                          <li
-                            className={`page-item ${
-                              currentPage === totalPages ? "disabled" : ""
-                            }`}
-                          >
-                            <button
-                              className="page-link border-0"
-                              onClick={() => setCurrentPage(currentPage + 1)}
-                              aria-label="Next page"
-                            >
-                              <i className="fa-solid fa-angle-right"></i>
-                            </button>
-                          </li>
-                          <li
-                            className={`page-item ${
-                              currentPage === totalPages ? "disabled" : ""
-                            }`}
-                          >
-                            <button
-                              className="page-link border-0"
-                              onClick={() => setCurrentPage(totalPages)}
-                              aria-label="Last page"
-                            >
-                              <i className="fa-solid fa-angles-right"></i>
-                            </button>
-                          </li>
-                        </ul>
-                      </nav>
-                    </div>
-                  </div>
+          {/* Card Container */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Search and Entries Control */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search inspection reports..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
-{/* Proceed Button */}
-                {/* <div className="mt-3 d-flex justify-content-end">
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleProceed}
-                    disabled={selectedItems.length === 0}
-                  >
-                    Proceed
-                  </button>
-                  </div> */}
-              {/* Order Form - opens when Po Number is clicked */}
-              
+
+              {/* Table */}
+              {isLoading ? (
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading data...</p>
+                </div>
+              ) : (
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        {columns.map((column) => (
+                          <th
+                            key={column.field}
+                            onClick={() => handleSort(column.field)}
+                            style={{ width: column.width }}
+                          >
+                            <div className={styles.thContent}>
+                              <span>{column.label}</span>
+                              {sortField === column.field ? (
+                                <i
+                                  className={`fa fa-sort-${sortDirection === "asc" ? "up" : "down"} ${styles.sortIconActive}`}
+                                ></i>
+                              ) : (
+                                <i className={`fa fa-sort ${styles.sortIcon}`}></i>
+                              )}
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentItems.length > 0 ? (
+                        currentItems.map((requisition, index) => (
+                          <tr
+                            key={requisition.reportNo || index}
+                            style={{ animationDelay: `${index * 0.02}s` }}
+                          >
+                            {columns.map((column) => (
+                              <td
+                                key={`${requisition.reportNo}-${column.field}`}
+                                title={requisition[column.field]}
+                              >
+                                {column.field === "reportNo" ? (
+                                  <button
+                                    className={styles.linkButton}
+                                    onClick={() => handleBatchClick(requisition.reportNo)}
+                                  >
+                                    {requisition[column.field]}
+                                  </button>
+                                ) : (
+                                  requisition[column.field]
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={columns.length}
+                            className={styles.noData}
+                          >
+                            {searchTerm ? (
+                              <div>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
+                              </div>
+                            ) : (
+                              <div>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No data available</p>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>{Math.min(indexOfLastItem, sortedData.length)}</strong> of{" "}
+                  <strong>{sortedData.length}</strong> entries
+                  {searchTerm &&
+                    ` (filtered from ${tableData.length} total entries)`}
+                </div>
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
+                      >
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
+                      >
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
+
+                    {renderPageNumbers()}
+
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
+                      >
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
+                      >
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
             </div>
           </div>
         </div>
         <Footer />
       </div>
-    </>
+    </div>
   );
-} 
+}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import styles from "./CAForm.module.css";
 import {
   submitCAForm,
@@ -9,7 +9,6 @@ import {
 } from "../services/db_manager";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import Footer from "./Footer";
 import { toast } from "react-toastify";
 import logo from "../static/img/AMCLOGO.jpg";
@@ -456,402 +455,346 @@ const handlePrintClick = (report) => {
 };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="CA Form" />
-          
-          <div className={styles.container}>
-            <div className={`${styles.formContainer} p-4 pb-5`}>
-              <div
-                className={`${styles.companySection} flex items-center justify-between gap-4`}
-              >
-                <div
-                  className={styles.companyInfo}
-                  style={{ borderRight: "1px solid black" }}
-                >
-                  1. DGCA India
-                </div>
-                <div
-                  className={styles.companyInfo}
-                  style={{ borderRight: "1px solid black" }}
-                >
-                  <h1 className="text-center font-bold text-lg">
-                    2. AUTHORISED RELEASE CERTIFICATE <br></br> CA FORM 1
-                  </h1>
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Add CA Form</span>
+            </div>
+          </div>
+
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                {/* Header Section */}
+                <div className={styles.formHeader}>
+                  <div className={styles.headerItem}>
+                    <span className={styles.headerLabel}>1. DGCA India</span>
+                  </div>
+                  <div className={styles.headerTitle}>
+                    <h2>2. AUTHORISED RELEASE CERTIFICATE</h2>
+                    <h3>CA FORM 1</h3>
+                  </div>
+                  <div className={styles.headerItem}>
+                    <span className={styles.headerLabel}>3. Form Tracking Number</span>
+                  </div>
                 </div>
 
-                <div className={`${styles.companyInfo} flex items-center`}>
-                  <label htmlFor="formTrackingNumber" className="mr-2">
-                    3. Form Tracking Number:
-                  </label>
-                </div>
-              </div>
-              <div className={`${styles.companySection} flex items-center `}>
-                <div className={styles.companyInfo}>
-                  4. Approved Organization Name and Address:
-                  <div className={styles.companyLogo}>
-                    <img
-                      src={logo}
-                      alt="AMC Technology Logo"
-                      className={styles.logoImage}
+                {/* Company Section */}
+                <div className={styles.companySection}>
+                  <div className={styles.companyLeft}>
+                    <div className={styles.companyLabel}>
+                      4. Approved Organization Name and Address:
+                    </div>
+                    <div className={styles.companyLogo}>
+                      <img src={logo} alt="AMC Technology Logo" className={styles.logoImage} />
+                    </div>
+                  </div>
+                  <div className={styles.companyAddress}>
+                    <p>AMC TECHNOLOGY</p>
+                    <p>105, HRIDAY INDUSTRIAL ESTATE,</p>
+                    <p>HIRA INDUSTRIAL PARK, VASAI PHATA,</p>
+                    <p>VASAI EAST, PALGHAR 401 203,</p>
+                    <p>MAHARASHTRA, INDIA</p>
+                  </div>
+                  <div className={styles.workOrderSection}>
+                    <label className={styles.label}>
+                      5. Work Order/Contract/Invoice <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={workOrderDetails.workOrderNumber}
+                      onChange={(e) => handleInputChange("workOrderNumbers", e.target.value)}
+                      disabled
                     />
                   </div>
                 </div>
-                <div
-                  className={styles.companyInfo}
-                  style={{ borderRight: "1px solid black" }}
-                >
-                  <br />
-                  AMC TECHNOLOGY
-                  <br />
-                  105, HRIDAY INDUSTRIAL ESTATE,
-                  <br />
-                  HIRA INDUSTRIAL PARK, VASAI PHATA,
-                  <br />
-                  VASAI EAST, PALGHAR 401 203,
-                  <br />
-                  MAHARASHTRA, INDIA
+
+                {/* Details Section */}
+                <div className={styles.sectionHeader}>
+                  <i className="fa fa-list"></i>
+                  <span>Item Details</span>
                 </div>
-                <div className={styles.companyInfo}>
-                  <label className="col-md-4 mt-2">
-                    5. Work Order/Contract/Invoice:
-                  </label>
-                  <input
-                    id="workOrderNumber"
-                    type="text"
-                    className={styles.inputField}
-                    value={workOrderDetails.workOrderNumber}
-                    onChange={(e) =>
-                      handleInputChange("workOrderNumbers", e.target.value)
-                    }
-                  />
+
+                <div className={styles.detailsGrid}>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      6. Item <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={formData.item}
+                      onChange={(e) => handleInputChange("item", e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      7. Description <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={workOrderDetails.description}
+                      onChange={(e) => handleInputChange("description", e.target.value)}
+                      disabled
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      8. Part No. <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={workOrderDetails.partNo}
+                      onChange={(e) => handleInputChange("partNo", e.target.value)}
+                      disabled
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      9. Qty <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={workOrderDetails.quantity}
+                      onChange={(e) => handleInputChange("quantity", e.target.value)}
+                      disabled
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      10. Serial/Batch No. <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={workOrderDetails.serialNo}
+                      onChange={(e) => handleInputChange("serialNo", e.target.value)}
+                      disabled
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      11. Status/Work <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={workOrderDetails.status}
+                      disabled
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className={`${styles.companySection} flex items-center `}>
-                <div
-                  className={styles.companyInfo}
-                  style={{ borderRight: "1px solid black" }}
-                >
-                  <label htmlFor="item" className="mr-2">
-                    6. Item
-                  </label>
-                  <input
-                    id="item"
-                    type="text"
-                    className={styles.inputField}
-                    value={formData.item}
-                    onChange={(e) => handleInputChange("item", e.target.value)}
-                  />
-                </div>
-                <div
-                  className={styles.companyInfo}
-                  style={{ borderRight: "1px solid black" }}
-                >
-                  <label htmlFor="description" className="mr-2">
-                    7. Description
-                  </label>
-                  <input
-                    id="description"
-                    type="text"
-                    className={styles.inputField}
-                    value={workOrderDetails.description}
-                    onChange={(e) =>
-                      handleInputChange("description", e.target.value)
-                    }
-                  />
-                </div>
-                <div
-                  className={styles.companyInfo}
-                  style={{ borderRight: "1px solid black" }}
-                >
-                  <label htmlFor="partNo" className="mr-2">
-                    8. Part No.
-                  </label>
-                  <input
-                    id="partNo"
-                    type="text"
-                    className={styles.inputField}
-                    value={workOrderDetails.partNo}
-                    onChange={(e) =>
-                      handleInputChange("partNo", e.target.value)
-                    }
-                  />
-                </div>
-                <div
-                  className={styles.companyInfo}
-                  style={{ borderRight: "1px solid black" }}
-                >
-                  <label htmlFor="quantity" className="mr-2">
-                    9. Qty
-                  </label>
-                  <input
-                    id="quantity"
-                    type="text"
-                    className={styles.inputField}
-                    value={workOrderDetails.quantity}
-                    onChange={(e) =>
-                      handleInputChange("quantity", e.target.value)
-                    }
-                  />
-                </div>
-                <div
-                  className={styles.companyInfo}
-                  style={{ borderRight: "1px solid black" }}
-                >
-                  <label htmlFor="serialNo" className="mr-2">
-                    10. Serial/Batch No.
-                  </label>
-                  <input
-                    id="serialNo"
-                    type="text"
-                    className={styles.inputField}
-                    value={workOrderDetails.serialNo}
-                    onChange={(e) =>
-                      handleInputChange("serialNo", e.target.value)
-                    }
-                  />
-                </div>
-                <div className={styles.companyInfo}>
-                  <label htmlFor="status" className="mr-2">
-                    11. Status/Work
-                  </label>
-                  <input
-                    id="status"
-                    type="text"
-                    className={styles.inputField}
-                    value={workOrderDetails.status}
-                    required
-                  />
-                </div>
-              </div>
-              <div className={`${styles.companySection} flex items-center `}>
-                <div className="col-md-6 p-2 d-flex">
-                  <label htmlFor="remarks" className="col-md-4 mt-2">
-                    12. Remarks
+
+                {/* Remarks Section */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    12. Remarks <span className={styles.required}>*</span>
                   </label>
                   <textarea
-                    className={styles.inputField}
-                    name="remarks"
+                    className={styles.textarea}
                     value={formData.remarks}
-                    onChange={(e) =>
-                      handleInputChange("remarks", e.target.value)
-                    }
-                    style={{ height: "70px" }}
-                    required
-                  ></textarea>
-                </div>
-              </div>
-              
-              {/* Combined Section 13 & 14 */}
-              <div className={`${styles.crossSectionWrapper}`}>
-                {/* Section 13 */}
-                <div className={`${styles.sectionBox} ${styles.crossBox}`}>
-                  <div className={styles.sectionTitle}>
-                    13. Manufacturer / Conformity Certification
-                  </div>
-                  <div className={styles.companyInfo}>
-                    <p>
-                      13 a. Certifies that the items identified above were
-                      manufactured in conformity to:
-                    </p>
-                    <label>
-                      <input
-                        disabled
-                        type="checkbox"
-                        checked={formData.approveDesign13a === "Y"}
-                        onChange={() =>
-                          handleCheckboxChangeYN("approveDesign13a")
-                        }
-                      />
-                      Approved design data and are in condition for safe
-                      operation.
-                    </label>
-                    <br />
-                    <label>
-                      <input
-                        disabled
-                        type="checkbox"
-                        checked={formData.nonApproveDesign13a === "Y"}
-                        onChange={() =>
-                          handleCheckboxChangeYN("nonApproveDesign13a")
-                        }
-                      />
-                      Non-approved design data specified in block 12.
-                    </label>
-                  </div>
-
-                  <div className={`${styles.signatureGroup}`}>
-                    <div className={styles.signatureItem}>
-                      <label>13 b. Authorised Signature</label>
-                      <input
-                        disabled
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.authorisedSign13b}
-                        onChange={(e) =>
-                          handleInputChange("authorisedSign13b", e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className={styles.signatureItem}>
-                      <label>13 c. Approval / Authorisation Number</label>
-                      <input
-                        disabled
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.authorisationNumber13c}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "authorisationNumber13c",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </div>
-                    <div className={styles.signatureItem}>
-                      <label>13 d. Name</label>
-                      <input
-                        disabled
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.name13d}
-                        onChange={(e) =>
-                          handleInputChange("name13d", e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className={styles.signatureItem}>
-                      <label>13 e. Date (dd/mm/yyyy)</label>
-                      <input
-                        disabled
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.date13e}
-                        onChange={(e) =>
-                          handleInputChange("date13e", e.target.value)
-                        }
-                      />
-                    </div>
-                  </div>
+                    onChange={(e) => handleInputChange("remarks", e.target.value)}
+                    rows="4"
+                    placeholder="Enter remarks..."
+                  />
                 </div>
 
-                {/* Section 14 */}
-                <div className={`${styles.sectionBox}`}>
-                  <div className={styles.sectionTitle}>
-                    14. Release to Service
-                  </div>
-                  <div className={styles.companyInfo}>
-                    <p>14 a. CAR 145.A.50 RELEASE TO SERVICE</p>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={formData.otherRegulation14a === "Y"}
-                        onChange={() =>
-                          handleCheckboxChangeYN("otherRegulation14a")
-                        }
-                      />
-                      Other regulation specified in block 12.
-                    </label>
-                    <p className="mt-1">
-                      Certifies that unless otherwise specified in block 12, the
-                      work identified in block 11 and described in block 12 was
-                      accomplished in accordance with CAR 145 and in respect to
-                      that work the items are considered ready for release to
-                      service.
-                    </p>
+                {/* Certification Sections */}
+                <div className={styles.sectionHeader}>
+                  <i className="fa fa-certificate"></i>
+                  <span>Certification</span>
+                </div>
+
+                <div className={styles.certificationGrid}>
+                  {/* Section 13 - Disabled with Cross */}
+                  <div className={styles.certBox}>
+                    <div className={styles.certHeader}>
+                      <span>13. Manufacturer / Conformity Certification</span>
+                    </div>
+                    <div className={styles.certContent}>
+                      <p className={styles.certLabel}>
+                        13 a. Certifies that the items identified above were manufactured in conformity to:
+                      </p>
+                      <div className={styles.checkboxGroup}>
+                        <label className={styles.checkboxLabel}>
+                          <input
+                            type="checkbox"
+                            checked={formData.approveDesign13a === "Y"}
+                            onChange={() => handleCheckboxChangeYN("approveDesign13a")}
+                            disabled
+                          />
+                          <span>Approved design data and are in condition for safe operation.</span>
+                        </label>
+                        <label className={styles.checkboxLabel}>
+                          <input
+                            type="checkbox"
+                            checked={formData.nonApproveDesign13a === "Y"}
+                            onChange={() => handleCheckboxChangeYN("nonApproveDesign13a")}
+                            disabled
+                          />
+                          <span>Non-approved design data specified in block 12.</span>
+                        </label>
+                      </div>
+                      <div className={styles.signatureFields}>
+                        <div className={styles.formGroup}>
+                          <label className={styles.label}>13 b. Authorised Signature</label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={formData.authorisedSign13b}
+                            onChange={(e) => handleInputChange("authorisedSign13b", e.target.value)}
+                            disabled
+                          />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label className={styles.label}>13 c. Approval / Authorisation Number</label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={formData.authorisationNumber13c}
+                            onChange={(e) => handleInputChange("authorisationNumber13c", e.target.value)}
+                            disabled
+                          />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label className={styles.label}>13 d. Name</label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={formData.name13d}
+                            onChange={(e) => handleInputChange("name13d", e.target.value)}
+                            disabled
+                          />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label className={styles.label}>13 e. Date (dd/mm/yyyy)</label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={formData.date13e}
+                            onChange={(e) => handleInputChange("date13e", e.target.value)}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.crossMark}></div>
                   </div>
 
-                  <div className={`${styles.signatureGroup}`}>
-                    <div className={styles.signatureItem}>
-                      <label>14 b. Authorised Signature</label>
-                      <input
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.authorisedSign14b}
-                        onChange={(e) =>
-                          handleInputChange("authorisedSign14b", e.target.value)
-                        }
-                      />
+                  {/* Section 14 - Active */}
+                  <div className={styles.certBox}>
+                    <div className={styles.certHeader}>
+                      <span>14. Release to Service</span>
                     </div>
-                    <div className={styles.signatureItem}>
-                      <label>14 c. Certificate / Approval Ref No.</label>
-                      <input
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.approvalRefNo14c}
-                        onChange={(e) =>
-                          handleInputChange("approvalRefNo14c", e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className={styles.signatureItem}>
-                      <label>14 d. Name</label>
-                      <input
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.name14d}
-                        onChange={(e) =>
-                          handleInputChange("name14d", e.target.value)
-                        }
-                        disabled
-                      />
-                    </div>
-                    <div className={styles.signatureItem}>
-                      <label>14 e. Date (dd/mm/yyyy)</label>
-                      <input
-                        type="text"
-                        className={styles.inputField}
-                        value={formData.date14e}
-                        onChange={(e) =>
-                          handleInputChange("date14e", e.target.value)
-                        }
-                        disabled
-                      />
+                    <div className={styles.certContent}>
+                      <p className={styles.certLabel}>14 a. CAR 145.A.50 RELEASE TO SERVICE</p>
+                      <div className={styles.checkboxGroup}>
+                        <label className={styles.checkboxLabel}>
+                          <input
+                            type="checkbox"
+                            checked={formData.otherRegulation14a === "Y"}
+                            onChange={() => handleCheckboxChangeYN("otherRegulation14a")}
+                          />
+                          <span>Other regulation specified in block 12.</span>
+                        </label>
+                      </div>
+                      <p className={styles.certText}>
+                        Certifies that unless otherwise specified in block 12, the work identified in block 11 
+                        and described in block 12 was accomplished in accordance with CAR 145 and in respect 
+                        to that work the items are considered ready for release to service.
+                      </p>
+                      <div className={styles.signatureFields}>
+                        <div className={styles.formGroup}>
+                          <label className={styles.label}>
+                            14 b. Authorised Signature <span className={styles.required}>*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={formData.authorisedSign14b}
+                            onChange={(e) => handleInputChange("authorisedSign14b", e.target.value)}
+                            placeholder="Enter signature"
+                          />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label className={styles.label}>
+                            14 c. Certificate / Approval Ref No. <span className={styles.required}>*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={formData.approvalRefNo14c}
+                            onChange={(e) => handleInputChange("approvalRefNo14c", e.target.value)}
+                            placeholder="Enter approval reference"
+                          />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label className={styles.label}>14 d. Name</label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={formData.name14d}
+                            onChange={(e) => handleInputChange("name14d", e.target.value)}
+                            disabled
+                          />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label className={styles.label}>14 e. Date (dd/mm/yyyy)</label>
+                          <input
+                            type="text"
+                            className={styles.input}
+                            value={formData.date14e}
+                            onChange={(e) => handleInputChange("date14e", e.target.value)}
+                            disabled
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Footer Section */}
-              <div className={styles.footerSection}>
-                <div className={styles.footerLeft}>
-                  <div className={styles.legalText}>
-                    <div>USER/INSTALLER RESPONSIBILITY:</div>
-                    <p>
-                      THIS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE
-                      AUTHORITY TO INSTALL THE ITEMS. WHERE THE USER/INSTALLER
-                      PERFORMS WORK IN ACCORDANCE WITH REGULATIONS OF AN
-                      AIRWORTHINESS AUTHORITY DIFFERENT THAN THE AIRWORTHINESS
-                      AUTHORITY SPECIFIED IN BLOCK 1, IT IS ESSENTIAL THAT THE
-                      USER/INSTALLER ENSURES THAT HIS/HER AIRWORTHINESS
-                      AUTHORITY ACCEPTS ITEMS FROM THE AIRWORTHINESS AUTHORITY
-                      SPECIFIED IN BLOCK 1. STATEMENTS IN BLOCKS 13A AND 14A DO
-                      NOT CONSTITUTE INSTALLATION CERTIFICATION. IN ALL CASES
-                      AIRCRAFT MAINTENANCE RECORDS MUST CONTAIN AN INSTALLATION
-                      CERTIFICATION ISSUED IN ACCORDANCE WITH THE NATIONAL
-                      REGULATIONS BY THE USER/INSTALLER BEFORE THE AIRCRAFT MAY
-                      BE FLOWN.
-                    </p>
-                  </div>
+                {/* Footer Notice */}
+                <div className={styles.footerNotice}>
+                  <div className={styles.noticeTitle}>USER/INSTALLER RESPONSIBILITY:</div>
+                  <p className={styles.noticeText}>
+                    THIS CERTIFICATE DOES NOT AUTOMATICALLY CONSTITUTE AUTHORITY TO INSTALL THE ITEMS. 
+                    WHERE THE USER/INSTALLER PERFORMS WORK IN ACCORDANCE WITH REGULATIONS OF AN AIRWORTHINESS 
+                    AUTHORITY DIFFERENT THAN THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1, IT IS ESSENTIAL 
+                    THAT THE USER/INSTALLER ENSURES THAT HIS/HER AIRWORTHINESS AUTHORITY ACCEPTS ITEMS FROM 
+                    THE AIRWORTHINESS AUTHORITY SPECIFIED IN BLOCK 1. STATEMENTS IN BLOCKS 13A AND 14A DO NOT 
+                    CONSTITUTE INSTALLATION CERTIFICATION. IN ALL CASES AIRCRAFT MAINTENANCE RECORDS MUST CONTAIN 
+                    AN INSTALLATION CERTIFICATION ISSUED IN ACCORDANCE WITH THE NATIONAL REGULATIONS BY THE 
+                    USER/INSTALLER BEFORE THE AIRCRAFT MAY BE FLOWN.
+                  </p>
                 </div>
-              </div>
-              
-              {/* Save Button */}
-              <div>
-                <button onClick={handleSave} className={styles.saveButton}>
-                  <Save size={18} className={styles.saveIcon} />
-                  Save CA Form
-                </button>
+
+                {/* Save Button */}
+                <div className={styles.formActions}>
+                  <button onClick={handleSave} className={styles.btnSave}>
+                    <Save size={18} />
+                    <span>Save CA Form</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <Footer />
       </div>
-
-      <Footer />
     </div>
   );
 };

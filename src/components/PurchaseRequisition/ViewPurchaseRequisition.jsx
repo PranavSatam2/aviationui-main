@@ -2,14 +2,18 @@ import { useEffect, useState } from "react";
 import Footer from "../Footer";
 import Header from "../Header";
 import Sidebar from "../Sidebar";
-import { deletePurchaseRequisition, DownloadCSV, DownloadPDF, getPurchaseRequisitionDetail, listAllPurchaseRequisition } from "../../services/db_manager";
+import { 
+  deletePurchaseRequisition, 
+  DownloadCSV, 
+  DownloadPDF, 
+  getPurchaseRequisitionDetail, 
+  listAllPurchaseRequisition 
+} from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
-// import styles from "./ViewPurchaseRequisition.module.css";
+import styles from "./ViewPurchaseRequisition.module.css";
 
 const ViewPurchaseRequisitionPage = () => {
-  // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,11 +27,10 @@ const ViewPurchaseRequisitionPage = () => {
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    setIsLoading(false)
+    setIsLoading(true);
     try {
       const response = await listAllPurchaseRequisition();
       setTableData(response || []);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching purchase requisitions", error);
       toast.error("Failed to load purchase requisitions");
@@ -36,12 +39,10 @@ const ViewPurchaseRequisitionPage = () => {
     }
   };
 
-  // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Delete the selected purchase requisition
   const deleteSelectedElement = async (purchaseRequisitionID) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
@@ -61,16 +62,12 @@ const ViewPurchaseRequisitionPage = () => {
     }
   };
 
-  // Edit the selected purchase requisition
   const editSelectedElement = async (RequisitionID) => {
-    console.log(RequisitionID,"id paraent")
     navigate("/editpurchaserequisition", {
       state: { RequisitionID },
     });
   };
 
-  // Search functionality
-  // Filter out "close" status first, then search, then date filter
   const filteredData = tableData
     .filter(requisition => requisition.status?.toLowerCase() !== 'close')
     .filter(requisition =>
@@ -81,7 +78,6 @@ const ViewPurchaseRequisitionPage = () => {
       )
     )
     .filter(requisition => {
-      // Date filter (assuming requiredDate is in YYYY-MM-DD format)
       let matchesDate = true;
       if (startDate) {
         matchesDate =
@@ -98,8 +94,6 @@ const ViewPurchaseRequisitionPage = () => {
       return matchesDate;
     });
 
-
-  // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
@@ -111,7 +105,6 @@ const ViewPurchaseRequisitionPage = () => {
     }
   });
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -141,9 +134,9 @@ const ViewPurchaseRequisitionPage = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${currentPage === i ? styles.active : ''}`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -153,347 +146,217 @@ const ViewPurchaseRequisitionPage = () => {
     return pageNumbers;
   };
 
-  // Column definitions for the table
   const columns = [
-    { field: "batchNumber", label: "Purchase_Req", width: "250px"},
-   // { field: "id", label: "P_REQ_No", width: "100px" },
+    { field: "batchNumber", label: "Purchase Req", width: "180px" },
     { field: "partNumber", label: "Part Number", width: "130px" },
-    { field: "description", label: "Description", width: "130px" },
-    { field: "currentStock", label: "Current Stock", width: "70px" },
-    { field: "requiredQty", label: "Required Qty", width: "70px" },
-    { field: "requiredDate", label: "Required Date", width: "150px" },
-    { field: "remark", label: "Remark", width: "100px" },
-    { field: "unitOfMeasurement", label: "Unit of Measurement", width: "150px" },
+    { field: "description", label: "Description", width: "150px" },
+    { field: "currentStock", label: "Current Stock", width: "120px" },
+    { field: "requiredQty", label: "Required Qty", width: "120px" },
+    { field: "requiredDate", label: "Required Date", width: "120px" },
+    { field: "remark", label: "Remark", width: "120px" },
+    { field: "unitOfMeasurement", label: "UOM", width: "100px" },
     { field: "status", label: "Status", width: "100px" },
   ];
 
-  // const handlePrintClick = () => {
-  //   setTimeout(() => {
-  //     window.print();
-  //   }, 500);
-  // };
   const handleDownloadCSV = async () => {
-
     try {
-    const response = await DownloadCSV();
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "purchase_requisitions.csv");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    toast.success("CSV file downloaded successfully!");
-  } catch (error) {
-    toast.error("Error downloading CSV file");
-  }
-    // try {
-    //   const response = await DownloadCSV()
-    //   if(!response.error){
-    //     toast.success("CSV file download successfully.!")
-    //   }
-    //   // Create a URL from the file
-    //   // const url = window.URL.createObjectURL(response.data);
-    //   console.log(response,"urllll")
-
-    //   // const link = document.createElement('a');
-    //   // link.href = url;
-    //   // link.setAttribute('download', 'data.csv');
-    //   // document.body.appendChild(link);
-    //   // link.click();
-
-    //   // // Clean up
-    //   // link.parentNode.removeChild(link);
-    //   // window.URL.revokeObjectURL(url);
-    // } catch (error) {
-    //   toast.error('Error downloading the CSV file');
-    // }
+      const response = await DownloadCSV();
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "purchase_requisitions.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("CSV file downloaded successfully!");
+    } catch (error) {
+      toast.error("Error downloading CSV file");
+    }
   };
 
   const handleDownloadPDF = async () => {
-    try{
-    const response = await DownloadPDF();
-    const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "purchase_requisitions.pdf");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    toast.success("PDF file downloaded successfully!");
-  } catch (error) {
-    toast.error("Error downloading PDF file");
-  }
-  //   try {
-  //     const response = await DownloadPDF()
-  //     if(!response.error){
-  //       toast.success("PDF file download successfully .!")
-  //     }
-  //     // const url = window.URL.createObjectURL(new Blob([response.data]));
-  //     // console.log(url,"urllll")
-  //     // const link = document.createElement('a');
-  //     // link.href = url;
-  //     // link.setAttribute('download', 'data.pdf'); // File name
-  //     // document.body.appendChild(link);
-  //     // link.click();
-  //     // link.parentNode.removeChild(link);
-  //     // window.URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     toast.error('Error downloading PDF');
-  //   }
+    try {
+      const response = await DownloadPDF();
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "purchase_requisitions.pdf");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("PDF file downloaded successfully!");
+    } catch (error) {
+      toast.error("Error downloading PDF file");
+    }
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Purchase Requisitions" />
-          
-          {/* ...existing table and controls... */}
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-            //   styles.normalViewStyle,
-            ].join(" ")}
-          >
-            <div className="card-body">
-              {/* Date Range Filter */}
-          <div className="row mb-3">
-            <div className="col-md-3">
-              <label className="form-label fw-light">Start Date</label>
-              <input
-                type="date"
-                className="form-control"
-                value={startDate}
-                onChange={(e) => {
-                  setStartDate(e.target.value);
-                  setCurrentPage(1);
-                }}
-              />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-file-invoice"></i>
+              <span className={styles.breadcrumbLabel}>View Purchase Requisitions</span>
             </div>
-            <div className="col-md-3">
-              <label className="form-label fw-light">End Date</label>
-              <input
-                type="date"
-                className="form-control"
-                value={endDate}
-                onChange={(e) => {
-                  setEndDate(e.target.value);
-                  setCurrentPage(1);
-                }}
-              />
+            <div className={styles.downloadButtons}>
+              <button className={styles.btnDownload} onClick={handleDownloadCSV}>
+                <i className="fa fa-file-csv"></i>
+                <span>CSV</span>
+              </button>
+              <button className={styles.btnDownload} onClick={handleDownloadPDF}>
+                <i className="fa fa-file-pdf"></i>
+                <span>PDF</span>
+              </button>
             </div>
           </div>
-              <div className="row align-items-center">
-                <div className="col-md-4">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search requisitions..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-3" style={{ display: 'flex', justifyContent: 'space-around' }}>
-                  <button
-                    onClick={handleDownloadCSV}
-                    style={{
-                      backgroundColor: '#007bff',
-                      color: 'white',
-                      padding: '8px 16px',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.3s ease'
-                    }}
-                  >
-                    Download CSV
-                  </button>
-                  <button
-                    onClick={handleDownloadPDF}
-                    style={{
-                      backgroundColor: '#007bff',
-                      color: 'white',
-                      padding: '8px 16px',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.3s ease'
-                    }}
-                  >
-                    Download PDF
-                  </button>
-                </div>
 
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+          {/* Card */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Date Range Filter */}
+              <div className={styles.dateFilters}>
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>Start Date</label>
+                  <input
+                    type="date"
+                    className={styles.dateInput}
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label className={styles.label}>End Date</label>
+                  <input
+                    type="date"
+                    className={styles.dateInput}
+                    value={endDate}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
                 </div>
               </div>
 
+              {/* Search and Entries */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search requisitions..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
+                </div>
+              </div>
+
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                  </div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-light">
+                      <tr>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
-                                    sortDirection === "desc" ? "up" : "down"
-                                  } text-primary`}
+                                  className={`fa fa-sort-${sortDirection === "asc" ? "up" : "down"} ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
-                                <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
-                                ></i>
+                                <i className={`fa fa-sort ${styles.sortIcon}`}></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
+                        <th className={styles.actionsHeader}>
+                          <div className={styles.thContent}>
+                            <span>ACTIONS</span>
+                          </div>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
                         currentItems.map((requisition, index) => (
-                          <tr
-                            key={requisition.purchaseRequisitionNo}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
-                          >
+                          <tr key={requisition.purchaseRequisitionNo} style={{ animationDelay: `${index * 0.02}s` }}>
                             {columns.map((column) => (
                               <td
                                 key={`${requisition.purchaseRequisitionNo}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={requisition[column.field]}
                               >
                                 {requisition[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
                                 <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() =>
-                                    editSelectedElement(requisition.id)
-                                  }
+                                  className={styles.btnEdit}
+                                  onClick={() => editSelectedElement(requisition.id)}
                                   title="Edit"
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
                                 </button>
                                 <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() =>
-                                    deleteSelectedElement(requisition.id)
-                                  }
+                                  className={styles.btnDelete}
+                                  onClick={() => deleteSelectedElement(requisition.id)}
                                   title="Delete"
                                 >
                                   <i className="fa-solid fa-trash"></i>
                                 </button>
-                                {/* <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handlePrintClick(requisition)}
-                                  title="Print"
-                                >
-                                  <i className="fa-solid fa-print"></i>
-                                </button> */}
                               </div>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td
-                            colSpan={columns.length + 1}
-                            className="text-center py-5"
-                          >
+                          <td colSpan={columns.length + 1} className={styles.noData}>
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No data available</p>
                               </div>
                             )}
                           </td>
@@ -504,87 +367,57 @@ const ViewPurchaseRequisitionPage = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>{Math.min(indexOfLastItem, sortedData.length)}</strong> of{" "}
+                  <strong>{sortedData.length}</strong> entries
+                  {searchTerm && ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>

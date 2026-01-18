@@ -5,9 +5,8 @@ import Sidebar from "./Sidebar";
 import { getCAFormList, getCAForm, deleteCAForm } from "../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import { PrintCAForm } from "./PrintCAForm";
-import styles from "./Checker/EditSupplier/EditSupplierTable.module.css";
+import styles from "./ViewMaterialNote.module.css";
 import logo from "../static/img/AMCLOGO.jpg"; 
 
 const ViewCAForm = () => {
@@ -25,11 +24,12 @@ const ViewCAForm = () => {
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
-  const [actionType, setActionType] = useState(""); // "accept" or "reject"
+  const [actionType, setActionType] = useState("");
   const [remark, setRemark] = useState("");
   const [reportData, setReportData] = useState();
 
   const navigate = useNavigate();
+  
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -52,12 +52,11 @@ const ViewCAForm = () => {
       setIsLoading(false);
     }
   };
-  // Fetching data when the component is mounted
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Reset selection when page changes
   useEffect(() => {
     setSelectedItem("");
     setSelectAll(false);
@@ -116,9 +115,11 @@ const ViewCAForm = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${
+            currentPage === i ? styles.active : ""
+          }`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -127,8 +128,8 @@ const ViewCAForm = () => {
 
     return pageNumbers;
   };
+
   const handleCheckboxChange = (report) => {
-    // If the same checkbox is clicked again, deselect it
     if (selectedItem === report.id) {
       setSelectedItem("");
     } else {
@@ -137,12 +138,10 @@ const ViewCAForm = () => {
     }
   };
 
-  // Modified: Handle select all - now it just clears selection
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedItem("");
     } else {
-      // Select the first item when clicking "select all"
       if (currentItems.length > 0) {
         const firstItemId = currentItems[0].id;
         setSelectedItem(firstItemId);
@@ -150,6 +149,7 @@ const ViewCAForm = () => {
     }
     setSelectAll(!selectAll);
   };
+
   const handlePrintClick = (report) => {
     // Create the HTML content with inline styles
     const printContent = `
@@ -392,7 +392,6 @@ const ViewCAForm = () => {
       printWindow.document.write(printContent);
       printWindow.document.close();
 
-      // Wait for content to load, then print
       printWindow.onload = function () {
         setTimeout(() => {
           printWindow.focus();
@@ -406,149 +405,105 @@ const ViewCAForm = () => {
 
   // Column definitions for the table
   const columns = [
-    { field: "formTrackingNumber", label: "CA Form No.", width: "220px" },
-    { field: "workOrderNumber", label: "Work Order No.", width: "180px" },
+    { field: "formTrackingNumber", label: "CA Form No.", width: "180px" },
+    { field: "workOrderNumber", label: "Work Order No.", width: "150px" },
     { field: "item", label: "Item", width: "80px" },
     { field: "partNo", label: "Part No.", width: "120px" },
-    { field: "description", label: "Description", width: "200px" },
-    { field: "quantity", label: "Quantity", width: "80px" },
-    { field: "serialNo", label: "Serial No.", width: "150px" },
+    { field: "description", label: "Description", width: "180px" },
+    { field: "quantity", label: "Quantity", width: "90px" },
+    { field: "serialNo", label: "Serial No.", width: "130px" },
     { field: "status", label: "Status", width: "100px" },
-    { field: "remarks", label: "Remarks", width: "100px" },
+    { field: "remarks", label: "Remarks", width: "150px" },
   ];
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View CA Form" />
+        <div className={styles.mainContent}>
+          {/* Print View (Hidden) */}
           <div className="printView">
             <PrintCAForm dataMap={reportData} />
           </div>
 
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              styles.normalViewStyle,
-            ].join(" ")}
-          >
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search reports..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-certificate"></i>
+              <span className={styles.breadcrumbLabel}>View CA Form</span>
+            </div>
+          </div>
+
+          {/* Card Container */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Search and Entries Control */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search CA forms..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading CA forms...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-blue">
-                        {/* <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{ width: "40px" }}
-                        >
-                          <div className="form-check d-flex justify-content-center">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="selectAll"
-                              checked={selectAll}
-                              onChange={handleSelectAll}
-                            />
-                          </div>
-                        </th> */}
+                      <tr>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
+                                  className={`fa fa-sort-${
                                     sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  } ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
+                                  className={`fa fa-sort ${styles.sortIcon}`}
                                 ></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
-                        </th>
+                        <th className={styles.actionsHeader}>ACTIONS</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -556,60 +511,22 @@ const ViewCAForm = () => {
                         currentItems.map((report, index) => (
                           <tr
                             key={report.id}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
+                            style={{ animationDelay: `${index * 0.02}s` }}
                           >
-                            {/* <td className="text-center">
-                              <div className="form-check d-flex justify-content-center">
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`check-${report.id}`}
-                                  checked={selectedItem === report.id}
-                                  onChange={() =>
-                                    handleCheckboxChange(report)
-                                  }
-                                />
-                              </div>
-                            </td> */}
                             {columns.map((column) => (
                               <td
                                 key={`${report.id}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={report[column.field]}
                               >
                                 {report[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
-                                {/* <button
-                                className="btn btn-sm btn-outline-primary"
-                                onClick={() => editSelectedElement(report.id)}
-                                title="Edit"
-                              >
-                                <i className="fa-solid fa-pen-to-square"></i>
-                              </button>
-                              <button
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={() => deleteSelectedElement(report.id)}
-                                title="Delete"
-                              >
-                                <i className="fa-solid fa-trash"></i>
-                              </button> */}
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
                                 <button
-                                  className="btn btn-sm btn-outline-secondary"
+                                  className={styles.btnPrint}
                                   onClick={() => handlePrintClick(report)}
-                                  title="Print Doc"
+                                  title="Print CA Form"
                                 >
                                   <i className="fa-solid fa-print"></i>
                                 </button>
@@ -620,20 +537,18 @@ const ViewCAForm = () => {
                       ) : (
                         <tr>
                           <td
-                            colSpan={columns.length + 2}
-                            className="text-center py-5"
+                            colSpan={columns.length + 1}
+                            className={styles.noData}
                           >
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No CA forms available</p>
                               </div>
                             )}
                           </td>
@@ -644,87 +559,76 @@ const ViewCAForm = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>
+                    {Math.min(indexOfLastItem, sortedData.length)}
+                  </strong>{" "}
+                  of <strong>{sortedData.length}</strong> entries
+                  {searchTerm &&
+                    ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>

@@ -9,11 +9,9 @@ import {
 } from "../../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
-import styles from "../ViewPurchaseOrder/ViewPurchaseOrder.module.css";
+import styles from "./ViewPurchaseOrder.module.css";
 
 const ViewPurchaseOrderPage = () => {
-  // State
   const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,7 +28,6 @@ const ViewPurchaseOrderPage = () => {
     try {
       const response = await listAllPurchaseOrder();
       setTableData(response.data || []);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching purchase orders", error);
       toast.error("Failed to load purchase orders");
@@ -39,22 +36,16 @@ const ViewPurchaseOrderPage = () => {
     }
   };
 
-  // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Delete the selected purchase order
   const deleteSelectedElement = async (purchaseOrderId) => {
-    if (
-      window.confirm("Are you sure you want to delete this purchase order?")
-    ) {
+    if (window.confirm("Are you sure you want to delete this purchase order?")) {
       try {
         await deletePurchaseOrder(purchaseOrderId);
         setTableData((prevData) =>
-          prevData.filter(
-            (purchaseOrder) => purchaseOrder.id !== purchaseOrderId
-          )
+          prevData.filter((purchaseOrder) => purchaseOrder.id !== purchaseOrderId)
         );
         toast.success("Purchase order deleted successfully!");
         fetchData();
@@ -65,23 +56,19 @@ const ViewPurchaseOrderPage = () => {
     }
   };
 
-  // Edit the selected purchase order
   const editSelectedElement = async (purchaseOrderID) => {
     navigate("/editpurchaseorder", {
       state: { purchaseOrderID },
     });
   };
 
-  // Print functionality
   const handlePrintClick = async (purchaseOrderId) => {
     try {
-      // Fetch the full purchase order data
       const response = await getPurchaseOrder(purchaseOrderId);
       
       if (response) {
         setPrintData(response);
         
-        // Wait for state to update and DOM to render
         setTimeout(() => {
           window.print();
         }, 300);
@@ -92,7 +79,6 @@ const ViewPurchaseOrderPage = () => {
     }
   };
 
-  // Search functionality
   const filteredData = tableData
     .filter((requisition) => requisition.status?.toLowerCase() !== "close")
     .filter((requisition) =>
@@ -119,7 +105,6 @@ const ViewPurchaseOrderPage = () => {
       return matchesDate;
     });
 
-  // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
@@ -131,7 +116,6 @@ const ViewPurchaseOrderPage = () => {
     }
   });
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -161,9 +145,9 @@ const ViewPurchaseOrderPage = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${currentPage === i ? styles.active : ''}`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -173,280 +157,83 @@ const ViewPurchaseOrderPage = () => {
     return pageNumbers;
   };
 
-  // Column definitions for the table
   const columns = [
     { field: "poNumber", label: "PO Number", width: "120px" },
     { field: "poDate", label: "PO Date", width: "120px" },
     { field: "srNo", label: "SR No", width: "80px" },
-    { field: "paymentTerms", label: "Payment Terms", width: "120px" },
-    { field: "partNumber", label: "Part Number", width: "120px" },
-    { field: "description", label: "Desc", width: "150px" },
+    { field: "paymentTerms", label: "Payment Terms", width: "140px" },
+    { field: "partNumber", label: "Part Number", width: "130px" },
+    { field: "description", label: "Description", width: "150px" },
     { field: "currentStoke", label: "PO QTY", width: "100px" },
     { field: "unit", label: "Unit", width: "80px" },
-    { field: "ratePerUnit", label: "Rate Per Unit", width: "120px" },
-    { field: "grossAmount", label: "Gross AMT", width: "100px" },
-    { field: "currency", label: "Currency", width: "100px" },
+    { field: "ratePerUnit", label: "Rate/Unit", width: "100px" },
+    { field: "grossAmount", label: "Gross AMT", width: "110px" },
+    { field: "currency", label: "Currency", width: "90px" },
     { field: "status", label: "Status", width: "90px" },
   ];
 
-  // Format currency values
   const formatCurrency = (value) => {
     if (value === null || value === undefined) return "";
     return parseFloat(value).toFixed(2);
   };
 
-  // Print styles
   const printStyles = `
     @media print {
-      body * {
-        visibility: hidden;
-      }
-      
-      #printSection,
-      #printSection * {
-        visibility: visible;
-      }
-      
-      #printSection {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 20px;
-      }
-      
-      .no-print {
-        display: none !important;
-      }
-      
-      @page {
-        size: A4;
-        margin: 10mm;
-      }
+      body * { visibility: hidden; }
+      #printSection, #printSection * { visibility: visible; }
+      #printSection { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+      .no-print { display: none !important; }
+      @page { size: A4; margin: 10mm; }
     }
-    
     @media screen {
-      #printSection {
-        display: none;
-      }
+      #printSection { display: none; }
     }
   `;
 
-  // Purchase Order Print Template
   const PurchaseOrderPrintTemplate = ({ data }) => {
     if (!data) return null;
 
-    const calculateSubtotal = () => {
-      return parseFloat(data.grossAmount || 0);
-    };
-
-    const calculateTotal = () => {
-      return (
-        calculateSubtotal() +
-        (parseFloat(data.pf) || 0) +
-        (parseFloat(data.transportation) || 0) +
-        (parseFloat(data.insurance) || 0) +
-        (parseFloat(data.other_Charges) || 0)
-      );
-    };
+    const calculateSubtotal = () => parseFloat(data.grossAmount || 0);
 
     return (
       <div id="printSection" style={{ fontFamily: "Arial, sans-serif" }}>
         <style>{`
-          .print-container {
-            max-width: 210mm;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-          }
-          
-          .print-header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-          }
-          
-          .company-info h2 {
-            margin: 0 0 10px 0;
-            color: #333;
-            font-size: 24px;
-          }
-          
-          .company-info p {
-            margin: 2px 0;
-            font-size: 12px;
-            color: #666;
-          }
-          
-          .order-info {
-            text-align: right;
-          }
-          
-          .order-info-grid {
-            display: grid;
-            grid-template-columns: auto auto;
-            gap: 5px 10px;
-            font-size: 12px;
-          }
-          
-          .order-info-label {
-            font-weight: bold;
-            text-align: right;
-          }
-          
-          .address-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-          }
-          
-          .address-box {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-          }
-          
-          .address-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 14px;
-          }
-          
-          .address-text {
-            font-size: 12px;
-            line-height: 1.6;
-          }
-          
-          .payment-terms {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-          }
-          
-          .payment-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 14px;
-          }
-          
-          .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-          }
-          
-          .items-table th,
-          .items-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            font-size: 12px;
-          }
-          
-          .items-table th {
-            background-color: #f5f5f5;
-            font-weight: bold;
-          }
-          
-          .items-table td.text-center {
-            text-align: center;
-          }
-          
-          .items-table td.text-right {
-            text-align: right;
-          }
-          
-          .footer-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 30px;
-          }
-          
-          .legal-text {
-            font-size: 10px;
-            line-height: 1.5;
-          }
-          
-          .legal-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 11px;
-          }
-          
-          .terms-section {
-            margin-top: 15px;
-          }
-          
-          .terms-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 11px;
-          }
-          
-          .terms-grid {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 5px 10px;
-            font-size: 11px;
-          }
-          
-          .total-section {
-            text-align: right;
-          }
-          
-          .total-table {
-            width: 100%;
-            margin-bottom: 20px;
-          }
-          
-          .total-table td {
-            padding: 5px 10px;
-            font-size: 12px;
-          }
-          
-          .total-label {
-            font-weight: bold;
-            text-align: right;
-          }
-          
-          .total-value {
-            text-align: right;
-            border-bottom: 1px solid #eee;
-          }
-          
-          .signature {
-            margin-top: 40px;
-            text-align: center;
-          }
-          
-          .signature-title {
-            font-weight: bold;
-            margin-bottom: 50px;
-            font-size: 12px;
-          }
-          
-          .form-footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-          }
-          
-          .form-footer p {
-            display: inline-block;
-            margin: 0 15px;
-          }
+          .print-container { max-width: 210mm; margin: 0 auto; padding: 20px; background: white; }
+          .print-header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+          .company-info h2 { margin: 0 0 10px 0; color: #333; font-size: 24px; }
+          .company-info p { margin: 2px 0; font-size: 12px; color: #666; }
+          .order-info { text-align: right; }
+          .order-info-grid { display: grid; grid-template-columns: auto auto; gap: 5px 10px; font-size: 12px; }
+          .order-info-label { font-weight: bold; text-align: right; }
+          .address-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+          .address-box { border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
+          .address-title { font-weight: bold; margin-bottom: 10px; font-size: 14px; }
+          .address-text { font-size: 12px; line-height: 1.6; }
+          .payment-terms { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+          .payment-title { font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+          .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+          .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
+          .items-table th { background-color: #f5f5f5; font-weight: bold; }
+          .items-table td.text-center { text-align: center; }
+          .items-table td.text-right { text-align: right; }
+          .footer-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+          .legal-text { font-size: 10px; line-height: 1.5; }
+          .legal-title { font-weight: bold; margin-bottom: 5px; font-size: 11px; }
+          .terms-section { margin-top: 15px; }
+          .terms-title { font-weight: bold; margin-bottom: 10px; font-size: 11px; }
+          .terms-grid { display: grid; grid-template-columns: auto 1fr; gap: 5px 10px; font-size: 11px; }
+          .total-section { text-align: right; }
+          .total-table { width: 100%; margin-bottom: 20px; }
+          .total-table td { padding: 5px 10px; font-size: 12px; }
+          .total-label { font-weight: bold; text-align: right; }
+          .total-value { text-align: right; border-bottom: 1px solid #eee; }
+          .signature { margin-top: 40px; text-align: center; }
+          .signature-title { font-weight: bold; margin-bottom: 50px; font-size: 12px; }
+          .form-footer { margin-top: 30px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
+          .form-footer p { display: inline-block; margin: 0 15px; }
         `}</style>
 
         <div className="print-container">
-          {/* Header Section */}
           <div className="print-header">
             <div className="company-info">
               <h2>AMC TECHNOLOGY</h2>
@@ -457,27 +244,19 @@ const ViewPurchaseOrderPage = () => {
             </div>
             <div className="order-info">
               <div className="order-info-grid">
-                <div className="order-info-label">P.O. No.:</div>
-                <div>{data.poNumber || ""}</div>
-                <div className="order-info-label">P.O. Date:</div>
-                <div>{data.poDate || ""}</div>
-                <div className="order-info-label">Our Reference:</div>
-                <div>{data.ourReference || ""}</div>
-                <div className="order-info-label">Your Reference:</div>
-                <div>{data.yourReference || ""}</div>
-                <div className="order-info-label">Delivery:</div>
-                <div>{data.delivery || ""}</div>
+                <div className="order-info-label">P.O. No.:</div><div>{data.poNumber || ""}</div>
+                <div className="order-info-label">P.O. Date:</div><div>{data.poDate || ""}</div>
+                <div className="order-info-label">Our Reference:</div><div>{data.ourReference || ""}</div>
+                <div className="order-info-label">Your Reference:</div><div>{data.yourReference || ""}</div>
+                <div className="order-info-label">Delivery:</div><div>{data.delivery || ""}</div>
               </div>
             </div>
           </div>
 
-          {/* Address Section */}
           <div className="address-section">
             <div className="address-box">
               <div className="address-title">To,</div>
-              <div className="address-text">
-                {data.deliveryAddress || ""}
-              </div>
+              <div className="address-text">{data.deliveryAddress || ""}</div>
             </div>
             <div className="address-box">
               <div className="address-title">Delivery Address:</div>
@@ -490,13 +269,11 @@ const ViewPurchaseOrderPage = () => {
             </div>
           </div>
 
-          {/* Payment Terms */}
           <div className="payment-terms">
             <div className="payment-title">Payment Terms:</div>
             <div>{data.paymentTerms || ""}</div>
           </div>
 
-          {/* Items Table */}
           <table className="items-table">
             <thead>
               <tr>
@@ -522,63 +299,30 @@ const ViewPurchaseOrderPage = () => {
             </tbody>
           </table>
 
-          {/* Footer Section */}
           <div className="footer-section">
             <div>
               <div className="legal-text">
                 <div className="legal-title">JURISDICTION OF COURTS:</div>
-                <p>
-                  All contracts shall be deemed to have been wholly made in
-                  Mumbai and all claims thereunder are payable in Mumbai City
-                  and it is the distinct condition of the order that no suit or
-                  action for the purpose of enforcing any claim in respect of
-                  the order shall be instituted in any Court other than that
-                  situated in Mumbai City, Maharashtra State, India i.e. courts
-                  in Mumbai shall alone have jurisdiction to decide upon any
-                  dispute arising out of or in Respect of the contract.
-                </p>
+                <p>All contracts shall be deemed to have been wholly made in Mumbai and all claims thereunder are payable in Mumbai City...</p>
               </div>
               <div className="terms-section">
                 <div className="terms-title">TERMS AND CONDITION:</div>
                 <div className="terms-grid">
-                  <div>Incoterm:</div>
-                  <div>{data.incoterm || ""}</div>
-                  <div>Currency:</div>
-                  <div>{data.currency || ""}</div>
-                  <div>Forwarder:</div>
-                  <div>{data.forwarder || ""}</div>
+                  <div>Incoterm:</div><div>{data.incoterm || ""}</div>
+                  <div>Currency:</div><div>{data.currency || ""}</div>
+                  <div>Forwarder:</div><div>{data.forwarder || ""}</div>
                 </div>
               </div>
             </div>
             <div className="total-section">
               <table className="total-table">
                 <tbody>
-                  <tr>
-                    <td className="total-label">Gross</td>
-                    <td className="total-value">{formatCurrency(calculateSubtotal())}</td>
-                  </tr>
-                  <tr>
-                    <td className="total-label">Total</td>
-                    <td className="total-value">{formatCurrency(data.total)}</td>
-                  </tr>
-                  <tr>
-                    <td className="total-label">SGST {data.sgstPercentage}%</td>
-                    <td className="total-value">{formatCurrency(data.sgst)}</td>
-                  </tr>
-                  <tr>
-                    <td className="total-label">CGST {data.cgstPercentage}%</td>
-                    <td className="total-value">{formatCurrency(data.cgst)}</td>
-                  </tr>
-                  <tr>
-                    <td className="total-label">IGST {data.igstPercentage}%</td>
-                    <td className="total-value">{formatCurrency(data.igst)}</td>
-                  </tr>
-                  <tr>
-                    <td className="total-label">Grand Total</td>
-                    <td className="total-value" style={{ fontWeight: "bold", fontSize: "14px" }}>
-                      {formatCurrency(data.grandTotal)}
-                    </td>
-                  </tr>
+                  <tr><td className="total-label">Gross</td><td className="total-value">{formatCurrency(calculateSubtotal())}</td></tr>
+                  <tr><td className="total-label">Total</td><td className="total-value">{formatCurrency(data.total)}</td></tr>
+                  <tr><td className="total-label">SGST {data.sgstPercentage}%</td><td className="total-value">{formatCurrency(data.sgst)}</td></tr>
+                  <tr><td className="total-label">CGST {data.cgstPercentage}%</td><td className="total-value">{formatCurrency(data.cgst)}</td></tr>
+                  <tr><td className="total-label">IGST {data.igstPercentage}%</td><td className="total-value">{formatCurrency(data.igst)}</td></tr>
+                  <tr><td className="total-label">Grand Total</td><td className="total-value" style={{ fontWeight: "bold", fontSize: "14px" }}>{formatCurrency(data.grandTotal)}</td></tr>
                 </tbody>
               </table>
               <div className="signature">
@@ -588,7 +332,6 @@ const ViewPurchaseOrderPage = () => {
             </div>
           </div>
 
-          {/* Form Footer */}
           <div className="form-footer">
             <p>Form: AMC-32</p>
             <p>Rev:00</p>
@@ -602,31 +345,28 @@ const ViewPurchaseOrderPage = () => {
   return (
     <>
       <style>{printStyles}</style>
-      
-      {/* Print Template - Hidden on screen */}
       <PurchaseOrderPrintTemplate data={printData} />
 
-      <div className="wrapper no-print">
+      <div className={`${styles.wrapper} no-print`}>
         <Sidebar />
-        <div className="content">
+        <div className={styles.content}>
           <Header />
-          <div style={{ marginTop: "10px" }}>
-            <CustomBreadcrumb breadcrumbsLabel="View Purchase Orders" />
-            
-            <div
-              className={[
-                "card border-0 shadow-lg mx-4 my-4 rounded-3",
-                styles.normalViewStyle,
-              ].join(" ")}
-            >
-              <div className="card-body">
-                {/* Date Range Filter */}
-                <div className="row mb-3">
-                  <div className="col-md-3">
-                    <label className="form-label fw-light">Start Date</label>
+          <div className={styles.mainContent}>
+            <div className={styles.breadcrumbSection}>
+              <div className={styles.breadcrumbContent}>
+                <i className="fa fa-file-invoice-dollar"></i>
+                <span className={styles.breadcrumbLabel}>View Purchase Orders</span>
+              </div>
+            </div>
+
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <div className={styles.dateFilters}>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Start Date</label>
                     <input
                       type="date"
-                      className="form-control"
+                      className={styles.dateInput}
                       value={startDate}
                       onChange={(e) => {
                         setStartDate(e.target.value);
@@ -634,11 +374,11 @@ const ViewPurchaseOrderPage = () => {
                       }}
                     />
                   </div>
-                  <div className="col-md-3">
-                    <label className="form-label fw-light">End Date</label>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>End Date</label>
                     <input
                       type="date"
-                      className="form-control"
+                      className={styles.dateInput}
                       value={endDate}
                       onChange={(e) => {
                         setEndDate(e.target.value);
@@ -648,197 +388,90 @@ const ViewPurchaseOrderPage = () => {
                   </div>
                 </div>
 
-                <div className="row align-items-center mb-4">
-                  <div className="col-md-6">
-                    <div className="input-group">
-                      <span className="input-group-text bg-primary text-white border-0">
-                        <i className="fa fa-search"></i>
-                      </span>
-                      <input
-                        type="text"
-                        className="form-control border-start-0 ps-0"
-                        placeholder="Search purchase orders..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </div>
+                <div className={styles.controlsRow}>
+                  <div className={styles.searchBox}>
+                    <i className="fa fa-search"></i>
+                    <input
+                      type="text"
+                      className={styles.searchInput}
+                      placeholder="Search purchase orders..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
-                  <div className="col-md-3 ms-auto">
-                    <div className="d-flex align-items-center justify-content-end">
-                      <label className="me-2 text-muted fw-light">Show</label>
-                      <select
-                        className="form-select form-select-sm w-auto"
-                        value={itemsPerPage}
-                        onChange={(e) => {
-                          setItemsPerPage(Number(e.target.value));
-                          setCurrentPage(1);
-                        }}
-                      >
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={25}>25</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
-                      </select>
-                      <label className="ms-2 text-muted fw-light">entries</label>
-                    </div>
+                  <div className={styles.entriesSelector}>
+                    <label className={styles.label}>Show</label>
+                    <select
+                      className={styles.select}
+                      value={itemsPerPage}
+                      onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                    <label className={styles.label}>entries</label>
                   </div>
                 </div>
 
                 {isLoading ? (
-                  <div className="text-center py-5">
-                    <div
-                      className="spinner-border text-primary"
-                      role="status"
-                    ></div>
-                    <p className="mt-2 text-muted">Loading data...</p>
+                  <div className={styles.loadingContainer}>
+                    <div className={styles.spinner}></div>
+                    <p className={styles.loadingText}>Loading data...</p>
                   </div>
                 ) : (
-                  <div
-                    className="table-responsive"
-                    style={{
-                      overflowX: "auto",
-                      overflowY: "auto",
-                      maxHeight: "65vh",
-                      scrollbarWidth: "thin",
-                      scrollbarColor: "#ccc transparent",
-                    }}
-                  >
-                    <table className="table table-hover table-striped align-middle">
+                  <div className={styles.tableContainer}>
+                    <table className={styles.table}>
                       <thead>
-                        <tr className="bg-light">
+                        <tr>
                           {columns.map((column) => (
                             <th
                               key={column.field}
-                              className="position-sticky top-0 bg-light py-3"
                               onClick={() => handleSort(column.field)}
-                              style={{
-                                cursor: "pointer",
-                                width: column.width || "auto",
-                                fontSize: "0.9rem",
-                                fontWeight: "600",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.5px",
-                                whiteSpace: "nowrap",
-                              }}
+                              style={{ width: column.width }}
                             >
-                              <div className="d-flex align-items-center">
+                              <div className={styles.thContent}>
                                 <span>{column.label}</span>
                                 {sortField === column.field ? (
-                                  <i
-                                    className={`ms-1 fa fa-sort-${
-                                      sortDirection === "desc" ? "up" : "down"
-                                    } text-primary`}
-                                  ></i>
+                                  <i className={`fa fa-sort-${sortDirection === "asc" ? "up" : "down"} ${styles.sortIconActive}`}></i>
                                 ) : (
-                                  <i
-                                    className="ms-1 fa fa-sort text-muted opacity-50"
-                                    style={{ fontSize: "0.8rem" }}
-                                  ></i>
+                                  <i className={`fa fa-sort ${styles.sortIcon}`}></i>
                                 )}
                               </div>
                             </th>
                           ))}
-                          <th
-                            className="position-sticky top-0 bg-light py-3 text-center"
-                            style={{
-                              width: "100px",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            ACTIONS
+                          <th className={styles.actionsHeader}>
+                            <div className={styles.thContent}><span>ACTIONS</span></div>
                           </th>
                         </tr>
                       </thead>
                       <tbody>
                         {currentItems.length > 0 ? (
                           currentItems.map((purchaseOrder, index) => (
-                            <tr
-                              key={purchaseOrder.id || index}
-                              className={
-                                index % 2 === 0
-                                  ? "bg-white"
-                                  : "bg-light bg-opacity-50"
-                              }
-                            >
+                            <tr key={purchaseOrder.id || index} style={{ animationDelay: `${index * 0.02}s` }}>
                               {columns.map((column) => (
-                                <td
-                                  key={`${purchaseOrder.id || index}-${
-                                    column.field
-                                  }`}
-                                  className="text-nowrap py-3"
-                                  style={{
-                                    maxWidth: "150px",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                  }}
-                                  title={purchaseOrder[column.field]}
-                                >
-                                  {[
-                                    "total",
-                                    "grandTotal",
-                                    "ratePerUnit",
-                                    "grossAmount",
-                                    "sgst",
-                                    "cgst",
-                                    "igst",
-                                    "transportation",
-                                    "pf",
-                                    "other_Charges",
-                                    "insurance",
-                                  ].includes(column.field)
+                                <td key={`${purchaseOrder.id || index}-${column.field}`} title={purchaseOrder[column.field]}>
+                                  {["total", "grandTotal", "ratePerUnit", "grossAmount", "sgst", "cgst", "igst"].includes(column.field)
                                     ? formatCurrency(purchaseOrder[column.field])
                                     : column.field === "deliveryAddress"
-                                    ? purchaseOrder[column.field]?.substring(
-                                        0,
-                                        20
-                                      ) +
-                                      (purchaseOrder[column.field]?.length > 20
-                                        ? "..."
-                                        : "")
-                                    : column.field === "termsAndConditions"
-                                    ? purchaseOrder[column.field]?.substring(
-                                        0,
-                                        20
-                                      ) +
-                                      (purchaseOrder[column.field]?.length > 20
-                                        ? "..."
-                                        : "")
+                                    ? purchaseOrder[column.field]?.substring(0, 20) + (purchaseOrder[column.field]?.length > 20 ? "..." : "")
                                     : purchaseOrder[column.field]}
                                 </td>
                               ))}
-                              <td>
-                                <div className="d-flex justify-content-center gap-2">
-                                  <button
-                                    className="btn btn-sm btn-outline-primary"
-                                    onClick={() =>
-                                      editSelectedElement(purchaseOrder.id)
-                                    }
-                                    title="Edit"
-                                  >
+                              <td className={styles.actionsCell}>
+                                <div className={styles.actionButtons}>
+                                  <button className={styles.btnEdit} onClick={() => editSelectedElement(purchaseOrder.id)} title="Edit">
                                     <i className="fa-solid fa-pen-to-square"></i>
                                   </button>
-                                  <button
-                                    className="btn btn-sm btn-outline-danger"
-                                    onClick={() =>
-                                      deleteSelectedElement(purchaseOrder.id)
-                                    }
-                                    title="Delete"
-                                  >
+                                  <button className={styles.btnDelete} onClick={() => deleteSelectedElement(purchaseOrder.id)} title="Delete">
                                     <i className="fa-solid fa-trash"></i>
                                   </button>
-                                  <button
-                                    className="btn btn-sm btn-outline-secondary"
-                                    onClick={() =>
-                                      handlePrintClick(purchaseOrder.id)
-                                    }
-                                    title="Print"
-                                  >
+                                  <button className={styles.btnPrint} onClick={() => handlePrintClick(purchaseOrder.id)} title="Print">
                                     <i className="fa-solid fa-print"></i>
                                   </button>
                                 </div>
@@ -847,22 +480,11 @@ const ViewPurchaseOrderPage = () => {
                           ))
                         ) : (
                           <tr>
-                            <td
-                              colSpan={columns.length + 1}
-                              className="text-center py-5"
-                            >
+                            <td colSpan={columns.length + 1} className={styles.noData}>
                               {searchTerm ? (
-                                <div>
-                                  <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                  <p className="mb-0">
-                                    No matching records found
-                                  </p>
-                                </div>
+                                <div><i className="fa fa-search fa-2x"></i><p>No matching records found</p></div>
                               ) : (
-                                <div>
-                                  <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                  <p className="mb-0">No data available</p>
-                                </div>
+                                <div><i className="fa fa-database fa-2x"></i><p>No data available</p></div>
                               )}
                             </td>
                           </tr>
@@ -872,87 +494,38 @@ const ViewPurchaseOrderPage = () => {
                   </div>
                 )}
 
-                <div className="row mt-4 align-items-center">
-                  <div className="col-md-6">
-                    <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                      Showing{" "}
-                      <span className="fw-bold text-dark">
-                        {indexOfFirstItem + 1}
-                      </span>{" "}
-                      to{" "}
-                      <span className="fw-bold text-dark">
-                        {Math.min(indexOfLastItem, sortedData.length)}
-                      </span>{" "}
-                      of{" "}
-                      <span className="fw-bold text-dark">
-                        {sortedData.length}
-                      </span>{" "}
-                      entries
-                      {searchTerm &&
-                        ` (filtered from ${tableData.length} total entries)`}
-                    </p>
+                <div className={styles.paginationRow}>
+                  <div className={styles.paginationInfo}>
+                    Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                    <strong>{Math.min(indexOfLastItem, sortedData.length)}</strong> of{" "}
+                    <strong>{sortedData.length}</strong> entries
+                    {searchTerm && ` (filtered from ${tableData.length} total entries)`}
                   </div>
-                  <div className="col-md-6">
-                    <nav aria-label="Page navigation">
-                      <ul className="pagination justify-content-end mb-0">
-                        <li
-                          className={`page-item ${
-                            currentPage === 1 ? "disabled" : ""
-                          }`}
-                        >
-                          <button
-                            className="page-link border-0"
-                            onClick={() => setCurrentPage(1)}
-                            aria-label="First page"
-                          >
-                            <i className="fa-solid fa-angles-left"></i>
-                          </button>
-                        </li>
-                        <li
-                          className={`page-item ${
-                            currentPage === 1 ? "disabled" : ""
-                          }`}
-                        >
-                          <button
-                            className="page-link border-0"
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                            aria-label="Previous page"
-                          >
-                            <i className="fa-solid fa-angle-left"></i>
-                          </button>
-                        </li>
-
-                        {renderPageNumbers()}
-
-                        <li
-                          className={`page-item ${
-                            currentPage === totalPages ? "disabled" : ""
-                          }`}
-                        >
-                          <button
-                            className="page-link border-0"
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                            aria-label="Next page"
-                          >
-                            <i className="fa-solid fa-angle-right"></i>
-                          </button>
-                        </li>
-                        <li
-                          className={`page-item ${
-                            currentPage === totalPages ? "disabled" : ""
-                          }`}
-                        >
-                          <button
-                            className="page-link border-0"
-                            onClick={() => setCurrentPage(totalPages)}
-                            aria-label="Last page"
-                          >
-                            <i className="fa-solid fa-angles-right"></i>
-                          </button>
-                        </li>
-                      </ul>
-                    </nav>
-                  </div>
+                  <nav>
+                    <ul className={styles.pagination}>
+                      <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                        <button className={styles.pageLink} onClick={() => setCurrentPage(1)} aria-label="First page">
+                          <i className="fa-solid fa-angles-left"></i>
+                        </button>
+                      </li>
+                      <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                        <button className={styles.pageLink} onClick={() => setCurrentPage(currentPage - 1)} aria-label="Previous page">
+                          <i className="fa-solid fa-angle-left"></i>
+                        </button>
+                      </li>
+                      {renderPageNumbers()}
+                      <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                        <button className={styles.pageLink} onClick={() => setCurrentPage(currentPage + 1)} aria-label="Next page">
+                          <i className="fa-solid fa-angle-right"></i>
+                        </button>
+                      </li>
+                      <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                        <button className={styles.pageLink} onClick={() => setCurrentPage(totalPages)} aria-label="Last page">
+                          <i className="fa-solid fa-angles-right"></i>
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
                 </div>
               </div>
             </div>
