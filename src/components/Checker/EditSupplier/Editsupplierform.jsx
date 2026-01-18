@@ -90,8 +90,10 @@ const EditSupplierForm = () => {
     scopeOfWork: "",
     safetyProgram: "",
     houseKeeping: "",
-    userName: "Hrishikesh",
-    userId: "10",
+    // userName: "Hrishikesh",
+    // userId: "10",
+    userName: sessionStorage.getItem("username") || "",
+    userId: sessionStorage.getItem("userId") || "",
     userRole: "M",
     userAction: "1",
   };
@@ -103,6 +105,10 @@ const EditSupplierForm = () => {
       setDataMap((prevData) => ({
         ...prevData,
         ...supplierData,
+        userId: sessionStorage.getItem("userId") || prevData.userId || "",
+        userName: sessionStorage.getItem("username") || prevData.userName || "",
+        userRole: prevData.userRole || "M",
+        userAction: "1",
       }));
     }
   }, [supplierData, supplierId]);
@@ -208,6 +214,10 @@ const EditSupplierForm = () => {
           "qualityManagerPhoneNumber",
           "qualityManagerCountryCode",
           "isoRegistrationPlans",
+          "userId", // Add
+          "userName", // Add
+          "userRole", // Add
+          "userAction", // Add
         ].includes(key)
       ) {
         errorMessages[key] = "This field is required.";
@@ -230,49 +240,63 @@ const EditSupplierForm = () => {
   };
 
   async function actionPerformed(action) {
-    if (action === "clear") {
-      let keys = Object.keys(formVariables);
-      keys.forEach((key) => {
-        formVariables[key] = "";
-      });
-      setDataMap(formVariables);
-      setErrors({});
-      toast.info("Form cleared");
-      return;
-    }
+  if (action === "clear") {
+    // Create a fresh copy with only system fields preserved
+    const clearedData = {
+      ...Object.keys(formVariables).reduce((acc, key) => {
+        acc[key] = "";
+        return acc;
+      }, {}),
+      // Preserve system fields
+      userId: sessionStorage.getItem("userId") || "",
+      userName: sessionStorage.getItem("username") || "",
+      userRole: "M",
+      userAction: "1",
+    };
 
-    const missingFields = getMissingFields();
-    if (Object.keys(missingFields).length > 0) {
-      console.log(missingFields, "miss");
-      setErrors(missingFields);
-      toast.error("Please fill all required fields");
-      return;
-    }
-
-    console.log("✅ VALIDATION PASSED - Proceeding with update");
-    setIsSubmitting(true);
+    setDataMap(clearedData);
     setErrors({});
-
-    try {
-      let supplierDataToUpdate = {
-        ...dataMap,
-        userAction: "1",
-      };
-      let response = await updateSupplier(supplierId, supplierDataToUpdate);
-      if (response) {
-        toast.success("Supplier updated successfully");
-        navigate("/editsupplier");
-      } else if (response?.error) {
-        toast.error(response.error.message);
-      }
-    } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Failed to update supplier"
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    toast.info("Form cleared");
+    return;
   }
+
+  const missingFields = getMissingFields();
+  if (Object.keys(missingFields).length > 0) {
+    console.log(missingFields, "miss");
+    setErrors(missingFields);
+    toast.error("Please fill all required fields");
+    return;
+  }
+
+  console.log("✅ VALIDATION PASSED - Proceeding with update");
+  setIsSubmitting(true);
+  setErrors({});
+  console.log(dataMap);
+  try {
+    let supplierDataToUpdate = {
+      ...dataMap,
+      // Always ensure system fields are set from sessionStorage
+      userId: sessionStorage.getItem("userId") || dataMap.userId || "",
+      userName: sessionStorage.getItem("username") || dataMap.userName || "",
+      userRole: "M",
+      userAction: "1",
+    };
+    console.log(supplierDataToUpdate);
+    let response = await updateSupplier(supplierId, supplierDataToUpdate);
+    if (response) {
+      toast.success("Supplier updated successfully");
+      navigate("/editsupplier");
+    } else if (response?.error) {
+      toast.error(response.error.message);
+    }
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message || "Failed to update supplier"
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+}
 
   const renderTabContent = () => {
     const tabProps = {
