@@ -328,16 +328,17 @@ const EditCustomerOrderTable = () => {
                   <table className={styles.table}>
                     <thead>
                       <tr>
-                        <th className={styles.checkboxHeader}>
+                        {/* <th className={styles.checkboxHeader}>
                           <div className={styles.checkboxWrapper}>
                             <input
                               type="checkbox"
                               className={styles.checkbox}
                               checked={selectAll}
                               onChange={handleSelectAll}
+                              disabled
                             />
                           </div>
-                        </th>
+                        </th> */}
                         {columns.map((column) => (
                           <th
                             key={column.field}
@@ -370,7 +371,7 @@ const EditCustomerOrderTable = () => {
                             key={report.formId}
                             style={{ animationDelay: `${index * 0.02}s` }}
                           >
-                            <td className={styles.checkboxCell}>
+                            {/* <td className={styles.checkboxCell}>
                               <div className={styles.checkboxWrapper}>
                                 <input
                                   type="checkbox"
@@ -379,7 +380,7 @@ const EditCustomerOrderTable = () => {
                                   onChange={() => handleCheckboxChange(report)}
                                 />
                               </div>
-                            </td>
+                            </td> */}
                             {columns.map((column) => (
                               <td
                                 key={`${report.formId}-${column.field}`}
@@ -501,7 +502,7 @@ const EditCustomerOrderTable = () => {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ 
+              {/* <div style={{ 
                 display: 'flex', 
                 justifyContent: 'flex-end', 
                 marginTop: '2rem', 
@@ -524,7 +525,7 @@ const EditCustomerOrderTable = () => {
                   <i className="fa-solid fa-xmark"></i>
                   Reject
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
