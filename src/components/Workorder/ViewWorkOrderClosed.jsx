@@ -192,7 +192,7 @@ const ViewWorkOrderClosed = () => {
             <div className={styles.breadcrumbContent}>
               <i className="fa fa-check-circle"></i>
               <span className={styles.breadcrumbLabel}>
-                View All Work Orders
+                Dispatch Report 
               </span>
             </div>
           </div>

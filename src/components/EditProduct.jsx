@@ -3,9 +3,14 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProductDetail, updateProduct, fetchPartNumbersAndDescriptions } from "../services/db_manager";
+import {
+  getProductDetail,
+  updateProduct,
+  fetchPartNumbersAndDescriptions,
+} from "../services/db_manager";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import styles from "./EditProduct.module.css";
+import { toast } from "react-toastify";
 
 const EditProduct = () => {
   const { productId } = useParams();
@@ -90,9 +95,21 @@ const EditProduct = () => {
 
   const validationRules = {
     productName: { required: true, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
-    productDescription: { required: true, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
-    unitOfMeasurement: { required: true, length: 10, regex: /^[a-zA-Z0-9.\s-]*$/ },
-    materialClassification: { required: true, length: 30, regex: /^[a-zA-Z0-9\s-]*$/ },
+    productDescription: {
+      required: true,
+      length: 255,
+      regex: /^[a-zA-Z0-9\s-]*$/,
+    },
+    unitOfMeasurement: {
+      required: true,
+      length: 10,
+      regex: /^[a-zA-Z0-9.\s-]*$/,
+    },
+    materialClassification: {
+      required: true,
+      length: 30,
+      regex: /^[a-zA-Z0-9\s-]*$/,
+    },
     oem: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
     nha: { required: false, length: 255, regex: /^[a-zA-Z0-9\s-]*$/ },
     cmmReferenceNumber: { required: false, regex: /^[0-9\s-]*$/, length: 12 },
@@ -129,12 +146,12 @@ const EditProduct = () => {
     try {
       const response = await updateProduct(productId, form);
       if (response.status === 200) {
-        alert("Product updated successfully!");
+        toast.success("Product updated successfully!");
         navigate("/productList");
       }
     } catch (error) {
       console.error("Error updating product:", error);
-      alert("Failed to update product.");
+      toast.error("Failed to update product.");
     } finally {
       setIsSubmitting(false);
     }
@@ -147,7 +164,7 @@ const EditProduct = () => {
         <Header />
         <div className={styles.mainContent}>
           <div className={styles.breadcrumbSection}>
-            <button 
+            <button
               className={styles.backButton}
               onClick={() => navigate("/productList")}
             >
@@ -164,7 +181,7 @@ const EditProduct = () => {
               <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.formSection}>
                   <h3 className={styles.sectionTitle}>Basic Information</h3>
-                  
+
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
@@ -183,7 +200,8 @@ const EditProduct = () => {
 
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
-                        Material Classification <span className={styles.required}>*</span>
+                        Material Classification{" "}
+                        <span className={styles.required}>*</span>
                       </label>
                       <select
                         className={styles.select}
@@ -218,7 +236,9 @@ const EditProduct = () => {
                         type="button"
                         onClick={() => setForm({ ...form, mappingType: "UP" })}
                         className={`${styles.mappingBtn} ${
-                          form.mappingType === "UP" ? styles.mappingBtnActive : ""
+                          form.mappingType === "UP"
+                            ? styles.mappingBtnActive
+                            : ""
                         }`}
                       >
                         <i className="fa fa-arrow-up"></i>
@@ -226,9 +246,13 @@ const EditProduct = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setForm({ ...form, mappingType: "BOTH" })}
+                        onClick={() =>
+                          setForm({ ...form, mappingType: "BOTH" })
+                        }
                         className={`${styles.mappingBtn} ${
-                          form.mappingType === "BOTH" ? styles.mappingBtnActive : ""
+                          form.mappingType === "BOTH"
+                            ? styles.mappingBtnActive
+                            : ""
                         }`}
                       >
                         <i className="fa fa-arrow-up"></i>
@@ -245,7 +269,9 @@ const EditProduct = () => {
 
                   {/* Alternate Product 1 */}
                   <div className={styles.radioGroup}>
-                    <label className={styles.label}>Alternate Part Number 1?</label>
+                    <label className={styles.label}>
+                      Alternate Part Number 1?
+                    </label>
                     <div className={styles.radioOptions}>
                       <label className={styles.radioLabel}>
                         <input
@@ -263,7 +289,10 @@ const EditProduct = () => {
                           checked={!showAlternateName1}
                           onChange={() => {
                             setShowAlternateName1(false);
-                            setForm(prev => ({ ...prev, alternateProduct1: "" }));
+                            setForm((prev) => ({
+                              ...prev,
+                              alternateProduct1: "",
+                            }));
                           }}
                         />
                         <span>No</span>
@@ -274,7 +303,8 @@ const EditProduct = () => {
                   {showAlternateName1 && (
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
-                        Alternate Part Number 1 <span className={styles.required}>*</span>
+                        Alternate Part Number 1{" "}
+                        <span className={styles.required}>*</span>
                       </label>
                       <select
                         className={styles.select}
@@ -295,7 +325,9 @@ const EditProduct = () => {
 
                   {/* Alternate Product 2 */}
                   <div className={styles.radioGroup}>
-                    <label className={styles.label}>Alternate Part Number 2?</label>
+                    <label className={styles.label}>
+                      Alternate Part Number 2?
+                    </label>
                     <div className={styles.radioOptions}>
                       <label className={styles.radioLabel}>
                         <input
@@ -313,7 +345,10 @@ const EditProduct = () => {
                           checked={!showAlternateName2}
                           onChange={() => {
                             setShowAlternateName2(false);
-                            setForm(prev => ({ ...prev, alternateProduct2: "" }));
+                            setForm((prev) => ({
+                              ...prev,
+                              alternateProduct2: "",
+                            }));
                           }}
                         />
                         <span>No</span>
@@ -324,7 +359,8 @@ const EditProduct = () => {
                   {showAlternateName2 && (
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
-                        Alternate Part Number 2 <span className={styles.required}>*</span>
+                        Alternate Part Number 2{" "}
+                        <span className={styles.required}>*</span>
                       </label>
                       <select
                         className={styles.select}
@@ -350,7 +386,8 @@ const EditProduct = () => {
 
                   <div className={styles.formGroup}>
                     <label className={styles.label}>
-                      Part Description <span className={styles.required}>*</span>
+                      Part Description{" "}
+                      <span className={styles.required}>*</span>
                     </label>
                     <textarea
                       className={styles.textarea}
@@ -366,7 +403,8 @@ const EditProduct = () => {
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
-                        Unit of Measurement <span className={styles.required}>*</span>
+                        Unit of Measurement{" "}
+                        <span className={styles.required}>*</span>
                       </label>
                       <select
                         className={styles.select}
@@ -415,7 +453,9 @@ const EditProduct = () => {
                     </div>
 
                     <div className={styles.formGroup}>
-                      <label className={styles.label}>CMM Reference Number</label>
+                      <label className={styles.label}>
+                        CMM Reference Number
+                      </label>
                       <input
                         className={styles.input}
                         type="text"
@@ -430,7 +470,9 @@ const EditProduct = () => {
 
                 {/* Registration Section */}
                 <div className={styles.formSection}>
-                  <h3 className={styles.sectionTitle}>Registration Information</h3>
+                  <h3 className={styles.sectionTitle}>
+                    Registration Information
+                  </h3>
 
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>

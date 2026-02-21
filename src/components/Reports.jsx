@@ -8,23 +8,25 @@ import {
   getReportColumns,
   generateReportPreview,
   downloadReportCSV,
-  downloadReportExcel
+  downloadReportExcel,
 } from "../services/db_manager";
 import styles from "./Reports.module.css";
 
 const Reports = () => {
   const [entities, setEntities] = useState([]);
-  const [selectedEntity, setSelectedEntity] = useState('');
+  const [selectedEntity, setSelectedEntity] = useState("");
   const [availableColumns, setAvailableColumns] = useState({});
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [reportData, setReportData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filterActive, setFilterActive] = useState(false);
-  const [searchColumn, setSearchColumn] = useState('');
+  const [searchColumn, setSearchColumn] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [dateField, setDateField] = useState("");
   useEffect(() => {
     fetchEntities();
   }, []);
@@ -35,6 +37,9 @@ const Reports = () => {
       setReportData([]);
       setShowPreview(false);
       setSelectedColumns([]);
+      setDateFrom("");
+      setDateTo("");
+      setDateField("");
     }
   }, [selectedEntity]);
 
@@ -60,10 +65,10 @@ const Reports = () => {
   };
 
   const handleColumnToggle = (columnKey) => {
-    setSelectedColumns(prev =>
+    setSelectedColumns((prev) =>
       prev.includes(columnKey)
-        ? prev.filter(c => c !== columnKey)
-        : [...prev, columnKey]
+        ? prev.filter((c) => c !== columnKey)
+        : [...prev, columnKey],
     );
   };
 
@@ -86,7 +91,12 @@ const Reports = () => {
       const result = await generateReportPreview({
         entityName: selectedEntity,
         columns: selectedColumns,
-        filter: filterActive ? { flag: 0 } : null
+        filter: {
+          Rflag: filterActive ? 0 : 1,
+          ...(dateFrom && { dateFrom }),
+          ...(dateTo && { dateTo }),
+          ...(dateField && { dateField }),
+        },
       });
 
       setReportData(result.data || []);
@@ -111,7 +121,7 @@ const Reports = () => {
       const payload = {
         entityName: selectedEntity,
         columns: selectedColumns,
-        filter: filterActive ? { flag: 0 } : null
+        filter: filterActive ? { flag: 0 } : null,
       };
 
       const response =
@@ -138,9 +148,10 @@ const Reports = () => {
     }
   };
 
-  const filteredColumns = Object.entries(availableColumns).filter(([key, value]) =>
-    value.toLowerCase().includes(searchColumn.toLowerCase()) ||
-    key.toLowerCase().includes(searchColumn.toLowerCase())
+  const filteredColumns = Object.entries(availableColumns).filter(
+    ([key, value]) =>
+      value.toLowerCase().includes(searchColumn.toLowerCase()) ||
+      key.toLowerCase().includes(searchColumn.toLowerCase()),
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -167,7 +178,7 @@ const Reports = () => {
           <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
-        </li>
+        </li>,
       );
     }
     return pageNumbers;
@@ -183,7 +194,9 @@ const Reports = () => {
           <div className={styles.breadcrumbSection}>
             <div className={styles.breadcrumbContent}>
               <i className="fa fa-chart-bar"></i>
-              <span className={styles.breadcrumbLabel}>Dynamic Report Generator</span>
+              <span className={styles.breadcrumbLabel}>
+                Dynamic Report Generator
+              </span>
             </div>
           </div>
 
@@ -201,8 +214,10 @@ const Reports = () => {
                 className={styles.select}
               >
                 <option value="">-- Choose Component --</option>
-                {entities.map(entity => (
-                  <option key={entity} value={entity}>{entity}</option>
+                {entities.map((entity) => (
+                  <option key={entity} value={entity}>
+                    {entity}
+                  </option>
                 ))}
               </select>
 
@@ -212,7 +227,9 @@ const Reports = () => {
                   <hr className={styles.divider} />
                   <div className={styles.stepHeader}>
                     <span className={styles.stepBadge}>2</span>
-                    <h5 className={styles.stepTitle}>Select Columns from {selectedEntity}</h5>
+                    <h5 className={styles.stepTitle}>
+                      Select Columns from {selectedEntity}
+                    </h5>
                   </div>
 
                   <div className={styles.sectionControls}>
@@ -222,8 +239,15 @@ const Reports = () => {
                         onClick={handleSelectAll}
                         className={styles.btnSelectAll}
                       >
-                        <i className={`fa ${selectedColumns.length === Object.keys(availableColumns).length ? 'fa-check-square' : 'fa-square'}`}></i>
-                        <span>{selectedColumns.length === Object.keys(availableColumns).length ? 'Deselect All' : 'Select All'}</span>
+                        <i
+                          className={`fa ${selectedColumns.length === Object.keys(availableColumns).length ? "fa-check-square" : "fa-square"}`}
+                        ></i>
+                        <span>
+                          {selectedColumns.length ===
+                          Object.keys(availableColumns).length
+                            ? "Deselect All"
+                            : "Select All"}
+                        </span>
                       </button>
                       <span className={styles.selectedBadge}>
                         {selectedColumns.length} Selected
@@ -249,12 +273,20 @@ const Reports = () => {
                       <div
                         key={key}
                         className={`${styles.columnCard} ${
-                          selectedColumns.includes(key) ? styles.columnCardSelected : ''
+                          selectedColumns.includes(key)
+                            ? styles.columnCardSelected
+                            : ""
                         }`}
                         onClick={() => handleColumnToggle(key)}
                       >
                         <div className={styles.columnCheckbox}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                            }}
+                          >
                             <input
                               type="checkbox"
                               checked={selectedColumns.includes(key)}
@@ -279,14 +311,145 @@ const Reports = () => {
                   )}
                 </>
               )}
+              {selectedEntity && (
+                <>
+                  <hr className={styles.divider} />
+                  <div className={styles.stepHeader}>
+                    <span className={styles.stepBadge}>3</span>
+                    <h5 className={styles.stepTitle}>
+                      Select Date Range (Optional)
+                    </h5>
+                  </div>
 
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "1rem",
+                      flexWrap: "wrap",
+                      alignItems: "flex-end",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.4rem",
+                      }}
+                    >
+                      <label style={{ fontWeight: 500, fontSize: "0.875rem" }}>
+                        Date Field
+                      </label>
+                      <select
+                        value={dateField}
+                        onChange={(e) => setDateField(e.target.value)}
+                        className={styles.select}
+                        style={{ minWidth: "180px" }}
+                      >
+                        <option value="">-- Select Date Field --</option>
+                        {selectedColumns
+                          .filter(
+                            (col) =>
+                              col.toLowerCase().includes("date") ||
+                              col.toLowerCase().includes("time"),
+                          )
+                          .map((col) => (
+                            <option key={col} value={col}>
+                              {availableColumns[col] || col}
+                            </option>
+                          ))}
+                        {/* Fallback: show all selected columns */}
+                        {selectedColumns
+                          .filter(
+                            (col) =>
+                              !col.toLowerCase().includes("date") &&
+                              !col.toLowerCase().includes("time"),
+                          )
+                          .map((col) => (
+                            <option key={col} value={col}>
+                              {availableColumns[col] || col}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.4rem",
+                      }}
+                    >
+                      <label style={{ fontWeight: 500, fontSize: "0.875rem" }}>
+                        Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={dateFrom}
+                        onChange={(e) => setDateFrom(e.target.value)}
+                        className={styles.searchInput}
+                        style={{
+                          padding: "0.5rem",
+                          borderRadius: "6px",
+                          border: "1px solid #ccc",
+                        }}
+                      />
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.4rem",
+                      }}
+                    >
+                      <label style={{ fontWeight: 500, fontSize: "0.875rem" }}>
+                        End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={dateTo}
+                        onChange={(e) => setDateTo(e.target.value)}
+                        min={dateFrom}
+                        className={styles.searchInput}
+                        style={{
+                          padding: "0.5rem",
+                          borderRadius: "6px",
+                          border: "1px solid #ccc",
+                        }}
+                      />
+                    </div>
+
+                    {(dateFrom || dateTo || dateField) && (
+                      <button
+                        onClick={() => {
+                          setDateFrom("");
+                          setDateTo("");
+                          setDateField("");
+                        }}
+                        style={{
+                          padding: "0.5rem 1rem",
+                          borderRadius: "6px",
+                          border: "1px solid #ccc",
+                          background: "#f8f9fa",
+                          cursor: "pointer",
+                          height: "fit-content",
+                        }}
+                      >
+                        <i className="fa fa-times"></i> Clear Dates
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
               {/* Step 3: Filter and Actions */}
               {selectedEntity && selectedColumns.length > 0 && (
                 <>
                   <hr className={styles.divider} />
                   <div className={styles.stepHeader}>
-                    <span className={styles.stepBadge}>3</span>
-                    <h5 className={styles.stepTitle}>Filter & Generate Report</h5>
+                    <span className={styles.stepBadge}>4</span>
+                    <h5 className={styles.stepTitle}>
+                      Filter & Generate Report
+                    </h5>
                   </div>
 
                   <div className={styles.actionButtons}>
@@ -296,10 +459,10 @@ const Reports = () => {
                       className={styles.btnPreview}
                     >
                       <i className="fa fa-eye"></i>
-                      <span>{loading ? 'Loading...' : 'Preview Report'}</span>
+                      <span>{loading ? "Loading..." : "Preview Report"}</span>
                     </button>
                     <button
-                      onClick={() => downloadReport('csv')}
+                      onClick={() => downloadReport("csv")}
                       disabled={loading}
                       className={styles.btnDownloadCSV}
                     >
@@ -307,7 +470,7 @@ const Reports = () => {
                       <span>Download CSV</span>
                     </button>
                     <button
-                      onClick={() => downloadReport('excel')}
+                      onClick={() => downloadReport("excel")}
                       disabled={loading}
                       className={styles.btnDownloadExcel}
                     >
@@ -351,7 +514,7 @@ const Reports = () => {
                       <table className={styles.table}>
                         <thead>
                           <tr>
-                            {selectedColumns.map(col => (
+                            {selectedColumns.map((col) => (
                               <th key={col}>{availableColumns[col]}</th>
                             ))}
                           </tr>
@@ -359,12 +522,14 @@ const Reports = () => {
                         <tbody>
                           {currentItems.map((row, idx) => (
                             <tr key={idx}>
-                              {selectedColumns.map(col => (
+                              {selectedColumns.map((col) => (
                                 <td
                                   key={col}
-                                  title={row[col] != null ? String(row[col]) : ''}
+                                  title={
+                                    row[col] != null ? String(row[col]) : ""
+                                  }
                                 >
-                                  {row[col] != null ? String(row[col]) : '-'}
+                                  {row[col] != null ? String(row[col]) : "-"}
                                 </td>
                               ))}
                             </tr>
@@ -376,13 +541,17 @@ const Reports = () => {
                     {/* Pagination */}
                     <div className={styles.paginationRow}>
                       <div className={styles.paginationInfo}>
-                        Showing <strong>{indexOfFirstItem + 1}</strong> to{' '}
-                        <strong>{Math.min(indexOfLastItem, reportData.length)}</strong> of{' '}
-                        <strong>{reportData.length}</strong> entries
+                        Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                        <strong>
+                          {Math.min(indexOfLastItem, reportData.length)}
+                        </strong>{" "}
+                        of <strong>{reportData.length}</strong> entries
                       </div>
                       <nav>
                         <ul className={styles.pagination}>
-                          <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                          <li
+                            className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ""}`}
+                          >
                             <button
                               className={styles.pageLink}
                               onClick={() => setCurrentPage(1)}
@@ -391,7 +560,9 @@ const Reports = () => {
                               <i className="fa-solid fa-angles-left"></i>
                             </button>
                           </li>
-                          <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                          <li
+                            className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ""}`}
+                          >
                             <button
                               className={styles.pageLink}
                               onClick={() => setCurrentPage(currentPage - 1)}
@@ -401,7 +572,9 @@ const Reports = () => {
                             </button>
                           </li>
                           {renderPageNumbers()}
-                          <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                          <li
+                            className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ""}`}
+                          >
                             <button
                               className={styles.pageLink}
                               onClick={() => setCurrentPage(currentPage + 1)}
@@ -410,7 +583,9 @@ const Reports = () => {
                               <i className="fa-solid fa-angle-right"></i>
                             </button>
                           </li>
-                          <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                          <li
+                            className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ""}`}
+                          >
                             <button
                               className={styles.pageLink}
                               onClick={() => setCurrentPage(totalPages)}
