@@ -26,7 +26,7 @@ const Reports = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [dateField, setDateField] = useState("");
+  // const [dateField, setDateField] = useState("");
   useEffect(() => {
     fetchEntities();
   }, []);
@@ -39,7 +39,7 @@ const Reports = () => {
       setSelectedColumns([]);
       setDateFrom("");
       setDateTo("");
-      setDateField("");
+      // setDateField("");
     }
   }, [selectedEntity]);
 
@@ -92,11 +92,10 @@ const Reports = () => {
         entityName: selectedEntity,
         columns: selectedColumns,
         filter: {
-          Rflag: filterActive ? 0 : 1,
-          ...(dateFrom && { dateFrom }),
-          ...(dateTo && { dateTo }),
-          ...(dateField && { dateField }),
-        },
+            Rflag: filterActive ? 0 : 1,
+            ...(dateFrom && { dateFrom }),
+            ...(dateTo && { dateTo }),
+          },
       });
 
       setReportData(result.data || []);
@@ -119,10 +118,14 @@ const Reports = () => {
     try {
       setLoading(true);
       const payload = {
-        entityName: selectedEntity,
-        columns: selectedColumns,
-        filter: filterActive ? { flag: 0 } : null,
-      };
+  entityName: selectedEntity,
+  columns: selectedColumns,
+  filter: {
+    Rflag: filterActive ? 0 : 1,
+    ...(dateFrom && { dateFrom }),
+    ...(dateTo && { dateTo }),
+  },
+};
 
       const response =
         format === "csv"
@@ -336,7 +339,7 @@ const Reports = () => {
                         gap: "0.4rem",
                       }}
                     >
-                      <label style={{ fontWeight: 500, fontSize: "0.875rem" }}>
+                      {/* <label style={{ fontWeight: 500, fontSize: "0.875rem" }}>
                         Date Field
                       </label>
                       <select
@@ -358,7 +361,7 @@ const Reports = () => {
                             </option>
                           ))}
                         {/* Fallback: show all selected columns */}
-                        {selectedColumns
+                        {/* {selectedColumns
                           .filter(
                             (col) =>
                               !col.toLowerCase().includes("date") &&
@@ -369,7 +372,7 @@ const Reports = () => {
                               {availableColumns[col] || col}
                             </option>
                           ))}
-                      </select>
+                      </select> */}
                     </div>
 
                     <div
@@ -419,12 +422,12 @@ const Reports = () => {
                       />
                     </div>
 
-                    {(dateFrom || dateTo || dateField) && (
+                    {(dateFrom || dateTo ) && (
                       <button
                         onClick={() => {
                           setDateFrom("");
                           setDateTo("");
-                          setDateField("");
+                          // setDateField("");
                         }}
                         style={{
                           padding: "0.5rem 1rem",
