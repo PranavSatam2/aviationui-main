@@ -167,9 +167,8 @@ const CAForm = () => {
       };
 
       console.log("Saving CA Form:", payload);
-
       const responce = await submitCAForm(payload);
-      alert("CA Form saved successfully!");
+      toast.success("CA Form saved successfully!");
       
       const savedDataRes = await getCAForm(responce.data.formTrackingNumber);
       const savedData = savedDataRes;

@@ -122,12 +122,12 @@ const Sidebar = () => {
       </div>
 
       {/* Footer */}
-      <div className={styles.sidebarFooter}>
+      {/* <div className={styles.sidebarFooter}>
         <div className={styles.versionBadge}>
           <span className={styles.versionText}>Dashboard</span>
           <span className={styles.versionNumber}>v1.0</span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

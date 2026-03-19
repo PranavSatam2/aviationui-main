@@ -56,6 +56,7 @@ import ViewPurchaseOrder from './PurchaseOrder/ViewPurchaseOrder/ViewPurchaseOrd
 import Addpurchase from './PurchaseRequisition/AddpurchaseRequisition/Addpurchase.jsx';
 import EditPurchase from './PurchaseRequisition/EditPurchaseRequisition/EditPurchase.jsx';
 import ViewPurchaseRequisition from './PurchaseRequisition/ViewPurchaseRequisition.jsx';
+import Reports from './Reports.jsx';
 import RoleMenuMapping from './RoleMenuMapping.jsx';
 import Sidebar from './Sidebar.jsx';
 import StoreAccComponent from './StoreAccComponent.jsx';
@@ -144,6 +145,7 @@ const componentsMap = {
   "Addpurchase": Addpurchase,
   "EditPurchase": EditPurchase,
   "ViewPurchaseRequisition": ViewPurchaseRequisition,
+  "Reports": Reports,
   "RoleMenuMapping": RoleMenuMapping,
   "Sidebar": Sidebar,
   "StoreAccComponent": StoreAccComponent,

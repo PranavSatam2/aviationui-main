@@ -24,11 +24,11 @@ const AddMaterialNote = () => {
     orderNumber: "",
     partNumber: "",
     partDescription: "",
-    quantity: "",
+    quantity: "",           // ordered qty
+    receiveQuantity: "",    // received qty
     unitOfMeasurement: "",
     challanNo: "",
     receiptDate: "",
-    qualityAcceptance: "",
     storeInchargeSign: "",
   });
 
@@ -71,7 +71,7 @@ const AddMaterialNote = () => {
           const result = await fetchAllPartNO(form.orderNumber);
           console.log("Fetched PartNo list:", result);
           setParts(Array.isArray(result.data) ? result.data : []);
-          
+
           // ✅ Auto-populate supplier name from the first item
           if (result.data && result.data.length > 0 && result.data[0].supplierName) {
             setForm((prev) => ({
@@ -129,19 +129,24 @@ const AddMaterialNote = () => {
 
   // ✅ Submit
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await addMaterialNote(form);
-      toast.success("Material Receipt Note saved successfully!");
-      resetForm();
-    } catch (error) {
-      console.error("Error saving material:", error);
-      const backendMessage =
-        error.response?.data?.message || "Failed to save material receipt note.";
+  e.preventDefault();
 
-      toast.error(backendMessage);
-    }
+  const payload = {
+    ...form,
+    quantity: form.receiveQuantity   // send received qty
   };
+
+  try {
+    await addMaterialNote(payload);
+    toast.success("Material Receipt Note saved successfully!");
+    resetForm();
+  } catch (error) {
+    console.error("Error saving material:", error);
+    const backendMessage =
+      error.response?.data?.message || "Failed to save material receipt note.";
+    toast.error(backendMessage);
+  }
+};
 
   // ✅ Reset Form
   const resetForm = () => {
@@ -311,8 +316,8 @@ const AddMaterialNote = () => {
                     <input
                       type="number"
                       className={styles.input}
-                      name="qualityAcceptance"
-                      value={form.qualityAcceptance}
+                      name="receiveQuantity"
+                      value={form.receiveQuantity}
                       onChange={handleChange}
                       required
                     />
@@ -321,8 +326,8 @@ const AddMaterialNote = () => {
 
                 {/* Form Footer */}
                 <div className={styles.formFooter}>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className={styles.btnCancel}
                     onClick={() => navigate(-1)}
                   >
