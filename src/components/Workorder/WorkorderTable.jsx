@@ -17,7 +17,7 @@ const WorkorderTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortField, setSortField] = useState("workOrderNo");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [isLoading, setIsLoading] = useState(true);
   
   const navigate = useNavigate();

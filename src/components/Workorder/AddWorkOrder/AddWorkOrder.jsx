@@ -260,7 +260,7 @@ const AddWorkorder = () => {
     },
     partNumber: {
       length: 50,
-      regex: /^[a-zA-Z0-9-]*$/,
+      regex: /^[a-zA-Z0-9-\s]*$/,
     },
     description: {
       length: 200,

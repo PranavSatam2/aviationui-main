@@ -47,6 +47,8 @@ const AddUser = () => {
   const validateField = (fieldName, value, rules) => {
     if (!value) return `${fieldName} is required.`;
 
+    if (!value) return null;
+
     if (rules.type === 'number' && isNaN(value)) {
       return `${fieldName} should be a number.`;
     }
@@ -65,41 +67,51 @@ const AddUser = () => {
   // New validation rules object
   const validationRules = {
     firstName: {
+      required: true,
       length: 50,
       regex: /^[a-zA-Z]*$/,
     },
     middleName: {
+      required: false,
       regex: /^[a-zA-Z]*$/,
     },
     lastName: {
+      required: true,
       length: 50,
       regex: /^[a-zA-Z]*$/,
     },
     username: {
+      required: true,
       length: 50,
       regex: /^[a-zA-Z0-9\s]*$/,
     },
     mobileNumber: {
+      required: true,
       regex: /^[0-9\s]*$/,
       length: 10,
     },
     address: {
+      required: true,
       length: 100,
-      regex: /^[a-zA-Z0-9\s]*$/,
+      regex: /^[a-zA-Z0-9\s,./-]*$/,
     },
     city: {
+      required: true,
       length: 50,
       regex: /^[a-zA-Z0-9\s]*$/,
     },
     state: {
+      required: true,
       length: 50,
       regex: /^[a-zA-Z\s]*$/,
     },
     country: {
+      required: true,
       length: 50,
       regex: /^[a-zA-Z\s]*$/,
     },
     email: {
+      required: true,
       length: 255,
       regex: /^\S+@\S+\.\S+$/,
     },

@@ -102,7 +102,7 @@ const AddRequisition = () => {
     },
     partNumber: {
       length: 255,
-      regex: /^[a-zA-Z0-9-]*$/,
+      regex: /^[a-zA-Z0-9-\s]*$/,
     },
     description: {
       length: 255,

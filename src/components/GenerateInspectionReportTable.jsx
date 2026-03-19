@@ -436,7 +436,7 @@ const GenerateInspectionReportTable = () => {
                                 name={item.field}
                                 value={form[item.field]}
                                 onChange={handleChange}
-                                required={item.required}
+                                required={item.required === true}
                               />
                             </td>
                           </tr>
@@ -489,7 +489,7 @@ const GenerateInspectionReportTable = () => {
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                       <label className={styles.label}>
-                        Remark (If any) <span className={styles.required}>*</span>
+                        Remark (If any) 
                       </label>
                       <input
                         className={styles.input}
@@ -497,7 +497,7 @@ const GenerateInspectionReportTable = () => {
                         name="remark"
                         value={form.remark}
                         onChange={handleChange}
-                        required
+                        
                         placeholder="Enter remarks"
                       />
                     </div>

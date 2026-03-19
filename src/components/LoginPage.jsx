@@ -113,10 +113,11 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         if (response && response.data && response.data.token) {
-          const { token, passwordExpired, username, role, id } = response.data;
+          const { token, refreshToken, passwordExpired, username, role, id } = response.data;
           sessionStorage.setItem("userId", id);
           sessionStorage.setItem("username", username);
           sessionStorage.setItem("jwt_token", token);
+          sessionStorage.setItem("refresh_token", refreshToken);
           sessionStorage.setItem("role", role);
           sessionStorage.setItem("location", location);
 
