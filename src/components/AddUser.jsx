@@ -45,9 +45,10 @@ const AddUser = () => {
 
   // Helper function to validate each field
   const validateField = (fieldName, value, rules) => {
-    if (!value) return `${fieldName} is required.`;
-
-    if (!value) return null;
+    
+    if (!value || value.trim() === "") {
+  return rules.required ? `${fieldName} is required.` : null;
+   }
 
     if (rules.type === 'number' && isNaN(value)) {
       return `${fieldName} should be a number.`;
