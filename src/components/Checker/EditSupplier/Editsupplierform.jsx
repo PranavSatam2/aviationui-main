@@ -14,6 +14,105 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./EditSupplierForm.module.css";
 
+// ─── Fields that are NEVER required ───────────────────────────────────────────
+const OPTIONAL_FIELDS = [
+  "faxNum",
+  "workYear",
+  "numEmp",
+  "numOpeShift",
+  "carDgcaApproval",
+  "isoCertificate",
+  "isoRegistrationPlans",
+  "qualityManagerName",
+  "qualityManagerEmailId",
+  "qualityManagerPhoneNumber",
+  "qualityManagerCountryCode",
+  "userName",
+  "userId",
+  "userAction",
+  "userRole",
+];
+
+// ─── Required fields mapped to each tab index ─────────────────────────────────
+const TAB_REQUIRED_FIELDS = {
+  0: [
+    "supplierName",
+    "vendorTypes",
+    "paymentTerms",
+    "countryCode",
+    "phoneNumber",
+    "email",
+    "address",
+    "saleRepresentativeName",
+    "saleRepresentativeEmailId",
+    "saleRepresentativeCountryCode",
+    "saleRepresentativePhoneNumber",
+  ],
+  1: [
+    "coreProcess",
+    "isoRegistered",
+    "isoStandard",
+    "quaManual",
+    "turnOver",
+  ],
+  2: [
+    "independenceManuf",
+    "documentedOperative",
+    "documentedProcedure",
+    "productShipment",
+  ],
+  3: [
+    "processDocumented",
+    "samplingIncomingInsp",
+    "receivingInspectionResultsOnFile",
+    "identificationMaintained",
+    "sepInsMaterial",
+    "nonConMaterial",
+    "affectCusReq",
+  ],
+  4: [
+    "writtenWorkInstructionsAvaibleInStation",
+    "finalInspectionEvidence",
+    "statisMethod",
+    "suppliedDocument",
+    "includeMethod",
+    "qualityCapabilities",
+    "approvedSupplierList",
+    "marketPrice",
+    "certifiedTestReports",
+    "supplierOnTimeDelivery",
+  ],
+  5: [
+    "equipCalibrated",
+    "recalibration",
+    "scopeOfWork",
+    "safetyProgram",
+    "houseKeeping",
+  ],
+};
+
+// ─── Validate one specific tab, return its error map ─────────────────────────
+function getErrorsForTab(tabIndex, dataMap) {
+  const fields = TAB_REQUIRED_FIELDS[tabIndex] || [];
+  const tabErrors = {};
+  fields.forEach((key) => {
+    if (!dataMap[key] || dataMap[key].toString().trim() === "") {
+      tabErrors[key] = "This field is required.";
+    }
+  });
+  return tabErrors;
+}
+
+// ─── Validate ALL tabs, return combined error map ────────────────────────────
+function getAllErrors(dataMap) {
+  let allErrors = {};
+  Object.keys(TAB_REQUIRED_FIELDS).forEach((tabIndex) => {
+    const tabErrors = getErrorsForTab(Number(tabIndex), dataMap);
+    allErrors = { ...allErrors, ...tabErrors };
+  });
+  return allErrors;
+}
+
 const EditSupplierForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,8 +189,6 @@ const EditSupplierForm = () => {
     scopeOfWork: "",
     safetyProgram: "",
     houseKeeping: "",
-    // userName: "Hrishikesh",
-    // userId: "10",
     userName: sessionStorage.getItem("username") || "",
     userId: sessionStorage.getItem("userId") || "",
     userRole: "M",
@@ -119,27 +216,14 @@ const EditSupplierForm = () => {
       ...dataMap,
       [name]: value,
     }));
+
+    // Don't show errors for optional fields
+    if (OPTIONAL_FIELDS.includes(name)) return;
+
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]:
-        value.trim() === "" &&
-        ![
-          "faxNum",
-          "workYear",
-          "numEmp",
-          "numOpeShift",
-          "rev",
-          "sysdate",
-          "remark",
-          "carDgcaApproval",
-          "isoCertificate",
-          "qualityManagerName",
-          "qualityManagerEmailId",
-          "qualityManagerPhoneNumber",
-          "qualityManagerCountryCode",
-          "paymentTerms",
-          "vendorTypes",
-        ].includes(name)
+        !value || value.toString().trim() === ""
           ? "This field is required."
           : "",
     }));
@@ -192,45 +276,20 @@ const EditSupplierForm = () => {
     }
   }
 
-  function getMissingFields() {
-    let errorMessages = {};
-    let keys = Object.keys(dataMap);
-
-    for (let key of keys) {
-      if (
-        !dataMap[key] &&
-        ![
-          "faxNum",
-          "workYear",
-          "numEmp",
-          "numOpeShift",
-          "rev",
-          "sysdate",
-          "remark",
-          "carDgcaApproval",
-          "isoCertificate",
-          "qualityManagerName",
-          "qualityManagerEmailId",
-          "qualityManagerPhoneNumber",
-          "qualityManagerCountryCode",
-          "isoRegistrationPlans",
-          "userId", // Add
-          "userName", // Add
-          "userRole", // Add
-          "userAction", // Add
-        ].includes(key)
-      ) {
-        errorMessages[key] = "This field is required.";
-      }
-    }
-
-    return errorMessages;
-  }
-
+  // ─── Next button: block navigation if current tab has unfilled required fields
   const handleNextTab = () => {
-    if (activeTab < tabs.length - 1) {
-      setActiveTab(activeTab + 1);
+    if (activeTab >= tabs.length - 1) return;
+
+    const tabErrors = getErrorsForTab(activeTab, dataMap);
+    if (Object.keys(tabErrors).length > 0) {
+      setErrors(tabErrors);
+      toast.error("Please fill all required fields before proceeding.");
+      return;
     }
+
+    // Clear errors and move forward
+    setErrors({});
+    setActiveTab(activeTab + 1);
   };
 
   const handlePrevTab = () => {
@@ -239,64 +298,74 @@ const EditSupplierForm = () => {
     }
   };
 
-  async function actionPerformed(action) {
-  if (action === "clear") {
-    // Create a fresh copy with only system fields preserved
-    const clearedData = {
-      ...Object.keys(formVariables).reduce((acc, key) => {
-        acc[key] = "";
-        return acc;
-      }, {}),
-      // Preserve system fields
-      userId: sessionStorage.getItem("userId") || "",
-      userName: sessionStorage.getItem("username") || "",
-      userRole: "M",
-      userAction: "1",
-    };
+  // ─── Tab header click: validate current tab first, block if errors exist ─────
+  const handleTabClick = (targetIndex) => {
+    if (targetIndex === activeTab) return;
 
-    setDataMap(clearedData);
-    setErrors({});
-    toast.info("Form cleared");
-    return;
-  }
-
-  const missingFields = getMissingFields();
-  if (Object.keys(missingFields).length > 0) {
-    console.log(missingFields, "miss");
-    setErrors(missingFields);
-    toast.error("Please fill all required fields");
-    return;
-  }
-
-  console.log("✅ VALIDATION PASSED - Proceeding with update");
-  setIsSubmitting(true);
-  setErrors({});
-  console.log(dataMap);
-  try {
-    let supplierDataToUpdate = {
-      ...dataMap,
-      // Always ensure system fields are set from sessionStorage
-      userId: sessionStorage.getItem("userId") || dataMap.userId || "",
-      userName: sessionStorage.getItem("username") || dataMap.userName || "",
-      userRole: "M",
-      userAction: "1",
-    };
-    console.log(supplierDataToUpdate);
-    let response = await updateSupplier(supplierId, supplierDataToUpdate);
-    if (response) {
-      toast.success("Supplier updated successfully");
-      navigate("/editsupplier");
-    } else if (response?.error) {
-      toast.error(response.error.message);
+    const leavingErrors = getErrorsForTab(activeTab, dataMap);
+    if (Object.keys(leavingErrors).length > 0) {
+      setErrors(leavingErrors);
+      toast.error("Please fill all required fields before proceeding.");
+      return;
     }
-  } catch (error) {
-    toast.error(
-      error?.response?.data?.message || "Failed to update supplier"
-    );
-  } finally {
-    setIsSubmitting(false);
+
+    // Clear errors and allow tab switch
+    setErrors({});
+    setActiveTab(targetIndex);
+  };
+
+  async function actionPerformed(action) {
+    if (action === "clear") {
+      const clearedData = {
+        ...Object.keys(formVariables).reduce((acc, key) => {
+          acc[key] = "";
+          return acc;
+        }, {}),
+        userId: sessionStorage.getItem("userId") || "",
+        userName: sessionStorage.getItem("username") || "",
+        userRole: "M",
+        userAction: "1",
+      };
+
+      setDataMap(clearedData);
+      setErrors({});
+      toast.info("Form cleared");
+      return;
+    }
+
+    const allErrors = getAllErrors(dataMap);
+    if (Object.keys(allErrors).length > 0) {
+      setErrors(allErrors);
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      let supplierDataToUpdate = {
+        ...dataMap,
+        userId: sessionStorage.getItem("userId") || dataMap.userId || "",
+        userName: sessionStorage.getItem("username") || dataMap.userName || "",
+        userRole: "M",
+        userAction: "1",
+      };
+      let response = await updateSupplier(supplierId, supplierDataToUpdate);
+      if (response) {
+        toast.success("Supplier updated successfully");
+        navigate("/editsupplier");
+      } else if (response?.error) {
+        toast.error(response.error.message);
+      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to update supplier"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
-}
 
   const renderTabContent = () => {
     const tabProps = {
@@ -360,7 +429,7 @@ const EditSupplierForm = () => {
                     className={`${styles.tabButton} ${
                       activeTab === index ? styles.activeTab : ""
                     }`}
-                    onClick={() => setActiveTab(index)}
+                    onClick={() => handleTabClick(index)}
                   >
                     <i className={`fa ${tab.icon}`}></i>
                     <span className={styles.tabName}>{tab.name}</span>
