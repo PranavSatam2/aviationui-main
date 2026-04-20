@@ -3,14 +3,20 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getMaterialDetail, updateMaterial } from "../services/db_manager";
+import styles from "./MaterialNote.module.css";
+import {
+  getMaterialDetail,
+  updateMaterial,
+  fetchPartNumbersAndDescriptions,
+} from "../services/db_manager";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const EditMaterialNote = () => {
   const location = useLocation();
   const { materialId } = location.state || "";
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+
   const [form, setForm] = useState({
     mrnNo: "",
     supplierName: "",
@@ -20,12 +26,17 @@ const EditMaterialNote = () => {
     partNumber: "",
     partDescription: "",
     quantity: "",
-    storeInchargeSign: "",
+    unitOfMeasurement: "",
     qualityAcceptance: "",
+    storeInchargeSign: sessionStorage.getItem("username") || "",
   });
 
+  const [partData, setPartData] = useState([]);
+
+  // Fetch material details
   useEffect(() => {
-    const fetchMaterialDetail = async () => {
+    const fetchMaterialDetailData = async () => {
+      setIsLoading(true);
       try {
         const response = await getMaterialDetail(materialId);
         if (response.data) {
@@ -33,25 +44,28 @@ const EditMaterialNote = () => {
         }
       } catch (error) {
         console.error("Error fetching material details:", error);
-        alert("Error fetching material details.");
+        toast.error("Error fetching material details.");
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchMaterialDetail();
+    fetchMaterialDetailData();
   }, [materialId]);
 
+  // Handle generic field change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
+  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await updateMaterial(materialId, form);
       if (response.status === 200) {
-        // alert("Material updated successfully!");
-        navigate("/ViewMaterialNotePage");
         toast.success("Material updated successfully!");
+        navigate("/ViewMaterialNote");
       }
     } catch (error) {
       console.error("Error updating material:", error);
@@ -60,235 +74,216 @@ const EditMaterialNote = () => {
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="Edit Material Receipt Note Form"
-            isBack={true}
-          />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Edit Material Receipt Note Form</span>
+            </div>
+          </div>
 
-          {/* <div className="col-md-6">
-          <h5 className="mx-3 mt-4">Material Receipt Note Form</h5>
-        </div> */}
+          {/* Form Container */}
+          <div className={styles.container}>
+            <div className={styles.formCard}>
+              {/* Loading Overlay */}
+              {isLoading && (
+                <div className={styles.loadingOverlay}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading material details...</p>
+                </div>
+              )}
 
-          <div
-            className="card border border-dark shadow mx-4 my-4 p-2"
-            style={{ height: "70vh" }}
-          >
-            <form onSubmit={handleSubmit}>
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-md-6 p-2">
-                    <label>
-                      MRN No{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="mrnNo"
-                      value={form.mrnNo}
-                      onChange={handleChange}
-                    />
+              {/* Form Body */}
+              <form onSubmit={handleSubmit}>
+                <div className={styles.formBody}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Number
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="partNumber"
+                        value={form.partNumber}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Description
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="partDescription"
+                        value={form.partDescription}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
                   </div>
 
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Supplier Name{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="supplierName"
-                      value={form.supplierName}
-                      onChange={handleChange}
-                    />
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        MRN No
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="mrnNo"
+                        value={form.mrnNo}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Supplier Name
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="supplierName"
+                        value={form.supplierName}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
                   </div>
 
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Order Number{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="number"
-                      className="form-control"
-                      name="orderNumber"
-                      value={form.orderNumber}
-                      onChange={handleChange}
-                    />
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Order Number
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="orderNumber"
+                        value={form.orderNumber}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Challan No
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="challanNo"
+                        value={form.challanNo}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
 
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Challan No{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="challanNo"
-                      value={form.challanNo}
-                      onChange={handleChange}
-                    />
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Receipt Date
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="date"
+                        className={styles.input}
+                        name="receiptDate"
+                        value={form.receiptDate}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Quantity
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="number"
+                        className={styles.input}
+                        name="quantity"
+                        value={form.quantity}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
                   </div>
 
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Receipt Date{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="date"
-                      className="form-control"
-                      name="receiptDate"
-                      value={form.receiptDate}
-                      onChange={handleChange}
-                    />
-                  </div>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Unit of Measurement
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        className={styles.input}
+                        name="unitOfMeasurement"
+                        value={form.unitOfMeasurement}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
 
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Part Number{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="number"
-                      className="form-control"
-                      name="partNumber"
-                      value={form.partNumber}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Part Description{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="partDescription"
-                      value={form.partDescription}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Quantity{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="number"
-                      className="form-control"
-                      name="quantity"
-                      value={form.quantity}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Store Incharge Sign{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="storeInchargeSign"
-                      value={form.storeInchargeSign}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Quality Acceptance{" "}
-                      <span
-                        className="text-danger mx-1"
-                        style={{ fontSize: "17px" }}
-                      >
-                        *
-                      </span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="qualityAcceptance"
-                      value={form.qualityAcceptance}
-                      onChange={handleChange}
-                    />
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Receive Quantity</label>
+                      <input
+                        type="number"
+                        className={styles.input}
+                        name="qualityAcceptance"
+                        value={form.qualityAcceptance}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="col-md-12 text-right mt-3">
-                <button type="submit" className="btn btn-primary">
-                  Save
-                </button>
-              </div>
-            </form>
+                {/* Form Footer */}
+                <div className={styles.formFooter}>
+                  <button 
+                    type="button" 
+                    className={styles.btnCancel}
+                    onClick={() => navigate(-1)}
+                  >
+                    <i className="fa fa-times"></i>
+                    <span>Cancel</span>
+                  </button>
+                  <button type="submit" className={styles.btnSave}>
+                    <i className="fa fa-check"></i>
+                    <span>Save</span>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
         <Footer />

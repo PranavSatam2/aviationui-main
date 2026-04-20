@@ -9,9 +9,7 @@ import {
 } from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
-import MaterialRequisitionForm from "./MaterialRequisitionReport";
-import styles from "./Viewrequisition.module.css";
+import styles from "./ViewRequisition.module.css";
 
 const ViewMaterialRequisitionPage = () => {
   // State
@@ -20,13 +18,13 @@ const ViewMaterialRequisitionPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortField, setSortField] = useState("materialRequisitionNo");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [isLoading, setIsLoading] = useState(true);
-  const [requisitionData, setRequisitionData] = useState();
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    // setIsLoading(true);
     try {
       const response = await listAllMaterialRequisition();
       setTableData(response || []);
@@ -38,6 +36,7 @@ const ViewMaterialRequisitionPage = () => {
       setIsLoading(false);
     }
   };
+
   // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
@@ -79,14 +78,31 @@ const ViewMaterialRequisitionPage = () => {
     }
   };
 
-  // Search functionality
+  // Search and Date Range Filter
   const filteredData = tableData.filter((requisition) => {
-    return Object.values(requisition).some(
+    // Search filter
+    const matchesSearch = Object.values(requisition).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
+    // Date filter
+    let matchesDate = true;
+    if (startDate) {
+      matchesDate =
+        matchesDate &&
+        requisition.date &&
+        new Date(requisition.date) >= new Date(startDate);
+    }
+    if (endDate) {
+      matchesDate =
+        matchesDate &&
+        requisition.date &&
+        new Date(requisition.date) <= new Date(endDate);
+    }
+    return matchesSearch && matchesDate;
   });
+
   // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
@@ -129,9 +145,11 @@ const ViewMaterialRequisitionPage = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${
+            currentPage === i ? styles.active : ""
+          }`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -145,150 +163,314 @@ const ViewMaterialRequisitionPage = () => {
   const columns = [
     { field: "materialRequisitionNo", label: "Requisition No", width: "140px" },
     { field: "workOrderNo", label: "Workorder No", width: "130px" },
-    { field: "date", label: "Date", width: "120px" },
-    { field: "partNo", label: "Part No", width: "120px" },
+    { field: "date", label: "Issue Date", width: "120px" },
+    { field: "partNumber", label: "Part No", width: "120px" },
     { field: "description", label: "Description", width: "200px" },
     { field: "requestedQty", label: "Requested Qty", width: "130px" },
-    { field: "issueQty", label: "Issue Qty", width: "120px" },
     { field: "issuedQty", label: "Issued Qty", width: "120px" },
-    { field: "batchLotNo", label: "Batch/Lot", width: "120px" },
+    { field: "supplierName", label: "Supplier Name", width: "150px" },
+    { field: "curDate", label: "Created Date", width: "140px" },
   ];
 
-  const handlePrintClick = (requisition) => {
-    // console.log(requisition, "requisition");
-    setRequisitionData(requisition);
-    setTimeout(() => {
-      window.print();
-    }, 500);
-  };
-  // useEffect(() => {
-  //   console.log(requisitionData?.batchLotNo, "requisitionDatsdsdsdsdsdsdsda");
-  // }, [requisitionData]);
-  return (
-    <div className="wrapper">
-      <Sidebar />
-      <div className="content">
-        <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View Material Requisitions" />
-          <div className="printView">
-            <MaterialRequisitionForm tableData={requisitionData} />
+  const handlePrintClick = (data) => {
+    if (!data) return;
+
+    const printContent = `
+      <html>
+        <head>
+          <title>Material Requisition Print</title>
+          <style>
+            @media print {
+              @page {
+                margin: 20mm;
+                size: A4;
+              }
+            }
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            body {
+              font-family: Arial, sans-serif;
+              font-size: 12px;
+              padding: 20px;
+            }
+            .header-section {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: 30px;
+            }
+            .logo {
+              font-size: 32px;
+              font-weight: bold;
+              color: #000;
+            }
+            .form-info {
+              text-align: right;
+              font-size: 11px;
+            }
+            .title {
+              text-align: center;
+              font-size: 18px;
+              font-weight: bold;
+              margin-bottom: 20px;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+            }
+            .info-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            .info-table td {
+              border: 1px solid #000;
+              padding: 8px;
+              font-size: 12px;
+            }
+            .info-label {
+              font-weight: bold;
+              width: 180px;
+              background-color: #f5f5f5;
+            }
+            .main-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 40px;
+            }
+            .main-table th,
+            .main-table td {
+              border: 1px solid #000;
+              padding: 8px;
+              text-align: center;
+              font-size: 11px;
+            }
+            .main-table th {
+              background-color: #f5f5f5;
+              font-weight: bold;
+              text-transform: uppercase;
+            }
+            .main-table td {
+              height: 35px;
+            }
+            .sr-no-col { width: 50px; }
+            .part-no-col { width: 120px; }
+            .desc-col { width: 200px; }
+            .qty-col { width: 80px; }
+            .batch-col { width: 100px; }
+            .sign-col { width: 120px; }
+            .signature-section {
+              margin-top: 60px;
+              border-top: 1px solid #000;
+              padding-top: 10px;
+              width: 300px;
+            }
+            .signature-section div {
+              font-weight: bold;
+              font-size: 12px;
+            }
+          </style>
+        </head>
+        <body>
+          <!-- Header Section -->
+          <div class="header-section">
+            <div class="logo">amc</div>
+            <div class="form-info">
+              <div>Form: AMF-1/</div>
+              <div>Rev.: 01</div>
+              <div>Date: Feb 2024</div>
+            </div>
           </div>
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              styles.normalViewStyle,
-            ].join(" ")}
-          >
-            {/* <div > */}
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
+
+          <!-- Title -->
+          <div class="title">MATERIAL REQUISITION</div>
+
+          <!-- Info Table -->
+          <table class="info-table">
+            <tr>
+              <td class="info-label">Material Requisition No.:</td>
+              <td style="width: 35%;">${data.materialRequisitionNo || ""}</td>
+              <td class="info-label">Date: ${data.date || ""}</td>
+            </tr>
+            <tr>
+              <td class="info-label">Workorder No.:</td>
+              <td colspan="3">${data.workOrderNo || ""}</td>
+            </tr>
+          </table>
+
+          <!-- Main Table -->
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th class="sr-no-col">Sr.<br/>No.</th>
+                <th class="part-no-col">Part No.</th>
+                <th class="desc-col">Description</th>
+                <th class="qty-col">Requested<br/>Qty</th>
+                <th class="qty-col">Issued<br/>Qty</th>
+                <th class="batch-col">Batch /<br/>LOT#</th>
+                <th class="sign-col">Receiver Sign</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>${data.partNumber || ""}</td>
+                <td style="text-align: left;">${data.description || ""}</td>
+                <td>${data.requestedQty || ""}</td>
+                <td>${data.issuedQty || ""}</td>
+                <td>${data.batchLotNo || ""}</td>
+                <td></td>
+              </tr>
+              ${Array.from({ length: 15 }, (_, i) => `
+                <tr>
+                  <td>${i + 2}</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <!-- Signature Section -->
+          <div class="signature-section">
+            <div>Workshop Manager Sign</div>
+            <div style="margin-top: 5px;">_________________________________</div>
+          </div>
+
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank", "width=900,height=600");
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 250);
+  };
+
+  return (
+    <div className={styles.wrapper}>
+      <Sidebar />
+      <div className={styles.content}>
+        <Header />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-file-text"></i>
+              <span className={styles.breadcrumbLabel}>
+                View Material Requisitions
+              </span>
+            </div>
+          </div>
+
+          {/* Card Container */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Date Range Filter */}
+              <div className={styles.filtersRow}>
+                <div className={styles.dateFilters}>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Start Date</label>
                     <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search requisitions..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      type="date"
+                      className={styles.dateInput}
+                      value={startDate}
+                      onChange={(e) => {
+                        setStartDate(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                    />
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>End Date</label>
+                    <input
+                      type="date"
+                      className={styles.dateInput}
+                      value={endDate}
+                      onChange={(e) => {
+                        setEndDate(e.target.value);
+                        setCurrentPage(1);
+                      }}
                     />
                   </div>
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
-                </div>
-                {/* <button
-                  className={styles.printBtn}
-                  onClick={() => handlePrintClick()}
-                >
-                  {" "}
-                  Print
-                </button> */}
               </div>
 
+              {/* Search and Entries Control */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search requisitions..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
+                </div>
+              </div>
+
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-light">
+                      <tr>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
+                                  className={`fa fa-sort-${
                                     sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  } ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
+                                  className={`fa fa-sort ${styles.sortIcon}`}
                                 ></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
-                        </th>
+                        <th className={styles.actionsHeader}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -296,31 +478,20 @@ const ViewMaterialRequisitionPage = () => {
                         currentItems.map((requisition, index) => (
                           <tr
                             key={requisition.materialRequisitionNo}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
+                            style={{ animationDelay: `${index * 0.02}s` }}
                           >
                             {columns.map((column) => (
                               <td
                                 key={`${requisition.materialRequisitionNo}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={requisition[column.field]}
                               >
                                 {requisition[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
                                 <button
-                                  className="btn btn-sm btn-outline-primary"
+                                  className={styles.btnEdit}
                                   onClick={() =>
                                     editSelectedElement(requisition.id)
                                   }
@@ -329,7 +500,7 @@ const ViewMaterialRequisitionPage = () => {
                                   <i className="fa-solid fa-pen-to-square"></i>
                                 </button>
                                 <button
-                                  className="btn btn-sm btn-outline-danger"
+                                  className={styles.btnDelete}
                                   onClick={() =>
                                     deleteSelectedElement(requisition.id)
                                   }
@@ -338,9 +509,9 @@ const ViewMaterialRequisitionPage = () => {
                                   <i className="fa-solid fa-trash"></i>
                                 </button>
                                 <button
-                                  // className={styles.printBtn}
-                                  // style={{ background: "#adc2ff" }}
+                                  className={styles.btnPrint}
                                   onClick={() => handlePrintClick(requisition)}
+                                  title="Print"
                                 >
                                   <i className="fa-solid fa-print"></i>
                                 </button>
@@ -352,19 +523,17 @@ const ViewMaterialRequisitionPage = () => {
                         <tr>
                           <td
                             colSpan={columns.length + 1}
-                            className="text-center py-5"
+                            className={styles.noData}
                           >
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No data available</p>
                               </div>
                             )}
                           </td>
@@ -375,90 +544,78 @@ const ViewMaterialRequisitionPage = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>
+                    {Math.min(indexOfLastItem, sortedData.length)}
+                  </strong>{" "}
+                  of <strong>{sortedData.length}</strong> entries
+                  {searchTerm &&
+                    ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
-            {/* </div> */}
           </div>
         </div>
         <Footer />

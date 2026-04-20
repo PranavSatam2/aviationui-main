@@ -4,8 +4,32 @@ const GeneralTab = ({
   validateDataType,
   validateLen,
   errors,
-  disabledField
+  disabledField,
 }) => {
+  // Country codes list
+  const countryCodes = [
+    { code: "+1", country: "USA/Canada" },
+    { code: "+44", country: "UK" },
+    { code: "+91", country: "India" },
+    { code: "+86", country: "China" },
+    { code: "+81", country: "Japan" },
+    { code: "+49", country: "Germany" },
+    { code: "+33", country: "France" },
+    { code: "+39", country: "Italy" },
+    { code: "+61", country: "Australia" },
+    { code: "+971", country: "UAE" },
+    { code: "+65", country: "Singapore" },
+    { code: "+82", country: "South Korea" },
+    { code: "+7", country: "Russia" },
+    { code: "+55", country: "Brazil" },
+    { code: "+27", country: "South Africa" },
+    { code: "+52", country: "Mexico" },
+    { code: "+34", country: "Spain" },
+    { code: "+31", country: "Netherlands" },
+    { code: "+46", country: "Sweden" },
+    { code: "+41", country: "Switzerland" },
+  ];
+
   function validateMailId(event) {
     const email = event.target.value;
     const emailValidator = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -22,17 +46,18 @@ const GeneralTab = ({
   return (
     <div className="m-2 p-2 mt-2">
       {/* Supplier/Sub-Contractor Details */}
-      <div className="col-md-12 mb-1 d-flex">
-        <div className="col-md-5">
-          <div className="row">
-            <label className="col-md-6 pt-2" htmlFor="supplierName">
+      <div className="col-md-12 mb-3">
+        <div className="row">
+          {/* Supplier/Sub-Contractor Name */}
+          <div className="col-md-6 mb-2">
+            <label className="form-label" htmlFor="supplierName">
               Supplier/Sub-Contractor Name
-              <span className="text-danger mx-1 " style={{ fontSize: "17px" }}>
+              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
               </span>
             </label>
             <input
-              className="col-md-8 form-control"
+              className="form-control uniform-input"
               type="text"
               name="supplierName"
               id="supplierName"
@@ -41,80 +66,230 @@ const GeneralTab = ({
               onChange={handleChange}
               onInput={(event) => {
                 validateDataType(event, "A");
-                validateLen(event, 0, 50);
               }}
               disabled={disabledField}
             />
+            {errors.supplierName && (
+              <div className="text-danger mt-1" style={{ fontSize: "12px" }}>
+                {errors.supplierName}
+              </div>
+            )}
           </div>
-          {errors.supplierName && (
-            <div className="col-6" style={{ color: "red", textAlign: "end" }}>
-              {errors.supplierName}
+
+          {/* Type of Vendor/Supplier Checkboxes */}
+          <div className="col-md-6 mb-2">
+            <label className="form-label">
+              Type of Vendor / Supplier
+              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
+                *
+              </span>
+            </label>
+            <div className="d-flex" style={{ gap: "30px", marginTop: "8px" }}>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="vendorTypeSupplier"
+                  name="vendorTypes"
+                  value="Supplier"
+                  checked={dataMap.vendorTypes === "Supplier"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="vendorTypeSupplier"
+                >
+                  Supplier
+                </label>
+              </div>
+
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="vendorTypeSubContractor"
+                  name="vendorTypes"
+                  value="Sub-contractor"
+                  checked={dataMap.vendorTypes === "Sub-contractor"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="vendorTypeSubContractor"
+                >
+                  Sub-contractor
+                </label>
+              </div>
             </div>
-          )}
+            {errors.vendorTypes && (
+              <div className="text-danger mt-1" style={{ fontSize: "12px" }}>
+                {errors.vendorTypes}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* <div className="col-md-6 ">
-                        <div className="row">
-                            <label className="col-md-4 pt-2" 
-                                htmlFor="name">Form 
-                                <span 
-                                    className="text-danger mx-1 " 
-                                    style={{fontSize : '17px'}}>*
-                                </span>
-                            </label>
-                            <input 
-                                className="col-md-8 form-control" 
-                                type="text" 
-                                name="formNum" 
-                                id="formNum" 
-                                placeholder="Form Number" 
-                                value={dataMap.formId } 
-                                onChange={handleChange} 
-                                onInput={(event) => {validateDataType(event, 'ANS'); validateLen(event, 0, 10);}}/>
-                        </div>
-                    </div> */}
-      </div>
+        {/* Payment Terms */}
+        <div className="row mt-2">
+          <div className="col-md-12">
+            <label className="form-label">
+              Select Payment Terms
+              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
+                *
+              </span>
+            </label>
+            <div
+              className="d-flex flex-wrap"
+              style={{ gap: "20px", marginTop: "8px" }}
+            >
+              {/* 30 Days */}
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="paymentTerms30"
+                  name="paymentTerms"
+                  value="30"
+                  checked={dataMap.paymentTerms === "30"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label" htmlFor="paymentTerms30">
+                  30 Days
+                </label>
+              </div>
 
+              {/* 60 Days */}
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="paymentTerms60"
+                  name="paymentTerms"
+                  value="60"
+                  checked={dataMap.paymentTerms === "60"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label" htmlFor="paymentTerms60">
+                  60 Days
+                </label>
+              </div>
+
+              {/* 90 Days */}
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="paymentTerms90"
+                  name="paymentTerms"
+                  value="90"
+                  checked={dataMap.paymentTerms === "90"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label className="form-check-label" htmlFor="paymentTerms90">
+                  90 Days
+                </label>
+              </div>
+
+              {/* Advance Pay */}
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id="paymentTermsAdvance"
+                  name="paymentTerms"
+                  value="Advance Pay"
+                  checked={dataMap.paymentTerms === "Advance Pay"}
+                  onChange={handleChange}
+                  disabled={disabledField}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="paymentTermsAdvance"
+                >
+                  Advance Pay
+                </label>
+              </div>
+            </div>
+            {errors.paymentTerms && (
+              <div className="text-danger mt-1" style={{ fontSize: "12px" }}>
+                {errors.paymentTerms}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
       <hr className="mx-0 my-2 p-0 border" />
 
       {/* Contact Details */}
-      <div className="col-md-12 d-flex mb-1" style={{justifyContent:'space-between'}}>
+      <div
+        className="col-md-12 d-flex mb-1"
+        style={{ justifyContent: "space-between" }}
+      >
+        {/* Phone Number with Country Code */}
         <div className="col-md-5">
           <div className="row">
-            <label className="col-md-4 pt-2" htmlFor="phoneNumber">
+            <label className="col-md-6" htmlFor="phoneNumber">
               Phone Number
               <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
                 *
               </span>
             </label>
-            <input
-              className="col-md-8 form-control"
-              type="number"
-              name="phoneNumber"
-              id="phoneNumber"
-              placeholder="Phone Number"
-              value={dataMap.phoneNumber}
-              onChange={handleChange}
-              onInput={(event) => {
-                validateDataType(event, "N");
-                validateLen(event, 10, 10);
-              }}
-              disabled={disabledField}
-            />
+            <div className="col-md-12 d-flex" style={{ gap: "5px" }}>
+              <select
+                className="form-select"
+                name="countryCode"
+                value={dataMap.countryCode}
+                onChange={handleChange}
+                disabled={disabledField}
+                style={{ width: "150px", height: "38px" }}
+              >
+                <option value="" disabled>
+                  Country Code
+                </option>
+                {countryCodes.map((item) => (
+                  <option key={item.code} value={item.code}>
+                    {`${item.code} - ${item.country}`}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                className="form-control uniform-input"
+                type="number"
+                name="phoneNumber"
+                id="phoneNumber"
+                placeholder="Enter Number"
+                value={dataMap.phoneNumber}
+                onChange={handleChange}
+                onInput={(event) => {
+                  validateDataType(event, "N");
+                  validateLen(event, 10, 10);
+                }}
+                disabled={disabledField}
+                style={{ flex: 1 }}
+              />
+            </div>
           </div>
-          {errors.phoneNumber && (
-            <div className="col-6" style={{ color: "red", textAlign: "end" }}>
+          {(errors.phoneNumber || errors.countryCode) && (
+            <div className="col-8" style={{ color: "red", textAlign: "end" }}>
+              {errors.countryCode}
               {errors.phoneNumber}
             </div>
           )}
         </div>
+
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="faxNum">
               Fax Number
             </label>
             <input
-              className="col-md-8 form-control"
+              className="col-md-8 form-control uniform-input"
               type="number"
               name="faxNum"
               id="faxNum"
@@ -128,7 +303,10 @@ const GeneralTab = ({
       </div>
 
       {/* Email & Address */}
-      <div className="col-md-12 d-flex mb-3" style={{justifyContent:'space-between'}}>
+      <div
+        className="col-md-12 d-flex mb-3"
+        style={{ justifyContent: "space-between" }}
+      >
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="email">
@@ -138,7 +316,7 @@ const GeneralTab = ({
               </span>
             </label>
             <input
-              className="col-md-8 form-control"
+              className="col-md-8 form-control uniform-input"
               type="email"
               name="email"
               id="email"
@@ -167,7 +345,7 @@ const GeneralTab = ({
               </span>
             </label>
             <input
-              className="col-md-8 form-control"
+              className="col-md-8 form-control uniform-input"
               type="text"
               name="address"
               id="address"
@@ -191,18 +369,18 @@ const GeneralTab = ({
       <hr className="mx-0 my-2 p-0 border " />
 
       {/* Quality Manager Details */}
-      <h5 className="mb-3 fw-bold text-dark" >Quality Manager Details</h5>
-      <div className="col-md-12 d-flex"  style={{justifyContent:'space-between'}}>
+      <h5 className="mb-3 fw-bold text-dark">Quality Manager Details</h5>
+      <div
+        className="col-md-12 d-flex"
+        style={{ justifyContent: "space-between" }}
+      >
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="qualityManagerName">
               Name
-              <span className="text-danger mx-1 " style={{ fontSize: "17px" }}>
-                *
-              </span>
             </label>
             <input
-              className="col-md-8 form-control"
+              className="col-md-8 form-control uniform-input"
               type="text"
               name="qualityManagerName"
               id="qualityManagerName"
@@ -210,43 +388,65 @@ const GeneralTab = ({
               value={dataMap.qualityManagerName}
               onChange={handleChange}
               onInput={(event) => {
-                validateDataType(event, "A");
-                validateLen(event, 0, 30);
+                if (event.target.value.trim() !== "") {
+                  validateDataType(event, "A");
+                  validateLen(event, 0, 30);
+                }
               }}
               disabled={disabledField}
             />
           </div>
-          {errors.qualityManagerName && (
+          {dataMap.qualityManagerName && errors.qualityManagerName && (
             <div className="col-6" style={{ color: "red", textAlign: "end" }}>
               {errors.qualityManagerName}
             </div>
           )}
         </div>
+
+        {/* Quality Manager Phone with Country Code */}
         <div className="col-md-5">
           <div className="row">
             <label
-              className="col-md-4 pt-2"
+              className="col-md-8 pt-2"
               htmlFor="qualityManagerPhoneNumber"
             >
               Phone Number
-              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
-                *
-              </span>
             </label>
-            <input
-              className="col-md-8 form-control"
-              type="number"
-              name="qualityManagerPhoneNumber"
-              id="qualityManagerPhoneNumber"
-              placeholder="Quality Manager Number"
-              value={dataMap.qualityManagerPhoneNumber}
-              onChange={handleChange}
-              onInput={(event) => {
-                validateDataType(event, "N");
-                validateLen(event, 0, 10);
-              }}
-              disabled={disabledField}
-            />
+            <div className="col-md-12 d-flex" style={{ gap: "5px" }}>
+              <select
+                className="form-select"
+                name="qualityManagerCountryCode"
+                value={dataMap.qualityManagerCountryCode}
+                onChange={handleChange}
+                disabled={disabledField}
+                style={{ width: "150px", height: "38px" }}
+              >
+                {" "}
+                <option value="">Country Code</option>
+                {countryCodes.map((item) => (
+                  <option key={item.code} value={item.code}>
+                    {`${item.code} - ${item.country}`}
+                  </option>
+                ))}
+              </select>
+              <input
+                className="form-control uniform-input"
+                type="number"
+                name="qualityManagerPhoneNumber"
+                id="qualityManagerPhoneNumber"
+                placeholder="Enter Number"
+                value={dataMap.qualityManagerPhoneNumber}
+                onChange={handleChange}
+                onInput={(event) => {
+                  if (event.target.value.trim() !== "") {
+                    validateDataType(event, "N");
+                    validateLen(event, 10, 10);
+                  }
+                }}
+                disabled={disabledField}
+                style={{ flex: 1 }}
+              />
+            </div>
           </div>
           {errors.qualityManagerPhoneNumber && (
             <div className="col-6" style={{ color: "red", textAlign: "end" }}>
@@ -260,12 +460,9 @@ const GeneralTab = ({
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="qualityManagerEmailId">
               Email ID
-              <span className="text-danger mx-1" style={{ fontSize: "17px" }}>
-                *
-              </span>
             </label>
             <input
-              className="col-md-8 form-control"
+              className="col-md-8 form-control uniform-input"
               type="email"
               name="qualityManagerEmailId"
               id="qualityManagerEmailId"
@@ -273,7 +470,9 @@ const GeneralTab = ({
               value={dataMap.qualityManagerEmailId}
               onChange={handleChange}
               onInput={(event) => {
-                validateMailId(event);
+                if (event.target.value.trim() !== "") {
+                  validateMailId(event);
+                }
               }}
               disabled={disabledField}
             />
@@ -290,7 +489,10 @@ const GeneralTab = ({
 
       {/* Sales Representative Details */}
       <h5 className="mb-3 fw-bold text-dark">Sales Representative Details</h5>
-      <div className="col-md-12 d-flex"  style={{justifyContent:'space-between'}}>
+      <div
+        className="col-md-12 d-flex"
+        style={{ justifyContent: "space-between" }}
+      >
         <div className="col-md-5">
           <div className="row">
             <label className="col-md-4 pt-2" htmlFor="saleRepresentativeName">
@@ -300,7 +502,7 @@ const GeneralTab = ({
               </span>
             </label>
             <input
-              className="col-md-8 form-control"
+              className="col-md-8 form-control uniform-input"
               type="text"
               name="saleRepresentativeName"
               id="saleRepresentativeName"
@@ -332,7 +534,7 @@ const GeneralTab = ({
               </span>
             </label>
             <input
-              className="col-md-8 form-control"
+              className="col-md-8 form-control uniform-input"
               type="email"
               name="saleRepresentativeEmailId"
               id="saleRepresentativeEmailId"
@@ -353,11 +555,13 @@ const GeneralTab = ({
           )}
         </div>
       </div>
+
+      {/* Sales Representative Phone with Country Code */}
       <div className="col-md-12 mb-2">
-        <div className="col-md-5">
+        <div className="col-md-6">
           <div className="row">
             <label
-              className="col-md-4 pt-2"
+              className="col-md-8 pt-2"
               htmlFor="saleRepresentativePhoneNumber"
             >
               Phone Number
@@ -365,24 +569,46 @@ const GeneralTab = ({
                 *
               </span>
             </label>
-            <input
-              className="col-md-8 form-control"
-              type="number"
-              name="saleRepresentativePhoneNumber"
-              id="saleRepresentativePhoneNumber"
-              placeholder="Sales Representative Number"
-              value={dataMap.saleRepresentativePhoneNumber}
-              onChange={handleChange}
-              onInput={(event) => {
-                validateDataType(event, "N");
-                validateLen(event, 10, 10);
-              }}
-              disabled={disabledField}
-            />
+            <div className="col-md-10 d-flex" style={{ gap: "5px" }}>
+              <select
+                className="form-select"
+                name="saleRepresentativeCountryCode"
+                value={dataMap.saleRepresentativeCountryCode}
+                onChange={handleChange}
+                disabled={disabledField}
+                style={{ width: "150px", height: "38px" }}
+              >
+                <option value="" disabled>
+                  Country Code
+                </option>
+                {countryCodes.map((item) => (
+                  <option key={item.code} value={item.code}>
+                    {`${item.code} - ${item.country}`}
+                  </option>
+                ))}
+              </select>
+              <input
+                className="form-control uniform-input"
+                type="number"
+                name="saleRepresentativePhoneNumber"
+                id="saleRepresentativePhoneNumber"
+                placeholder="Enter Number"
+                value={dataMap.saleRepresentativePhoneNumber}
+                onChange={handleChange}
+                onInput={(event) => {
+                  validateDataType(event, "N");
+                  validateLen(event, 10, 10);
+                }}
+                disabled={disabledField}
+                style={{ flex: 1 }}
+              />
+            </div>
           </div>
-          {errors.saleRepresentativePhoneNumber && (
+          {(errors.saleRepresentativePhoneNumber ||
+            errors.saleRepresentativeCountryCode) && (
             <div className="col-6" style={{ color: "red", textAlign: "end" }}>
               {errors.saleRepresentativePhoneNumber}
+              {errors.saleRepresentativeCountryCode}
             </div>
           )}
         </div>

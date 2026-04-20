@@ -15,6 +15,7 @@ import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
 import { Modal, Button, Form } from "react-bootstrap";
 import { PrintableGeneralTab } from "./CheckerSupplierRegistration/PrintSupplierReg";
 import styles from "./Checker.module.css";
+
 const Checker = () => {
   // State
   const [tableData, setTableData] = useState([]);
@@ -24,18 +25,18 @@ const Checker = () => {
   const [sortField, setSortField] = useState("formId");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-  // Modified: Changed selectedItems from array to single string ID
   const [selectedItem, setSelectedItem] = useState("");
   const [selecteSupplierData, setSelecteSupplierData] = useState();
   const [selectAll, setSelectAll] = useState(false);
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
-  const [actionType, setActionType] = useState(""); // "accept" or "reject"
+  const [actionType, setActionType] = useState("");
   const [remark, setRemark] = useState("");
   const [supplierData, setSupplierData] = useState();
 
   const navigate = useNavigate();
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -50,14 +51,12 @@ const Checker = () => {
       setIsLoading(false);
     }
   };
-  // Fetching data when the component is mounted
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Modified: Handle checkbox selection for single selection only
   const handleCheckboxChange = (supplier) => {
-    // If the same checkbox is clicked again, deselect it
     if (selectedItem === supplier.supplierId) {
       setSelectedItem("");
     } else {
@@ -66,12 +65,10 @@ const Checker = () => {
     }
   };
 
-  // Modified: Handle select all - now it just clears selection
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedItem("");
     } else {
-      // Select the first item when clicking "select all"
       if (currentItems.length > 0) {
         const firstItemId = currentItems[0].formId;
         setSelectedItem(firstItemId);
@@ -80,7 +77,6 @@ const Checker = () => {
     setSelectAll(!selectAll);
   };
 
-  // Reset selection when page changes
   useEffect(() => {
     setSelectedItem("");
     setSelectAll(false);
@@ -121,7 +117,6 @@ const Checker = () => {
     }
   };
 
-  // Modal handlers
   const handleOpenModal = (type) => {
     if (!selectedItem) {
       toast.warning("Please select a supplier");
@@ -138,13 +133,11 @@ const Checker = () => {
 
   const handleSubmitAction = async () => {
     const action = actionType === "accept" ? "accepted" : "rejected";
-    // Add 'remark' to each object in selecteSupplierData
     const updatedSupplierData = {
       ...selecteSupplierData,
       remark: remark,
-      // supplierId: selectedItem,
-      userRole:'QM',
-      userAction: action === "rejected" ? "3" : "2", // 👈 conditional value
+      userRole: "QM",
+      userAction: action === "rejected" ? "3" : "2",
     };
     try {
       const response = await ApproveSupplier(updatedSupplierData);
@@ -154,16 +147,13 @@ const Checker = () => {
       console.error("Error fetching supplier details: ", error);
       toast.error("Failed to fetch supplier details");
     }
-  
-    // Reset states
+
     setSelectedItem("");
     setSelectAll(false);
     setRemark("");
     handleCloseModal();
   };
-  
 
-  // Search functionality
   const filteredData = tableData.filter((supplier) => {
     return Object.values(supplier).some(
       (value) =>
@@ -172,7 +162,6 @@ const Checker = () => {
     );
   });
 
-  // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
@@ -184,7 +173,6 @@ const Checker = () => {
     }
   });
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -214,9 +202,9 @@ const Checker = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${currentPage === i ? styles.active : ''}`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -227,226 +215,798 @@ const Checker = () => {
   };
 
   const handlePrintClick = (supplier) => {
-    // Store the supplier data
-    setSupplierData(supplier);
+    const printWindow = window.open("", "_blank", "width=800,height=600");
 
-    // Short delay to ensure React has updated the state and rendered the component
-    setTimeout(() => {
-      // Cache original body styles
-      const originalBodyStyle = document.body.style.cssText;
+    if (!printWindow) {
+      alert("Please allow pop-ups for printing");
+      return;
+    }
 
-      // Apply print-friendly styles to the body
-      document.body.style.margin = "0";
-      document.body.style.padding = "0";
+    printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Print Supplier Registration - ${
+          supplier.supplierName || "Supplier"
+        }</title>
+        <meta charset="UTF-8">
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 10mm;
+          }
+          
+          * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background: white;
+            font-size: 12px;
+          }
+          
+          .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+          }
+          
+          table {
+            border-collapse: collapse;
+            width: 100%;
+            page-break-inside: auto;
+            border: 1px solid black;
+          }
+          
+          tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+          }
+          
+          td, th {
+            page-break-inside: avoid;
+            border: 1px solid black;
+            padding: 6px;
+          }
+          
+          thead {
+            display: table-header-group;
+          }
+          
+          tbody {
+            display: table-row-group;
+          }
+          
+          strong {
+            font-weight: bold;
+          }
+          
+          @media print {
+            body {
+              padding: 0;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <!-- Header Section -->
+          <div style="display: flex; border: 1px solid black; margin-bottom: 15px;">
+            <div style="width: 20%; padding: 10px; border-right: 1px solid black; font-weight: bold;">
+              amc
+            </div>
+            <div style="width: 55%; text-align: center; padding: 10px; font-weight: bold; font-size: 16px; border-right: 1px solid black;">
+              SUPPLIER / SUB-CONTRACTOR EVALUATION FORM
+            </div>
+            <div style="width: 25%; padding: 10px;">
+              <div>Form: AMC-29</div>
+              <div>Rev.: 00</div>
+              <div>Date: Jan 2021</div>
+            </div>
+          </div>
 
-      // Print the document
-      window.print();
+          <!-- General Information Section -->
+          <div style="margin-bottom: 20px; border: 1px solid black; padding: 10px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div style="width: 60%;">
+                <strong>Supplier Name:</strong> ${
+                  supplier.supplierName || "N/A"
+                }
+              </div>
+              <div style="width: 40%;">
+                <strong>Date:</strong> ${
+                  supplier.date || new Date().toLocaleDateString()
+                }
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div style="width: 50%;">
+                <strong>Type of Vendor / Supplier:</strong> ${
+                  supplier.vendorTypes || "N/A"
+                }
+              </div>
+              <div style="width: 50%;">
+                <strong>Payment Terms:</strong> ${
+                  supplier.paymentTerms
+                    ? `${supplier.paymentTerms} ${
+                        supplier.paymentTerms !== "Advance Pay" ? "Days" : ""
+                      }`
+                    : "N/A"
+                }
+              </div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <strong>Address:</strong> ${supplier.address || "N/A"}
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div style="width: 33%;">
+                <strong>Phone:</strong> ${supplier.countryCode || ""} ${
+      supplier.phoneNumber || "N/A"
+    }
+              </div>
+              <div style="width: 33%;">
+                <strong>Fax:</strong> ${supplier.faxNum || "N/A"}
+              </div>
+              <div style="width: 33%;">
+                <strong>Email:</strong> ${supplier.email || "N/A"}
+              </div>
+            </div>
+            <div style="margin-bottom: 10px; border-top: 1px solid #ddd; padding-top: 10px;">
+              <div style="font-weight: bold; margin-bottom: 5px;">Quality Manager Contact:</div>
+              <div style="display: flex; justify-content: space-between;">
+                <div style="width: 33%;">
+                  <strong>Name:</strong> ${supplier.qualityManagerName || "N/A"}
+                </div>
+                <div style="width: 33%;">
+                  <strong>Phone:</strong> ${
+                    supplier.qualityManagerCountryCode || ""
+                  } ${supplier.qualityManagerPhoneNumber || "N/A"}
+                </div>
+                <div style="width: 33%;">
+                  <strong>Email:</strong> ${
+                    supplier.qualityManagerEmailId || "N/A"
+                  }
+                </div>
+              </div>
+            </div>
+            <div style="border-top: 1px solid #ddd; padding-top: 10px;">
+              <div style="font-weight: bold; margin-bottom: 5px;">Sales Representative Contact:</div>
+              <div style="display: flex; justify-content: space-between;">
+                <div style="width: 33%;">
+                  <strong>Name:</strong> ${
+                    supplier.saleRepresentativeName || "N/A"
+                  }
+                </div>
+                <div style="width: 33%;">
+                  <strong>Phone:</strong> ${
+                    supplier.saleRepresentativeCountryCode || ""
+                  } ${supplier.saleRepresentativePhoneNumber || "N/A"}
+                </div>
+                <div style="width: 33%;">
+                  <strong>Email:</strong> ${
+                    supplier.saleRepresentativeEmailId || "N/A"
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
 
-      // Restore original body styles after printing dialog is closed
-      setTimeout(() => {
-        document.body.style.cssText = originalBodyStyle;
-      }, 100);
-    }, 500);
+          <!-- Supplier Analysis Section -->
+          <div style="border: 1px solid black; margin-bottom: 15px;">
+            <div style="padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5; border-bottom: 1px solid black;">
+              SUPPLIER ANALYSIS
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; padding: 8px; font-size: 0.85em;">
+              <div><strong>1) Core products/Process:</strong><br/>${
+                supplier.coreProcess || "N/A"
+              }</div>
+              <div><strong>2) Years in Business:</strong><br/>${
+                supplier.workYear || "N/A"
+              } years</div>
+              <div><strong>3) ISO Registered?</strong><br/>${
+                supplier.isoRegistered || "N/A"
+              }</div>
+              <div><strong>4) ISO Standard:</strong><br/>${
+                supplier.isoStandard || "N/A"
+              }</div>
+              <div><strong>5) ISO Certificate:</strong><br/>${
+                supplier.isoCertificate || "N/A"
+              }</div>
+              <div><strong>6) CAR 145 / DGCA Approval:</strong><br/>${
+                supplier.carDgcaApproval || "N/A"
+              }</div>
+              <div><strong>7) ISO Registration Plans:</strong><br/>${
+                supplier.isoRegistrationPlans || "N/A"
+              }</div>
+              <div><strong>8) Total Employees:</strong><br/>${
+                supplier.numEmp || "N/A"
+              }</div>
+              <div><strong>9) Operating Shifts:</strong><br/>${
+                supplier.numOpeShift || "N/A"
+              }</div>
+              <div><strong>10) Quality Manual Available?</strong><br/>${
+                supplier.quaManual || "N/A"
+              }</div>
+              <div><strong>11) Annual Turnover (INR):</strong><br/>${
+                supplier.turnOver || "N/A"
+              }</div>
+            </div>
+          </div>
+
+          <!-- Quality Process Section -->
+          <div style="margin-bottom: 15px;">
+            <div style="border: 1px solid black; border-bottom: none; padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5;">
+              QUALITY PROCESS
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="padding: 6px; width: 70%; text-align: left;">QMS</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">YES</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">NO</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 6px;">Does quality assurance have independence from Mfg.?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.independenceManuf === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.independenceManuf === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.independenceManuf === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Do you have documented operative system for internal & external Corrective & preventive actions</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedOperative === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedOperative === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedOperative === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are there documented procedure for identification, collection, filing, Storage & maintenance of Quality records?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedProcedure === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedProcedure === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.documentedProcedure === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Does your system assure that product shipped meets customers applicable revision of specifications</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.productShipment === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.productShipment === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.productShipment === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Incoming Inspection Section -->
+          <div style="margin-bottom: 15px;">
+            <div style="border: 1px solid black; border-bottom: none; padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5;">
+              INCOMING INSPECTION
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="padding: 6px; width: 70%; text-align: left;">Questions</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">YES</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">NO</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 6px;">Is incoming process documented?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.processDocumented === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.processDocumented === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.processDocumented === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">What sampling plan is used for incoming inspection?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.samplingIncomingInsp === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.samplingIncomingInsp === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.samplingIncomingInsp === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is objective evidence of receiving inspection results maintained on file?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.receivingInspectionResultsOnFile === "Yes"
+                      ? "✓"
+                      : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.receivingInspectionResultsOnFile === "No"
+                      ? "✓"
+                      : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.receivingInspectionResultsOnFile === "N/A"
+                      ? "✓"
+                      : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is lot number or other traceability identification maintained?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.identificationMaintained === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.identificationMaintained === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.identificationMaintained === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is incoming material kept separate from inspected material?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.sepInsMaterial === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.sepInsMaterial === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.sepInsMaterial === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is there any procedure for isolating nonconforming material?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.nonConMaterial === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.nonConMaterial === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.nonConMaterial === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are deviations that affect the customer's requirement referred to customers for disposition?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.affectCusReq === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.affectCusReq === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.affectCusReq === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Process/Document/Procurement Control Section -->
+          <div style="margin-bottom: 15px; padding-top:30px;">
+            <div style="border: 1px solid black; border-bottom: none; padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5;">
+              PROCESS / DOCUMENT / PROCUREMENT CONTROL
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="padding: 6px; width: 70%; text-align: left;">Questions</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">YES</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">NO</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 6px;">Are written work instructions available at work stations?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.writtenWorkInstructionsAvaibleInStation === "Yes"
+                      ? "✓"
+                      : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.writtenWorkInstructionsAvaibleInStation === "No"
+                      ? "✓"
+                      : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.writtenWorkInstructionsAvaibleInStation === "N/A"
+                      ? "✓"
+                      : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Does the finished product show evidence of final inspection acceptance?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.finalInspectionEvidence === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.finalInspectionEvidence === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.finalInspectionEvidence === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are statistical methods used to control the process?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.statisMethod === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.statisMethod === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.statisMethod === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are procedures in place for control of customer-supplied documents?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.suppliedDocument === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.suppliedDocument === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.suppliedDocument === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Does range procedure include a method for handling revision changes & obsolete documents?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.includeMethod === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.includeMethod === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.includeMethod === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are quality capabilities of suppliers evaluated prior to procurement?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.qualityCapabilities === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.qualityCapabilities === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.qualityCapabilities === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Do you have an approved supplier list?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.approvedSupplierList === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.approvedSupplierList === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.approvedSupplierList === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is the supplier competent with respect to market price?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.marketPrice === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.marketPrice === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.marketPrice === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are certified test reports & certifications of conformance obtained on purchased material?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.certifiedTestReports === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.certifiedTestReports === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.certifiedTestReports === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is the supplier capable of on-time delivery?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.supplierOnTimeDelivery === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.supplierOnTimeDelivery === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.supplierOnTimeDelivery === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Material and Other Section -->
+          <div style="margin-bottom: 15px;">
+            <div style="border: 1px solid black; border-bottom: none; padding: 8px; font-weight: bold; text-align: center; background-color: #f5f5f5;">
+              MATERIAL AND OTHER
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="padding: 6px; width: 70%; text-align: left;">Questions</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">YES</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">NO</th>
+                  <th style="padding: 6px; width: 10%; text-align: center;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 6px;">Are equipment calibrated?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.equipCalibrated === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.equipCalibrated === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.equipCalibrated === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are gauges and test equipment periodically certified, and are records maintained for frequency of recalibration?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.recalibration === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.recalibration === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.recalibration === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Are gauges, test equipment available and sufficient for our scope of work?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.scopeOfWork === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.scopeOfWork === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.scopeOfWork === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is there adequate area & safety programs in place?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.safetyProgram === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.safetyProgram === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.safetyProgram === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px;">Is there a procedure in place for housekeeping?</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.houseKeeping === "Yes" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.houseKeeping === "No" ? "✓" : ""
+                  }</td>
+                  <td style="padding: 6px; text-align: center;">${
+                    supplier.houseKeeping === "N/A" ? "✓" : ""
+                  }</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Internal Use Section -->
+          <div style="margin-top: 30px; border-top: 1px solid black; padding-top: 10px;">
+            <div style="margin-bottom: 10px; font-weight: bold;">FOR AMC TECHNOLOGY INTERNAL USE</div>
+            <div style="margin-bottom: 10px;">Approval to vendor (Yes / No): _________________</div>
+            <div style="margin-bottom: 20px;">Remark (If Any): _______________________________</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+              <div>Quality Manager</div>
+              <div>Date: ________________</div>
+            </div>
+          </div>
+        </div>
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 500);
+          };
+        </script>
+      </body>
+    </html>
+  `);
+
+    printWindow.document.close();
   };
 
-  // Column definitions for the table
   const columns = [
-    { field: "supplierId", label: "ID", width: "50px" },
-    { field: "supplierName", label: "Supplier Name", width: "100px" },
-    { field: "address", label: "Address", width: "100px" },
-    { field: "phoneNumber", label: "Phone Number", width: "100px" },
+    { field: "supplierId", label: "ID", width: "60px" },
+    { field: "supplierName", label: "Supplier Name", width: "150px" },
+    { field: "address", label: "Address", width: "150px" },
+    { field: "phoneNumber", label: "Phone Number", width: "120px" },
     { field: "faxNum", label: "Fax Number", width: "100px" },
-    { field: "email", label: "Email", width: "100px" },
-    { field: "qualityManagerName", label: "Quality Manager", width: "100px" },
-    { field: "qualityManagerPhoneNumber", label: "QM Phone", width: "100px" },
-    { field: "qualityManagerEmailId", label: "QM Email", width: "100px" },
-    { field: "saleRepresentativeName", label: "Sales Rep", width: "100px" },
+    { field: "email", label: "Email", width: "150px" },
+    { field: "qualityManagerName", label: "Quality Manager", width: "130px" },
+    { field: "qualityManagerPhoneNumber", label: "QM Phone", width: "120px" },
+    { field: "qualityManagerEmailId", label: "QM Email", width: "150px" },
+    { field: "saleRepresentativeName", label: "Sales Rep", width: "120px" },
     {
       field: "saleRepresentativePhoneNumber",
       label: "SR Phone",
-      width: "100px",
+      width: "120px",
     },
     { field: "saleRepresentativeEmailId", label: "SR Email", width: "150px" },
-    { field: "coreProcess", label: "Core Product", width: "100px" },
+    { field: "coreProcess", label: "Core Product", width: "120px" },
   ];
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Supplier Checker" />
-          <div className="printView">
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-clipboard-check"></i>
+              <span className={styles.breadcrumbLabel}>Supplier Checker</span>
+            </div>
+          </div>
+
+          {/* Print View (Hidden) */}
+          <div className="printView" style={{ display: 'none' }}>
             <PrintableGeneralTab dataMap={supplierData} />
           </div>
 
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              styles.normalViewStyle,
-            ].join(" ")}
-          >
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search suppliers..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+          {/* Card */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Search and Entries */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search suppliers..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-blue">
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{ width: "40px" }}
-                        >
-                          <div className="form-check d-flex justify-content-center">
+                      <tr>
+                        <th className={styles.checkboxHeader}>
+                          <div className={styles.thContent}>
                             <input
-                              className="form-check-input"
                               type="checkbox"
-                              id="selectAll"
                               checked={selectAll}
                               onChange={handleSelectAll}
+                              className={styles.checkbox}
                             />
                           </div>
                         </th>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
-                                    sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  className={`fa fa-sort-${sortDirection === "asc" ? "up" : "down"} ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
-                                <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
-                                ></i>
+                                <i className={`fa fa-sort ${styles.sortIcon}`}></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
+                        <th className={styles.actionsHeader}>
+                          <div className={styles.thContent}>
+                            <span>ACTIONS</span>
+                          </div>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
                         currentItems.map((supplier, index) => (
-                          <tr
-                            key={supplier.formId}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
-                          >
-                            <td className="text-center">
-                              <div className="form-check d-flex justify-content-center">
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`check-${supplier.supplierId}`}
-                                  checked={selectedItem === supplier.supplierId}
-                                  onChange={() =>
-                                    handleCheckboxChange(supplier)
-                                  }
-                                />
-                              </div>
+                          <tr key={supplier.formId} style={{ animationDelay: `${index * 0.02}s` }}>
+                            <td className={styles.checkboxCell}>
+                              <input
+                                type="checkbox"
+                                checked={selectedItem === supplier.supplierId}
+                                onChange={() => handleCheckboxChange(supplier)}
+                                className={styles.checkbox}
+                              />
                             </td>
                             {columns.map((column) => (
                               <td
                                 key={`${supplier.formId}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={supplier[column.field]}
                               >
                                 {supplier[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
                                 <button
-                                  className="btn btn-sm btn-outline-primary"
+                                  className={styles.btnView}
                                   onClick={() =>
                                     editSelectedElement(supplier.supplierId)
                                   }
@@ -455,7 +1015,7 @@ const Checker = () => {
                                   <i className="fa-solid fa-eye"></i>
                                 </button>
                                 <button
-                                  className="btn btn-sm btn-outline-secondary"
+                                  className={styles.btnPrint}
                                   onClick={() => handlePrintClick(supplier)}
                                   title="Print Doc"
                                 >
@@ -467,21 +1027,16 @@ const Checker = () => {
                         ))
                       ) : (
                         <tr>
-                          <td
-                            colSpan={columns.length + 2}
-                            className="text-center py-5"
-                          >
+                          <td colSpan={columns.length + 2} className={styles.noData}>
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No data available</p>
                               </div>
                             )}
                           </td>
@@ -492,114 +1047,84 @@ const Checker = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>{Math.min(indexOfLastItem, sortedData.length)}</strong> of{" "}
+                  <strong>{sortedData.length}</strong> entries
+                  {searchTerm && ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
 
               {/* Accept/Reject Buttons */}
-              <div className="d-flex justify-content-end mt-3 gap-3">
+              <div className={styles.actionButtonsContainer}>
                 <button
-                  className="btn btn-outline-success"
+                  className={styles.btnApprove}
                   onClick={() => handleOpenModal("accept")}
                   disabled={!selectedItem}
                 >
-                  <i className="fa-solid fa-check me-2"></i>
-                  Approved
+                  <i className="fa-solid fa-check"></i>
+                  <span>Approve</span>
                 </button>
                 <button
-                  className="btn btn-outline-info"
+                  className={styles.btnSendEdit}
                   onClick={() => handleOpenModal("Send To Edit")}
                   disabled={!selectedItem}
                 >
-                  <i className="fa-solid fa-paper-plane me-2"></i>
-                  Send To Edit
+                  <i className="fa-solid fa-paper-plane"></i>
+                  <span>Send To Edit</span>
                 </button>
                 <button
-                  className="btn btn-outline-danger"
+                  className={styles.btnReject}
                   onClick={() => handleOpenModal("reject")}
                   disabled={!selectedItem}
                 >
-                  <i className="fa-solid fa-xmark me-2"></i>
-                  Reject
+                  <i className="fa-solid fa-xmark"></i>
+                  <span>Reject</span>
                 </button>
               </div>
             </div>
