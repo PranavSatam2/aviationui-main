@@ -3,12 +3,12 @@ import Footer from "../Footer";
 import Header from "../Header";
 import Sidebar from "../Sidebar";
 import {
-  deletePurchaseOrder,
-  listOfAllWorkorderTable,
+  deleteWorkOrder,
+  listOfAllWorkorderTableView,
 } from "../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "../Breadcrumb/CustomBreadcrumb";
+import styles from "../ViewMaterialNote.module.css";
 
 const WorkorderTable = () => {
   // State
@@ -17,16 +17,16 @@ const WorkorderTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortField, setSortField] = useState("workOrderNo");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [isLoading, setIsLoading] = useState(true);
-  const [workOrderData, setWorkOrderData] = useState();
+  
   const navigate = useNavigate();
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
-      const response = await listOfAllWorkorderTable();
+      const response = await listOfAllWorkorderTableView();
       setTableData(response.data || []);
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching work orders", error);
       toast.error("Failed to load work orders");
@@ -35,16 +35,14 @@ const WorkorderTable = () => {
     }
   };
 
-  // Fetching data when the component is mounted
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Delete the selected work order
   const deleteSelectedElement = async (workOrderNo) => {
     if (window.confirm("Are you sure you want to delete this work order?")) {
       try {
-        await deletePurchaseOrder(workOrderNo);
+        await deleteWorkOrder(workOrderNo);
         setTableData((prevData) =>
           prevData.filter((workOrder) => workOrder.workOrderNo !== workOrderNo)
         );
@@ -57,14 +55,12 @@ const WorkorderTable = () => {
     }
   };
 
-  // Edit the selected work order
   const editSelectedElement = async (workOrderNo) => {
     navigate("/EditWorkorder", {
       state: { workOrderNo },
     });
   };
 
-  // Search functionality
   const filteredData = tableData.filter((workOrder) => {
     return Object.entries(workOrder)
       .filter(
@@ -74,7 +70,7 @@ const WorkorderTable = () => {
             "qualityManagerSignDate",
             "workshopManagerSignDate",
           ].includes(key)
-      ) // Exclude certain fields from search
+      )
       .some(
         ([_, value]) =>
           value &&
@@ -82,7 +78,6 @@ const WorkorderTable = () => {
       );
   });
 
-  // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
@@ -94,7 +89,6 @@ const WorkorderTable = () => {
     }
   });
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -124,9 +118,11 @@ const WorkorderTable = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${
+            currentPage === i ? styles.active : ""
+          }`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -136,40 +132,30 @@ const WorkorderTable = () => {
     return pageNumbers;
   };
 
-  // Updated column definitions to match your API response data structure
   const columns = [
     { field: "workOrderNo", label: "Work Order No", width: "140px" },
     { field: "issueDate", label: "Issue Date", width: "120px" },
     { field: "customerName", label: "Customer Name", width: "150px" },
-    { field: "repairOrderNo", label: "Repair Order No", width: "180px" },
+    { field: "repairOrderNo", label: "Repair Order No", width: "150px" },
     { field: "partNumber", label: "Part Number", width: "120px" },
-    { field: "qty", label: "Quantity", width: "100px" },
+    { field: "qty", label: "Quantity", width: "90px" },
     { field: "description", label: "Description", width: "150px" },
     { field: "cmmRefNo", label: "CMM Ref No", width: "120px" },
-    { field: "revNo", label: "Rev No", width: "100px" },
+    { field: "revNo", label: "Rev No", width: "90px" },
     { field: "issuedBy", label: "Issued By", width: "120px" },
     { field: "technician", label: "Technician", width: "120px" },
-    { field: "totalManHour", label: "Man Hours", width: "110px" },
+    { field: "totalManHour", label: "Man Hours", width: "100px" },
     { field: "actionTaken", label: "Action Taken", width: "130px" },
     { field: "toolsUsed", label: "Tools Used", width: "120px" },
     { field: "snBn", label: "SN/BN", width: "100px" },
   ];
 
-  const handlePrintClick = (workOrder) => {
-    setWorkOrderData(workOrder);
-    setTimeout(() => {
-      window.print();
-    }, 500);
-  };
-
-  // Format date values
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
 
-  // Format text with truncation
   const formatText = (text, maxLength = 20) => {
     if (!text) return "";
     return text.length > maxLength
@@ -177,127 +163,418 @@ const WorkorderTable = () => {
       : text;
   };
 
+  // Default work steps
+  const defaultWorkSteps = [
+    { srNo: 1, detail: "INCOMING INSPECTION: Visual inspection, SB compliance" },
+    { srNo: 2, detail: "Test unit as per CMM" },
+    { srNo: 3, detail: "Disassembly as per CMM" },
+    { srNo: 4, detail: "Cleaning as per CMM" },
+    { srNo: 5, detail: "Inspection/Check as per CMM" },
+    { srNo: 6, detail: "Troubleshooting as per CMM" },
+    { srNo: 7, detail: "Repair as per CMM" },
+    { srNo: 8, detail: "Assembly as per CMM" },
+    { srNo: 9, detail: "Test unit as per CMM" },
+    { srNo: 10, detail: "Fits and Clearances as per CMM" },
+    { srNo: 11, detail: "Final Inspection" },
+  ];
+
+  // PRINT FUNCTIONALITY
+  const handlePrintClick = (workOrder) => {
+    console.log("Printing work order:", workOrder);
+    
+    const mainPartMaterialRequisition = {
+      srNo: 101,
+      description: workOrder.partDesc || workOrder.description || "",
+      partNo: workOrder.partNo || workOrder.partNumber || "",
+      snbn: workOrder.snBin || workOrder.snBn || "",
+      qty: workOrder.qty || "",
+      remarks: workOrder.remarks || workOrder.workshopManagerRemarks || "Main part from order",
+    };
+
+    const processedWorkOrder = {
+      ...workOrder,
+      materialRequisitions: workOrder.materialRequisitions || 
+                           workOrder.partsUsed || 
+                           [mainPartMaterialRequisition],
+      workOrderSteps: workOrder.workOrderSteps || workOrder.workDetails || [],
+    };
+
+    const printHTML = generatePrintHTML(processedWorkOrder);
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    printWindow.document.write(printHTML);
+    printWindow.document.close();
+    
+    printWindow.onload = function() {
+      printWindow.focus();
+      printWindow.print();
+    };
+  };
+
+  // Generate HTML for printing
+  const generatePrintHTML = (workOrderData) => {
+    const workSteps = workOrderData.workOrderSteps?.length > 0
+      ? workOrderData.workOrderSteps
+      : defaultWorkSteps;
+
+    const materialRequisitions = workOrderData.materialRequisitions || [];
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Work Order - ${workOrderData.workOrderNo}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 7pt;
+      padding: 20px;
+      background: white;
+      color: black;
+    }
+    
+    @media print {
+      body {
+        padding: 10px;
+      }
+      
+      @page {
+        size: A4;
+        margin: 10mm;
+      }
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    table td, table th {
+      border: 1px solid black;
+      padding: 8px;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid black;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .header h1 {
+      font-size: 16pt;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-align: center;
+      flex: 1;
+    }
+    
+    .header-info {
+      text-align: right;
+      font-size: 7pt;
+      line-height: 1.3;
+    }
+    
+    .section-title {
+      background-color: #e0e0e0;
+      padding: 8px;
+      border: 1px solid black;
+      font-weight: bold;
+      font-size: 9pt;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+    
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid black;
+      margin-bottom: 15px;
+    }
+    
+    .info-row strong {
+      font-weight: bold;
+    }
+    
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 15px;
+    }
+    
+    .signature-box {
+      flex: 1;
+      text-align: center;
+      border: 1px solid black;
+      padding: 10px;
+      min-height: 80px;
+    }
+    
+    .signature-box .title {
+      font-weight: bold;
+      font-size: 8pt;
+      margin-bottom: 30px;
+    }
+    
+    .signature-box .date {
+      font-size: 7pt;
+      margin-top: 10px;
+    }
+    
+    .certification {
+      padding: 10px;
+      border: 1px solid black;
+      font-size: 7pt;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+    
+    .certification p {
+      margin-bottom: 10px;
+    }
+    
+    .certification .highlight {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+      padding: 8px;
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>WORKORDER</h1>
+    <div class="header-info">
+      <div>Form: AMC 7A</div>
+      <div>Rev: 01</div>
+      <div>Date: ${formatDate(new Date())}</div>
+    </div>
+  </div>
+
+  <table style="margin-bottom: 15px; font-size: 7pt;">
+    <tbody>
+      <tr>
+        <td style="font-weight: bold; background-color: #f0f0f0; width: 12%;">WO#:</td>
+        <td style="width: 21%;">${workOrderData.workOrderNo || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0; width: 12%;">RO#:</td>
+        <td style="width: 21%;">${workOrderData.repairOrderNo || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0; width: 12%;">Date:</td>
+        <td style="width: 22%;">${formatDate(workOrderData.issueDate)}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background-color: #f0f0f0;">Customer:</td>
+        <td colspan="3">${workOrderData.customerName || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0;">Qty:</td>
+        <td>${workOrderData.qty || ""}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background-color: #f0f0f0;">Desc:</td>
+        <td colspan="5">${workOrderData.description || ""}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; background-color: #f0f0f0;">S/N:</td>
+        <td>${workOrderData.snBn || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0;">CMM:</td>
+        <td>${workOrderData.cmmRefNo || ""}</td>
+        <td style="font-weight: bold; background-color: #f0f0f0;">Rev:</td>
+        <td>${workOrderData.revNo || ""}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-row">
+    <strong>Issued By:</strong>
+    <span>${workOrderData.issuedBy || ""}</span>
+  </div>
+
+  <table style="margin-bottom: 15px; font-size: 7pt;">
+    <thead>
+      <tr>
+        <th style="background-color: #e0e0e0; width: 5%; text-align: center;">No.</th>
+        <th style="background-color: #e0e0e0; width: 55%; text-align: center;">Work Done</th>
+        <th style="background-color: #e0e0e0; width: 20%; text-align: center;">Tech Sign</th>
+        <th style="background-color: #e0e0e0; width: 20%; text-align: center;">Staff Sign</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${workSteps.map((step, index) => `
+        <tr>
+          <td style="text-align: center;">${step.srNo || step.stepNo || index + 1}</td>
+          <td>${step.detail || step.detailOfWorkDone || ""}</td>
+          <td>${step.technicianSign || ""}</td>
+          <td>${step.certifyingStaffSign || ""}</td>
+        </tr>
+      `).join('')}
+      <tr>
+        <td colspan="4"><strong>Action:</strong> ${workOrderData.actionTaken || ""}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">Material Requisition</div>
+  <table style="margin-bottom: 15px; font-size: 7pt;">
+    <thead>
+      <tr>
+        <th style="background-color: #e0e0e0; width: 8%; text-align: center;">No.</th>
+        <th style="background-color: #e0e0e0; width: 35%; text-align: center;">Description</th>
+        <th style="background-color: #e0e0e0; width: 20%; text-align: center;">Part No.</th>
+        <th style="background-color: #e0e0e0; width: 15%; text-align: center;">S/N</th>
+        <th style="background-color: #e0e0e0; width: 8%; text-align: center;">Qty</th>
+        <th style="background-color: #e0e0e0; width: 14%; text-align: center;">Remarks</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${materialRequisitions.length > 0 ? 
+        materialRequisitions.map((item, idx) => `
+          <tr>
+            <td style="text-align: center;">${item.srNo || idx + 1}</td>
+            <td>${item.description || ""}</td>
+            <td>${item.partNo || ""}</td>
+            <td>${item.snbn || ""}</td>
+            <td style="text-align: center;">${item.qty || ""}</td>
+            <td>${item.remarks || ""}</td>
+          </tr>
+        `).join('') :
+        Array.from({ length: 3 }, (_, idx) => `
+          <tr>
+            <td style="text-align: center;">${idx + 1}</td>
+            <td style="height: 25px;"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        `).join('')
+      }
+    </tbody>
+  </table>
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid black; margin-bottom: 15px; font-size: 7pt;">
+    <strong>Tools:</strong>
+    <span style="flex: 1; border-bottom: 1px solid black; min-height: 20px;">${workOrderData.toolsUsed || ""}</span>
+    <strong>Tech:</strong>
+    <span style="flex: 1; border-bottom: 1px solid black; min-height: 20px;">${workOrderData.technician || ""}</span>
+    <strong>Hours:</strong>
+    <span style="border-bottom: 1px solid black; min-width: 50px;">${workOrderData.totalManHour || ""}</span>
+  </div>
+
+  <div class="certification">
+    <p>Certified: Task completed per CMM ref, meets DGCA requirements, ready for release per CAR 145.50</p>
+    <div class="highlight">All Documents Scrutinized & Verified</div>
+  </div>
+
+  <div class="signature-section">
+    <div class="signature-box">
+      <div class="title">Workshop Manager</div>
+      <div class="date">Date & Sign: ${formatDate(workOrderData.workshopManagerSignDate)}</div>
+    </div>
+    <div class="signature-box">
+      <div class="title">Quality Manager</div>
+      <div class="date">Date & Sign: ${formatDate(workOrderData.qualityManagerSignDate)}</div>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+  };
+
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="View All Work Orders" />
-          <div className="printView">
-            {/* <PurchaseOrderForm tableData={workOrderData} /> */}
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-list-check"></i>
+              <span className={styles.breadcrumbLabel}>
+                View All Work Orders
+              </span>
+            </div>
           </div>
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-            ].join(" ")}
-          >
-            <div className="card-body">
-              <div className="row align-items-center mb-4">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search work orders..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+
+          {/* Card Container */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Search and Entries Control */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search work orders..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div
-                    className="spinner-border text-primary"
-                    role="status"
-                  ></div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading work orders...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowX: "auto",
-                    overflowY: "auto",
-                    maxHeight: "65vh",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-light">
+                      <tr>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                              whiteSpace: "nowrap",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
+                                  className={`fa fa-sort-${
                                     sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  } ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
                                 <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
+                                  className={`fa fa-sort ${styles.sortIcon}`}
                                 ></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "150px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          ACTIONS
-                        </th>
+                        <th className={styles.actionsHeader}>ACTIONS</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -305,24 +582,13 @@ const WorkorderTable = () => {
                         currentItems.map((workOrder, index) => (
                           <tr
                             key={workOrder.workOrderNo || index}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
+                            style={{ animationDelay: `${index * 0.02}s` }}
                           >
                             {columns.map((column) => (
                               <td
                                 key={`${workOrder.workOrderNo || index}-${
                                   column.field
                                 }`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={workOrder[column.field]}
                               >
                                 {column.field === "issueDate" ||
@@ -340,10 +606,10 @@ const WorkorderTable = () => {
                                   : workOrder[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
                                 <button
-                                  className="btn btn-sm btn-outline-primary"
+                                  className={styles.btnEdit}
                                   onClick={() =>
                                     editSelectedElement(workOrder.workOrderNo)
                                   }
@@ -352,7 +618,7 @@ const WorkorderTable = () => {
                                   <i className="fa-solid fa-pen-to-square"></i>
                                 </button>
                                 <button
-                                  className="btn btn-sm btn-outline-danger"
+                                  className={styles.btnDelete}
                                   onClick={() =>
                                     deleteSelectedElement(workOrder.workOrderNo)
                                   }
@@ -361,7 +627,7 @@ const WorkorderTable = () => {
                                   <i className="fa-solid fa-trash"></i>
                                 </button>
                                 <button
-                                  className="btn btn-sm btn-outline-success"
+                                  className={styles.btnPrint}
                                   onClick={() => handlePrintClick(workOrder)}
                                   title="Print"
                                 >
@@ -375,19 +641,17 @@ const WorkorderTable = () => {
                         <tr>
                           <td
                             colSpan={columns.length + 1}
-                            className="text-center py-5"
+                            className={styles.noData}
                           >
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No work orders available</p>
                               </div>
                             )}
                           </td>
@@ -398,87 +662,76 @@ const WorkorderTable = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>
+                    {Math.min(indexOfLastItem, sortedData.length)}
+                  </strong>{" "}
+                  of <strong>{sortedData.length}</strong> entries
+                  {searchTerm &&
+                    ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === 1 ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li
+                      className={`${styles.pageItem} ${
+                        currentPage === totalPages ? styles.disabled : ""
+                      }`}
+                    >
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>

@@ -4,23 +4,27 @@ import axiosInstance from "../axiosConfig";
 import ViewCustomerOrder from "../components/ViewCustomerOrder";
 // ######################### ROUTE #########################
 let STORE_URL = REST_API_BASE_URL + "/storeAcceptance";
+let STORE_TAG_URL = REST_API_BASE_URL + "/storeAcceptance/allTag";
 let SUPPLIER_URL = REST_API_BASE_URL + "/api/supplier";
 let PRODUCT_URL = REST_API_BASE_URL + "/api/product";
 let MATERIAL_URL = REST_API_BASE_URL + "/api/mrn";
 let MATERIAL_REQUISITION = REST_API_BASE_URL + "/api/material-requisitions";
 let PURCHASE_REQUISITION = REST_API_BASE_URL + "/api/purchase-requisitions";
-let PARTANDDESCRIPTION =REST_API_BASE_URL + "/api/purchase-requisitions/prodNameDesc";
+let PARTANDDESCRIPTION =
+  REST_API_BASE_URL + "/api/purchase-requisitions/prodNameDesc";
 // let PURCHASE_ORDERBYBATCH = REST_API_BASE_URL + "/api/purchase-orders/requisitions-by-batch";
-let PURCHASE_ORDER =REST_API_BASE_URL +"/api/purchase-orders"
+let PURCHASE_ORDER = REST_API_BASE_URL + "/api/purchase-orders";
 // ######################### DB_MANAGER #########################
 
 // Store Acceptance
 export const createStore = (Store) => axiosInstance.post(STORE_URL, Store);
 // export const listAllStore = () =>  axios.get(`${STORE_URL}/`);
-export const deleteStore = (StoreId) => axiosInstance.delete(`${STORE_URL}/${StoreId}`);
+export const deleteStore = (StoreId) =>
+  axiosInstance.delete(`${STORE_URL}/${StoreId}`);
 export const updateStore = (StoreId, Store) =>
   axiosInstance.put(`${STORE_URL}/${StoreId}`, Store);
-export const getStoreDetail = (StoreId) => axiosInstance.get(`${STORE_URL}/${StoreId}`);
+export const getStoreDetail = (StoreId) =>
+  axiosInstance.get(`${STORE_URL}/${StoreId}`);
 
 export const listAllStore = () => {
   return axiosInstance
@@ -34,6 +38,29 @@ export const listAllStore = () => {
     });
 };
 
+export const AllStoreTag = (inspectionReportId) => {
+  return axiosInstance
+    .get(`${STORE_URL}/storeAcceptance/tag/by-inspection/${inspectionReportId}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching store:", error);
+      throw error;
+    });
+};
+
+export const AllStoreTagList = () => {
+  return axiosInstance
+    .get(`${STORE_TAG_URL}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching store:", error);
+      throw error;
+    });
+};
 //Material Requisition
 export const createMaterialRequisition = (Requisition) =>
   axiosInstance.post(MATERIAL_REQUISITION, Requisition);
@@ -82,26 +109,29 @@ export const listAllPurchaseRequisition = () => {
 };
 export const DownloadCSV = () =>
   axiosInstance.get(`${PURCHASE_REQUISITION}/csv`, {
-    responseType: 'blob', // important!
+    responseType: "blob", // important!
   });
 
 export const DownloadPDF = () =>
-  axiosInstance.get(`${PURCHASE_REQUISITION}/pdf`);
-
-export const fetchPartNumbersAndDescriptions=()=>{
-  return axiosInstance
-  .get(`${PARTANDDESCRIPTION}`)
-  .then((response) => {
-    return response.data;
-  })
-  .catch((error) => {
-    console.error("Error fetching PARTS AND DESCRIPTIONS:", error);
-    throw error;
+  axiosInstance.get(`${PURCHASE_REQUISITION}/pdf`, {
+    responseType: "blob", // important!
   });
-}
+
+export const fetchPartNumbersAndDescriptions = () => {
+  return axiosInstance
+    .get(`${PARTANDDESCRIPTION}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching PARTS AND DESCRIPTIONS:", error);
+      throw error;
+    });
+};
 // Supplier Registration
-export const createSupplier = (Supplier) =>
-  axiosInstance.post(`${SUPPLIER_URL}/supplierReg`, Supplier);
+export const createSupplier = (Supplier) => {
+  return axiosInstance.post(`${SUPPLIER_URL}/supplierReg`, Supplier);
+};
 // export const listAllSupplier = () => axios.get(`${SUPPLIER_URL}/`);
 export const deleteSupplier = (SupplierId) =>
   axiosInstance.delete(`${SUPPLIER_URL}/${SupplierId}`);
@@ -149,6 +179,11 @@ export const getEditingSupplierList = () => {
 export const ApproveSupplier = (Supplier) =>
   axiosInstance.post(`${SUPPLIER_URL}/approve`, Supplier);
 
+let FetchSupplierDetails =
+  REST_API_BASE_URL + "/api/supplier/supplierNamePayment";
+export const fetchSupplierDetails = () =>
+  axiosInstance.get(`${FetchSupplierDetails}`);
+
 // ######################### PRODUCT #########################
 export const createProduct = (Product) =>
   axiosInstance.post(`${PRODUCT_URL}/create`, Product);
@@ -175,18 +210,18 @@ export const getMaterialDetail = (MaterialId) =>
   axiosInstance.get(`${MATERIAL_URL}/${MaterialId}`);
 // ######################### LOGIN #####################
 
-let login_API = REST_API_BASE_URL + "/login"
-let USER_API = REST_API_BASE_URL + "/api/roles/addUser"
-let VIEW_USER_API = REST_API_BASE_URL + "/api/roles/viewUser"
-let ROLE_API = REST_API_BASE_URL + "/api/roles"
-let DELETE_USER_API = REST_API_BASE_URL + "/api/roles/userDelete"
-let USER_BY_ID_API = REST_API_BASE_URL + "/api/roles/userById"
-let USER_UPDATE_API = REST_API_BASE_URL + "/api/roles/userUpdate"
+let login_API = REST_API_BASE_URL + "/login";
+let USER_API = REST_API_BASE_URL + "/api/roles/addUser";
+let VIEW_USER_API = REST_API_BASE_URL + "/api/roles/viewUser";
+let ROLE_API = REST_API_BASE_URL + "/api/roles";
+let DELETE_USER_API = REST_API_BASE_URL + "/api/roles/userDelete";
+let USER_BY_ID_API = REST_API_BASE_URL + "/api/roles/userById";
+let USER_UPDATE_API = REST_API_BASE_URL + "/api/roles/userUpdate";
 
 export const login = (loginData) => axiosInstance.post(login_API, loginData);
-export const  createUser = (Login) => axiosInstance.post(USER_API, Login);
-export const listAllUser = () =>  axiosInstance.get(`${VIEW_USER_API}`);
-export const addRole = () =>  axiosInstance.get(`${ROLE_API}/addRole`,Role);
+export const createUser = (Login) => axiosInstance.post(USER_API, Login);
+export const listAllUser = () => axiosInstance.get(`${VIEW_USER_API}`);
+export const addRole = () => axiosInstance.get(`${ROLE_API}/addRole`, Role);
 export const deleteUser = (userId) => {
   console.log(`Deleting user with ID: ${userId}`); // Log for debugging
   return axiosInstance.delete(`${DELETE_USER_API}/${userId}`);
@@ -194,102 +229,129 @@ export const deleteUser = (userId) => {
 export const userById = (userId) => {
   console.log(`Getting user with ID: ${userId}`); // Log for debugging
   return axiosInstance.get(`${USER_BY_ID_API}/${userId}`);
-}
+};
 export const updateUser = (userId, userData) => {
   console.log(`Updating user with ID: ${userId}`); // Log for debugging
   return axiosInstance.put(`${USER_UPDATE_API}/${userId}`, userData);
 };
 
-
 // ##################### Inspection Report #########################
-let PARTNumber = REST_API_BASE_URL + "/api/inspectionReport/partNo"  
-let getDetailsByPartNo = REST_API_BASE_URL + "/api/inspectionReport/getDetilsByPartNo" 
-let SaveInspectionReport = REST_API_BASE_URL + "/api/inspectionReport/saveInspectionReport"
-let GetInpectionReportPendingList = REST_API_BASE_URL + "/api/inspectionReport/getpendingInpectionReportList"
-let deleteInspectorReport = REST_API_BASE_URL + "/api/inspectionReport/deleteReport"
-let GetReportDetailsById = REST_API_BASE_URL + "/api/inspectionReport/getReportDetailById"
-let approveReport = REST_API_BASE_URL + "/api/inspectionReport/approveReport"
-let GetEditReportList =REST_API_BASE_URL + "/api/inspectionReport/getEditReportList"
-let UpdateReportNew = REST_API_BASE_URL + "/api/inspectionReport/updateReport"
-let ViewReportList = REST_API_BASE_URL + "/api/inspectionReport/viewReport"
- 
-export const fetchPartNumbers = () => axiosInstance.get(`${PARTNumber}`);
-export const fetchPartDetails = (PartNo) => axiosInstance.get(`${getDetailsByPartNo}/${PartNo}`);
-export const submitInspectionReport =(payload) => axiosInstance.post(SaveInspectionReport,payload, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-export const getpendingInpectionReportList = () => axiosInstance.get(`${GetInpectionReportPendingList}`);
-export const deleteReport = (reportId) => axiosInstance.delete(`${deleteInspectorReport}/${reportId}`);
-export const getReportDetails = (reportId) => axiosInstance.get(`${GetReportDetailsById}/${reportId}`);
-export const ApproveReport = (report) => axiosInstance.post(approveReport,report);
-export const getEditReportList = () => axiosInstance.get(`${GetEditReportList}`);
-export const updateReport = (InpectionReportId, ReportData) => axiosInstance.put(`${UpdateReportNew}/${InpectionReportId}`, ReportData);
+let PARTNumber = REST_API_BASE_URL + "/api/inspectionReport/partNo";
+let getDetailsByPartNo =
+  REST_API_BASE_URL + "/api/inspectionReport/getDetilsByPartNo";
+let SaveInspectionReport =
+  REST_API_BASE_URL + "/api/inspectionReport/saveInspectionReport";
+let GetInpectionReportPendingList =
+  REST_API_BASE_URL + "/api/inspectionReport/getpendingInpectionReportList";
+let deleteInspectorReport =
+  REST_API_BASE_URL + "/api/inspectionReport/deleteReport";
+let GetReportDetailsById =
+  REST_API_BASE_URL + "/api/inspectionReport/getReportDetailById";
+let approveReport = REST_API_BASE_URL + "/api/inspectionReport/approveReport";
+let GetEditReportList =
+  REST_API_BASE_URL + "/api/inspectionReport/getEditReportList";
+let UpdateReportNew = REST_API_BASE_URL + "/api/inspectionReport/updateReport";
+let ViewReportList = REST_API_BASE_URL + "/api/inspectionReport/viewReport";
+
+export const fetchPartNumbers = (mrnNo) =>
+  axiosInstance.get(`${PARTNumber}/${mrnNo}`);
+export const fetchPartDetails = (reportNo) =>
+  axiosInstance.get(`${getDetailsByPartNo}/${reportNo}`);
+export const submitInspectionReport = (payload) =>
+  axiosInstance.post(SaveInspectionReport, payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+export const getpendingInpectionReportList = () =>
+  axiosInstance.get(`${GetInpectionReportPendingList}`);
+export const deleteReport = (reportId) =>
+  axiosInstance.delete(`${deleteInspectorReport}/${reportId}`);
+export const getReportDetails = (reportId) =>
+  axiosInstance.get(`${GetReportDetailsById}/${reportId}`);
+export const ApproveReport = (report) =>
+  axiosInstance.post(approveReport, report);
+export const getEditReportList = () =>
+  axiosInstance.get(`${GetEditReportList}`);
+export const updateReport = (InpectionReportId, ReportData) =>
+  axiosInstance.put(`${UpdateReportNew}/${InpectionReportId}`, ReportData);
 export const getViewReportList = () => axiosInstance.get(`${ViewReportList}`);
 
-//Purchase order 
+//Purchase order
 
-// export const GetAllDataUsingBatchNo = (batchNo) =>{ 
+// export const GetAllDataUsingBatchNo = (batchNo) =>{
 //   axiosInstance.get(`${PURCHASE_ORDER}/${batchNo}`)};
-  export const GetAllDataUsingBatchNo = (batchNo) => {
-    return axiosInstance
-      .get(`${PURCHASE_ORDER}/requisitions-by-batch/${batchNo}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Error fetching list:", error);
-        throw error;
-      });
-  };
+export const GetAllDataUsingBatchNo = (batchNo) => {
+  return axiosInstance
+    .get(`${PURCHASE_ORDER}/requisitions-by-batch/${batchNo}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching list:", error);
+      throw error;
+    });
+};
 
-export const createPurchaseOrder = (Purchaseorder) =>{
-    console.log(Purchaseorder,"ppppp")
-    axiosInstance.post(`${PURCHASE_ORDER}/create`, Purchaseorder)};
+export const createPurchaseOrder = (Purchaseorder) => {
+  return axiosInstance.post(`${PURCHASE_ORDER}/create`, Purchaseorder);
+};
+
 export const listAllPurchaseOrder = () =>
-      axiosInstance.get(`${PURCHASE_ORDER}`);
-export const updatePurchaseOrder = (ID,order) =>
-  axiosInstance.put(`${PURCHASE_ORDER}/${ID}`,order);
-  export const getPurchaseOrder = (ID) => {
-    return axiosInstance
-      .get(`${PURCHASE_ORDER}/${ID}`)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error) => {
-        console.error("Error fetching list:", error);
-        throw error;
-      });
-  };
-  export const deletePurchaseOrder = (ID) => {
-    return axiosInstance.delete(`${PURCHASE_ORDER}/${ID}`);
-  };
+  axiosInstance.get(`${PURCHASE_ORDER}`);
+export const updatePurchaseOrder = (ID, order) =>
+  axiosInstance.put(`${PURCHASE_ORDER}/${ID}`, order);
+export const getPurchaseOrder = (ID) => {
+  return axiosInstance
+    .get(`${PURCHASE_ORDER}/${ID}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching list:", error);
+      throw error;
+    });
+};
+export const deletePurchaseOrder = (ID) => {
+  return axiosInstance.delete(`${PURCHASE_ORDER}/${ID}`);
+};
 
+//Customer Order
+let AddCustOrder = REST_API_BASE_URL + "/api/customerOrder/addCustomerOrder";
+let GetpendingCustomerOrder =
+  REST_API_BASE_URL + "/api/customerOrder/getpendingCustomerOrderList";
+let ApproveCustomerOrder =
+  REST_API_BASE_URL + "/api/customerOrder/approveCustomerOrder";
+let GetOrdertDetailsById =
+  REST_API_BASE_URL + "/api/customerOrder/getCustomerOrderById";
+let DeleteCustomerOrder =
+  REST_API_BASE_URL + "/api/customerOrder/deleteCustomerOrder";
+let ViewCustomerOrderList = REST_API_BASE_URL + "/api/customerOrder/all";
+let GetEditOrderList =
+  REST_API_BASE_URL + "/api/customerOrder/getEditOrderList";
+let UpdateOrderNew = REST_API_BASE_URL + "/api/customerOrder/updateOrder";
 
-  //Customer Order
-  let AddCustOrder = REST_API_BASE_URL + "/api/customerOrder/addCustomerOrder"
-  let GetpendingCustomerOrder = REST_API_BASE_URL + "/api/customerOrder/getpendingCustomerOrderList" 
-  let ApproveCustomerOrder = REST_API_BASE_URL + "/api/customerOrder/approveCustomerOrder"
-  let GetOrdertDetailsById = REST_API_BASE_URL + "/api/customerOrder/getCustomerOrderById"
-  let DeleteCustomerOrder = REST_API_BASE_URL + "/api/customerOrder/deleteCustomerOrder"
-  let ViewCustomerOrderList = REST_API_BASE_URL + "/api/customerOrder/viewCustomerOrder"
-  let GetEditOrderList = REST_API_BASE_URL + "/api/customerOrder/getEditOrderList"
-  let UpdateOrderNew = REST_API_BASE_URL + "/api/customerOrder/updateOrder"
-
-
-  export const addCustomerOrder = (Order) => axiosInstance.post(AddCustOrder, Order);
-  export const getpendingCustomerOrderList = () => axiosInstance.get(GetpendingCustomerOrder);
-  export const ApproveCustOrders = (Order) => axiosInstance.post(ApproveCustomerOrder,Order);
-  export const getCustomerOrder = (orderId) => axiosInstance.get(`${GetOrdertDetailsById}/${orderId}`);
-  export const deleteCustomerOrder = (orderId) => axiosInstance.delete(`${DeleteCustomerOrder}/${orderId}`);
-  export const  getViewCustomerOrderList = () => axiosInstance.get(`${ViewCustomerOrderList}`);
-  export const getEditOrderList = () => axiosInstance.get(`${GetEditOrderList}`);
-  export const updateOrder = (orderId, ReportData) => axiosInstance.put(`${UpdateOrderNew}/${orderId}`, ReportData);
-
+export const addCustomerOrder = (Order) =>
+  axiosInstance.post(AddCustOrder, Order);
+export const getpendingCustomerOrderList = () =>
+  axiosInstance.get(GetpendingCustomerOrder);
+export const ApproveCustOrders = (Order) =>
+  axiosInstance.post(ApproveCustomerOrder, Order);
+export const getCustomerOrder = (orderId) =>
+  axiosInstance.get(`${GetOrdertDetailsById}/${orderId}`);
+export const deleteCustomerOrder = (orderId) =>
+  axiosInstance.delete(`${DeleteCustomerOrder}/${orderId}`);
+export const getViewCustomerOrderList = () =>
+  axiosInstance.get(`${ViewCustomerOrderList}`);
+export const getEditOrderList = () => axiosInstance.get(`${GetEditOrderList}`);
+export const updateOrder = (orderId, ReportData) =>
+  axiosInstance.put(`${UpdateOrderNew}/${orderId}`, ReportData);
 
 // Dispatch Report
 let DispatchReport = REST_API_BASE_URL + "/api/dispatch";
+let GetCaFormNo = REST_API_BASE_URL + "/api/caForm/getCAFormByWorkOrderNo"
+ 
+export const getCaFormNo =(workOrderNo) => axiosInstance.get(`${GetCaFormNo}/${workOrderNo}`);
 
 export const saveDispatchReport = (dispatchData) => {
   return axiosInstance.post(`${DispatchReport}/save`, dispatchData);
@@ -318,33 +380,53 @@ export const getDispatchReportById = (reportId) => {
       return response.data;
     })
     .catch((error) => {
-      console.error("Error fetching dispatch report by ID:", error);  
+      console.error("Error fetching dispatch report by ID:", error);
     });
-  };
+};
+export const fetchStatusClosed = () => {
+  return axiosInstance
+    .get(`${DispatchReport}/closed`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching closed status dispatch reports:", error);
+      throw error;
+    });
+}
 
 //CAForm
-let WORKORDER = REST_API_BASE_URL + "/api/caForm/workOrderList"  
-let WORKoRDERdETAILS = REST_API_BASE_URL + "/api/caForm/getDetilsByWorkOrderNo" 
-let SaveCAForm = REST_API_BASE_URL + "/api/caForm/saveCAForm"
-let GETALLCAFormLIST = REST_API_BASE_URL + "/api/caForm/viewCAForm"
-let GETCAFormById = REST_API_BASE_URL + "/api/caForm/getCAFormByID"
-let DeleteCAForm = REST_API_BASE_URL + "/api/caForm/deleteCAFormByID"
-let UPDATECAFORM = REST_API_BASE_URL + "/api/caForm/updateCAForm"
+let WORKORDER = REST_API_BASE_URL + "/api/caForm/workOrderList";
+let WORKoRDERdETAILS = REST_API_BASE_URL + "/api/caForm/getDetilsByWorkOrderNo";
+let SaveCAForm = REST_API_BASE_URL + "/api/caForm/saveCAForm";
+let GETALLCAFormLIST = REST_API_BASE_URL + "/api/caForm/viewCAForm";
+let GETCAFormById = REST_API_BASE_URL + "/api/caForm/getCAFormByID";
+let DeleteCAForm = REST_API_BASE_URL + "/api/caForm/deleteCAFormByID";
+let UPDATECAFORM = REST_API_BASE_URL + "/api/caForm/updateCAForm";
 
 export const fetchWorkOrder = () => axiosInstance.get(`${WORKORDER}`);
-export const fetchWorkOrderDetails = (workOrder) => axiosInstance.get(`${WORKoRDERdETAILS}/${workOrder}`);
+export const fetchWorkOrderDetails = (workOrder) =>
+  axiosInstance.get(`${WORKoRDERdETAILS}/${workOrder}`);
 export const submitCAForm = (data) => axiosInstance.post(SaveCAForm, data);
 export const getCAFormList = () => axiosInstance.get(`${GETALLCAFormLIST}`);
 export const getCAForm = (id) => axiosInstance.get(`${GETCAFormById}/${id}`);
-export const deleteCAForm = (id) => axiosInstance.delete(`${DeleteCAForm}/${id}`);
-export const updateCAForm  = (formId,formData) =>axiosInstance.put(`${UPDATECAFORM}/${formId}`, formData);
+export const deleteCAForm = (id) =>
+  axiosInstance.delete(`${DeleteCAForm}/${id}`);
+export const updateCAForm = (formId, formData) =>
+  axiosInstance.put(`${UPDATECAFORM}/${formId}`, formData);
 
 //workorder
-let WORKORDERFROMCHECKER = REST_API_BASE_URL + "/api/workorders/workordersFromChecker";
-let WORKORDERLIST = REST_API_BASE_URL + "/api/workorders";
+let WORKORDERFROMCHECKER = REST_API_BASE_URL + "/api/customerOrder/all";
+let OPENWORKORDER = REST_API_BASE_URL + "/api/workorders/open";
+let WORKORDERLIST = REST_API_BASE_URL + "/api/workorders/opened";
+let WORKORDERLISTVIEW = REST_API_BASE_URL + "/api/workorders";
 
+let CLOSEDWORKORDER = REST_API_BASE_URL + "/api/workorders/closed";
 
-export const listAllWorkorder = () => axiosInstance.get(`${WORKORDERFROMCHECKER}`);
+export const listAllOpenWorkorder = () => axiosInstance.get(`${OPENWORKORDER}`);
+
+export const listAllWorkorder = () =>
+  axiosInstance.get(`${WORKORDERFROMCHECKER}`);
 export const getWorkOrder = (ID) => {
   return axiosInstance
     .get(`${"/api/workorders/workorders-short"}/${ID}`)
@@ -356,7 +438,12 @@ export const getWorkOrder = (ID) => {
       throw error;
     });
 };
-export const listOfAllWorkorderTable = () => axiosInstance.get(`${WORKORDERLIST}`);
+export const listOfAllWorkorderTable = () =>
+  axiosInstance.get(`${WORKORDERLIST}`);
+export const listOfAllWorkorderTableView = () =>
+   axiosInstance.get(`${WORKORDERLISTVIEW}`);
+export const listOfClosedWorkorders = () =>
+  axiosInstance.get(`${CLOSEDWORKORDER}`);
 export const updateWorkOrder = (ID, order) =>
   axiosInstance.put(`${WORKORDERLIST}/${ID}`, order);
 export const getWorkOrderDetails = (ID) => {
@@ -370,14 +457,193 @@ export const getWorkOrderDetails = (ID) => {
       throw error;
     });
 };
+export const updateWorkOrderEditViews = (ID, order) =>
+  axiosInstance.put(`${WORKORDERLISTVIEW}/${ID}`, order);
+export const getWorkOrderDetailsEditView = (ID) => {
+  return axiosInstance
+    .get(`${WORKORDERLISTVIEW}/${ID}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching list:", error);
+      throw error;
+    });
+};
+export const deleteWorkOrder = (Id) =>
+  axiosInstance.delete(`${WORKORDERLISTVIEW}/${Id}`);
 export const AddWorkOrder = (Workorder) => {
-  axiosInstance.post("/api/workorders", Workorder);
+  return axiosInstance.post("/api/workorders", Workorder);
 };
 
 //StoreInventory
-let StoreInventory = REST_API_BASE_URL + "/api/inventory/storeInventory" 
+let StoreInventory = REST_API_BASE_URL + "/api/inventory/storeInventory";
 
 export const storeInventoryList = () => axiosInstance.get(`${StoreInventory}`);
 
+//Supplier name
+let GetSupplierName = REST_API_BASE_URL + "/api/supplier/suppliernames";
+export const fetchSupplierName = () => axiosInstance.get(`${GetSupplierName}`);
 
+let GetAllPurchaseOrder =
+  REST_API_BASE_URL + "/api/purchase-orders/getAllPurchaseOrder";
+export const fetchAllPurchaseOrder = () =>
+  axiosInstance.get(`${GetAllPurchaseOrder}`);
+
+let FetchAllPartNO =
+  REST_API_BASE_URL + "/api/purchase-orders/getAllPartNoByPurchaseOrder";
+export const fetchAllPartNO = (poNumber) =>
+  axiosInstance.get(`${FetchAllPartNO}/${poNumber}`);
+
+let FetchAllPartNODetails =
+  REST_API_BASE_URL + "/api/purchase-orders/getDetailByPartNo";
+export const fetchAllPartNODetails = (PartNo, poNumber) =>
+  axiosInstance.get(`${FetchAllPartNODetails}/${PartNo}`, {
+    params: { poNumber },
+  });
+
+let FetchCurrentQuantityFromStore =
+  REST_API_BASE_URL + "/api/inspectionReport/getCurrentQuantityFromStore";
+export const fetchCurrentQuantityFromStore = (PartNo) =>
+  axiosInstance.get(`${FetchCurrentQuantityFromStore}/${PartNo}`);
+
+let FetchMrnNos = REST_API_BASE_URL + "/api/inspectionReport/mrnNo";
+export const fetchMrnNos = () => axiosInstance.get(`${FetchMrnNos}`);
+
+let API_URL = REST_API_BASE_URL + "/api/customers";
+export const getAllCustomers = () => axiosInstance.get(API_URL);
+export const getCustomerById = (id) => axiosInstance.get(`${API_URL}/${id}`);
+export const addCustomer = (customer) => axiosInstance.post(API_URL, customer);
+export const updateCustomer = (id, customer) =>
+  axiosInstance.put(`${API_URL}/${id}`, customer);
+export const deleteCustomer = (id) => axiosInstance.delete(`${API_URL}/${id}`);
+//Cstm_repair_product
+let Csmt_API_URL = REST_API_BASE_URL + "/api/repair-products";
+export const createRepairProduct = (product) =>
+  axiosInstance.post(Csmt_API_URL, product);
+export const getAllProducts = () => axiosInstance.get(Csmt_API_URL);
+export const getProductById = (id) =>
+  axiosInstance.get(`${Csmt_API_URL}/${id}`);
+export const updateRepairProduct = (id, product) =>
+  axiosInstance.put(`${Csmt_API_URL}/${id}`, product);
+export const deleteReapairProduct = (id) =>
+  axiosInstance.delete(`${Csmt_API_URL}/${id}`);
+
+let CustomerNames = REST_API_BASE_URL + "/api/customers/customernames";
+
+export const listAllCustomerNames = () => {
+  return axiosInstance
+    .get(`${CustomerNames}/`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching custmores names", error);
+      throw error;
+    });
+};
+
+let ALLProductNames = REST_API_BASE_URL + "/api/repair-products/allProducts";
+
+export const listAllPartNo = () => {
+  return axiosInstance
+    .get(`${ALLProductNames}/`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching custmores names", error);
+      throw error;
+    });
+};
+
+let PartDetailsFromPartNumber =
+  REST_API_BASE_URL + "/api/repair-products/prodName";
+
+export const GetpartDetailsFromProductSelect = (produnctName) => {
+  return axiosInstance
+    .get(`${PartDetailsFromPartNumber}/${produnctName}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching custmores names", error);
+      throw error;
+    });
+};
+
+let WORKORDERBYID = REST_API_BASE_URL + "/api/customerOrder/bySrNo";
+
+export const getWorkOrderById = (id) =>
+  axiosInstance.get(`${WORKORDERBYID}/${id}`);
+
+
+///////////////////////// Reports /////////////////////////
+let REPORT_API = REST_API_BASE_URL + "/api/reports";
+
+export const getReportEntities = () => {
+  return axiosInstance
+    .get(`${REPORT_API}/entities`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error fetching report entities:", error);
+      throw error;
+    });
+};
+
+export const getReportColumns = (entityName) => {
+  return axiosInstance
+    .get(`${REPORT_API}/entities/${entityName}/columns`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error fetching report columns:", error);
+      throw error;
+    });
+};
+
+export const getReportEntityInfo = (entityName) => {
+  return axiosInstance
+    .get(`${REPORT_API}/entities/${entityName}/info`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error fetching entity info:", error);
+      throw error;
+    });
+};
+
+export const generateReportPreview = (payload) => {
+  return axiosInstance
+    .post(`${REPORT_API}/generate`, payload)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error generating report preview:", error);
+      throw error;
+    });
+};
+
+export const downloadReportCSV = (payload) => {
+  return axiosInstance.post(
+    `${REPORT_API}/download/csv`,
+    payload,
+    { responseType: "blob" }
+  );
+};
+
+export const downloadReportExcel = (payload) => {
+  return axiosInstance.post(
+    `${REPORT_API}/download/excel`,
+    payload,
+    { responseType: "blob" }
+  );
+};
+
+export const getReportPreviewData = (entityName) => {
+  return axiosInstance
+    .get(`${REPORT_API}/entities/${entityName}/preview`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error fetching preview data:", error);
+      throw error;
+    });
+};
 

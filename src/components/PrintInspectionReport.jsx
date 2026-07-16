@@ -1,5 +1,5 @@
 // import { useEffect, useState } from "react";
-import styles from "./Checker/CheckerSupplierRegistration/PrintSupplier.module.css";
+import styles from "./Checker/CheckerSupplierRegistration/PrintReport.module.css";
 
 export const PrintInspectionReport = (dataMap) => {
   return (

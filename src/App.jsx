@@ -13,6 +13,7 @@ import EditMaterialRequisition from "./components/MaterialRequisition/EditMateri
 import EditSupplierTable from "./components/Checker/EditSupplier/EditSupplierTable";
 import EditSupplierfrom from "./components/Checker/EditSupplier/Editsupplierform";
 import EditStoreAcceptance from "./components/EditStoreAcceptance";
+import EditUpdateStore from "./components/EditUpdateStore";
 import EditPurchaseRequisition from "./components/PurchaseRequisition/EditPurchaseRequisition/EditPurchase.jsx";
 import PurchaseOrderForm from "./components/PurchaseOrder/PurchaseOrder.jsx";
 import AddPurchaseRequisition from "./components/PurchaseRequisition/AddpurchaseRequisition/Addpurchase.jsx";
@@ -29,6 +30,20 @@ import { useRoleMenus } from "./context/RoleMenuContext";
 import EditDispatchReport from "./components/EditDispatchReport.jsx";
 import AddWorkOrder from "./components/Workorder/AddWorkOrder/AddWorkOrder.jsx";
 import EditWorkorder from "./components/Workorder/editWorkOrder.jsx";
+import CustomerList from "./components/ViewCustomerRegList.jsx"; // Adjust path if needed
+import AddCustomer  from "./components/AddCustomerReg.jsx";
+import AddCustomerRepairProduct from "./components/AddRepairProduct.jsx";
+import CustomerRepairProductList from "./components/ViewRepairProducts.jsx";
+import EditCustomerRepairProduct from "./components/EditCustomerRepairProduct.jsx";
+import EditCustomer from "./components/EditRepairProduct.jsx";
+import NewPurchaseOrderForm from "./components/PurchaseOrder/PurchaseOrderForm.jsx";
+import UpdateStore from "./components/UpdateStoreTable.jsx";
+import GenerateInspectionReportTable from "./components/GenerateInspectionReportTable.jsx";
+import AddRequisition from "./components/MaterialRequisition/AddMaterialRequisition/AddMaterialRequisition.jsx";  
+import AddDispatchReport from "./components/AddDispatchReport.jsx";
+import CAForm from "./components/CAForm.jsx";
+import Reports from "./components/Reports.jsx";
+
 
 const App = () => {
   const token = sessionStorage.getItem('jwt_token') || '';
@@ -53,6 +68,7 @@ const App = () => {
         <Route path='/editUser' element={<EditUser />} />
         {/* <Route path="/editRole/:roleId" element={<EditRole />} /> */}
         <Route path="/editstoreAcceptance" element={<EditStoreAcceptance />} />
+        <Route path="/editUpdateStore/:id" element={<EditUpdateStore />} />
         <Route path="/editmaterial" element={<EditMaterialNote />} />
         <Route path="/editsupplier" element={<EditSupplierTable />} />
         <Route path="/editsupplierform" element={<EditSupplierfrom />} />
@@ -74,6 +90,21 @@ const App = () => {
                       {/* <Route path="/workOrderTable" element={<WorkOrderTable />} /> */}
                       <Route path="/EditWorkorder" element={<EditWorkorder />} />
         {/* <Route path="/ViewStoreAcc" element={<ViewSupplierRegis />} /> */}
+         <Route path="/viewCustomers" element={<CustomerList />} />
+            <Route path="/addCustomers" element={<AddCustomer />} />
+            <Route path = "/editCustomer/:id" element={<EditCustomer/>}/>
+            <Route path = "/viewCustomer/:id" element={<AddCustomer/>}/>
+            <Route path="/addCustomersRepairProduct" element={<AddCustomerRepairProduct />} />
+            <Route path="/viewCustomersRepairProduct" element={<CustomerRepairProductList />} />
+            <Route path = "/editCustomersRepairProduct/:id" element={<EditCustomerRepairProduct/>}/>
+            <Route path = "/purchaseOrderForm" element={<NewPurchaseOrderForm/>}/>
+
+            <Route path = "/updatestore" element={<UpdateStore/>}/>
+            <Route path = "/generateInspectionReport" element={<GenerateInspectionReportTable/>}/>
+            <Route path = "/AddMaterialRequisition" element={<AddRequisition/>}/>
+            <Route path = "/AddDispatchReport" element={<AddDispatchReport/>}/>
+            <Route path = "/generateCAForm" element={<CAForm/>}/>
+            <Route path = "/Reports" element={<Reports/>}/>
 
     {menuItems.flatMap((menu) =>
                 menu.subMenus.map((sub) => {

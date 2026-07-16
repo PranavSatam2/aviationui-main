@@ -3,15 +3,16 @@ import axiosInstance from "../axiosConfig";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import { useNavigate } from "react-router-dom";
+import styles from "./AddRole.module.css";
 
-
-const AddRole= () => {
-  const [roleName, setRoleName] = useState('');        // Role Name
-  const [roleCode, setRoleCode] = useState('');        // Role Code
-  const [roleDescription, setRoleDescription] = useState('');  // Role Description
-  const [error, setError] = useState('');              // Error message
-  const [success, setSuccess] = useState('');          // Success message
+const AddRole = () => {
+  const navigate = useNavigate();
+  const [roleName, setRoleName] = useState('');
+  const [roleCode, setRoleCode] = useState('');
+  const [roleDescription, setRoleDescription] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   // Handle input changes for each field
   const handleInputChange = (e, setter) => {
@@ -28,10 +29,10 @@ const AddRole= () => {
       return;
     }
     const token = sessionStorage.getItem("jwt_token");
-  if (!token) {
-    setError('You need to be logged in to change your password');
-    return;
-  }
+    if (!token) {
+      setError('You need to be logged in to change your password');
+      return;
+    }
 
     try {
       // Send the new role data to the backend
@@ -39,7 +40,7 @@ const AddRole= () => {
         roleName,
         roleCode,
         roleDescription,
-       });
+      });
 
       // On successful role creation, show success message and clear form
       setSuccess('Role created successfully!');
@@ -55,83 +56,115 @@ const AddRole= () => {
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-        <CustomBreadcrumb breadcrumbsLabel="Add Role"  isBack={true}/>
-
-        {/* content Begin */}
-        {/* <div className="col-md-6">
-          <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-3">
-            <h5 className="h5 mx-4 mb-0 text-gray-800">Add User</h5>
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button
+              className={styles.backButton}
+              onClick={() => navigate(-1)}
+            >
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Add Role</span>
+            </div>
           </div>
-        </div> */}
-        <div className="my-2 p-2">
-          <div className="container-fluid">
-            <div className="row mx-1 card border border-dark shadow-lg py-2" style={{height : '397px'}}>
-              <div className="col-md-12">
-                <form onSubmit={handleSubmit} style={{height : '100%'}}>
-                  <div className="col-md-12 p-2 d-flex">
-                    <div className="col-md-6 p-2 d-flex">
 
-          <label className="col-md-4 mt-1" htmlFor="roleName">Role Name</label>
-          <input
-          className="form-control w-100"
-            type="text"
-            id="roleName"
-            value={roleName}
-            onChange={(e) => handleInputChange(e, setRoleName)}
-            placeholder="Enter role name"
-          />
-        </div>
+          {/* Form Container */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              <div className={styles.cardBody}>
+                <form onSubmit={handleSubmit}>
+                  {/* Role Information Section */}
+                  <div className={styles.sectionTitle}>
+                    <i className="fa fa-user-shield"></i>
+                    <span>Role Information</span>
+                  </div>
 
-        <div className="col-md-6 p-1 d-flex">
-          <label className="col-md-4 mt-1" htmlFor="roleCode">Role Code</label>
-          <input
-          className="form-control w-100"
-            type="text"
-            id="roleCode"
-            value={roleCode}
-            onChange={(e) => handleInputChange(e, setRoleCode)}
-            placeholder="Enter role code"
-          />
-        </div>
-        </div>
-        <div className="col-md-12 d-flex">
-        <div className="col-md-6 p-1 d-flex">
-          <label className="col-md-4 mt-1" htmlFor="roleDescription">Role Description</label>
-          <textarea
-          className="form-control w-100"
-            id="roleDescription"
-            value={roleDescription}
-            onChange={(e) => handleInputChange(e, setRoleDescription)}
-            placeholder="Enter role description"
-          />
-        </div>
-        </div>
-        {/* Show error message if any */}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-
-        {/* Show success message after a successful submission */}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
-
-        <div className="col-md-12 text-right mt-1">
-                      <div className="text-end m-0">
-                    <button type="submit" className="btn btn-primary">Add Role</button>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label} htmlFor="roleName">
+                        Role Name <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        className={styles.input}
+                        type="text"
+                        id="roleName"
+                        value={roleName}
+                        onChange={(e) => handleInputChange(e, setRoleName)}
+                        placeholder="Enter role name"
+                        required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label} htmlFor="roleCode">
+                        Role Code <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        className={styles.input}
+                        type="text"
+                        id="roleCode"
+                        value={roleCode}
+                        onChange={(e) => handleInputChange(e, setRoleCode)}
+                        placeholder="Enter role code"
+                        required
+                      />
                     </div>
                   </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label} htmlFor="roleDescription">
+                        Role Description <span className={styles.required}>*</span>
+                      </label>
+                      <textarea
+                        className={styles.textarea}
+                        id="roleDescription"
+                        value={roleDescription}
+                        onChange={(e) => handleInputChange(e, setRoleDescription)}
+                        placeholder="Enter role description"
+                        rows="4"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Show error message if any */}
+                  {error && (
+                    <div className={styles.errorMessage}>
+                      <i className="fa fa-exclamation-circle"></i>
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  {/* Show success message after a successful submission */}
+                  {success && (
+                    <div className={styles.successMessage}>
+                      <i className="fa fa-check-circle"></i>
+                      <span>{success}</span>
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <div className={styles.formActions}>
+                    <button type="submit" className={styles.btnSubmit}>
+                      <i className="fa fa-plus-circle"></i>
+                      <span>Add Role</span>
+                    </button>
+                  </div>
                 </form>
-                </div>
               </div>
             </div>
           </div>
         </div>
-      </div >
-      
-      <Footer />
-    </div >
+        <Footer />
+      </div>
+    </div>
   );
 };
 

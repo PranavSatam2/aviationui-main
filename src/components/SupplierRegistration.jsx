@@ -1,25 +1,602 @@
-import React, { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
+// import Header from "./Header";
+// import Footer from "./Footer";
+// import Sidebar from "./Sidebar";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import GeneralTab from "./tabs/supplier_registration/GeneralTab";
+// import SupplierAnalysisTab from "./tabs/supplier_registration/SupplierAnalysisTab";
+// import QualityProcessTab from "./tabs/supplier_registration/QualityProcessTab";
+// import IncomingInspectionTab from "./tabs/supplier_registration/IncomingInspectionTab";
+// import DocAndProcControl from "./tabs/supplier_registration/DocAndProcControl";
+// import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
+// import { createSupplier } from "../services/db_manager";
+// import { toast } from "react-toastify";
+// import styles from "./SupplierRegistration.module.css";
+
+// // ─── Fields that are NEVER required ───────────────────────────────────────────
+// const OPTIONAL_FIELDS = [
+//   "faxNum",
+//   "workYear",
+//   "numEmp",
+//   "numOpeShift",
+//   "carDgcaApproval",
+//   "isoCertificate",
+//   "isoRegistrationPlans",
+//   "qualityManagerName",
+//   "qualityManagerEmailId",
+//   "qualityManagerPhoneNumber",
+//   "qualityManagerCountryCode",
+//   "userName",
+//   "userId",
+//   "userAction",
+//   "userRole",
+// ];
+
+// // ─── Required fields mapped to each tab index ─────────────────────────────────
+// const TAB_REQUIRED_FIELDS = {
+//   0: [
+//     "supplierName",
+//     "vendorTypes",
+//     "paymentTerms",
+//     "countryCode",
+//     "phoneNumber",
+//     "email",
+//     "address",
+//     "saleRepresentativeName",
+//     "saleRepresentativeEmailId",
+//     "saleRepresentativeCountryCode",
+//     "saleRepresentativePhoneNumber",
+//   ],
+//   1: [
+//     "coreProcess",
+//     "isoRegistered",
+//     "isoStandard",
+//     "quaManual",
+//     "turnOver",
+//   ],
+//   2: [
+//     "independenceManuf",
+//     "documentedOperative",
+//     "documentedProcedure",
+//     "productShipment",
+//   ],
+//   3: [
+//     "processDocumented",
+//     "samplingIncomingInsp",
+//     "receivingInspectionResultsOnFile",
+//     "identificationMaintained",
+//     "sepInsMaterial",
+//     "nonConMaterial",
+//     "affectCusReq",
+//   ],
+//   4: [
+//     "writtenWorkInstructionsAvaibleInStation",
+//     "finalInspectionEvidence",
+//     "statisMethod",
+//     "suppliedDocument",
+//     "includeMethod",
+//     "qualityCapabilities",
+//     "approvedSupplierList",
+//     "marketPrice",
+//     "certifiedTestReports",
+//     "supplierOnTimeDelivery",
+//   ],
+//   5: [
+//     "equipCalibrated",
+//     "recalibration",
+//     "scopeOfWork",
+//     "safetyProgram",
+//     "houseKeeping",
+//   ],
+// };
+
+// // ─── Validate one specific tab, return its error map ─────────────────────────
+// function getErrorsForTab(tabIndex, dataMap) {
+//   const fields = TAB_REQUIRED_FIELDS[tabIndex] || [];
+//   const tabErrors = {};
+//   fields.forEach((key) => {
+//     if (!dataMap[key] || dataMap[key].toString().trim() === "") {
+//       tabErrors[key] = "This field is required.";
+//     }
+//   });
+//   return tabErrors;
+// }
+
+// // ─── Validate ALL tabs, return combined error map ────────────────────────────
+// function getAllErrors(dataMap) {
+//   let allErrors = {};
+//   Object.keys(TAB_REQUIRED_FIELDS).forEach((tabIndex) => {
+//     const tabErrors = getErrorsForTab(Number(tabIndex), dataMap);
+//     allErrors = { ...allErrors, ...tabErrors };
+//   });
+//   return allErrors;
+// }
+
+// const SupplierRegistration = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { supplierId, supplierData } = location.state || {};
+
+//   const [activeTab, setActiveTab] = useState(0);
+//   const [errors, setErrors] = useState({});
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+
+//   const tabs = [
+//     { id: 0, name: "General", icon: "fa-building" },
+//     { id: 1, name: "Quality Analysis", icon: "fa-chart-line" },
+//     { id: 2, name: "Quality Process", icon: "fa-cogs" },
+//     { id: 3, name: "Incoming Inspection", icon: "fa-clipboard-check" },
+//     {
+//       id: 4,
+//       name: "Process / Document / Procurement Control",
+//       icon: "fa-file-alt",
+//     },
+//     { id: 5, name: "Measuring Equipment & Other", icon: "fa-tools" },
+//   ];
+
+//   const formVariables = {
+//     supplierName: "",
+//     vendorTypes: "",
+//     countryCode: "",
+//     qualityManagerCountryCode: "",
+//     saleRepresentativeCountryCode: "",
+//     phoneNumber: "",
+//     faxNum: "",
+//     email: "",
+//     address: "",
+//     qualityManagerName: "",
+//     qualityManagerPhoneNumber: "",
+//     qualityManagerEmailId: "",
+//     saleRepresentativeName: "",
+//     saleRepresentativeEmailId: "",
+//     saleRepresentativePhoneNumber: "",
+//     coreProcess: "",
+//     workYear: "",
+//     isoRegistered: "",
+//     isoStandard: "",
+//     carDgcaApproval: "",
+//     isoRegistrationPlans: "",
+//     isoCertificate: "",
+//     numEmp: "",
+//     numOpeShift: "",
+//     quaManual: "",
+//     turnOver: "",
+//     paymentTerms: "",
+//     independenceManuf: "",
+//     documentedOperative: "",
+//     documentedProcedure: "",
+//     productShipment: "",
+//     processDocumented: "",
+//     samplingIncomingInsp: "",
+//     receivingInspectionResultsOnFile: "",
+//     identificationMaintained: "",
+//     sepInsMaterial: "",
+//     nonConMaterial: "",
+//     affectCusReq: "",
+//     writtenWorkInstructionsAvaibleInStation: "",
+//     finalInspectionEvidence: "",
+//     statisMethod: "",
+//     suppliedDocument: "",
+//     includeMethod: "",
+//     qualityCapabilities: "",
+//     approvedSupplierList: "",
+//     marketPrice: "",
+//     certifiedTestReports: "",
+//     supplierOnTimeDelivery: "",
+//     equipCalibrated: "",
+//     recalibration: "",
+//     scopeOfWork: "",
+//     safetyProgram: "",
+//     houseKeeping: "",
+//     userName: sessionStorage.getItem("username") || "",
+//     userId: sessionStorage.getItem("userId") || "",
+//     userAction: "1",
+//     userRole: "M",
+//   };
+
+//   const [dataMap, setDataMap] = useState(formVariables);
+
+//   useEffect(() => {
+//     if (supplierData && supplierId) {
+//       setDataMap((prevData) => ({
+//         ...prevData,
+//         ...supplierData,
+//       }));
+//     }
+//   }, [supplierData, supplierId]);
+
+//   // ─── Field change: update value + immediately show/clear its own error ────────
+//   const handleChange = (event) => {
+//     const { name, value } = event.target;
+//     setDataMap((prev) => ({ ...prev, [name]: value }));
+
+//     // Don't show errors for optional fields
+//     if (OPTIONAL_FIELDS.includes(name)) return;
+
+//     setErrors((prev) => ({
+//       ...prev,
+//       [name]:
+//         !value || value.toString().trim() === ""
+//           ? "This field is required."
+//           : "",
+//     }));
+//   };
+
+//   const validateDataType = (event, dataType) => {
+//     let value = event.target.value;
+//     if (dataType === "A")        value = value.replace(/[^a-zA-Z0-9 ]/g, "");
+//     else if (dataType === "N")   value = value.replace(/[^0-9]/g, "");
+//     else if (dataType === "ANS") value = value.replace(/[^a-zA-Z0-9@.]/g, "");
+//     else if (dataType === "ANS-")value = value.replace(/[^a-zA-Z0-9\- ]/g, "");
+//     event.target.value = value;
+//     if (value.trim().length > 0) {
+//       event.target.classList.add("is-valid");
+//       event.target.classList.remove("is-invalid");
+//     } else {
+//       event.target.classList.remove("is-valid");
+//       event.target.classList.add("is-invalid");
+//     }
+//   };
+
+//   function validateLen(event, minLen, maxLen) {
+//     let value = event.target.value.substring(0, maxLen);
+//     event.target.value = value;
+//     const len = value.length;
+//     if (len === 0) {
+//       event.target.classList.remove("is-valid");
+//       event.target.classList.add("is-invalid");
+//       return;
+//     }
+//     if (len > maxLen || len < minLen) {
+//       event.target.classList.remove("is-valid");
+//       event.target.classList.add("is-invalid");
+//     } else {
+//       event.target.classList.add("is-valid");
+//       event.target.classList.remove("is-invalid");
+//     }
+//   }
+
+//   // ─── Next button: block navigation if current tab has unfilled required fields
+//   const handleNextTab = () => {
+//     if (activeTab >= tabs.length - 1) return;
+
+//     const tabErrors = getErrorsForTab(activeTab, dataMap);
+//     if (Object.keys(tabErrors).length > 0) {
+//       // Replace errors with ONLY current tab errors — don't show other tabs
+//       setErrors(tabErrors);
+//       toast.error("Please fill all required fields before proceeding.");
+//       return;
+//     }
+
+//     // Clear all errors when moving forward successfully
+//     setErrors({});
+//     setActiveTab(activeTab + 1);
+//   };
+
+//   const handlePrevTab = () => {
+//     if (activeTab > 0) setActiveTab(activeTab - 1);
+//   };
+
+//   // ─── Tab header click: validate current tab only, then switch ───────────────
+//   const handleTabClick = (targetIndex) => {
+//     if (targetIndex === activeTab) return;
+
+//     // Only validate the tab user is LEAVING — show only those errors
+//     const leavingErrors = getErrorsForTab(activeTab, dataMap);
+
+//     // Set ONLY the leaving tab's errors (replace all previous errors)
+//     setErrors(leavingErrors);
+
+//     setActiveTab(targetIndex);
+//   };
+
+//   // ─── Submit: validate every tab before posting ───────────────────────────────
+//   async function actionPerformed(action) {
+//     if (action === "clear") {
+//       setDataMap(formVariables);
+//       setErrors({});
+//       toast.info("Form cleared");
+//       return;
+//     }
+
+//     const allErrors = getAllErrors(dataMap);
+//     if (Object.keys(allErrors).length > 0) {
+//       setErrors(allErrors);
+//       toast.error("Please fill all required fields");
+//       return;
+//     }
+
+//     setIsSubmitting(true);
+//     setErrors({});
+
+//     try {
+//       const response = await createSupplier(dataMap);
+//       if (response) {
+//         toast.success("Supplier Added successfully");
+//         setTimeout(() => {
+//           window.location.reload();
+//         }, 1500);
+//       }
+//     } catch (error) {
+//       toast.error(
+//         error?.response?.data?.message || "Failed to create supplier"
+//       );
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   }
+
+//   const renderTabContent = () => {
+//     const tabProps = {
+//       dataMap,
+//       handleChange,
+//       validateDataType,
+//       validateLen,
+//       errors,
+//     };
+
+//     switch (activeTab) {
+//       case 0: return <GeneralTab {...tabProps} />;
+//       case 1: return <SupplierAnalysisTab {...tabProps} />;
+//       case 2: return <QualityProcessTab {...tabProps} />;
+//       case 3: return <IncomingInspectionTab {...tabProps} />;
+//       case 4: return <DocAndProcControl {...tabProps} />;
+//       case 5: return <MaterialAndOther {...tabProps} actionPerformed={actionPerformed} />;
+//       default: return null;
+//     }
+//   };
+
+//   return (
+//     <div className={styles.wrapper}>
+//       <Sidebar />
+//       <div className={styles.content}>
+//         <Header />
+//         <div className={styles.mainContent}>
+//           {/* Breadcrumb */}
+//           <div className={styles.breadcrumbSection}>
+//             <button className={styles.backButton} onClick={() => navigate(-1)}>
+//               <i className="fa fa-arrow-left"></i>
+//               <span>Back</span>
+//             </button>
+//             <div className={styles.breadcrumbText}>
+//               <span className={styles.breadcrumbLabel}>
+//                 Supplier Registration
+//               </span>
+//             </div>
+//           </div>
+
+//           {/* Main Card */}
+//           <div className={styles.formContainer}>
+//             <div className={styles.card}>
+//               {/* Tab Navigation */}
+//               <div className={styles.tabNavigation}>
+//                 {tabs.map((tab, index) => (
+//                   <button
+//                     key={tab.id}
+//                     className={`${styles.tabButton} ${
+//                       activeTab === index ? styles.activeTab : ""
+//                     }`}
+//                     onClick={() => handleTabClick(index)}
+//                   >
+//                     <i className={`fa ${tab.icon}`}></i>
+//                     <span className={styles.tabName}>{tab.name}</span>
+//                     {activeTab === index && (
+//                       <div className={styles.activeIndicator}></div>
+//                     )}
+//                   </button>
+//                 ))}
+//               </div>
+
+//               {/* Tab Content */}
+//               <div className={styles.tabContent}>{renderTabContent()}</div>
+
+//               {/* Action Buttons */}
+//               <div className={styles.formActions}>
+//                 <button
+//                   type="button"
+//                   className={styles.btnClear}
+//                   onClick={() => actionPerformed("clear")}
+//                   disabled={isSubmitting}
+//                 >
+//                   <i className="fa fa-eraser"></i>
+//                   <span>Clear</span>
+//                 </button>
+
+//                 <div className={styles.navigationButtons}>
+//                   <button
+//                     type="button"
+//                     className={styles.btnSecondary}
+//                     onClick={handlePrevTab}
+//                     disabled={activeTab === 0 || isSubmitting}
+//                   >
+//                     <i className="fa fa-chevron-left"></i>
+//                     <span>Previous</span>
+//                   </button>
+
+//                   {activeTab < tabs.length - 1 ? (
+//                     <button
+//                       type="button"
+//                       className={styles.btnPrimary}
+//                       onClick={handleNextTab}
+//                       disabled={isSubmitting}
+//                     >
+//                       <span>Next</span>
+//                       <i className="fa fa-chevron-right"></i>
+//                     </button>
+//                   ) : (
+//                     <button
+//                       type="button"
+//                       className={styles.btnSubmit}
+//                       onClick={() => actionPerformed("submit")}
+//                       disabled={isSubmitting}
+//                     >
+//                       {isSubmitting ? (
+//                         <>
+//                           <span className={styles.spinner}></span>
+//                           <span>Submitting...</span>
+//                         </>
+//                       ) : (
+//                         <>
+//                           <i className="fa fa-check"></i>
+//                           <span>Submit</span>
+//                         </>
+//                       )}
+//                     </button>
+//                   )}
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//         <Footer />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default SupplierRegistration;
+import { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import GeneralTab from "./tabs/supplier_registration/GeneralTab";
 import SupplierAnalysisTab from "./tabs/supplier_registration/SupplierAnalysisTab";
 import QualityProcessTab from "./tabs/supplier_registration/QualityProcessTab";
 import IncomingInspectionTab from "./tabs/supplier_registration/IncomingInspectionTab";
 import DocAndProcControl from "./tabs/supplier_registration/DocAndProcControl";
 import MaterialAndOther from "./tabs/supplier_registration/MaterialAndOther";
-import { createSupplier, updateSupplier } from "../services/db_manager";
-import { data, useLocation } from "react-router-dom";
+import { createSupplier } from "../services/db_manager";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import styles from "./SupplierRegistration.module.css";
+
+// ─── Fields that are NEVER required ───────────────────────────────────────────
+const OPTIONAL_FIELDS = [
+  "faxNum",
+  "workYear",
+  "numEmp",
+  "numOpeShift",
+  "carDgcaApproval",
+  "isoCertificate",
+  "isoRegistrationPlans",
+  "qualityManagerName",
+  "qualityManagerEmailId",
+  "qualityManagerPhoneNumber",
+  "qualityManagerCountryCode",
+  "userName",
+  "userId",
+  "userAction",
+  "userRole",
+];
+
+// ─── Required fields mapped to each tab index ─────────────────────────────────
+const TAB_REQUIRED_FIELDS = {
+  0: [
+    "supplierName",
+    "vendorTypes",
+    "paymentTerms",
+    "countryCode",
+    "phoneNumber",
+    "email",
+    "address",
+    "saleRepresentativeName",
+    "saleRepresentativeEmailId",
+    "saleRepresentativeCountryCode",
+    "saleRepresentativePhoneNumber",
+  ],
+  1: [
+    "coreProcess",
+    "isoRegistered",
+    "isoStandard",
+    "quaManual",
+    "turnOver",
+  ],
+  2: [
+    "independenceManuf",
+    "documentedOperative",
+    "documentedProcedure",
+    "productShipment",
+  ],
+  3: [
+    "processDocumented",
+    "samplingIncomingInsp",
+    "receivingInspectionResultsOnFile",
+    "identificationMaintained",
+    "sepInsMaterial",
+    "nonConMaterial",
+    "affectCusReq",
+  ],
+  4: [
+    "writtenWorkInstructionsAvaibleInStation",
+    "finalInspectionEvidence",
+    "statisMethod",
+    "suppliedDocument",
+    "includeMethod",
+    "qualityCapabilities",
+    "approvedSupplierList",
+    "marketPrice",
+    "certifiedTestReports",
+    "supplierOnTimeDelivery",
+  ],
+  5: [
+    "equipCalibrated",
+    "recalibration",
+    "scopeOfWork",
+    "safetyProgram",
+    "houseKeeping",
+  ],
+};
+
+// ─── Validate one specific tab, return its error map ─────────────────────────
+function getErrorsForTab(tabIndex, dataMap) {
+  const fields = TAB_REQUIRED_FIELDS[tabIndex] || [];
+  const tabErrors = {};
+  fields.forEach((key) => {
+    if (!dataMap[key] || dataMap[key].toString().trim() === "") {
+      tabErrors[key] = "This field is required.";
+    }
+  });
+  return tabErrors;
+}
+
+// ─── Validate ALL tabs, return combined error map ────────────────────────────
+function getAllErrors(dataMap) {
+  let allErrors = {};
+  Object.keys(TAB_REQUIRED_FIELDS).forEach((tabIndex) => {
+    const tabErrors = getErrorsForTab(Number(tabIndex), dataMap);
+    allErrors = { ...allErrors, ...tabErrors };
+  });
+  return allErrors;
+}
+
 const SupplierRegistration = () => {
-  // Variables
   const navigate = useNavigate();
-  const gmailValidator = !/^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-  let formVariavles = {
+  const location = useLocation();
+  const { supplierId, supplierData } = location.state || {};
+
+  const [activeTab, setActiveTab] = useState(0);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const tabs = [
+    { id: 0, name: "General", icon: "fa-building" },
+    { id: 1, name: "Quality Analysis", icon: "fa-chart-line" },
+    { id: 2, name: "Quality Process", icon: "fa-cogs" },
+    { id: 3, name: "Incoming Inspection", icon: "fa-clipboard-check" },
+    {
+      id: 4,
+      name: "Process / Document / Procurement Control",
+      icon: "fa-file-alt",
+    },
+    { id: 5, name: "Measuring Equipment & Other", icon: "fa-tools" },
+  ];
+
+  const formVariables = {
     supplierName: "",
-    // formId               : '',
+    vendorTypes: "",
+    countryCode: "",
+    qualityManagerCountryCode: "",
+    saleRepresentativeCountryCode: "",
     phoneNumber: "",
     faxNum: "",
     email: "",
@@ -32,34 +609,29 @@ const SupplierRegistration = () => {
     saleRepresentativePhoneNumber: "",
     coreProcess: "",
     workYear: "",
-    areYouIsoRegistered: "",
     isoRegistered: "",
-    //ontKnow              : '',
     isoStandard: "",
     carDgcaApproval: "",
     isoRegistrationPlans: "",
-    //registerCar           : '',
+    isoCertificate: "",
     numEmp: "",
     numOpeShift: "",
     quaManual: "",
     turnOver: "",
+    paymentTerms: "",
     independenceManuf: "",
     documentedOperative: "",
     documentedProcedure: "",
     productShipment: "",
     processDocumented: "",
     samplingIncomingInsp: "",
-    receivingInspectionResultsOnFile: "", //ObjectiveEvidence     : '',
-    //arApproval           : '',
+    receivingInspectionResultsOnFile: "",
     identificationMaintained: "",
     sepInsMaterial: "",
     nonConMaterial: "",
     affectCusReq: "",
     writtenWorkInstructionsAvaibleInStation: "",
-    //nstructionStation    : '',
     finalInspectionEvidence: "",
-    //documentedOperative   : '',
-    //inalInsAcc           : '',
     statisMethod: "",
     suppliedDocument: "",
     includeMethod: "",
@@ -67,226 +639,72 @@ const SupplierRegistration = () => {
     approvedSupplierList: "",
     marketPrice: "",
     certifiedTestReports: "",
-    //  certifiedReport       : '',
     supplierOnTimeDelivery: "",
-    // supplierCapable       : '',
     equipCalibrated: "",
     recalibration: "",
     scopeOfWork: "",
     safetyProgram: "",
     houseKeeping: "",
-    userName: "Hrishikesh",
-    userId: "10",
+    userName: sessionStorage.getItem("username") || "",
+    userId: sessionStorage.getItem("userId") || "",
     userAction: "1",
     userRole: "M",
   };
 
-  // ######################################### HOOK #######################################
-
-  const [dataMap, setDataMap] = useState(formVariavles);
-  const [isDisabled, setIsDisabled] = useState(true);
-  const [errors, setErrors] = useState({});
-
-  const location = useLocation();
-  const { supplierId, supplierData } = location.state || {};
-  const [invalidFeedback, setInvalidFeedback] = useState("d-none text-danger ");
-  const [invalidFeedbackMsg, setInvalidFeedbackMsg] = useState("");
-  const [isActiveTab, setIsActiveTab] = useState(false);
+  const [dataMap, setDataMap] = useState(formVariables);
 
   useEffect(() => {
-    const checkActiveTab = () => {
-      const activeTab = document.getElementById("Proc&Other");
-      setIsActiveTab(
-        activeTab?.classList.contains("show") &&
-          activeTab?.classList.contains("active")
-      );
-    };
-
-    checkActiveTab();
-    const interval = setInterval(checkActiveTab, 100);
-
-    return () => clearInterval(interval);
-  }, []);
-  let msg = {
-    invalidFld: "*Please enter all mandatory fields",
-    dataSaved: "Data saved successfully",
-  };
-  function handleNextTab() {
-    const activeTab = document.querySelector(".nav-link.active");
-    const nextTab =
-      activeTab.parentElement.nextElementSibling?.querySelector("a");
-
-    if (nextTab) {
-      nextTab.click();
-    }
-  }
-  function handlePrevTab() {
-    const activeTab = document.querySelector(".nav-link.active");
-    const prevTab =
-      activeTab.parentElement.previousElementSibling?.querySelector("a");
-
-    if (prevTab) {
-      prevTab.click();
-    }
-  }
-  // ################################## HOOK-FUNCTION ###########################
-
-  // This function is used to save Form data
-  async function actionPerformed(action) {
-    if (action === "clear") {
-      let keys = Object.keys(formVariavles);
-      keys.forEach((key) => {
-        formVariavles[key] = "";
-      });
-      setDataMap(formVariavles);
-      setErrors({});
-      return;
-    }
-
-    const missingFields = getMissingFields();
-    if (Object.keys(missingFields).length > 0) {
-      setErrors(missingFields);
-      // return; // Stop further execution if errors are present
-    }
-
-    setErrors({});
-
-    if (supplierId === "" || supplierId === undefined) {
-      setDataMap(formVariavles);
-      let response = await createSupplier(dataMap);
-
-      if (response) {
-        setDataMap(formVariavles);
-        window.location.reload();
-      }
-    } else {
-      let response = await updateSupplier(supplierId, dataMap);
-      if (response) {
-        setDataMap(response.data);
-        setInvalidFeedbackMsg(msg.dataSaved);
-        setInvalidFeedback("text-success col-md-4");
-        navigate("/ViewSupplierRegis");
-        toast.success("Supplier updated successfully");
-      }
-    }
-  }
-
-  function getMissingFields() {
-    let errorMessages = {};
-    let keys = Object.keys(dataMap);
-
-    for (let key of keys) {
-      if (
-        !dataMap[key] &&
-        !["faxNum", "workYear", "numEmp", "numOpeShift"].includes(key)
-      ) {
-        errorMessages[key] = "This field is required.";
-      }
-    }
-
-    return errorMessages;
-  }
-
-  // ################################### FUNCTIONS ###############################
-
-  useEffect(() => {
-    // Check if supplierData and supplierId are available
     if (supplierData && supplierId) {
       setDataMap((prevData) => ({
         ...prevData,
-        ...supplierData, // Merge supplierData into dataMap
+        ...supplierData,
       }));
     }
   }, [supplierData, supplierId]);
 
-  // This functiom handle all change event's
+  // ─── Field change: update value + immediately show/clear its own error ────────
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setDataMap((dataMap) => ({
-      ...dataMap,
-      [name]: value,
-    }));
-    setErrors((prevErrors) => ({
-      ...prevErrors,
+    setDataMap((prev) => ({ ...prev, [name]: value }));
+
+    // Don't show errors for optional fields
+    if (OPTIONAL_FIELDS.includes(name)) return;
+
+    setErrors((prev) => ({
+      ...prev,
       [name]:
-        value.trim() === "" &&
-        !["faxNum", "workYear", "numEmp", "numOpeShift"].includes(name)
+        !value || value.toString().trim() === ""
           ? "This field is required."
           : "",
     }));
   };
 
-  // This function validate all mandatory fld are entered
-  function isAllFldValidated() {
-    let flds = "";
-    let keys = Object.keys(dataMap);
-    let isAllFldMandatory = true;
-
-    for (let index = 0; index < keys.length; index++) {
-      let key = keys[index];
-      let value = dataMap[key];
-
-      if (value === "") {
-        if (
-          key == "faxNum" ||
-          key == "workYear" ||
-          key == "dontKnow" ||
-          key == "registerCar" ||
-          key == "numEmp" ||
-          key == "numOpeShift"
-        ) {
-          continue;
-        } else {
-          flds += `${key},`;
-          isAllFldMandatory = false;
-        }
-      }
-    }
-
-    let textFlds = document.querySelectorAll(".is-invalid");
-
-    if (textFlds.length >= 1) {
-      isAllFldMandatory = false;
-    }
-
-    if (!isAllFldMandatory) {
-      setInvalidFeedback("text-danger col-md-4");
-      setInvalidFeedbackMsg(msg.invalidFld);
-    } else {
-      setInvalidFeedback("d-none text-danger col-md-4");
-    }
-
-    return isAllFldMandatory;
-  }
-
-  // ########################### VALIDATION ################################
-
-  // This function validate the dataType
   const validateDataType = (event, dataType) => {
     let value = event.target.value;
-    if (dataType === "A") {
-      value = value.replace(/[^a-zA-Z0-9 ]/g, "");
-      event.target.classList.add("is-valid");
-    } else if (dataType === "N") {
-      value = value.replace(/[^0-9]/g, "");
-      event.target.classList.add("is-valid");
-    } else if (dataType === "ANS") {
-      value = value.replace(/[^a-zA-Z0-9,. ]/g, "");
-      event.target.classList.add("is-valid");
-    }
-
+    if (dataType === "A")        value = value.replace(/[^a-zA-Z0-9 ]/g, "");
+    else if (dataType === "N")   value = value.replace(/[^0-9]/g, "");
+    else if (dataType === "ANS") value = value.replace(/[^a-zA-Z0-9@.]/g, "");
+    else if (dataType === "ANS-")value = value.replace(/[^a-zA-Z0-9\- ]/g, "");
     event.target.value = value;
+    if (value.trim().length > 0) {
+      event.target.classList.add("is-valid");
+      event.target.classList.remove("is-invalid");
+    } else {
+      event.target.classList.remove("is-valid");
+      event.target.classList.add("is-invalid");
+    }
   };
 
-  // This function validate the length of field
   function validateLen(event, minLen, maxLen) {
     let value = event.target.value.substring(0, maxLen);
     event.target.value = value;
-    let elementLen = value.length;
-    if (elementLen > maxLen) {
+    const len = value.length;
+    if (len === 0) {
       event.target.classList.remove("is-valid");
       event.target.classList.add("is-invalid");
-    } else if (elementLen < minLen) {
+      return;
+    }
+    if (len > maxLen || len < minLen) {
       event.target.classList.remove("is-valid");
       event.target.classList.add("is-invalid");
     } else {
@@ -294,256 +712,205 @@ const SupplierRegistration = () => {
       event.target.classList.remove("is-invalid");
     }
   }
-  useEffect(() => {
-    const allEmpty = Object.values(dataMap).every((value) => value === "");
-    setIsDisabled(allEmpty);
-  }, [dataMap]);
-  // ############################### RETURN-COMPONENT #############################
+
+  // ─── Next button: block navigation if current tab has unfilled required fields
+  const handleNextTab = () => {
+    if (activeTab >= tabs.length - 1) return;
+
+    const tabErrors = getErrorsForTab(activeTab, dataMap);
+    if (Object.keys(tabErrors).length > 0) {
+      // Replace errors with ONLY current tab errors — don't show other tabs
+      setErrors(tabErrors);
+      toast.error("Please fill all required fields before proceeding.");
+      return;
+    }
+
+    // Clear all errors when moving forward successfully
+    setErrors({});
+    setActiveTab(activeTab + 1);
+  };
+
+  const handlePrevTab = () => {
+    if (activeTab > 0) setActiveTab(activeTab - 1);
+  };
+
+  // ─── Tab header click: validate current tab first, block if errors exist ─────
+  const handleTabClick = (targetIndex) => {
+    if (targetIndex === activeTab) return;
+
+    // Validate the tab user is trying to LEAVE
+    const leavingErrors = getErrorsForTab(activeTab, dataMap);
+
+    if (Object.keys(leavingErrors).length > 0) {
+      // Show only current tab errors and BLOCK navigation
+      setErrors(leavingErrors);
+      toast.error("Please fill all required fields before proceeding.");
+      return;
+    }
+
+    // All good — clear errors and allow tab switch
+    setErrors({});
+    setActiveTab(targetIndex);
+  };
+
+  // ─── Submit: validate every tab before posting ───────────────────────────────
+  async function actionPerformed(action) {
+    if (action === "clear") {
+      setDataMap(formVariables);
+      setErrors({});
+      toast.info("Form cleared");
+      return;
+    }
+
+    const allErrors = getAllErrors(dataMap);
+    if (Object.keys(allErrors).length > 0) {
+      setErrors(allErrors);
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      const response = await createSupplier(dataMap);
+      if (response) {
+        toast.success("Supplier Added successfully");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to create supplier"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  const renderTabContent = () => {
+    const tabProps = {
+      dataMap,
+      handleChange,
+      validateDataType,
+      validateLen,
+      errors,
+    };
+
+    switch (activeTab) {
+      case 0: return <GeneralTab {...tabProps} />;
+      case 1: return <SupplierAnalysisTab {...tabProps} />;
+      case 2: return <QualityProcessTab {...tabProps} />;
+      case 3: return <IncomingInspectionTab {...tabProps} />;
+      case 4: return <DocAndProcControl {...tabProps} />;
+      case 5: return <MaterialAndOther {...tabProps} actionPerformed={actionPerformed} />;
+      default: return null;
+    }
+  };
+
   return (
-    <div className="wrapper ">
+    <div className={styles.wrapper}>
       <Sidebar />
-
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        {/* conetnt Begin*/}
-        <div style={{ marginTop: "10px", marginBottom: "4rem" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="Supplier Registration"
-            isBack={true}
-          />
-
-          {/* Content heading */}
-          {/* <div className="col-md-6">
-          <div className="d-sm-flex align-items-center justify-content-between mb-2 mt-2">
-            <h5 className="h5 mx-3 mb-0 text-gray-800">
-              Supplier Registration
-            </h5>
+        <div className={styles.mainContent}>
+          {/* Breadcrumb */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>
+                Supplier Registration
+              </span>
+            </div>
           </div>
-        </div> */}
 
-          {/* Content Body */}
-          <div
-            className="card border border-dark shadow mx-4 my-2 p-2"
-            style={{ minHeight: "60vh" }}
-          >
-            <div className="col-md-12">
-              <ul className="nav nav-tabs" id="myTabs" role="tablist">
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link active"
-                    id="home-tab"
-                    data-bs-toggle="tab"
-                    href="#home"
-                    role="tab"
-                    aria-controls="home"
-                    aria-selected="true"
+          {/* Main Card */}
+          <div className={styles.formContainer}>
+            <div className={styles.card}>
+              {/* Tab Navigation */}
+              <div className={styles.tabNavigation}>
+                {tabs.map((tab, index) => (
+                  <button
+                    key={tab.id}
+                    className={`${styles.tabButton} ${
+                      activeTab === index ? styles.activeTab : ""
+                    }`}
+                    onClick={() => handleTabClick(index)}
                   >
-                    General
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="profile-tab"
-                    data-bs-toggle="tab"
-                    href="#profile"
-                    role="tab"
-                    aria-controls="profile"
-                    aria-selected="false"
-                  >
-                    Quality Analysis
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="contact-tab"
-                    data-bs-toggle="tab"
-                    href="#contact"
-                    role="tab"
-                    aria-controls="contact"
-                    aria-selected="false"
-                  >
-                    Quality Process
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="inspection-tab"
-                    data-bs-toggle="tab"
-                    href="#inspection"
-                    role="tab"
-                    aria-controls="inspection"
-                    aria-selected="true"
-                  >
-                    Incoming Inspection
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="Doc&Proc-tab"
-                    data-bs-toggle="tab"
-                    href="#Doc&Proc"
-                    role="tab"
-                    aria-controls="Doc&Proc"
-                    aria-selected="false"
-                  >
-                    Process / Document / Procurement Control
-                  </a>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <a
-                    className="nav-link"
-                    id="Proc&Other-tab"
-                    data-bs-toggle="tab"
-                    href="#Proc&Other"
-                    role="tab"
-                    aria-controls="Proc&Other"
-                    aria-selected="false"
-                  >
-                    Measuring Equipment & Other
-                  </a>
-                </li>
-              </ul>
-              <div
-                className="tab-content mt-0 border"
-                id="myTabsContent"
-                style={{ minHeight: "60vh" }}
-              >
-                <div
-                  className="tab-pane fade show active"
-                  id="home"
-                  role="tabpanel"
-                  aria-labelledby="home-tab"
-                >
-                  {" "}
-                  <GeneralTab
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="profile"
-                  role="tabpanel"
-                  aria-labelledby="profile-tab"
-                >
-                  {" "}
-                  <SupplierAnalysisTab
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="contact"
-                  role="tabpanel"
-                  aria-labelledby="contact-tab"
-                >
-                  {" "}
-                  <QualityProcessTab
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="inspection"
-                  role="tabpanel"
-                  aria-labelledby="inspection-tab"
-                >
-                  {" "}
-                  <IncomingInspectionTab
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="Doc&Proc"
-                  role="tabpanel"
-                  aria-labelledby="Doc&Proc-tab"
-                >
-                  {" "}
-                  <DocAndProcControl
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    errors={errors}
-                  />
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="Proc&Other"
-                  role="tabpanel"
-                  aria-labelledby="Proc&Other-tab"
-                >
-                  {" "}
-                  <MaterialAndOther
-                    dataMap={dataMap}
-                    handleChange={handleChange}
-                    validateDataType={validateDataType}
-                    validateLen={validateLen}
-                    actionPerformed={actionPerformed}
-                    errors={errors}
-                  />
-                </div>
+                    <i className={`fa ${tab.icon}`}></i>
+                    <span className={styles.tabName}>{tab.name}</span>
+                    {activeTab === index && (
+                      <div className={styles.activeIndicator}></div>
+                    )}
+                  </button>
+                ))}
               </div>
-              <div className="mt-3 col-md-12 d-flex justify-content-end">
-                <p className={invalidFeedback}>{invalidFeedbackMsg}</p>
 
-                {/* <div className="col-md-8 text-right align-items-end"> */}
+              {/* Tab Content */}
+              <div className={styles.tabContent}>{renderTabContent()}</div>
+
+              {/* Action Buttons */}
+              <div className={styles.formActions}>
                 <button
                   type="button"
-                  className="btn btn-warning mx-2"
+                  className={styles.btnClear}
                   onClick={() => actionPerformed("clear")}
+                  disabled={isSubmitting}
                 >
-                  Clear
+                  <i className="fa fa-eraser"></i>
+                  <span>Clear</span>
                 </button>
-                {isActiveTab && (
+
+                <div className={styles.navigationButtons}>
                   <button
                     type="button"
-                    className="btn btn-success mx-2"
-                    onClick={() => actionPerformed("submit")}
+                    className={styles.btnSecondary}
+                    onClick={handlePrevTab}
+                    disabled={activeTab === 0 || isSubmitting}
                   >
-                    Submit
+                    <i className="fa fa-chevron-left"></i>
+                    <span>Previous</span>
                   </button>
-                )}
-                {/* </div> */}
-                <button
-                  type="button"
-                  className="btn btn-secondary mx-2"
-                  onClick={handlePrevTab}
-                >
-                  Previous
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleNextTab}
-                >
-                  Next
-                </button>
+
+                  {activeTab < tabs.length - 1 ? (
+                    <button
+                      type="button"
+                      className={styles.btnPrimary}
+                      onClick={handleNextTab}
+                      disabled={isSubmitting}
+                    >
+                      <span>Next</span>
+                      <i className="fa fa-chevron-right"></i>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className={styles.btnSubmit}
+                      onClick={() => actionPerformed("submit")}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <span className={styles.spinner}></span>
+                          <span>Submitting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa fa-check"></i>
+                          <span>Submit</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-        {/* Content End */}
         <Footer />
       </div>
     </div>

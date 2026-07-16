@@ -3,18 +3,19 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import { useNavigate, useLocation } from "react-router-dom";
+import styles from "./MaterialNote.module.css";
 import {
   getMaterialDetail,
   updateMaterial,
   fetchPartNumbersAndDescriptions,
 } from "../services/db_manager";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 
 const EditMaterialNote = () => {
   const location = useLocation();
   const { materialId } = location.state || "";
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   const [form, setForm] = useState({
     mrnNo: "",
@@ -26,6 +27,8 @@ const EditMaterialNote = () => {
     partDescription: "",
     quantity: "",
     unitOfMeasurement: "",
+    qualityAcceptance: "",
+    storeInchargeSign: sessionStorage.getItem("username") || "",
   });
 
   const [partData, setPartData] = useState([]);
@@ -33,6 +36,7 @@ const EditMaterialNote = () => {
   // Fetch material details
   useEffect(() => {
     const fetchMaterialDetailData = async () => {
+      setIsLoading(true);
       try {
         const response = await getMaterialDetail(materialId);
         if (response.data) {
@@ -41,39 +45,12 @@ const EditMaterialNote = () => {
       } catch (error) {
         console.error("Error fetching material details:", error);
         toast.error("Error fetching material details.");
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchMaterialDetailData();
   }, [materialId]);
-
-  // Fetch available parts
-  useEffect(() => {
-    const fetchParts = async () => {
-      try {
-        const result = await fetchPartNumbersAndDescriptions();
-        setPartData(result);
-      } catch (err) {
-        console.error("Failed to fetch part list", err);
-      }
-    };
-    fetchParts();
-  }, []);
-
-  // Handle part number selection
-  const handleProductChange = (e) => {
-    const selected = e.target.value;
-
-    // find matching description
-    const match = partData.find((item) => item.productName === selected);
-    const description = match ? match.productDescription : "";
-
-    // update form with both part number and description
-    setForm((prevForm) => ({
-      ...prevForm,
-      partNumber: selected,
-      partDescription: description,
-    }));
-  };
 
   // Handle generic field change
   const handleChange = (e) => {
@@ -88,7 +65,7 @@ const EditMaterialNote = () => {
       const response = await updateMaterial(materialId, form);
       if (response.status === 200) {
         toast.success("Material updated successfully!");
-        navigate("/ViewMaterialNotePage");
+        navigate("/ViewMaterialNote");
       }
     } catch (error) {
       console.error("Error updating material:", error);
@@ -97,180 +74,219 @@ const EditMaterialNote = () => {
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="Edit Material Receipt Note Form"
-            isBack={true}
-          />
-          <div
-            className="card border border-dark shadow mx-4 my-4 p-2"
-            style={{ height: "70vh" }}
-          >
-            <form onSubmit={handleSubmit}>
-              <div className="col-md-12">
-                <div className="row">
-                  {/* Part Number */}
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Part Number <span className="text-danger mx-1">*</span>
-                    </label>
-                    <select
-                      required
-                      className="form-control"
-                      name="partNumber"
-                      value={form.partNumber}
-                      onChange={handleProductChange}
-                    >
-                      <option value="">-- Select Part --</option>
-                      {partData.map((item) => (
-                        <option key={item.productName} value={item.productName}>
-                          {item.productName}
-                        </option>
-                      ))}
-                    </select>
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Edit Material Receipt Note Form</span>
+            </div>
+          </div>
+
+          {/* Form Container */}
+          <div className={styles.container}>
+            <div className={styles.formCard}>
+              {/* Loading Overlay */}
+              {isLoading && (
+                <div className={styles.loadingOverlay}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading material details...</p>
+                </div>
+              )}
+
+              {/* Form Body */}
+              <form onSubmit={handleSubmit}>
+                <div className={styles.formBody}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Number
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="partNumber"
+                        value={form.partNumber}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Part Description
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="partDescription"
+                        value={form.partDescription}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
                   </div>
 
-                  {/* Part Description */}
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Part Description <span className="text-danger mx-1">*</span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="partDescription"
-                      value={form.partDescription}
-                      onChange={handleChange}
-                      readOnly
-                    />
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        MRN No
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="mrnNo"
+                        value={form.mrnNo}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Supplier Name
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="supplierName"
+                        value={form.supplierName}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
                   </div>
 
-                  {/* Other Fields */}
-                  <div className="col-md-6 p-2">
-                    <label>
-                      MRN No <span className="text-danger mx-1">*</span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="mrnNo"
-                      value={form.mrnNo}
-                      onChange={handleChange}
-                    />
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Order Number
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="orderNumber"
+                        value={form.orderNumber}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Challan No
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className={styles.input}
+                        name="challanNo"
+                        value={form.challanNo}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
 
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Supplier Name <span className="text-danger mx-1">*</span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="supplierName"
-                      value={form.supplierName}
-                      onChange={handleChange}
-                    />
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Receipt Date
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="date"
+                        className={styles.input}
+                        name="receiptDate"
+                        value={form.receiptDate}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Quantity
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        type="number"
+                        className={styles.input}
+                        name="quantity"
+                        value={form.quantity}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
                   </div>
 
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Order Number <span className="text-danger mx-1">*</span>
-                    </label>
-                    <input
-                      required
-                      type="number"
-                      className="form-control"
-                      name="orderNumber"
-                      value={form.orderNumber}
-                      onChange={handleChange}
-                    />
-                  </div>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Unit of Measurement
+                        <span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        required
+                        className={styles.input}
+                        name="unitOfMeasurement"
+                        value={form.unitOfMeasurement}
+                        onChange={handleChange}
+                        readOnly
+                      />
+                    </div>
 
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Challan No <span className="text-danger mx-1">*</span>
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="form-control"
-                      name="challanNo"
-                      value={form.challanNo}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Receipt Date <span className="text-danger mx-1">*</span>
-                    </label>
-                    <input
-                      required
-                      type="date"
-                      className="form-control"
-                      name="receiptDate"
-                      value={form.receiptDate}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Quantity <span className="text-danger mx-1">*</span>
-                    </label>
-                    <input
-                      required
-                      type="number"
-                      className="form-control"
-                      name="quantity"
-                      value={form.quantity}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6 p-2">
-                    <label>
-                      Unit of Measurement <span className="text-danger mx-1">*</span>
-                    </label>
-                    <select
-                      required
-                      className="form-control"
-                      name="unitOfMeasurement"
-                      value={form.unitOfMeasurement}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select Unit</option>
-                      <option value="EA">EA</option>
-                      <option value="RL">RL</option>
-                      <option value="QT">QT</option>
-                      <option value="GAL">GAL</option>
-                      <option value="KIT">KIT</option>
-                      <option value="LTR">LTR</option>
-                      <option value="SHT">SHT</option>
-                      <option value="Sq.ft">Sq.ft</option>
-                      <option value="Sq.mtr">Sq.mtr</option>
-                    </select>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Receive Quantity</label>
+                      <input
+                        type="number"
+                        className={styles.input}
+                        name="qualityAcceptance"
+                        value={form.qualityAcceptance}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Save Button */}
-                <div className="col-md-12 text-right mt-3">
-                  <button type="submit" className="btn btn-primary">
-                    Save
+                {/* Form Footer */}
+                <div className={styles.formFooter}>
+                  <button 
+                    type="button" 
+                    className={styles.btnCancel}
+                    onClick={() => navigate(-1)}
+                  >
+                    <i className="fa fa-times"></i>
+                    <span>Cancel</span>
+                  </button>
+                  <button type="submit" className={styles.btnSave}>
+                    <i className="fa fa-check"></i>
+                    <span>Save</span>
                   </button>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
-          <Footer />
         </div>
+        <Footer />
       </div>
     </div>
   );

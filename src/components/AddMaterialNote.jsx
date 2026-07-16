@@ -2,257 +2,345 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Footer from "./Footer";
-import { addMaterialNote, fetchPartNumbersAndDescriptions } from "../services/db_manager";
 import { toast } from "react-toastify";
-import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
+import { useNavigate } from "react-router-dom";
+import styles from "./MaterialNote.module.css";
+import {
+  addMaterialNote,
+  fetchSupplierName,
+  fetchAllPurchaseOrder,
+  fetchAllPartNO,
+  fetchAllPartNODetails,
+} from "../services/db_manager";
 
-const MaterialReceiptNoteForm = () => {
+const AddMaterialNote = () => {
+  const navigate = useNavigate();
+  const [suppliers, setSuppliers] = useState([]);
+  const [poNumbers, setPoNumbers] = useState([]);
+  const [parts, setParts] = useState([]);
+
   const [form, setForm] = useState({
-    mrnNo: "",
     supplierName: "",
     orderNumber: "",
-    challanNo: "",
-    receiptDate: "",
     partNumber: "",
     partDescription: "",
-    quantity: "",
-    // storeInchargeSign: "",
+    quantity: "",           // ordered qty
+    receiveQuantity: "",    // received qty
     unitOfMeasurement: "",
-    // qualityAcceptance: "",
+    challanNo: "",
+    receiptDate: "",
+    storeInchargeSign: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [data, setData] = useState([]); // To hold part numbers and descriptions
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-
-
+  // ✅ Fetch Suppliers
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await fetchPartNumbersAndDescriptions();
-        console.log("Fetched part list:", result);
-        setData(result);
+        const result = await fetchSupplierName();
+        console.log("Fetched Supplier list:", result.data);
+        setSuppliers(Array.isArray(result.data) ? result.data : []);
       } catch (err) {
-        console.error("Failed to fetch product list", err);
+        console.error("Failed to fetch supplier list", err);
+        setSuppliers([]);
       }
     };
-
     fetchData();
   }, []);
 
-  const validateForm = () => {
-    let newErrors = {};
+  // ✅ Fetch PO Numbers based on Supplier
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await fetchAllPurchaseOrder();
+        console.log("Fetched PO list:", result);
+        setPoNumbers(Array.isArray(result.data) ? result.data : []);
+      } catch (err) {
+        console.error("Failed to fetch PO list", err);
+        setPoNumbers([]);
+      }
+    };
+    fetchData();
+  }, []);
 
-    // Numeric fields validation
-    if (!/^\d{1,15}$/.test(form.mrnNo))
-      newErrors.mrnNo = "MRN No must be a number (max 15 digits)";
-    if (!/^\d{1,20}$/.test(form.orderNumber))
-      newErrors.orderNumber = "Order Number must be a number (max 20 digits)";
-    // if (!/^\d{1,20}$/.test(form.partNumber))
-    //   newErrors.partNumber = "Part Number must be a number (max 20 digits)";
-    if (!/^\d{1,10}$/.test(form.quantity))
-      newErrors.quantity = "Quantity must be a number (max 10 digits)";
+  // ✅ Fetch Parts based on PO Number AND Auto-select Supplier
+  useEffect(() => {
+    if (form.orderNumber) {
+      console.log(form.orderNumber);
+      const fetchData = async () => {
+        try {
+          const result = await fetchAllPartNO(form.orderNumber);
+          console.log("Fetched PartNo list:", result);
+          setParts(Array.isArray(result.data) ? result.data : []);
 
-    // Alphanumeric fields validation
-    if (!/^[a-zA-Z0-9 ]{1,100}$/.test(form.supplierName))
-      newErrors.supplierName =
-        "Supplier Name must contain only alphabet and number (max 100 characters)";
-    if (!/^[a-zA-Z0-9 ]{1,50}$/.test(form.challanNo))
-      newErrors.challanNo =
-        "Challan No must be alphanumeric (max 50 characters)";
-    if (!/^[a-zA-Z0-9 ]{1,200}$/.test(form.partDescription))
-      newErrors.partDescription =
-        "Part Description must be alphanumeric (max 200 characters)";
+          // ✅ Auto-populate supplier name from the first item
+          if (result.data && result.data.length > 0 && result.data[0].supplierName) {
+            setForm((prev) => ({
+              ...prev,
+              supplierName: result.data[0].supplierName,
+            }));
+          }
+        } catch (err) {
+          console.error("Failed to fetch Parts list", err);
+          setParts([]);
+        }
+      };
+      fetchData();
+    } else {
+      // Reset parts and supplier when PO is cleared
+      setParts([]);
+      setForm((prev) => ({
+        ...prev,
+        supplierName: "",
+      }));
+    }
+  }, [form.orderNumber]);
 
-    // Required field validation
-    if (!form.receiptDate) newErrors.receiptDate = "Receipt Date is required";
+  // ✅ Fetch Part Details when Part Number selected
+  useEffect(() => {
+    if (form.partNumber) {
+      const fetchData = async () => {
+        try {
+          const result = await fetchAllPartNODetails(form.partNumber, form.orderNumber);
+          console.log("Fetched PartNoDetails:", result);
+          if (result) {
+            const { description, currentStoke, unit, poDate } = result.data;
+            setForm((prev) => ({
+              ...prev,
+              partDescription: description || "",
+              quantity: currentStoke || "",
+              unitOfMeasurement: unit || "",
+              receiptDate: poDate || "",
+              storeInchargeSign: sessionStorage.getItem("username") || "",
+            }));
+          }
+        } catch (err) {
+          console.error("Failed to fetch PartDetails", err);
+        }
+      };
+      fetchData();
+    }
+  }, [form.partNumber, form.orderNumber]);
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleProductChange = (e) => {
-    const selected = e.target.value;
-
-    // Find the corresponding part description
-    const selectedItem = data.find((item) => item.productName === selected);
-    const description = selectedItem ? selectedItem.productDescription : "";
-
-    setForm((prevForm) => ({
-      ...prevForm,
-      partNumber: selected,
-      partDescription: description,
-    }));
-  };
-
+  // ✅ Handle Change
   const handleChange = (e) => {
-  const { name, value } = e.target;
-  setForm((prevForm) => ({
-    ...prevForm,
-    [name]: value,
-  }));
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  // ✅ Submit
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    ...form,
+    quantity: form.receiveQuantity   // send received qty
+  };
+
+  try {
+    await addMaterialNote(payload);
+    toast.success("Material Receipt Note saved successfully!");
+    resetForm();
+  } catch (error) {
+    console.error("Error saving material:", error);
+    const backendMessage =
+      error.response?.data?.message || "Failed to save material receipt note.";
+    toast.error(backendMessage);
+  }
 };
 
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    try {
-      await addMaterialNote(form);
-      // alert('Material Receipt Note saved successfully!');
-      toast.success("Material Receipt Note saved successfully!");
-      resetForm();
-    } catch (error) {
-      console.error("Error saving material:", error);
-      toast.error("Failed to save material receipt note.");
-    }
-  };
-
+  // ✅ Reset Form
   const resetForm = () => {
     setForm({
-      mrnNo: "",
       supplierName: "",
       orderNumber: "",
-      challanNo: "",
-      receiptDate: "",
       partNumber: "",
       partDescription: "",
       quantity: "",
-      // storeInchargeSign: "",
-      // qualityAcceptance: "",
       unitOfMeasurement: "",
+      challanNo: "",
+      receiptDate: "",
+      qualityAcceptance: "",
+      storeInchargeSign: "",
     });
-    setErrors({});
+    setParts([]);
   };
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb
-            breadcrumbsLabel="Add Material Receipt Note Form"
-            isBack={true}
-          />
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <button className={styles.backButton} onClick={() => navigate(-1)}>
+              <i className="fa fa-arrow-left"></i>
+              <span>Back</span>
+            </button>
+            <div className={styles.breadcrumbText}>
+              <span className={styles.breadcrumbLabel}>Add Material Receipt Note Form</span>
+            </div>
+          </div>
 
-          {/* <div className="col-md-6">
-          <h5 className="mx-3 mt-4">Material Receipt Note Form</h5>
-        </div> */}
-
-          <div
-            className="card border border-dark shadow mx-4 my-4 p-2"
-            style={{ height: "70vh" }}
-          >
-            <form onSubmit={handleSave}>
-              <div className="col-md-12">
-                <div className="row">
-                  {[
-                    { label: "MRN No", name: "mrnNo", type: "text" },
-                    { label: "Supplier Name", name: "supplierName", type: "text" },
-                    { label: "Order Number", name: "orderNumber", type: "number" },
-                    { label: "Challan No", name: "challanNo", type: "text" },
-                    { label: "Receipt Date", name: "receiptDate", type: "date" },
-                    { label: "Part Number", name: "partNumber", type: "select" },
-                    { label: "Part Description", name: "partDescription", type: "autofill" },
-                    { label: "Quantity", name: "quantity", type: "number" },
-                    {
-                      label: "Unit of Measurement",
-                      name: "unitOfMeasurement",
-                      type: "Option",
-                      options: ["EA", "RL", "QT", "GAL", "KIT", "LTR", "SHT", "Sq.ft", "Sq.mtr"]
-                    },
-                    // { label: "Store Incharge Sign", name: "storeInchargeSign", type: "text" },
-                    // { label: "Quality Acceptance", name: "qualityAcceptance", type: "text" },
-                  ].map(({ label, name, type, options }) => (
-                    <div className="col-md-6 p-2" key={name}>
-                      <label>
-                        {label}
-                        <span className="text-danger mx-1" style={{ fontSize: "17px" }}>*</span>
-                      </label>
-
-                      {type === "Option" ? (
-                        // Existing unitOfMeasurement dropdown
-                        <select
-                          className="form-control"
-                          name={name}
-                          value={form[name]}
-                          onChange={handleChange}
-                          required
-                        >
-                          <option value="">-- Select Unit --</option>
-                          {options.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      ) : type === "select" ? (
-                        // NEW: Part Number dropdown
-                        <select
-                          className="form-control"
-                          name={name}
-                          value={form[name]}
-                          onChange={(e) => {
-                            const selected = e.target.value;
-                            const selectedItem = data.find((item) => item.productName === selected);
-                            const description = selectedItem?.productDescription || "";
-
-                            setForm((prevForm) => ({
-                              ...prevForm,
-                              partNumber: selected,
-                              partDescription: description, // Auto-fill here
-                            }));
-                          }}
-                          required
-                        >
-                          <option value="">-- Select Part --</option>
-                          {data.map((item, i) => (
-                            <option key={i} value={item.productName}>
-                              {item.productName}
-                            </option>
-                          ))}
-                        </select>
-                      ) : type === "autofill" ? (
-                        // NEW: Auto-filled, disabled input
-                        <input
-                          type="text"
-                          className="form-control"
-                          name={name}
-                          value={form[name]}
-                          disabled
-                        />
-                      ) : (
-                        // Fallback: all other inputs
-                        <input
-                          type={type}
-                          className="form-control"
-                          name={name}
-                          value={form[name]}
-                          onChange={handleChange}
-                          required
-                        />
-                      )}
-
-
-                      {errors[name] && (
-                        <span className="text-danger">{errors[name]}</span>
-                      )}
+          {/* Form Container */}
+          <div className={styles.container}>
+            <div className={styles.formCard}>
+              {/* Form Body */}
+              <form onSubmit={handleSubmit}>
+                <div className={styles.formBody}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>PO Number</label>
+                      <select
+                        className={styles.select}
+                        name="orderNumber"
+                        value={form.orderNumber}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">-- Select PO Number --</option>
+                        {poNumbers.map((po, i) => (
+                          <option key={i} value={po.poNumber}>
+                            {po.poNumber}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                  ))}
 
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Supplier</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="supplierName"
+                        value={form.supplierName}
+                        onChange={handleChange}
+                        disabled
+                        placeholder="Auto-populated from PO"
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Part Number</label>
+                      <select
+                        className={styles.select}
+                        name="partNumber"
+                        value={form.partNumber}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">-- Select Part --</option>
+                        {parts.map((p, i) => (
+                          <option key={i} value={`${p.partNumber}|${p.id}`}>
+                            {p.partNumber}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Description</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="partDescription"
+                        value={form.partDescription}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Challan No<span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="challanNo"
+                        value={form.challanNo}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>
+                        Receipt Date<span className={styles.required}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className={styles.input}
+                        name="receiptDate"
+                        value={form.receiptDate}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Quantity</label>
+                      <input
+                        type="number"
+                        className={styles.input}
+                        name="quantity"
+                        value={form.quantity}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label className={styles.label}>Unit of Measurement</label>
+                      <input
+                        type="text"
+                        className={styles.input}
+                        name="unitOfMeasurement"
+                        value={form.unitOfMeasurement}
+                        onChange={handleChange}
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formGroupFull}>
+                    <label className={styles.label}>
+                      Receive Quantity<span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type="number"
+                      className={styles.input}
+                      name="receiveQuantity"
+                      value={form.receiveQuantity}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="col-md-12 text-right mt-3">
-                <button type="submit" className="btn btn-primary">
-                  Save
-                </button>
-              </div>
-            </form>
+                {/* Form Footer */}
+                <div className={styles.formFooter}>
+                  <button
+                    type="button"
+                    className={styles.btnCancel}
+                    onClick={() => navigate(-1)}
+                  >
+                    <i className="fa fa-times"></i>
+                    <span>Cancel</span>
+                  </button>
+                  <button type="submit" className={styles.btnSave}>
+                    <i className="fa fa-check"></i>
+                    <span>Save</span>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
         <Footer />
@@ -261,4 +349,4 @@ const MaterialReceiptNoteForm = () => {
   );
 };
 
-export default MaterialReceiptNoteForm;
+export default AddMaterialNote;

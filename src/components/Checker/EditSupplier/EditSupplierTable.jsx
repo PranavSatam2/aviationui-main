@@ -8,7 +8,7 @@ import {
   listAllSupplier,
   getpendingAllSupplier,
   ApproveSupplier,
-  getEditingSupplierList
+  getEditingSupplierList,
 } from "../../../services/db_manager";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -16,6 +16,7 @@ import CustomBreadcrumb from "../../Breadcrumb/CustomBreadcrumb";
 import { Modal, Button, Form } from "react-bootstrap";
 import { PrintableGeneralTab } from "../CheckerSupplierRegistration/PrintSupplierReg";
 import styles from "./EditSupplierTable.module.css";
+
 const EditSupplierTable = () => {
   // State
   const [tableData, setTableData] = useState([]);
@@ -25,18 +26,18 @@ const EditSupplierTable = () => {
   const [sortField, setSortField] = useState("formId");
   const [sortDirection, setSortDirection] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
-  // Modified: Changed selectedItems from array to single string ID
   const [selectedItem, setSelectedItem] = useState("");
   const [selecteSupplierData, setSelecteSupplierData] = useState();
   const [selectAll, setSelectAll] = useState(false);
 
   // Modal states
   const [showModal, setShowModal] = useState(false);
-  const [actionType, setActionType] = useState(""); // "accept" or "reject"
+  const [actionType, setActionType] = useState("");
   const [remark, setRemark] = useState("");
   const [supplierData, setSupplierData] = useState();
 
   const navigate = useNavigate();
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -51,41 +52,32 @@ const EditSupplierTable = () => {
       setIsLoading(false);
     }
   };
-  // Fetching data when the component is mounted
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Modified: Handle checkbox selection for single selection only
   const handleCheckboxChange = (supplier) => {
-    // If the same checkbox is clicked again, deselect it
     if (selectedItem === supplier.supplierId) {
       setSelectedItem("");
-      console.log("Selected ID: none");
     } else {
       setSelectedItem(supplier.supplierId);
       setSelecteSupplierData(supplier);
-      console.log("Selected ID:", supplier.supplierId);
     }
   };
 
-  // Modified: Handle select all - now it just clears selection
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedItem("");
-      console.log("Selected ID: none");
     } else {
-      // Select the first item when clicking "select all"
       if (currentItems.length > 0) {
         const firstItemId = currentItems[0].formId;
         setSelectedItem(firstItemId);
-        console.log("Selected ID:", firstItemId);
       }
     }
     setSelectAll(!selectAll);
   };
 
-  // Reset selection when page changes
   useEffect(() => {
     setSelectedItem("");
     setSelectAll(false);
@@ -126,7 +118,6 @@ const EditSupplierTable = () => {
     }
   };
 
-  // Modal handlers
   const handleOpenModal = (type) => {
     if (!selectedItem) {
       toast.warning("Please select a supplier");
@@ -143,13 +134,11 @@ const EditSupplierTable = () => {
 
   const handleSubmitAction = async () => {
     const action = actionType === "accept" ? "accepted" : "rejected";
-    // Add 'remark' to each object in selecteSupplierData
     const updatedSupplierData = {
       ...selecteSupplierData,
       remark: remark,
-      // supplierId: selectedItem,
-      userRole:'QM',
-      userAction:'2'
+      userRole: "QM",
+      userAction: "2",
     };
     try {
       const response = await ApproveSupplier(updatedSupplierData);
@@ -159,16 +148,13 @@ const EditSupplierTable = () => {
       console.error("Error fetching supplier details: ", error);
       toast.error("Failed to fetch supplier details");
     }
-  
-    // Reset states
+
     setSelectedItem("");
     setSelectAll(false);
     setRemark("");
     handleCloseModal();
   };
-  
 
-  // Search functionality
   const filteredData = tableData.filter((supplier) => {
     return Object.values(supplier).some(
       (value) =>
@@ -177,7 +163,6 @@ const EditSupplierTable = () => {
     );
   });
 
-  // Sorting functionality
   const sortedData = [...filteredData].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
@@ -189,7 +174,6 @@ const EditSupplierTable = () => {
     }
   });
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
@@ -219,9 +203,9 @@ const EditSupplierTable = () => {
       pageNumbers.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
+          className={`${styles.pageItem} ${currentPage === i ? styles.active : ''}`}
         >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
+          <button className={styles.pageLink} onClick={() => setCurrentPage(i)}>
             {i}
           </button>
         </li>
@@ -232,226 +216,146 @@ const EditSupplierTable = () => {
   };
 
   const handlePrintClick = (supplier) => {
-    // Store the supplier data
     setSupplierData(supplier);
 
-    // Short delay to ensure React has updated the state and rendered the component
     setTimeout(() => {
-      // Cache original body styles
       const originalBodyStyle = document.body.style.cssText;
-
-      // Apply print-friendly styles to the body
       document.body.style.margin = "0";
       document.body.style.padding = "0";
-
-      // Print the document
       window.print();
 
-      // Restore original body styles after printing dialog is closed
       setTimeout(() => {
         document.body.style.cssText = originalBodyStyle;
       }, 100);
     }, 500);
   };
 
-  // Column definitions for the table
   const columns = [
-    { field: "supplierId", label: "ID", width: "50px" },
-    { field: "supplierName", label: "Supplier Name", width: "100px" },
-    { field: "address", label: "Address", width: "100px" },
-    { field: "phoneNumber", label: "Phone Number", width: "100px" },
+    { field: "supplierId", label: "ID", width: "60px" },
+    { field: "supplierName", label: "Supplier Name", width: "150px" },
+    { field: "address", label: "Address", width: "150px" },
+    { field: "phoneNumber", label: "Phone Number", width: "120px" },
     { field: "faxNum", label: "Fax Number", width: "100px" },
-    { field: "email", label: "Email", width: "100px" },
-    { field: "qualityManagerName", label: "Quality Manager", width: "100px" },
-    { field: "qualityManagerPhoneNumber", label: "QM Phone", width: "100px" },
-    { field: "qualityManagerEmailId", label: "QM Email", width: "100px" },
-    { field: "saleRepresentativeName", label: "Sales Rep", width: "100px" },
+    { field: "email", label: "Email", width: "150px" },
+    { field: "qualityManagerName", label: "Quality Manager", width: "130px" },
+    { field: "qualityManagerPhoneNumber", label: "QM Phone", width: "120px" },
+    { field: "qualityManagerEmailId", label: "QM Email", width: "150px" },
+    { field: "saleRepresentativeName", label: "Sales Rep", width: "120px" },
     {
       field: "saleRepresentativePhoneNumber",
       label: "SR Phone",
-      width: "100px",
+      width: "120px",
     },
     { field: "saleRepresentativeEmailId", label: "SR Email", width: "150px" },
-    { field: "coreProcess", label: "Core Product", width: "100px" },
+    { field: "coreProcess", label: "Core Product", width: "120px" },
   ];
 
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <Sidebar />
-      <div className="content">
+      <div className={styles.content}>
         <Header />
-        <div style={{ marginTop: "10px" }}>
-          <CustomBreadcrumb breadcrumbsLabel="Edit Supplier" />
-          <div className="printView">
+        <div className={styles.mainContent}>
+          {/* Breadcrumb Section */}
+          <div className={styles.breadcrumbSection}>
+            <div className={styles.breadcrumbContent}>
+              <i className="fa fa-edit"></i>
+              <span className={styles.breadcrumbLabel}>Edit Supplier</span>
+            </div>
+          </div>
+
+          {/* Print View (Hidden) */}
+          <div className="printView" style={{ display: 'none' }}>
             <PrintableGeneralTab dataMap={supplierData} />
           </div>
 
-          <div
-            className={[
-              "normalView",
-              "card border-0 shadow-lg mx-4 my-4 rounded-3",
-              styles.normalViewStyle,
-            ].join(" ")}
-          >
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <span className="input-group-text bg-primary text-white border-0">
-                      <i className="fa fa-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control border-start-0 ps-0"
-                      placeholder="Search suppliers..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+          {/* Card */}
+          <div className={styles.card}>
+            <div className={styles.cardBody}>
+              {/* Search and Entries */}
+              <div className={styles.controlsRow}>
+                <div className={styles.searchBox}>
+                  <i className="fa fa-search"></i>
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search suppliers..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div className="col-md-3 ms-auto">
-                  <div className="d-flex align-items-center justify-content-end">
-                    <label className="me-2 text-muted fw-light">Show</label>
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                    <label className="ms-2 text-muted fw-light">entries</label>
-                  </div>
+                <div className={styles.entriesSelector}>
+                  <label className={styles.label}>Show</label>
+                  <select
+                    className={styles.select}
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                  <label className={styles.label}>entries</label>
                 </div>
               </div>
 
+              {/* Table */}
               {isLoading ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary" role="status">
-                    {/* <span className="visually-hidden"></span> */}
-                  </div>
-                  <p className="mt-2 text-muted">Loading data...</p>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                  <p className={styles.loadingText}>Loading data...</p>
                 </div>
               ) : (
-                <div
-                  className="table-responsive"
-                  style={{
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "#ccc transparent",
-                  }}
-                >
-                  <table className="table table-hover table-striped align-middle">
+                <div className={styles.tableContainer}>
+                  <table className={styles.table}>
                     <thead>
-                      <tr className="bg-blue">
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{ width: "40px" }}
-                        >
-                          <div className="form-check d-flex justify-content-center">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="selectAll"
-                              checked={selectAll}
-                              onChange={handleSelectAll}
-                            />
-                          </div>
-                        </th>
+                      <tr>
                         {columns.map((column) => (
                           <th
                             key={column.field}
-                            className="position-sticky top-0 bg-light py-3"
                             onClick={() => handleSort(column.field)}
-                            style={{
-                              cursor: "pointer",
-                              width: column.width || "auto",
-                              fontSize: "0.9rem",
-                              fontWeight: "600",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                            }}
+                            style={{ width: column.width }}
                           >
-                            <div className="d-flex align-items-center">
+                            <div className={styles.thContent}>
                               <span>{column.label}</span>
                               {sortField === column.field ? (
                                 <i
-                                  className={`ms-1 fa fa-sort-${
-                                    sortDirection === "asc" ? "up" : "down"
-                                  } text-primary`}
+                                  className={`fa fa-sort-${sortDirection === "asc" ? "up" : "down"} ${styles.sortIconActive}`}
                                 ></i>
                               ) : (
-                                <i
-                                  className="ms-1 fa fa-sort text-muted opacity-50"
-                                  style={{ fontSize: "0.8rem" }}
-                                ></i>
+                                <i className={`fa fa-sort ${styles.sortIcon}`}></i>
                               )}
                             </div>
                           </th>
                         ))}
-                        <th
-                          className="position-sticky top-0 bg-light py-3 text-center"
-                          style={{
-                            width: "100px",
-                            fontSize: "0.9rem",
-                            fontWeight: "600",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          ACTIONS
+                        <th className={styles.actionsHeader}>
+                          <div className={styles.thContent}>
+                            <span>ACTIONS</span>
+                          </div>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentItems.length > 0 ? (
                         currentItems.map((supplier, index) => (
-                          <tr
-                            key={supplier.formId}
-                            className={
-                              index % 2 === 0
-                                ? "bg-white"
-                                : "bg-light bg-opacity-50"
-                            }
-                          >
-                            <td className="text-center">
-                              <div className="form-check d-flex justify-content-center">
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`check-${supplier.supplierId}`}
-                                  checked={selectedItem === supplier.supplierId}
-                                  onChange={() =>
-                                    handleCheckboxChange(supplier)
-                                  }
-                                />
-                              </div>
-                            </td>
+                          <tr key={supplier.formId} style={{ animationDelay: `${index * 0.02}s` }}>
                             {columns.map((column) => (
                               <td
                                 key={`${supplier.formId}-${column.field}`}
-                                className="text-nowrap py-3"
-                                style={{
-                                  maxWidth: "150px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
                                 title={supplier[column.field]}
                               >
                                 {supplier[column.field]}
                               </td>
                             ))}
-                            <td>
-                              <div className="d-flex justify-content-center gap-2">
-                              <button
-                                  className="btn btn-sm btn-outline-primary"
+                            <td className={styles.actionsCell}>
+                              <div className={styles.actionButtons}>
+                                <button
+                                  className={styles.btnEdit}
                                   onClick={() =>
                                     editSelectedElement(supplier.supplierId)
                                   }
@@ -459,43 +363,22 @@ const EditSupplierTable = () => {
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
                                 </button>
-                                {/* <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() =>
-                                    editSelectedElement(supplier.supplierId)
-                                  }
-                                  title="View Doc"
-                                >
-                                  <i className="fa-solid fa-eye"></i>
-                                </button> */}
-                                {/* <button
-                                  className="btn btn-sm btn-outline-secondary"
-                                  onClick={() => handlePrintClick(supplier)}
-                                  title="Print Doc"
-                                >
-                                  <i className="fa-solid fa-print"></i>
-                                </button> */}
                               </div>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td
-                            colSpan={columns.length + 2}
-                            className="text-center py-5"
-                          >
+                          <td colSpan={columns.length + 1} className={styles.noData}>
                             {searchTerm ? (
                               <div>
-                                <i className="fa fa-search fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">
-                                  No matching records found
-                                </p>
+                                <i className="fa fa-search fa-2x"></i>
+                                <p>No matching records found</p>
                               </div>
                             ) : (
                               <div>
-                                <i className="fa fa-database fa-2x text-muted mb-3"></i>
-                                <p className="mb-0">No data available</p>
+                                <i className="fa fa-database fa-2x"></i>
+                                <p>No data available</p>
                               </div>
                             )}
                           </td>
@@ -506,116 +389,58 @@ const EditSupplierTable = () => {
                 </div>
               )}
 
-              <div className="row mt-4 align-items-center">
-                <div className="col-md-6">
-                  <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                    Showing{" "}
-                    <span className="fw-bold text-dark">
-                      {indexOfFirstItem + 1}
-                    </span>{" "}
-                    to{" "}
-                    <span className="fw-bold text-dark">
-                      {Math.min(indexOfLastItem, sortedData.length)}
-                    </span>{" "}
-                    of{" "}
-                    <span className="fw-bold text-dark">
-                      {sortedData.length}
-                    </span>{" "}
-                    entries
-                    {searchTerm &&
-                      ` (filtered from ${tableData.length} total entries)`}
-                  </p>
+              {/* Pagination */}
+              <div className={styles.paginationRow}>
+                <div className={styles.paginationInfo}>
+                  Showing <strong>{indexOfFirstItem + 1}</strong> to{" "}
+                  <strong>{Math.min(indexOfLastItem, sortedData.length)}</strong> of{" "}
+                  <strong>{sortedData.length}</strong> entries
+                  {searchTerm && ` (filtered from ${tableData.length} total entries)`}
                 </div>
-                <div className="col-md-6">
-                  <nav aria-label="Page navigation">
-                    <ul className="pagination justify-content-end mb-0">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                <nav>
+                  <ul className={styles.pagination}>
+                    <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(1)}
+                        aria-label="First page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(1)}
-                          aria-label="First page"
-                        >
-                          <i className="fa-solid fa-angles-left"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angles-left"></i>
+                      </button>
+                    </li>
+                    <li className={`${styles.pageItem} ${currentPage === 1 ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        aria-label="Previous page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          aria-label="Previous page"
-                        >
-                          <i className="fa-solid fa-angle-left"></i>
-                        </button>
-                      </li>
+                        <i className="fa-solid fa-angle-left"></i>
+                      </button>
+                    </li>
 
-                      {renderPageNumbers()}
+                    {renderPageNumbers()}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                    <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        aria-label="Next page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          aria-label="Next page"
-                        >
-                          <i className="fa-solid fa-angle-right"></i>
-                        </button>
-                      </li>
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        <i className="fa-solid fa-angle-right"></i>
+                      </button>
+                    </li>
+                    <li className={`${styles.pageItem} ${currentPage === totalPages ? styles.disabled : ''}`}>
+                      <button
+                        className={styles.pageLink}
+                        onClick={() => setCurrentPage(totalPages)}
+                        aria-label="Last page"
                       >
-                        <button
-                          className="page-link border-0"
-                          onClick={() => setCurrentPage(totalPages)}
-                          aria-label="Last page"
-                        >
-                          <i className="fa-solid fa-angles-right"></i>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+                        <i className="fa-solid fa-angles-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
-
-              {/* Accept/Reject Buttons */}
-              {/* <div className="d-flex justify-content-end mt-3 gap-3">
-                <button
-                  className="btn btn-outline-success"
-                  onClick={() => handleOpenModal("accept")}
-                  disabled={!selectedItem}
-                >
-                  <i className="fa-solid fa-check me-2"></i>
-                  Approved
-                </button>
-                <button
-                  className="btn btn-outline-info"
-                  onClick={() => handleOpenModal("Send To Edit")}
-                  disabled={!selectedItem}
-                >
-                  <i className="fa-solid fa-paper-plane me-2"></i>
-                  Send To Edit
-                </button>
-                <button
-                  className="btn btn-outline-danger"
-                  onClick={() => handleOpenModal("reject")}
-                  disabled={!selectedItem}
-                >
-                  <i className="fa-solid fa-xmark me-2"></i>
-                  Reject
-                </button>
-              </div> */}
             </div>
           </div>
         </div>

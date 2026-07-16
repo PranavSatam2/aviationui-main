@@ -1,55 +1,47 @@
-// MaterialRequisitionForm.js
 import { useState, useEffect } from "react";
 import styles from "./index.module.css";
 
 const MaterialRequisitionForm = ({ tableData }) => {
-  // Initialize rows with the first row containing tableData if available
   const [rows, setRows] = useState([
     {
       id: 1,
-      partNo: "",
+      partNumber: "",
       description: "",
       requestedQty: "",
       issuedQty: "",
-      batchLot: "",
-      receivedSign: "",
-    }
+    },
   ]);
 
-  // Update the form when tableData changes
+  // Update first row when tableData changes
   useEffect(() => {
     if (tableData && Object.keys(tableData).length > 0) {
-      // Update the first row with tableData
       const updatedRows = [...rows];
       updatedRows[0] = {
         ...updatedRows[0],
-        partNo: tableData.partNo || "",
+        partNumber: tableData.partNumber || "",
         description: tableData.description || "",
         requestedQty: tableData.requestedQty || "",
         issuedQty: tableData.issuedQty || "",
-        batchLot: tableData.batchLotNo || "",
       };
       setRows(updatedRows);
     }
   }, [tableData]);
 
+  // Add new row
   const handleAddRow = () => {
     const newRow = {
       id: rows.length + 1,
-      partNo: "",
+      partNumber: "",
       description: "",
       requestedQty: "",
       issuedQty: "",
-      batchLot: "",
-      receivedSign: "",
     };
     setRows([...rows, newRow]);
   };
 
+  // Handle input change
   const handleRowChange = (id, field, value) => {
-    setRows(
-      rows.map((row) => (row.id === id ? { ...row, [field]: value } : row))
-    );
+    setRows(rows.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
   };
 
   return (
@@ -57,80 +49,58 @@ const MaterialRequisitionForm = ({ tableData }) => {
       <div className={styles.printContainer}>
         <table className={styles.formTable}>
           <thead>
+            {/* Header */}
             <tr>
-              <th
-                colSpan="8"
-                className={`${styles.tableCell} ${styles.headerYellow}`}
-              >
+              <th colSpan="7" className={`${styles.tableCell} ${styles.headerYellow}`}>
                 Material Requisition
               </th>
             </tr>
+
+            {/* Requisition No, Date, Current Date */}
             <tr>
-              <th colSpan="2" className={styles.tableCell}></th>
-              <th className={`${styles.tableCell} ${styles.labelCell}`}>
-                Material Requisition No
-              </th>
-              <th className={styles.tableCell}>
-                {tableData?.materialRequisitionNo || ""}
-              </th>
-              <th className={`${styles.tableCell} ${styles.labelCell}`}>
-                Date
-              </th>
-              <th colSpan="3" className={styles.tableCell}>
-                {tableData?.date || ""}
-              </th>
-            </tr>
-            <tr>
-              <th colSpan="2" className={styles.tableCell}></th>
-              <th className={`${styles.tableCell} ${styles.labelCell}`}>
-                Workorder No
-              </th>
-              <th className={styles.tableCell}>
-                {tableData?.workOrderNo || ""}
-              </th>
-              <th colSpan="4" className={styles.tableCell}></th>
-            </tr>
-            <tr>
-              <th className={`${styles.tableCell} ${styles.columnHeader}`}>
-                Sr.No
-              </th>
-              <th className={`${styles.tableCell} ${styles.columnHeader}`}>
-                Part No.
-              </th>
-              <th className={`${styles.tableCell} ${styles.columnHeader}`}>
-                Description
-              </th>
-              <th className={`${styles.tableCell} ${styles.columnHeader}`}>
-                Requested Qty
-              </th>
-              <th className={`${styles.tableCell} ${styles.columnHeader}`}>
-                Issued Qty
-              </th>
-              <th className={`${styles.tableCell} ${styles.columnHeader}`}>
-                Batch/LOT#
-              </th>
-              <th className={`${styles.tableCell} ${styles.columnHeader}`}>
-                Received Sign
-              </th>
               <th className={styles.tableCell}></th>
+              <th className={styles.labelCell}>Material Requisition No</th>
+              <th className={styles.tableCell}>{tableData?.materialRequisitionNo || ""}</th>
+              <th className={styles.labelCell}>Date</th>
+              <th className={styles.tableCell}>{tableData?.date || ""}</th>
+              <th className={styles.labelCell}>Current Date</th>
+              <th className={styles.tableCell}>{tableData?.curDate || ""}</th>
+            </tr>
+
+            {/* Workorder No and Supplier
+            <tr>
+              <th className={styles.tableCell}></th>
+              <th className={styles.labelCell}>Workorder No</th>
+              <th className={styles.tableCell}>{tableData?.workOrderNo || ""}</th>
+            </tr> */}
+
+            {/* Table Columns */}
+            <tr>
+              <th className={`${styles.tableCell} ${styles.columnHeader}`}>Sr.No</th>
+              <th className={`${styles.tableCell} ${styles.columnHeader}`}>Work Number</th>
+              <th className={`${styles.tableCell} ${styles.columnHeader}`}>Part No.</th>
+              <th className={`${styles.tableCell} ${styles.columnHeader}`}>Description</th>
+              <th className={`${styles.tableCell} ${styles.columnHeader}`}>Requested Qty</th>
+              <th className={`${styles.tableCell} ${styles.columnHeader}`}>Issued Qty</th>
+              <th className={`${styles.tableCell} ${styles.columnHeader}`}>Supplier Name</th>
+
             </tr>
           </thead>
+
+          {/* Table Body */}
           <tbody>
             {rows.map((row, index) => (
               <tr key={row.id}>
-                <td className={`${styles.tableCell} ${styles.centerText}`}>
-                  {row.id}
-                </td>
+                <td className={`${styles.tableCell} ${styles.centerText}`}>{row.id}</td>
+                <td className={styles.tableCell}>{tableData?.workOrderNo || ""}</td>
                 <td className={styles.tableCell}>
-                  {index === 0 && tableData?.partNo ? (
-                    tableData.partNo
+                  {index === 0 && tableData?.partNumber ? (
+                    tableData.partNumber
                   ) : (
                     <input
                       type="text"
-                      value={row.partNo}
-                      onChange={(e) =>
-                        handleRowChange(row.id, "partNo", e.target.value)
-                      }
+                      value={row.partNumber}
+                      onChange={(e) => handleRowChange(row.id, "partNumber", e.target.value)}
                       className={styles.inputField}
                     />
                   )}
@@ -142,9 +112,7 @@ const MaterialRequisitionForm = ({ tableData }) => {
                     <input
                       type="text"
                       value={row.description}
-                      onChange={(e) =>
-                        handleRowChange(row.id, "description", e.target.value)
-                      }
+                      onChange={(e) => handleRowChange(row.id, "description", e.target.value)}
                       className={styles.inputField}
                     />
                   )}
@@ -156,9 +124,7 @@ const MaterialRequisitionForm = ({ tableData }) => {
                     <input
                       type="text"
                       value={row.requestedQty}
-                      onChange={(e) =>
-                        handleRowChange(row.id, "requestedQty", e.target.value)
-                      }
+                      onChange={(e) => handleRowChange(row.id, "requestedQty", e.target.value)}
                       className={styles.inputField}
                     />
                   )}
@@ -170,66 +136,33 @@ const MaterialRequisitionForm = ({ tableData }) => {
                     <input
                       type="text"
                       value={row.issuedQty}
-                      onChange={(e) =>
-                        handleRowChange(row.id, "issuedQty", e.target.value)
-                      }
+                      onChange={(e) => handleRowChange(row.id, "issuedQty", e.target.value)}
                       className={styles.inputField}
                     />
                   )}
                 </td>
                 <td className={styles.tableCell}>
-                  {index === 0 && tableData?.batchLotNo ? (
-                    tableData.batchLotNo
+                  {index === 0 && tableData?.supplierName ? (
+                    tableData.supplierName
                   ) : (
                     <input
                       type="text"
-                      value={row.batchLot}
-                      onChange={(e) =>
-                        handleRowChange(row.id, "batchLot", e.target.value)
-                      }
+                      value={row.supplierName || ""}
+                      onChange={(e) => handleRowChange(row.id, "supplierName", e.target.value)}
                       className={styles.inputField}
                     />
                   )}
                 </td>
-                <td className={styles.tableCell}>
-                  <input
-                    type="text"
-                    value={row.receivedSign}
-                    onChange={(e) =>
-                      handleRowChange(row.id, "receivedSign", e.target.value)
-                    }
-                    className={styles.inputField}
-                  />
-                </td>
-                {/* <td className={styles.tableCell}>
-                  {row.id === rows.length && (
-                    <div className={styles.addButtonLabel}>
-                      Add new
-                      <br />
-                      Row button
-                    </div>
-                  )}
-                </td> */}
               </tr>
             ))}
-            <tr>
-              <td className={styles.tableCell}></td>
-              <td colSpan="6" className={styles.tableCell}>
-                <div className={styles.signatureRow}>
-                  <span className={styles.signatureLabel}>
-                    Workshop Manager Sign
-                  </span>
-                  <input type="text" className={styles.signatureInput} />
-                </div>
-              </td>
-              <td className={styles.tableCell}>
-                <button onClick={handleAddRow} className={styles.addRowButton}>
-                  Add Row
-                </button>
-              </td>
-            </tr>
           </tbody>
         </table>
+
+
+        <div className={styles.signatureRow}>
+          <span className={styles.signatureLabel}>Workshop Manager Sign</span>
+          <input type="text" className={styles.signatureInput} />
+        </div>
       </div>
     </div>
   );

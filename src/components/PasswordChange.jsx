@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axiosInstance from "../axiosConfig";
 import Footer from "./Footer";
 import CustomBreadcrumb from "./Breadcrumb/CustomBreadcrumb";
 import Header from "./Header";
+import { useNavigate } from "react-router-dom";
 
 const PasswordChange = () => {
   // States for form fields
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState("");
-
-  // State for error messages
- // const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
+  //const [success, setSuccess] = useState('');
 
   const validatePassword = (password) => {
     const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -23,23 +21,23 @@ const PasswordChange = () => {
   // Handle form submission
 const handleSubmit = async (e) => {
   e.preventDefault();
-  setErrorMessage("");
+  //setErrorMessage("");
 
   if (!currentPassword || !newPassword || !confirmPassword) {
-    setErrorMessage('All fields are required');
+    alert('All fields are required');
     return;
   }
   if (!validatePassword(newPassword)) {
-    setErrorMessage('New password must be at least 8 characters long and contain a mix of letters, numbers, and symbols.');
+    alert('New password must be at least 8 characters long and contain a mix of letters, numbers, and symbols.');
     return;
   }
   if (newPassword !== confirmPassword) {
-    setErrorMessage('New password and confirm password do not match');
+    alert('New password and confirm password do not match');
     return;
   }
   const token = sessionStorage.getItem("jwt_token");
   if (!token) {
-    setErrorMessage('You need to be logged in to change your password');
+    alert('You need to be logged in to change your password');
     return;
   }
   try {
